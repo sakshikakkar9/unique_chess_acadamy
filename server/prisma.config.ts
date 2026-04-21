@@ -7,7 +7,9 @@ export default defineConfig({
   
   migrations: {
     path: "prisma/migrations",
+    seed: 'node prisma/seed.js',
   },
+  
   
   // This is where the URL lives now!
   datasource: {
