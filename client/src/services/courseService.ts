@@ -1,37 +1,28 @@
+import api from "@/lib/api"; // Your custom axios instance
 import { Course } from "@/types";
-import { courses as initialCourses } from "./mockData";
-
-let courses = [...initialCourses];
 
 export const courseService = {
   getAll: async (): Promise<Course[]> => {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return [...courses];
+    const response = await api.get("/courses");
+    return response.data;
   },
 
-  getById: async (id: string): Promise<Course | undefined> => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return courses.find((c) => c.id === id);
+  getById: async (id: string): Promise<Course> => {
+    const response = await api.get(`/courses/${id}`);
+    return response.data;
   },
 
   create: async (course: Omit<Course, "id">): Promise<Course> => {
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    const newCourse = { ...course, id: Math.random().toString(36).substr(2, 9) };
-    courses.push(newCourse);
-    return newCourse;
+    const response = await api.post("/courses", course);
+    return response.data;
   },
 
   update: async (id: string, course: Partial<Course>): Promise<Course> => {
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    const index = courses.findIndex((c) => c.id === id);
-    if (index === -1) throw new Error("Course not found");
-    courses[index] = { ...courses[index], ...course };
-    return courses[index];
+    const response = await api.put(`/courses/${id}`, course);
+    return response.data;
   },
 
   delete: async (id: string): Promise<void> => {
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    courses = courses.filter((c) => c.id !== id);
+    await api.delete(`/courses/${id}`);
   },
 };

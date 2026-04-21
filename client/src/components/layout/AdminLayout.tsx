@@ -2,18 +2,11 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import AdminNavbar from "./AdminNavbar";
-import { useAuth } from "@/hooks/useAuth";
-import { Navigate } from "react-router-dom";
 
 const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { isAuthenticated, isLoading } = useAuth();
 
-  if (isLoading) return null;
-
-  if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
-  }
+  // 👇 Removed useAuth and <Navigate> here because <ProtectedRoute> handles it!
 
   return (
     <div className="min-h-screen bg-muted/30 flex">

@@ -1,21 +1,23 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroImg from "@/assets/hero-chess.jpg";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import SectionHeading from "@/components/shared/SectionHeading";
 import CTAStrip from "@/components/shared/CTAStrip";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { stats, courses, testimonials, tournaments } from "@/services/mockData";
 import CourseCard from "@/features/courses/components/CourseCard";
+import { useAdminCourses } from "@/hooks/useAdminCourses";
+import { useAdminTournaments } from "@/hooks/useAdminTournaments";
+// Keep static stats/testimonials
+import { stats, testimonials } from "@/services/mockData";
 
 export default function HomePage() {
+  const { courses, isLoading: coursesLoading } = useAdminCourses();
+  const { tournaments, isLoading: tournamentsLoading } = useAdminTournaments();
+
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-
       {/* Hero */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
@@ -94,11 +96,15 @@ export default function HomePage() {
             title="Train Smart. Win Smarter."
             description="Structured programs designed for every skill level — from first-time players to aspiring grandmasters."
           />
-          <div className="grid md:grid-cols-3 gap-6">
-            {courses.slice(0, 3).map((course, i) => (
-              <CourseCard key={course.id} course={course} delay={i * 0.1} />
-            ))}
-          </div>
+          {coursesLoading ? (
+            <div className="text-center py-10">Loading programs...</div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-6">
+              {courses.slice(0, 3).map((course, i) => (
+                <CourseCard key={course.id} course={course} delay={i * 0.1} />
+              ))}
+            </div>
+          )}
           <ScrollReveal className="text-center mt-10">
             <Link to="/courses">
               <Button variant="outline" size="lg" className="border-primary/30 text-primary hover:bg-primary/10">
@@ -151,44 +157,50 @@ export default function HomePage() {
             title="Compete. Conquer. Champion."
             description="Nationwide tournaments that test your mettle and build your competitive spirit."
           />
-          <div className="grid md:grid-cols-2 gap-6">
-            <ScrollReveal direction="left">
-              <div className="relative rounded-2xl overflow-hidden aspect-video group">
-                {tournaments[0].image && (
-                  <img src={tournaments[0].image} alt="Tournament" loading="lazy" width={800} height={600} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6">
-                  <span className="text-xs font-medium bg-primary/20 text-primary px-3 py-1 rounded-full mb-3 inline-block">Upcoming</span>
-                  <h3 className="font-heading font-bold text-xl mb-1">{tournaments[0].title}</h3>
-                  <p className="text-muted-foreground text-sm">{tournaments[0].location} • {tournaments[0].date}</p>
-                </div>
-              </div>
-            </ScrollReveal>
-            <ScrollReveal direction="right">
-              <div className="flex flex-col gap-4 h-full">
-                {tournaments.slice(1, 4).map((t) => (
-                  <div key={t.id} className="bg-card border border-border rounded-2xl p-5 flex-1 card-hover flex items-center justify-between">
-                    <div>
-                      <h4 className="font-heading font-semibold text-sm mb-1">{t.title}</h4>
-                      <p className="text-xs text-muted-foreground">{t.location} • {t.date}</p>
-                    </div>
-                    <span className={`text-xs font-medium px-3 py-1 rounded-full ${
-                      t.status === "Open" ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"
-                    }`}>
-                      {t.status}
-                    </span>
-                  </div>
-                ))}
-                <Link to="/tournaments">
-                  <Button variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10">
-                    View All Tournaments
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
-            </ScrollReveal>
-          </div>
+          {tournamentsLoading ? (
+             <div className="text-center py-10">Loading tournaments...</div>
+          ) : (
+             <div className="grid md:grid-cols-2 gap-6">
+               {tournaments.length > 0 && (
+                 <ScrollReveal direction="left">
+                   <div className="relative rounded-2xl overflow-hidden aspect-video group">
+                     {tournaments[0].image && (
+                       <img src={tournaments[0].image} alt="Tournament" loading="lazy" width={800} height={600} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                     )}
+                     <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
+                     <div className="absolute bottom-6 left-6 right-6">
+                       <span className="text-xs font-medium bg-primary/20 text-primary px-3 py-1 rounded-full mb-3 inline-block">Upcoming</span>
+                       <h3 className="font-heading font-bold text-xl mb-1">{tournaments[0].title}</h3>
+                       <p className="text-muted-foreground text-sm">{tournaments[0].location} • {tournaments[0].date}</p>
+                     </div>
+                   </div>
+                 </ScrollReveal>
+               )}
+               <ScrollReveal direction="right">
+                 <div className="flex flex-col gap-4 h-full">
+                   {tournaments.slice(1, 4).map((t) => (
+                     <div key={t.id} className="bg-card border border-border rounded-2xl p-5 flex-1 card-hover flex items-center justify-between">
+                       <div>
+                         <h4 className="font-heading font-semibold text-sm mb-1">{t.title}</h4>
+                         <p className="text-xs text-muted-foreground">{t.location} • {t.date}</p>
+                       </div>
+                       <span className={`text-xs font-medium px-3 py-1 rounded-full ${
+                         t.status === "Open" ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"
+                       }`}>
+                         {t.status}
+                       </span>
+                     </div>
+                   ))}
+                   <Link to="/tournaments">
+                     <Button variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10">
+                       View All Tournaments
+                       <ArrowRight className="ml-2 h-4 w-4" />
+                     </Button>
+                   </Link>
+                 </div>
+               </ScrollReveal>
+             </div>
+          )}
         </div>
       </section>
 
@@ -196,8 +208,6 @@ export default function HomePage() {
         title="Your Journey to Mastery Starts Here."
         subtitle="Book a free demo class and discover why thousands of students trust Unique Chess Academy."
       />
-
-      <Footer />
     </div>
   );
 }

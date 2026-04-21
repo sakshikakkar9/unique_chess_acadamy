@@ -16,6 +16,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
+    // Send them to login, but remember where they were trying to go!
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
 

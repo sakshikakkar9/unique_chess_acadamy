@@ -1,99 +1,82 @@
-import { useState, useEffect, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { GalleryImage } from "@/types";
-import { galleryService } from "@/services/galleryService";
+import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 export const useAdminGallery = () => {
-  const [images, setImages] = useState<GalleryImage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const fetchImages = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await galleryService.getAll();
-      setImages(data);
-      setError(null);
-    } catch (err) {
-      setError(err as Error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to fetch gallery images.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [toast]);
+  // 1. FETCH IMAGES
+  const { 
+    data: images = [], 
+    isLoading, 
+    error, 
+    refetch 
+  } = useQuery({
+    queryKey: ["gallery"],
+    queryFn: async () => {
+      const response = await api.get("/gallery");
+      return response.data;
+    },
+  });
 
-  useEffect(() => {
-    fetchImages();
-  }, [fetchImages]);
+  // 2. ADD IMAGE
+  const addMutation = useMutation({
+    mutationFn: async (image: Omit<GalleryImage, "id"> | FormData) => {
+      // If handling file uploads, you might pass FormData instead of standard JSON
+      const response = await api.post("/gallery", image);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["gallery"] });
+      toast({ title: "Success", description: "Image added successfully." });
+    },
+    onError: (err) => {
+      console.error(err);
+      toast({ variant: "destructive", title: "Error", description: "Failed to add image." });
+    },
+  });
 
-  const addImage = async (image: Omit<GalleryImage, "id">) => {
-    try {
-      const newImage = await galleryService.create(image);
-      setImages((prev) => [...prev, newImage]);
-      toast({
-        title: "Success",
-        description: "Image added successfully.",
-      });
-      return newImage;
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to add image.",
-      });
-      throw err;
-    }
-  };
+  // 3. UPDATE IMAGE
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, image }: { id: string; image: Partial<GalleryImage> }) => {
+      const response = await api.put(`/gallery/${id}`, image);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["gallery"] });
+      toast({ title: "Success", description: "Image updated successfully." });
+    },
+    onError: (err) => {
+      console.error(err);
+      toast({ variant: "destructive", title: "Error", description: "Failed to update image." });
+    },
+  });
 
-  const updateImage = async (id: string, image: Partial<GalleryImage>) => {
-    try {
-      const updatedImage = await galleryService.update(id, image);
-      setImages((prev) => prev.map((img) => (img.id === id ? updatedImage : img)));
-      toast({
-        title: "Success",
-        description: "Image updated successfully.",
-      });
-      return updatedImage;
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to update image.",
-      });
-      throw err;
-    }
-  };
-
-  const deleteImage = async (id: string) => {
-    try {
-      await galleryService.delete(id);
-      setImages((prev) => prev.filter((img) => img.id !== id));
-      toast({
-        title: "Success",
-        description: "Image deleted successfully.",
-      });
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to delete image.",
-      });
-      throw err;
-    }
-  };
+  // 4. DELETE IMAGE
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await api.delete(`/gallery/${id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["gallery"] });
+      toast({ title: "Success", description: "Image deleted successfully." });
+    },
+    onError: (err) => {
+      console.error(err);
+      toast({ variant: "destructive", title: "Error", description: "Failed to delete image." });
+    },
+  });
 
   return {
     images,
     isLoading,
-    error,
-    addImage,
-    updateImage,
-    deleteImage,
-    refresh: fetchImages,
+    error: error as Error | null,
+    addImage: addMutation.mutateAsync,
+    updateImage: (id: string, image: Partial<GalleryImage>) => updateMutation.mutateAsync({ id, image }),
+    deleteImage: deleteMutation.mutateAsync,
+    refresh: refetch, // Allows manual refresh if needed
   };
 };

@@ -1,16 +1,16 @@
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import PageHeader from "@/components/shared/PageHeader";
 import SectionHeading from "@/components/shared/SectionHeading";
 import TournamentCard from "@/features/tournaments/components/TournamentCard";
-import { tournaments, pastResults } from "@/services/mockData";
 import ScrollReveal from "@/components/shared/ScrollReveal";
+import { useAdminTournaments } from "@/hooks/useAdminTournaments"; 
+// Note: Keep pastResults in a separate constants/mock file if it's not in the DB yet
+import { pastResults } from "@/services/mockData"; 
 
 export default function TournamentsPage() {
+  const { tournaments, isLoading } = useAdminTournaments();
+
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-
       <PageHeader
         label="Competition"
         title={
@@ -28,11 +28,15 @@ export default function TournamentsPage() {
             description="Join our upcoming events and start your competitive journey."
             centered={false}
           />
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tournaments.map((t, i) => (
-              <TournamentCard key={t.id} tournament={t} delay={i * 0.1} />
-            ))}
-          </div>
+          {isLoading ? (
+             <div className="text-center py-10 text-muted-foreground">Loading tournaments...</div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tournaments.map((t, i) => (
+                <TournamentCard key={t.id} tournament={t} delay={i * 0.1} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -67,8 +71,6 @@ export default function TournamentsPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

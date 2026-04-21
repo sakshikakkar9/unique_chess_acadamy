@@ -1,16 +1,14 @@
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import PageHeader from "@/components/shared/PageHeader";
 import SectionHeading from "@/components/shared/SectionHeading";
 import CTAStrip from "@/components/shared/CTAStrip";
 import CourseList from "@/features/courses/components/CourseList";
-import { courses } from "@/services/mockData";
+import { useAdminCourses } from "@/hooks/useAdminCourses"; // Adjusted import path
 
 export default function CoursesPage() {
+  const { courses, isLoading } = useAdminCourses();
+
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-
       <PageHeader
         label="Academy"
         title={
@@ -28,7 +26,11 @@ export default function CoursesPage() {
             description="Our core curriculum focused on long-term skill development."
             centered={false}
           />
-          <CourseList courses={courses.filter(c => c.id !== 'corporate')} />
+          {isLoading ? (
+            <div className="text-center py-10 text-muted-foreground">Loading programs...</div>
+          ) : (
+            <CourseList courses={courses.filter(c => c.id !== 'corporate')} />
+          )}
         </div>
       </section>
 
@@ -71,7 +73,6 @@ export default function CoursesPage() {
       </section>
 
       <CTAStrip />
-      <Footer />
     </div>
   );
 }

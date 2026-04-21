@@ -1,99 +1,81 @@
-import { useState, useEffect, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Tournament } from "@/types";
-import { tournamentService } from "@/services/tournamentService";
+import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 export const useAdminTournaments = () => {
-  const [tournaments, setTournaments] = useState<Tournament[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const fetchTournaments = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await tournamentService.getAll();
-      setTournaments(data);
-      setError(null);
-    } catch (err) {
-      setError(err as Error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to fetch tournaments.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [toast]);
+  // 1. FETCH TOURNAMENTS
+  const { 
+    data: tournaments = [], 
+    isLoading, 
+    error, 
+    refetch 
+  } = useQuery({
+    queryKey: ["tournaments"],
+    queryFn: async () => {
+      const response = await api.get("/tournaments");
+      return response.data;
+    },
+  });
 
-  useEffect(() => {
-    fetchTournaments();
-  }, [fetchTournaments]);
+  // 2. ADD TOURNAMENT
+  const addMutation = useMutation({
+    mutationFn: async (tournament: Omit<Tournament, "id">) => {
+      const response = await api.post("/tournaments", tournament);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tournaments"] });
+      toast({ title: "Success", description: "Tournament added successfully." });
+    },
+    onError: (err) => {
+      console.error(err);
+      toast({ variant: "destructive", title: "Error", description: "Failed to add tournament." });
+    },
+  });
 
-  const addTournament = async (tournament: Omit<Tournament, "id">) => {
-    try {
-      const newTournament = await tournamentService.create(tournament);
-      setTournaments((prev) => [...prev, newTournament]);
-      toast({
-        title: "Success",
-        description: "Tournament added successfully.",
-      });
-      return newTournament;
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to add tournament.",
-      });
-      throw err;
-    }
-  };
+  // 3. UPDATE TOURNAMENT
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, tournament }: { id: string; tournament: Partial<Tournament> }) => {
+      const response = await api.put(`/tournaments/${id}`, tournament);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tournaments"] });
+      toast({ title: "Success", description: "Tournament updated successfully." });
+    },
+    onError: (err) => {
+      console.error(err);
+      toast({ variant: "destructive", title: "Error", description: "Failed to update tournament." });
+    },
+  });
 
-  const updateTournament = async (id: string, tournament: Partial<Tournament>) => {
-    try {
-      const updatedTournament = await tournamentService.update(id, tournament);
-      setTournaments((prev) => prev.map((t) => (t.id === id ? updatedTournament : t)));
-      toast({
-        title: "Success",
-        description: "Tournament updated successfully.",
-      });
-      return updatedTournament;
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to update tournament.",
-      });
-      throw err;
-    }
-  };
-
-  const deleteTournament = async (id: string) => {
-    try {
-      await tournamentService.delete(id);
-      setTournaments((prev) => prev.filter((t) => t.id !== id));
-      toast({
-        title: "Success",
-        description: "Tournament deleted successfully.",
-      });
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to delete tournament.",
-      });
-      throw err;
-    }
-  };
+  // 4. DELETE TOURNAMENT
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await api.delete(`/tournaments/${id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tournaments"] });
+      toast({ title: "Success", description: "Tournament deleted successfully." });
+    },
+    onError: (err) => {
+      console.error(err);
+      toast({ variant: "destructive", title: "Error", description: "Failed to delete tournament." });
+    },
+  });
 
   return {
     tournaments,
     isLoading,
-    error,
-    addTournament,
-    updateTournament,
-    deleteTournament,
-    refresh: fetchTournaments,
+    error: error as Error | null,
+    addTournament: addMutation.mutateAsync,
+    updateTournament: (id: string, tournament: Partial<Tournament>) => updateMutation.mutateAsync({ id, tournament }),
+    deleteTournament: deleteMutation.mutateAsync,
+    refresh: refetch,
   };
 };
