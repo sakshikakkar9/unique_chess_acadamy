@@ -1,0 +1,119 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------------------------------
+// ENUMS
+// ------------------------------------------------------
+
+enum TournamentStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum EventCategory {
+  CLASS
+  WORKSHOP
+}
+
+enum GalleryCategory {
+  TRAINING
+  TOURNAMENT
+  COACHING
+  ACADEMY
+}
+
+// ------------------------------------------------------
+// MODELS
+// ------------------------------------------------------
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+}
+
+model Event {
+  id          Int           @id @default(autoincrement())
+  title       String
+  description String?       @db.Text
+  date        DateTime
+  location    String?
+  category    EventCategory
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// Updated Tournament Model
+model Tournament {
+  id             Int                @id @default(autoincrement())
+  title          String
+  description    String?            @db.Text
+  date           DateTime
+  location       String?
+  entryFee       Float              @default(0.0)
+  status         TournamentStatus   @default(UPCOMING)
+  
+  // Relation to the new Results model
+  results        TournamentResult[] 
+  
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+}
+
+// NEW: Structured Results for Completed Tournaments
+model TournamentResult {
+  id             Int        @id @default(autoincrement())
+  tournamentId   Int
+  
+  position       Int        // 1 for Winner, 2 for Runner-up, etc.
+  playerName     String     // e.g., "Sakshi"
+  score          Float?     // e.g., 5.5 (points)
+  prize          String?    // e.g., "Trophy", "₹5000", "Gold Medal"
+  
+  // Links this result back to the specific tournament
+  tournament     Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime   @default(now())
+}
+
+model Gallery {
+  id        Int             @id @default(autoincrement())
+  imageUrl  String          
+  caption   String?
+  category  GalleryCategory 
+  
+  createdAt DateTime        @default(now())
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  message   String   // Verify this is not spelled 'messege'
+  createdAt DateTime @default(now())
+}

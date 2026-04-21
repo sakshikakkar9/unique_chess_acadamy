@@ -1,0 +1,55 @@
+import { Button } from "@/components/ui/button";
+import { Course } from "@/types";
+import ScrollReveal from "@/components/shared/ScrollReveal";
+
+interface CourseCardProps {
+  course: Course;
+  delay?: number;
+}
+
+const CourseCard = ({ course, delay }: CourseCardProps) => {
+  return (
+    <ScrollReveal delay={delay}>
+      <div className="bg-card border border-border rounded-2xl overflow-hidden card-hover group h-full flex flex-col">
+        <div className="relative overflow-hidden aspect-[4/3]">
+          <img
+            src={course.image}
+            alt={course.title}
+            loading="lazy"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+          <div className="absolute bottom-4 left-4 flex gap-2">
+            <span className="text-xs font-medium bg-primary/20 text-primary px-3 py-1 rounded-full backdrop-blur-sm">
+              {course.level}
+            </span>
+            <span className="text-xs font-medium bg-secondary text-secondary-foreground px-3 py-1 rounded-full backdrop-blur-sm">
+              {course.duration}
+            </span>
+          </div>
+        </div>
+        <div className="p-6 flex flex-col flex-grow">
+          <h3 className="font-heading font-bold text-xl mb-2">{course.title}</h3>
+          <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{course.description}</p>
+
+          {course.features && (
+            <ul className="space-y-2 mb-6 mt-auto">
+              {course.features.map((feat, i) => (
+                <li key={i} className="text-xs flex items-center gap-2">
+                  <div className="h-1 w-1 rounded-full bg-primary" />
+                  {feat}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <Button variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10 mt-auto">
+            Learn More
+          </Button>
+        </div>
+      </div>
+    </ScrollReveal>
+  );
+};
+
+export default CourseCard;
