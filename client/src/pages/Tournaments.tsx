@@ -2,9 +2,14 @@ import PageHeader from "@/components/shared/PageHeader";
 import SectionHeading from "@/components/shared/SectionHeading";
 import TournamentCard from "@/features/tournaments/components/TournamentCard";
 import ScrollReveal from "@/components/shared/ScrollReveal";
-import { useAdminTournaments } from "@/hooks/useAdminTournaments"; 
-// Note: Keep pastResults in a separate constants/mock file if it's not in the DB yet
-import { pastResults } from "@/services/mockData"; 
+import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments"; // Adjusted import path 
+
+// Since mockData is deleted, we define static results here or in a constants file
+const pastResults = [
+  { id: "r1", tournament: "Winter Open 2025", winner: "Rahul S.", runnerUp: "Sanya M.", category: "Open" },
+  { id: "r2", tournament: "Junior State 2025", winner: "Ishaan K.", runnerUp: "Ananya P.", category: "U-14" },
+  { id: "r3", tournament: "Academy Blitz", winner: "Vikram R.", runnerUp: "Zaid N.", category: "Academy" },
+];
 
 export default function TournamentsPage() {
   const { tournaments, isLoading } = useAdminTournaments();
@@ -29,7 +34,7 @@ export default function TournamentsPage() {
             centered={false}
           />
           {isLoading ? (
-             <div className="text-center py-10 text-muted-foreground">Loading tournaments...</div>
+            <div className="text-center py-10 text-muted-foreground animate-pulse">Loading tournaments...</div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {tournaments.map((t, i) => (
@@ -50,7 +55,7 @@ export default function TournamentsPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {pastResults.map((result, i) => (
               <ScrollReveal key={result.id} delay={i * 0.1}>
-                <div className="bg-background border border-border rounded-2xl p-6">
+                <div className="bg-background border border-border rounded-2xl p-6 shadow-sm">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2 block">
                     {result.category}
                   </span>

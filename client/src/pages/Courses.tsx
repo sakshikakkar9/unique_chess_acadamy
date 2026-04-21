@@ -2,7 +2,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import SectionHeading from "@/components/shared/SectionHeading";
 import CTAStrip from "@/components/shared/CTAStrip";
 import CourseList from "@/features/courses/components/CourseList";
-import { useAdminCourses } from "@/hooks/useAdminCourses"; // Adjusted import path
+import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses"; // Adjusted import path
 
 export default function CoursesPage() {
   const { courses, isLoading } = useAdminCourses();
