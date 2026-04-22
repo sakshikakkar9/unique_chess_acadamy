@@ -12,6 +12,7 @@ export interface Course {
 }
 
 export interface Tournament {
+  [x: string]: ReactNode;
   id: string;
   title: string;
   location: string;
@@ -39,6 +40,7 @@ export interface Event {
 }
 
 export interface GalleryImage {
+  [x: string]: ReactNode;
   id: string;
   url: string;
   alt: string;

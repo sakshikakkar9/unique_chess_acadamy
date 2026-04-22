@@ -1,14 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import api from "@/lib/api";
-import { useToast } from "@/hooks/use-toast";
 import { GalleryImage } from "@/types";
 
 export const useGallery = () => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const [filter, setFilter] = useState("All");
 
-  // 1. FETCH IMAGES (Public & Admin)
-  const { data: images = [], isLoading, error } = useQuery({
+  const { data: images = [], isLoading } = useQuery<GalleryImage[]>({
     queryKey: ["gallery"],
     queryFn: async () => {
       const response = await api.get("/gallery");
@@ -16,43 +15,31 @@ export const useGallery = () => {
     },
   });
 
-  // 2. UPLOAD IMAGE (Admin Only)
+  const categories = ["All", "TRAINING", "TOURNAMENT", "COACHING", "ACADEMY"];
+
+  const filteredImages = filter === "All" 
+    ? images 
+    : images.filter(img => img.category.toUpperCase() === filter.toUpperCase());
+
+  // Mutations for Admin
   const uploadMutation = useMutation({
-    // Note: If you are uploading actual files via Multer on the backend, 
-    // newImage might be FormData. If it's just image URLs, it will be standard JSON.
-    mutationFn: async (newImage: Omit<GalleryImage, "id"> | FormData) => {
-      const response = await api.post("/gallery", newImage);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["gallery"] });
-      toast({ title: "Success", description: "Image uploaded successfully." });
-    },
-    onError: () => {
-      toast({ variant: "destructive", title: "Error", description: "Failed to upload image." });
-    },
+    mutationFn: (newImage: any) => api.post("/gallery", newImage),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gallery"] }),
   });
 
-  // 3. DELETE IMAGE (Admin Only)
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response = await api.delete(`/gallery/${id}`);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["gallery"] });
-      toast({ title: "Success", description: "Image deleted successfully." });
-    },
-    onError: () => {
-      toast({ variant: "destructive", title: "Error", description: "Failed to delete image." });
-    },
+    mutationFn: (id: any) => api.delete(`/gallery/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gallery"] }),
   });
 
   return {
-    images,
+    images: filteredImages, // Use this for frontend
+    rawImages: images,      // Use this for admin table
     isLoading,
-    error,
+    filter,
+    setFilter,
+    categories,
     uploadImage: uploadMutation.mutateAsync,
-    deleteImage: deleteMutation.mutateAsync,
+    deleteImage: deleteMutation.mutateAsync
   };
 };

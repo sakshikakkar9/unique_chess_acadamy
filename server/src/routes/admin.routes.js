@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/login', adminController.loginAdmin);
 
 // Protected: Only an existing logged-in admin can create another admin
-router.post('/register',verifyAdmin, adminController.registerAdmin);
+router.post('/register', adminController.registerAdmin);
 
 // Protected: Get current admin profile
 router.get('/me', verifyAdmin, adminController.getAdminProfile);

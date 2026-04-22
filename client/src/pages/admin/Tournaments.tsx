@@ -12,21 +12,32 @@ import { Plus } from "lucide-react";
 import { Tournament } from "@/types";
 
 const AdminTournaments: React.FC = () => {
-  const { tournaments, isLoading, addTournament, updateTournament, deleteTournament } = useAdminTournaments();
+  const { 
+    tournaments, 
+    isLoading, 
+    addTournament, 
+    updateTournament, 
+    deleteTournament 
+  } = useAdminTournaments();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [formData, setFormData] = useState<Partial<Tournament>>({});
 
+  // ✅ Column configuration for the Admin Table
   const columns: Column<Tournament>[] = [
     {
       header: "Tournament Name",
-      accessorKey: "title",
+      accessorKey: "title", // ✅ Matches your backend 'title'
       cell: (item) => <span className="font-medium">{item.title}</span>
     },
     { header: "Location", accessorKey: "location" },
-    { header: "Date", accessorKey: "date" },
+    { 
+      header: "Date", 
+      accessorKey: "date",
+      cell: (item) => item.date ? new Date(item.date).toLocaleDateString() : "N/A"
+    },
     {
       header: "Status",
       accessorKey: "status",
@@ -39,34 +50,40 @@ const AdminTournaments: React.FC = () => {
     setFormData({
       title: "",
       location: "",
-      date: "",
-      status: "Coming Soon",
-      type: "Open",
+      date: new Date().toISOString().split('T')[0],
+      status: "UPCOMING",
+      entryFee: 0,
     });
     setIsModalOpen(true);
   };
 
   const handleEdit = (tournament: Tournament) => {
     setSelectedTournament(tournament);
-    setFormData({ ...tournament });
+    const formattedDate = tournament.date ? new Date(tournament.date).toISOString().split('T')[0] : "";
+    setFormData({ ...tournament, date: formattedDate });
     setIsModalOpen(true);
-  };
-
-  const handleDeleteClick = (tournament: Tournament) => {
-    setSelectedTournament(tournament);
-    setIsConfirmOpen(true);
   };
 
   const handleSave = async () => {
     try {
+      const payload = {
+        title: formData.title,
+        location: formData.location,
+        // ✅ Ensures valid ISO date for Prisma
+        date: formData.date ? new Date(formData.date).toISOString() : new Date().toISOString(),
+        status: formData.status,
+        entryFee: parseFloat(formData.entryFee?.toString() || "0"),
+        description: formData.description || "",
+      };
+
       if (selectedTournament) {
-        await updateTournament(selectedTournament.id, formData);
+        await updateTournament(selectedTournament.id, payload);
       } else {
-        await addTournament(formData as Omit<Tournament, "id">);
+        await addTournament(payload as any);
       }
       setIsModalOpen(false);
     } catch (error) {
-      console.error(error);
+      console.error("Save Error:", error);
     }
   };
 
@@ -82,10 +99,10 @@ const AdminTournaments: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Tournaments</h1>
-          <p className="text-muted-foreground">Manage upcoming and past chess tournaments.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Tournaments</h1>
+          <p className="text-muted-foreground">Manage academy chess tournaments and results.</p>
         </div>
-        <Button onClick={handleAdd} className="gap-2">
+        <Button onClick={handleAdd} className="gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
           <Plus className="h-4 w-4" />
           Add Tournament
         </Button>
@@ -96,7 +113,10 @@ const AdminTournaments: React.FC = () => {
         data={tournaments}
         isLoading={isLoading}
         onEdit={handleEdit}
-        onDelete={handleDeleteClick}
+        onDelete={(item) => {
+          setSelectedTournament(item);
+          setIsConfirmOpen(true);
+        }}
       />
 
       <AdminFormModal
@@ -105,7 +125,7 @@ const AdminTournaments: React.FC = () => {
         title={selectedTournament ? "Edit Tournament" : "Add New Tournament"}
         onSave={handleSave}
       >
-        <div className="grid gap-4">
+        <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="title">Tournament Name</Label>
             <Input
@@ -114,58 +134,53 @@ const AdminTournaments: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             />
           </div>
+
           <div className="grid gap-2">
             <Label htmlFor="location">Location</Label>
             <Input
               id="location"
-              placeholder="e.g. Mumbai"
               value={formData.location || ""}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
             />
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              placeholder="e.g. June 15–18, 2026"
-              value={formData.date || ""}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-            />
-          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label>Status</Label>
-              <Select
-                value={formData.status}
-              onValueChange={(v: Tournament["status"]) => setFormData({ ...formData, status: v })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Open">Open</SelectItem>
-                  <SelectItem value="Coming Soon">Coming Soon</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="date">Event Date</Label>
+              <Input
+                id="date"
+                type="date"
+                value={formData.date || ""}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              />
             </div>
             <div className="grid gap-2">
-              <Label>Type</Label>
-              <Select
-                value={formData.type}
-                onValueChange={(v: Tournament["type"]) => setFormData({ ...formData, type: v })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="State">State</SelectItem>
-                  <SelectItem value="National">National</SelectItem>
-                  <SelectItem value="Open">Open</SelectItem>
-                  <SelectItem value="Junior">Junior</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="entryFee">Entry Fee (₹)</Label>
+              <Input
+                id="entryFee"
+                type="number"
+                value={formData.entryFee || 0}
+                onChange={(e) => setFormData({ ...formData, entryFee: Number(e.target.value) })}
+              />
             </div>
+          </div>
+
+          <div className="grid gap-2">
+            <Label>Status</Label>
+            <Select
+              value={formData.status}
+              onValueChange={(v) => setFormData({ ...formData, status: v })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="UPCOMING">Upcoming</SelectItem> 
+                <SelectItem value="ONGOING">Ongoing</SelectItem>
+                <SelectItem value="COMPLETED">Completed</SelectItem>
+                <SelectItem value="CANCELLED">Cancelled</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </AdminFormModal>
@@ -175,7 +190,7 @@ const AdminTournaments: React.FC = () => {
         onOpenChange={setIsConfirmOpen}
         onConfirm={handleConfirmDelete}
         title="Delete Tournament"
-        description={`Are you sure you want to delete "${selectedTournament?.title}"? This action cannot be undone.`}
+        description={`Are you sure you want to delete "${selectedTournament?.title}"?`}
       />
     </div>
   );

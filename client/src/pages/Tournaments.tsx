@@ -1,6 +1,6 @@
 import PageHeader from "@/components/shared/PageHeader";
 import SectionHeading from "@/components/shared/SectionHeading";
-import TournamentCard from "@/features/tournaments/components/TournamentCard";
+import { TournamentCard } from "@/features/tournaments/components/TournamentCard";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments"; // Adjusted import path 
 

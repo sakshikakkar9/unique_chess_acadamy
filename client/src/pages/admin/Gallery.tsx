@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAdminGallery } from "@/features/gallery/hooks/useAdminGallery";
+import { useGallery } from "@/features/gallery/hooks/useGallery";
 import DataTable, { Column } from "@/components/shared/admin/DataTable";
 import AdminFormModal from "@/components/shared/admin/AdminFormModal";
 import ConfirmDialog from "@/components/shared/admin/ConfirmDialog";
@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast"; // ✅ Added missing toast import
 import { Plus } from "lucide-react";
 import { GalleryImage } from "@/types";
 
 const AdminGallery: React.FC = () => {
-  const { images, isLoading, addImage, updateImage, deleteImage } = useAdminGallery();
+  const { images, isLoading, uploadImage, deleteImage } = useGallery();
+  const { toast } = useToast(); // ✅ Initialize toast
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -21,19 +23,26 @@ const AdminGallery: React.FC = () => {
   const columns: Column<GalleryImage>[] = [
     {
       header: "Preview",
-      accessorKey: "url",
+      accessorKey: "imageUrl",
       cell: (item) => (
-        <div className="w-12 h-12 rounded overflow-hidden border border-border">
-          <img src={item.url} alt={item.alt} className="w-full h-full object-cover" />
+        <div className="w-12 h-12 rounded overflow-hidden border border-border bg-muted">
+          <img 
+            src={item.imageUrl} 
+            alt={item.caption || "Gallery Image"} 
+            className="w-full h-full object-cover" 
+            onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/100x100?text=Error'; }}
+          />
         </div>
       )
     },
-    { header: "Alt Text", accessorKey: "alt" },
+    { header: "Caption", accessorKey: "caption" },
     {
       header: "Category",
       accessorKey: "category",
       cell: (item) => (
-        <span className="text-xs bg-muted px-2 py-0.5 rounded">{item.category}</span>
+        <span className="text-xs bg-primary/10 text-primary font-bold px-2 py-0.5 rounded uppercase">
+          {item.category}
+        </span>
       )
     },
   ];
@@ -41,9 +50,9 @@ const AdminGallery: React.FC = () => {
   const handleAdd = () => {
     setSelectedImage(null);
     setFormData({
-      url: "https://images.unsplash.com/photo-1528819622765-d6bcf132f793?auto=format&fit=crop&q=80&w=800",
-      alt: "",
-      category: "Academy",
+      imageUrl: "",
+      caption: "",
+      category: "ACADEMY",
     });
     setIsModalOpen(true);
   };
@@ -59,18 +68,26 @@ const AdminGallery: React.FC = () => {
     setIsConfirmOpen(true);
   };
 
-  const handleSave = async () => {
-    try {
-      if (selectedImage) {
-        await updateImage(selectedImage.id, formData);
-      } else {
-        await addImage(formData as Omit<GalleryImage, "id">);
-      }
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+const handleSave = async () => {
+  try {
+    if (!formData.imageUrl) return;
+
+    // Ensure category is Uppercase to match Prisma Enums
+    const payload = {
+      imageUrl: formData.imageUrl,
+      caption: formData.caption || "",
+      category: formData.category?.toUpperCase() || "ACADEMY",
+    };
+
+    // This calls the mutation we just defined
+    await uploadImage(payload as any);
+    
+    setIsModalOpen(false);
+    setFormData({}); 
+  } catch (error) {
+    console.error("Save failed", error);
+  }
+};
 
   const handleConfirmDelete = async () => {
     if (selectedImage) {
@@ -87,7 +104,7 @@ const AdminGallery: React.FC = () => {
           <h1 className="text-3xl font-bold tracking-tight">Gallery</h1>
           <p className="text-muted-foreground">Manage the photos displayed on your website.</p>
         </div>
-        <Button onClick={handleAdd} className="gap-2">
+        <Button onClick={handleAdd} className="gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
           <Plus className="h-4 w-4" />
           Add Image
         </Button>
@@ -105,40 +122,41 @@ const AdminGallery: React.FC = () => {
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         title={selectedImage ? "Edit Image" : "Add New Image"}
-        onSave={handleSave}
+        onSave={handleSave} // ✅ This triggers the handleSave logic above
       >
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="url">Image URL</Label>
+            <Label htmlFor="imageUrl">Image URL</Label>
             <Input
-              id="url"
-              value={formData.url || ""}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+              id="imageUrl"
+              placeholder="Paste link here"
+              value={formData.imageUrl || ""}
+              onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="alt">Alt Text</Label>
+            <Label htmlFor="caption">Caption</Label>
             <Input
-              id="alt"
-              placeholder="Describe the image"
-              value={formData.alt || ""}
-              onChange={(e) => setFormData({ ...formData, alt: e.target.value })}
+              id="caption"
+              placeholder="Brief description"
+              value={formData.caption || ""}
+              onChange={(e) => setFormData({ ...formData, caption: e.target.value })}
             />
           </div>
           <div className="grid gap-2">
             <Label>Category</Label>
             <Select
               value={formData.category}
-              onValueChange={(v: GalleryImage["category"]) => setFormData({ ...formData, category: v })}
+              onValueChange={(v) => setFormData({ ...formData, category: v })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Training">Training</SelectItem>
-                <SelectItem value="Tournaments">Tournaments</SelectItem>
-                <SelectItem value="Coaching">Coaching</SelectItem>
-                <SelectItem value="Academy">Academy</SelectItem>
+                <SelectItem value="TRAINING">Training</SelectItem>
+                <SelectItem value="TOURNAMENT">Tournament</SelectItem>
+                <SelectItem value="COACHING">Coaching</SelectItem>
+                <SelectItem value="ACADEMY">Academy</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -150,7 +168,7 @@ const AdminGallery: React.FC = () => {
         onOpenChange={setIsConfirmOpen}
         onConfirm={handleConfirmDelete}
         title="Delete Image"
-        description={`Are you sure you want to delete this image? This action cannot be undone.`}
+        description="Are you sure you want to delete this image?"
       />
     </div>
   );

@@ -1,62 +1,52 @@
+import { motion } from "framer-motion";
+import { format } from "date-fns";
+import { MapPin, Calendar, Ticket } from "lucide-react";
 import { Tournament } from "@/types";
-import { Calendar, MapPin, Trophy } from "lucide-react";
-import ScrollReveal from "@/components/shared/ScrollReveal";
-import { Button } from "@/components/ui/button";
 
 interface TournamentCardProps {
   tournament: Tournament;
   delay?: number;
 }
 
-const TournamentCard = ({ tournament, delay }: TournamentCardProps) => {
+export const TournamentCard = ({ tournament, delay = 0 }: TournamentCardProps) => {
   return (
-    <ScrollReveal delay={delay}>
-      <div className="bg-card border border-border rounded-2xl p-6 card-hover group relative overflow-hidden">
-        {tournament.status === "Open" && (
-          <div className="absolute top-0 right-0">
-            <div className="bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-widest px-8 py-1 rotate-45 translate-x-6 translate-y-2">
-              Registration Open
-            </div>
-          </div>
-        )}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      viewport={{ once: true }}
+      className="group relative bg-card border border-border rounded-2xl p-6 hover:border-primary/50 transition-all shadow-sm"
+    >
+      <div className="flex justify-between items-start mb-4">
+        <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
+          {tournament.status}
+        </span>
+      </div>
 
-        <div className="flex flex-col h-full">
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Trophy className="h-6 w-6 text-primary" />
-            </div>
-            <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded bg-secondary text-secondary-foreground`}>
-              {tournament.type}
-            </span>
-          </div>
+      {/* ✅ FIX: Changed from tournament.name to tournament.title */}
+      <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">
+        {tournament.title} 
+      </h3>
 
-          <h3 className="font-heading font-bold text-xl mb-4 group-hover:text-primary transition-colors">
-            {tournament.title}
-          </h3>
-
-          <div className="space-y-3 mb-6 flex-grow">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4 text-primary" />
-              <span>{tournament.date}</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span>{tournament.location}</span>
-            </div>
-          </div>
-
-          <Button
-            className="w-full"
-            variant={tournament.status === "Open" ? "default" : "outline"}
-            disabled={tournament.status === "Completed"}
-          >
-            {tournament.status === "Open" ? "Register Now" :
-             tournament.status === "Coming Soon" ? "Notify Me" : "Completed"}
-          </Button>
+      <div className="space-y-2 mb-6">
+        <div className="flex items-center text-sm text-muted-foreground gap-2">
+          <Calendar className="h-4 w-4 text-primary" />
+          {/* ✅ Safe date formatting */}
+          {tournament.date ? format(new Date(tournament.date), "PPP") : "TBA"}
+        </div>
+        <div className="flex items-center text-sm text-muted-foreground gap-2">
+          <MapPin className="h-4 w-4 text-primary" />
+          {tournament.location}
+        </div>
+        <div className="flex items-center text-sm text-muted-foreground gap-2">
+          <Ticket className="h-4 w-4 text-primary" />
+          ₹{tournament.entryFee} Entry Fee
         </div>
       </div>
-    </ScrollReveal>
+
+      <button className="w-full py-2.5 rounded-xl bg-secondary hover:bg-primary hover:text-primary-foreground font-bold text-sm transition-all">
+        View Details
+      </button>
+    </motion.div>
   );
 };
-
-export default TournamentCard;

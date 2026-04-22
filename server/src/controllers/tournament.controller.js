@@ -30,10 +30,17 @@ export const createTournament = async (req, res) => {
 
 export const updateTournament = async (req, res) => {
   try {
-    const updated = await tournamentService.updateTournament(parseInt(req.params.id), req.body);
-    res.status(200).json(updated);
+    const id = parseInt(req.params.id);
+    const updated = await tournamentService.updateTournament(id, req.body);
+    
+    // Real-time update ke liye success message aur naya data bhejna zaroori hai
+    res.status(200).json({
+      message: 'Tournament updated successfully',
+      tournament: updated
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update tournament' });
+    console.error("Update Error:", error);
+    res.status(500).json({ error: 'Failed to update tournament. Check if the status value is correct.' });
   }
 };
 

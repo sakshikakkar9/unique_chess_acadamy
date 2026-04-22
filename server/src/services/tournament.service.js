@@ -1,7 +1,10 @@
 import prisma from '../../lib/prisma.js';
 
 export const getAllTournaments = async () => {
-  return await prisma.tournament.findMany({ orderBy: { date: 'asc' } });
+  return await prisma.tournament.findMany({ 
+    include: { results: true }, // Results bhi saath mein bhej rahe hain
+    orderBy: { date: 'asc' } 
+  });
 };
 
 export const getTournamentById = async (id) => {
@@ -16,7 +19,14 @@ export const createTournament = async (data) => {
 };
 
 export const updateTournament = async (id, data) => {
-  return await prisma.tournament.update({ where: { id }, data });
+  // Convert ID and handle optional fields
+  const formattedData = { ...data };
+  if (formattedData.date) formattedData.date = new Date(formattedData.date);
+  
+  return await prisma.tournament.update({
+    where: { id: parseInt(id) },
+    data: formattedData,
+  });
 };
 
 export const deleteTournament = async (id) => {
