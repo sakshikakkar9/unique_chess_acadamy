@@ -1,16 +1,26 @@
-import 'dotenv/config'; // Must be at the very top to load env vars first
+import 'dotenv/config'; 
 import express from 'express';
 import cors from 'cors';
+import path from 'path'; 
+import { fileURLToPath } from 'url'; 
 
-// 👉 ADDED MISSING IMPORT: Bring in the database connection
+// 👉 DATABASE CONNECTION
 import prisma from './lib/prisma.js';
 
-// Import Routes (Ensure the .js extension is present for ES Modules)
+// 👉 ROUTES IMPORT
 import adminRoutes from './src/routes/admin.routes.js';
 import tournamentRoutes from './src/routes/tournament.routes.js';
 import eventRoutes from './src/routes/event.routes.js';
 import galleryRoutes from './src/routes/gallery.routes.js';
 import contactRoutes from './src/routes/contact.routes.js';
+// ✅ ADDED: New route for Free Demo registrations
+import demoRoutes from './src/routes/demo.routes.js';
+
+// ------------------------------------------------------
+// ESM __DIRNAME CONFIGURATION
+// ------------------------------------------------------
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Initialize Express App
 const app = express();
@@ -18,21 +28,19 @@ const app = express();
 // ------------------------------------------------------
 // GLOBAL MIDDLEWARE
 // ------------------------------------------------------
-
-// Enable CORS for all routes (Allows your frontend to make requests here)
 app.use(cors()); 
-
-// Parse incoming JSON payloads
 app.use(express.json()); 
 
 // ------------------------------------------------------
-// ROUTES
+// STATIC FILES & ROUTES
 // ------------------------------------------------------
 
-// Upgraded health check route to verify the server AND database are running
+// Static folder for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
+
+// Health check route
 app.get('/', async (req, res) => {
   try {
-    // Ping the database
     await prisma.$queryRaw`SELECT 1`; 
     res.status(200).json({ 
       api: 'Online',
@@ -48,18 +56,18 @@ app.get('/', async (req, res) => {
   }
 });
 
-// Mount domain-specific routes
+// API Routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/contact', contactRoutes);
+// ✅ MOUNTED: Demo registration endpoint
+app.use('/api/demo', demoRoutes);
 
 // ------------------------------------------------------
 // GLOBAL ERROR HANDLER
 // ------------------------------------------------------
-
-// Catches any unhandled errors so the server doesn't crash entirely
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went critically wrong on the server.' });
@@ -68,8 +76,6 @@ app.use((err, req, res, next) => {
 // ------------------------------------------------------
 // START SERVER
 // ------------------------------------------------------
-
-// 👉 ADDED MISSING PORT VARIABLE
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {

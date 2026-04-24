@@ -69,19 +69,20 @@ model Event {
 
 // Updated Tournament Model
 model Tournament {
-  id             Int                @id @default(autoincrement())
-  title          String
-  description    String?            @db.Text
-  date           DateTime
-  location       String?
-  entryFee       Float              @default(0.0)
-  status         TournamentStatus   @default(UPCOMING)
+  id           Int                @id @default(autoincrement())
+  title        String
+  description  String?            @db.Text
+  date         DateTime
+  location     String?
+  entryFee     Float              @default(0.0)
+  status       TournamentStatus   @default(UPCOMING)
   
-  // Relation to the new Results model
-  results        TournamentResult[] 
+  // Relations
+  results       TournamentResult[] 
+  registrations Registration[]     // ✅ Added this to fix the "missing opposite relation" error
   
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
 }
 
 // NEW: Structured Results for Completed Tournaments
@@ -101,12 +102,11 @@ model TournamentResult {
 }
 
 model Gallery {
-  id        Int             @id @default(autoincrement())
-  imageUrl  String          
-  caption   String?
-  category  GalleryCategory 
-  
-  createdAt DateTime        @default(now())
+  id        String   @id @default(uuid())
+  imageUrl  String   // Check: Is this named exactly 'imageUrl'?
+  caption   String?  // Check: Is this optional with the '?'
+  category  String   @default("ACADEMY")
+  createdAt DateTime @default(now())
 }
 
 model Contact {
@@ -116,4 +116,25 @@ model Contact {
   phone     String
   message   String   // Verify this is not spelled 'messege'
   createdAt DateTime @default(now())
+}
+
+model Registration {
+  id           String     @id @default(uuid())
+  studentName  String
+  email        String
+  phone        String
+  tournamentId Int        // ✅ Changed from String to Int to match Tournament.id
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  status       String     @default("PENDING")
+  createdAt    DateTime   @default(now())
+}
+
+model DemoRegistration {
+  id          Int      @id @default(autoincrement())
+  studentName String
+  email       String
+  phone       String
+  scheduledAt DateTime // The time slot they selected
+  status      String   @default("PENDING") // PENDING, CONFIRMED, COMPLETED
+  createdAt   DateTime @default(now())
 }

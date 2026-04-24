@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useGallery } from "@/features/gallery/hooks/useGallery";
 import DataTable, { Column } from "@/components/shared/admin/DataTable";
 import AdminFormModal from "@/components/shared/admin/AdminFormModal";
@@ -7,18 +7,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast"; // ✅ Added missing toast import
-import { Plus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Plus, Upload, X } from "lucide-react";
 import { GalleryImage } from "@/types";
 
 const AdminGallery: React.FC = () => {
   const { images, isLoading, uploadImage, deleteImage } = useGallery();
-  const { toast } = useToast(); // ✅ Initialize toast
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-  const [formData, setFormData] = useState<Partial<GalleryImage>>({});
+  
+  // States for file upload
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [formData, setFormData] = useState<Partial<GalleryImage>>({
+    caption: "",
+    category: "ACADEMY",
+  });
 
   const columns: Column<GalleryImage>[] = [
     {
@@ -47,47 +55,61 @@ const AdminGallery: React.FC = () => {
     },
   ];
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      // Create a temporary URL for previewing the image in the modal
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
   const handleAdd = () => {
     setSelectedImage(null);
+    setSelectedFile(null);
+    setPreviewUrl(null);
     setFormData({
-      imageUrl: "",
       caption: "",
       category: "ACADEMY",
     });
     setIsModalOpen(true);
   };
 
-  const handleEdit = (image: GalleryImage) => {
-    setSelectedImage(image);
-    setFormData({ ...image });
-    setIsModalOpen(true);
+  const handleSave = async () => {
+  try {
+    if (!selectedFile) {
+      toast({ variant: "destructive", title: "Error", description: "Please select a file first" });
+      return;
+    }
+
+    const data = new FormData();
+    // Key names must match what the backend expects
+    data.append("image", selectedFile); 
+    data.append("caption", formData.caption || "");
+    data.append("category", formData.category || "ACADEMY");
+
+    await uploadImage(data as any);
+    
+    setIsModalOpen(false);
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    toast({ title: "Success", description: "Image uploaded successfully!" });
+  } catch (error) {
+    console.error("Upload failed", error);
+    toast({ variant: "destructive", title: "Upload Failed", description: "Check server logs for 500 error details." });
+  }
+};
+
+  const resetForm = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setFormData({});
   };
 
   const handleDeleteClick = (image: GalleryImage) => {
     setSelectedImage(image);
     setIsConfirmOpen(true);
   };
-
-const handleSave = async () => {
-  try {
-    if (!formData.imageUrl) return;
-
-    // Ensure category is Uppercase to match Prisma Enums
-    const payload = {
-      imageUrl: formData.imageUrl,
-      caption: formData.caption || "",
-      category: formData.category?.toUpperCase() || "ACADEMY",
-    };
-
-    // This calls the mutation we just defined
-    await uploadImage(payload as any);
-    
-    setIsModalOpen(false);
-    setFormData({}); 
-  } catch (error) {
-    console.error("Save failed", error);
-  }
-};
 
   const handleConfirmDelete = async () => {
     if (selectedImage) {
@@ -102,7 +124,7 @@ const handleSave = async () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Gallery</h1>
-          <p className="text-muted-foreground">Manage the photos displayed on your website.</p>
+          <p className="text-muted-foreground">Manage and upload photos from your computer.</p>
         </div>
         <Button onClick={handleAdd} className="gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
           <Plus className="h-4 w-4" />
@@ -114,61 +136,91 @@ const handleSave = async () => {
         columns={columns}
         data={images}
         isLoading={isLoading}
-        onEdit={handleEdit}
         onDelete={handleDeleteClick}
+        // Note: For file uploads, 'Edit' is usually complex because you'd have to 
+        // handle replacing a physical file. Keeping it simple with Add/Delete for now.
       />
 
       <AdminFormModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        title={selectedImage ? "Edit Image" : "Add New Image"}
-        onSave={handleSave} // ✅ This triggers the handleSave logic above
+  open={isModalOpen}
+  onOpenChange={setIsModalOpen}
+  title={selectedImage ? "Edit Image" : "Upload New Photo"}
+  onSave={handleSave} 
+>
+  {/* 👇 Added max-height and overflow scroll here */}
+  <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+    
+    {/* Image Upload Area */}
+    <div className="grid gap-2">
+      <Label>Image File</Label>
+      <div 
+        className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 transition"
+        onClick={() => fileInputRef.current?.click()}
       >
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="imageUrl">Image URL</Label>
-            <Input
-              id="imageUrl"
-              placeholder="Paste link here"
-              value={formData.imageUrl || ""}
-              onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="caption">Caption</Label>
-            <Input
-              id="caption"
-              placeholder="Brief description"
-              value={formData.caption || ""}
-              onChange={(e) => setFormData({ ...formData, caption: e.target.value })}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label>Category</Label>
-            <Select
-              value={formData.category}
-              onValueChange={(v) => setFormData({ ...formData, category: v })}
+        {previewUrl ? (
+          <div className="relative w-full aspect-video rounded-md overflow-hidden border">
+            <img src={previewUrl} className="w-full h-full object-cover" alt="Preview" />
+            <button 
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setPreviewUrl(null); setSelectedFile(null); }}
+              className="absolute top-2 right-2 p-1 bg-destructive text-white rounded-full shadow-md"
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="TRAINING">Training</SelectItem>
-                <SelectItem value="TOURNAMENT">Tournament</SelectItem>
-                <SelectItem value="COACHING">Coaching</SelectItem>
-                <SelectItem value="ACADEMY">Academy</SelectItem>
-              </SelectContent>
-            </Select>
+              <X className="h-4 w-4" />
+            </button>
           </div>
-        </div>
-      </AdminFormModal>
+        ) : (
+          <>
+            <Upload className="h-10 w-10 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">Click to select an image</p>
+          </>
+        )}
+      </div>
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        className="hidden" 
+        accept="image/*" 
+        onChange={handleFileChange} 
+      />
+    </div>
+
+    {/* Caption and Category - These will now be reachable via scroll */}
+    <div className="grid gap-2">
+      <Label htmlFor="caption">Caption</Label>
+      <Input
+        id="caption"
+        placeholder="Enter caption..."
+        value={formData.caption || ""}
+        onChange={(e) => setFormData({ ...formData, caption: e.target.value })}
+      />
+    </div>
+
+    <div className="grid gap-2">
+      <Label>Category</Label>
+      <Select
+        value={formData.category}
+        onValueChange={(v) => setFormData({ ...formData, category: v })}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select category" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="TRAINING">Training</SelectItem>
+          <SelectItem value="TOURNAMENT">Tournament</SelectItem>
+          <SelectItem value="COACHING">Coaching</SelectItem>
+          <SelectItem value="ACADEMY">Academy</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  </div>
+</AdminFormModal>
 
       <ConfirmDialog
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
         onConfirm={handleConfirmDelete}
         title="Delete Image"
-        description="Are you sure you want to delete this image?"
+        description="This will permanently remove the photo from the gallery."
       />
     </div>
   );

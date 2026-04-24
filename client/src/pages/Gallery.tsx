@@ -5,6 +5,9 @@ import GalleryItem from "@/features/gallery/components/GalleryItem";
 import { useGallery } from "@/features/gallery/hooks/useGallery";
 import { cn } from "@/lib/utils";
 
+// Define your backend URL here
+const BASE_URL = "http://localhost:5000";
+
 export default function GalleryPage() {
   const { images, filter, setFilter, categories, isLoading } = useGallery();
 
@@ -43,7 +46,6 @@ export default function GalleryPage() {
 
           {/* Gallery Grid */}
           {isLoading ? (
-            // Skeleton Loader to prevent blank screen
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="aspect-square animate-pulse rounded-2xl bg-muted border border-border" />
@@ -51,9 +53,25 @@ export default function GalleryPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {images.map((img, i) => (
-                <GalleryItem key={img.id} image={img} index={i} />
-              ))}
+              {images.map((img, i) => {
+  // Normalize backslashes from the server to forward slashes for the browser
+  const cleanPath = img.imageUrl.replace(/\\/g, '/');
+  
+  const formattedImage = {
+    ...img,
+    imageUrl: cleanPath.startsWith('http') 
+      ? cleanPath 
+      : `${BASE_URL}${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`
+  };
+
+                return (
+                  <GalleryItem 
+                    key={img.id} 
+                    image={formattedImage} 
+                    index={i} 
+                  />
+                );
+              })}
             </div>
           )}
 

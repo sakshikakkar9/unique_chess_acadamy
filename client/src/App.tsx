@@ -17,6 +17,8 @@ const Index = lazy(() => import("./pages/Index.tsx"));
 const About = lazy(() => import("./pages/About.tsx"));
 const Courses = lazy(() => import("./pages/Courses.tsx"));
 const Tournaments = lazy(() => import("./pages/Tournaments.tsx"));
+// ✅ New dynamic route for registration/details
+const TournamentDetails = lazy(() => import("./pages/TournamentDetails.tsx")); 
 const Gallery = lazy(() => import("./pages/Gallery.tsx"));
 const Events = lazy(() => import("./pages/Events.tsx"));
 const Contact = lazy(() => import("./pages/Contact.tsx"));
@@ -27,6 +29,8 @@ const AdminLogin = lazy(() => import("./pages/admin/Login.tsx"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard.tsx"));
 const AdminCourses = lazy(() => import("./pages/admin/Courses.tsx"));
 const AdminTournaments = lazy(() => import("./pages/admin/Tournaments.tsx"));
+// ✅ New admin route to see registered students
+const AdminRegistrations = lazy(() => import("./pages/admin/Registrations.tsx")); 
 const AdminGallery = lazy(() => import("./pages/admin/Gallery.tsx"));
 
 const queryClient = new QueryClient({
@@ -53,6 +57,8 @@ const App = () => (
                 <Route path="/about" element={<About />} />
                 <Route path="/courses" element={<Courses />} />
                 <Route path="/tournaments" element={<Tournaments />} />
+                {/* ✅ Added the dynamic ID route here */}
+                <Route path="/tournaments/:id" element={<TournamentDetails />} />
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/events" element={<Events />} />
                 <Route path="/contact" element={<Contact />} />
@@ -72,6 +78,8 @@ const App = () => (
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="courses" element={<AdminCourses />} />
                 <Route path="tournaments" element={<AdminTournaments />} />
+                {/* ✅ Added route for tracking tournament signups */}
+                <Route path="registrations" element={<AdminRegistrations />} />
                 <Route path="gallery" element={<AdminGallery />} />
               </Route>
 

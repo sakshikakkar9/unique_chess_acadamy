@@ -22,10 +22,12 @@ export const useGallery = () => {
     : images.filter(img => img.category.toUpperCase() === filter.toUpperCase());
 
   // Mutations for Admin
-  const uploadMutation = useMutation({
-    mutationFn: (newImage: any) => api.post("/gallery", newImage),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gallery"] }),
-  });
+const uploadMutation = useMutation({
+  mutationFn: (newImage) => api.post("/gallery", newImage, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gallery"] }),
+});
 
   const deleteMutation = useMutation({
     mutationFn: (id: any) => api.delete(`/gallery/${id}`),

@@ -1,3 +1,4 @@
+import { useState } from "react"; // ✅ Added for Modal State
 import { motion } from "framer-motion";
 import { ArrowRight, Users, Trophy, Star as StarIcon, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -7,10 +8,14 @@ import SectionHeading from "@/components/shared/SectionHeading";
 import CTAStrip from "@/components/shared/CTAStrip";
 import { Button } from "@/components/ui/button";
 import CourseCard from "@/features/courses/components/CourseCard";
-import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments"; // Adjusted import path
+
+// ✅ Import the new Demo Components
+import DemoModal from "@/features/demo/components/DemoModal"; 
+
+import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
 
-// Static Data previously in mockData
+// Static Data
 const stats = [
   { id: "1", icon: Users, value: "5,000+", label: "Students Trained" },
   { id: "2", icon: Trophy, value: "120+", label: "Tournaments Hosted" },
@@ -27,6 +32,9 @@ const testimonials = [
 export default function HomePage() {
   const { courses, isLoading: coursesLoading } = useAdminCourses();
   const { tournaments, isLoading: tournamentsLoading } = useAdminTournaments();
+  
+  // ✅ State to control the Modal
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
@@ -53,7 +61,14 @@ export default function HomePage() {
               <Button size="lg" className="gold-glow text-base px-8 py-6 group">
                 Join Now <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
-              <Button size="lg" variant="outline" className="border-primary/30 text-primary hover:bg-primary/10 px-8 py-6">
+              
+              {/* ✅ Book Free Demo Button with onClick handler */}
+              <Button 
+                onClick={() => setIsDemoModalOpen(true)} 
+                size="lg" 
+                variant="outline" 
+                className="border-primary/30 text-primary hover:bg-primary/10 px-8 py-6"
+              >
                 Book Free Demo
               </Button>
             </div>
@@ -158,7 +173,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      <CTAStrip title="Your Journey to Mastery Starts Here." subtitle="Book a free demo class today." />
+      <CTAStrip 
+        title="Your Journey to Mastery Starts Here." 
+        subtitle="Book a free demo class today." 
+      />
+
+      {/* ✅ Demo Modal Component */}
+      <DemoModal 
+        isOpen={isDemoModalOpen} 
+        onClose={() => setIsDemoModalOpen(false)} 
+      />
     </div>
   );
 }
