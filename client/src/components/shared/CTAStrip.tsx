@@ -17,7 +17,7 @@ const CTAStrip = ({
     <section className="section-padding py-12">
       <div className="container mx-auto px-4">
         <ScrollReveal>
-          <div className="bg-gradient-to-r from-primary/20 via-primary/10 to-transparent border border-primary/20 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="bg-gradient-to-r from-secondary/10 via-primary/5 to-transparent border border-secondary/10 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="text-center md:text-left">
               <h2 className="font-heading font-bold text-2xl md:text-3xl mb-2">{title}</h2>
               <p className="text-muted-foreground">{subtitle}</p>

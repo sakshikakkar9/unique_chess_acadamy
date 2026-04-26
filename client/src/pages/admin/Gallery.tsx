@@ -126,7 +126,7 @@ const AdminGallery: React.FC = () => {
           <h1 className="text-3xl font-bold tracking-tight">Gallery</h1>
           <p className="text-muted-foreground">Manage and upload photos from your computer.</p>
         </div>
-        <Button onClick={handleAdd} className="gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
+        <Button onClick={handleAdd} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
           <Plus className="h-4 w-4" />
           Add Image
         </Button>

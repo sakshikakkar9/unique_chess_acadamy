@@ -33,7 +33,7 @@ const Navbar = () => {
       className={cn(
         "fixed top-0 w-full z-50 transition-all duration-300 px-4 md:px-8 py-4",
         scrolled
-          ? "bg-background/85 backdrop-blur-xl border-b border-border/60 py-3 shadow-md"
+          ? "bg-card/90 backdrop-blur-xl border-b border-border/50 py-3 shadow-sm"
           : "bg-transparent"
       )}
     >
@@ -59,7 +59,7 @@ const Navbar = () => {
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-4">
-          <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">
+          <Button variant="ghost" size="sm" className="text-secondary hover:text-primary hover:bg-primary/5">
             Book Free Demo
           </Button>
           <Button size="sm" className="gold-glow">

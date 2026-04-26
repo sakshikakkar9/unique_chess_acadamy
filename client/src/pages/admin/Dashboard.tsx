@@ -35,30 +35,30 @@ const AdminDashboard: React.FC = () => {
       title: "Total Courses",
       value: courses.length.toString(),
       icon: BookOpen,
-      color: "text-blue-500",
-      bg: "bg-blue-500/10",
+      color: "text-accent",
+      bg: "bg-accent/10",
     },
     {
       title: "Course Enrollments",
       value: enrollLoading ? "…" : enrollments.length.toString(),
       sub: pendingEnrollments.length > 0 ? `${pendingEnrollments.length} pending` : undefined,
       icon: GraduationCap,
-      color: "text-emerald-500",
-      bg: "bg-emerald-500/10",
+      color: "text-accent",
+      bg: "bg-accent/10",
     },
     {
       title: "Tournaments",
       value: tournaments.length.toString(),
       icon: Trophy,
-      color: "text-amber-500",
-      bg: "bg-amber-500/10",
+      color: "text-primary",
+      bg: "bg-primary/10",
     },
     {
       title: "New Demo Leads",
       value: demosLoading ? "…" : demos.length.toString(),
       icon: Users,
-      color: "text-purple-500",
-      bg: "bg-purple-500/10",
+      color: "text-primary",
+      bg: "bg-primary/10",
     },
   ];
 
@@ -120,8 +120,8 @@ const AdminDashboard: React.FC = () => {
               ) : enrollments.length > 0 ? (
                 enrollments.slice(0, 5).map((enr) => (
                   <div key={enr.id} className="flex items-center gap-4 group">
-                    <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-colors flex-shrink-0">
-                      <GraduationCap className="h-5 w-5 text-emerald-500" />
+                    <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:bg-accent/20 transition-colors flex-shrink-0">
+                      <GraduationCap className="h-5 w-5 text-accent" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold truncate">
@@ -197,8 +197,8 @@ const AdminDashboard: React.FC = () => {
                 ) : demos.length > 0 ? (
                   demos.slice(0, 3).map((demo: any) => (
                     <div key={demo.id} className="flex items-center gap-3 group">
-                      <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20 flex-shrink-0">
-                        <UserCheck className="h-4 w-4 text-purple-500" />
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 flex-shrink-0">
+                        <UserCheck className="h-4 w-4 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold truncate">{demo.studentName}</p>

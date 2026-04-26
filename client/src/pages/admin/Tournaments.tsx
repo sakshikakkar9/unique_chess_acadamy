@@ -99,10 +99,10 @@ const AdminTournaments: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Tournaments</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Tournaments</h1>
           <p className="text-muted-foreground">Manage academy chess tournaments and results.</p>
         </div>
-        <Button onClick={handleAdd} className="gap-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
+        <Button onClick={handleAdd} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
           <Plus className="h-4 w-4" />
           Add Tournament
         </Button>

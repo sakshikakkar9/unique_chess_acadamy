@@ -5,78 +5,78 @@
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   COLOR PALETTE  (derived from UCA brand image)
-   ─── Deep Navy  #080F25  hsl(222 72% 8%)
-   ─── Navy Card  #0D1B3A  hsl(222 66% 14%)
-   ─── Royal Blue #1E4FAF  hsl(218 72% 40%)
-   ─── Sky Blue   #3B82F6  hsl(217 91% 60%)   (highlights)
-   ─── Gold       #D4AE2A  hsl(43  85% 50%)   (primary CTA)
+   COLOR PALETTE (UCA Professional Light Theme)
+   ─── Icy Blue    #F0F7FF  hsl(214 100% 98%)
+   ─── White       #FFFFFF  hsl(0 0% 100%)
+   ─── Deep Navy   #0A1A3A  hsl(221 83% 16%)
+   ─── Royal Blue  #1E4FAF  hsl(218 72% 40%)
+   ─── Gold        #D4A017  hsl(45 92% 47%)
    ─────────────────────────────────────────────────────────────────────────────  */
 
 @layer base {
   :root {
     /* ── Backgrounds ── */
-    --background:        222 72% 7%;   /* Deep navy  #080F25  */
-    --foreground:        210 80% 96%;  /* Ice white  #EEF5FF  */
+    --background:        214 100% 98%;   /* Icy blue   */
+    --foreground:        222 47% 11%;    /* Deep navy  */
 
     /* ── Cards / Surfaces ── */
-    --card:              222 65% 12%;  /* Navy card  #0E1C38  */
-    --card-foreground:   210 80% 96%;
+    --card:              0 0% 100%;      /* White      */
+    --card-foreground:   222 47% 11%;
 
-    --popover:           222 65% 12%;
-    --popover-foreground:210 80% 96%;
+    --popover:           0 0% 100%;
+    --popover-foreground:222 47% 11%;
 
-    /* ── Primary = Gold (CTA / accent) ── */
-    --primary:           43  85% 50%;  /* Gold       #D4AE2A  */
-    --primary-foreground:222 72% 7%;   /* Navy text on gold   */
+    /* ── Primary = Gold ── */
+    --primary:           45 92% 47%;     /* Gold       */
+    --primary-foreground: 222 47% 11%;   /* Navy text  */
 
-    /* ── Secondary = Royal Blue ── */
-    --secondary:         222 65% 19%;  /* Navy sec   #162845  */
-    --secondary-foreground: 210 80% 96%;
+    /* ── Secondary = Deep Navy ── */
+    --secondary:         221 83% 16%;    /* Deep navy  */
+    --secondary-foreground: 214 100% 98%;
 
     /* ── Muted ── */
-    --muted:             222 55% 17%;  /* Muted navy #12213E  */
-    --muted-foreground:  210 30% 62%;  /* Blue-gray  #7C97BE  */
+    --muted:             214 30% 92%;    /* Light blue-gray */
+    --muted-foreground:  215 16% 47%;    /* Muted navy/gray */
 
     /* ── Accent = Royal Blue ── */
-    --accent:            217 80% 56%;  /* Royal blue #2B6AE8  */
-    --accent-foreground: 0   0%  100%;
+    --accent:            218 72% 40%;    /* Royal blue */
+    --accent-foreground: 0 0% 100%;
 
     /* ── Destructive ── */
-    --destructive:       0   84% 60%;
+    --destructive:       0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     /* ── Borders / Inputs ── */
-    --border:            222 50% 21%;  /* Navy border #162745  */
-    --input:             222 50% 19%;
-    --ring:              43  85% 50%;
+    --border:            214 32% 91%;
+    --input:             214 32% 91%;
+    --ring:              45 92% 47%;
 
     /* ── Radius ── */
-    --radius: 0.85rem;
+    --radius: 0.75rem;
 
     /* ── Gold tokens ── */
-    --gold:              43  85% 50%;
-    --gold-light:        43  85% 66%;
-    --gold-dark:         43  85% 38%;
-    --gold-glow:         43  85% 50%;
+    --gold:              45 92% 47%;
+    --gold-light:        45 92% 60%;
+    --gold-dark:         45 92% 35%;
+    --gold-glow:         45 92% 47%;
 
     /* ── Royal blue token ── */
-    --royal:             217 80% 56%;
-    --royal-light:       210 80% 72%;
-    --royal-dark:        222 72% 36%;
+    --royal:             218 72% 40%;
+    --royal-light:       218 72% 55%;
+    --royal-dark:        218 72% 25%;
 
     /* ── Elevated surface ── */
-    --surface-elevated:  222 65% 15%;
+    --surface-elevated:  0 0% 100%;
 
-    /* ── Admin Sidebar (deepest navy) ── */
-    --sidebar-background:     222 78% 5%;
-    --sidebar-foreground:     210 60% 92%;
-    --sidebar-primary:        43  85% 50%;
-    --sidebar-primary-foreground: 222 72% 7%;
-    --sidebar-accent:         222 65% 13%;
-    --sidebar-accent-foreground:  210 80% 96%;
-    --sidebar-border:         222 55% 14%;
-    --sidebar-ring:           43  85% 50%;
+    /* ── Admin Sidebar (Navy) ── */
+    --sidebar-background:     221 83% 16%;
+    --sidebar-foreground:     214 100% 98%;
+    --sidebar-primary:        45 92% 47%;
+    --sidebar-primary-foreground: 221 83% 16%;
+    --sidebar-accent:         221 83% 20%;
+    --sidebar-accent-foreground:  214 100% 98%;
+    --sidebar-border:         221 83% 12%;
+    --sidebar-ring:           45 92% 47%;
   }
 }
 
@@ -93,14 +93,14 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
+    @apply font-heading text-secondary;
   }
 
-  /* Scrollbar – navy/gold brand */
+  /* Scrollbar */
   ::-webkit-scrollbar        { width: 6px; }
-  ::-webkit-scrollbar-track  { background: hsl(222 72% 7%); }
-  ::-webkit-scrollbar-thumb  { background: hsl(222 50% 24%); border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: hsl(43 85% 50%); }
+  ::-webkit-scrollbar-track  { background: hsl(214 100% 98%); }
+  ::-webkit-scrollbar-thumb  { background: hsl(214 32% 85%); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(45 92% 47%); }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -108,67 +108,48 @@
    ───────────────────────────────────────────────────────────────────────────── */
 @layer components {
 
-  /* ── Gold glow (primary CTA buttons) ── */
+  /* ── Professional shadows ── */
   .gold-glow {
-    box-shadow:
-      0 0 18px hsl(43 85% 50% / 0.40),
-      0 0 56px hsl(43 85% 50% / 0.14),
-      0 4px 12px hsl(222 72% 3% / 0.50);
+    box-shadow: 0 10px 15px -3px hsl(var(--primary) / 0.2), 0 4px 6px -2px hsl(var(--primary) / 0.1);
+    @apply transition-shadow duration-300;
   }
-  .gold-glow-strong {
-    box-shadow:
-      0 0 28px hsl(43 85% 50% / 0.55),
-      0 0 80px hsl(43 85% 50% / 0.22),
-      0 4px 20px hsl(222 72% 3% / 0.60);
+  .gold-glow:hover {
+    box-shadow: 0 20px 25px -5px hsl(var(--primary) / 0.3), 0 10px 10px -5px hsl(var(--primary) / 0.15);
   }
 
-  /* ── Royal blue glow (accent elements) ── */
   .blue-glow {
-    box-shadow:
-      0 0 18px hsl(217 80% 56% / 0.35),
-      0 0 56px hsl(217 80% 56% / 0.12);
-  }
-  .blue-glow-strong {
-    box-shadow:
-      0 0 28px hsl(217 80% 56% / 0.50),
-      0 0 80px hsl(217 80% 56% / 0.18);
+    box-shadow: 0 10px 15px -3px hsl(var(--accent) / 0.15), 0 4px 6px -2px hsl(var(--accent) / 0.1);
   }
 
   /* ── Card elevation ── */
   .card-elevation {
-    box-shadow:
-      0 4px 24px hsl(222 72% 3% / 0.60),
-      0 1px 4px  hsl(222 72% 3% / 0.40),
-      inset 0 1px 0 hsl(210 80% 96% / 0.04);
+    box-shadow: 0 1px 3px 0 hsl(var(--foreground) / 0.1), 0 1px 2px 0 hsl(var(--foreground) / 0.06);
   }
 
-  /* ── Card hover – lifts + royal blue glow ── */
+  /* ── Card hover ── */
   .card-hover {
-    @apply transition-all duration-300 ease-out;
+    @apply transition-all duration-300 ease-out border-transparent;
   }
   .card-hover:hover {
-    transform: translateY(-5px) scale(1.012);
-    box-shadow:
-      0 12px 36px hsl(222 72% 3% / 0.65),
-      0 0  24px hsl(217 80% 56% / 0.14),
-      0 0   8px hsl(43  85% 50% / 0.08);
+    transform: translateY(-4px);
+    @apply border-primary/20 shadow-xl shadow-secondary/5;
   }
 
   /* ── Glass ── */
   .glass {
-    background: hsl(222 72% 7% / 0.82);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid hsl(222 50% 21% / 0.60);
+    background: hsla(0, 0%, 100%, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsla(214, 32%, 91%, 0.5);
   }
 
   /* ── Gold gradient text ── */
   .text-gradient-gold {
     background: linear-gradient(
       135deg,
-      hsl(43 85% 68%) 0%,
-      hsl(43 85% 52%) 50%,
-      hsl(43 85% 40%) 100%
+      hsl(45 92% 55%) 0%,
+      hsl(45 92% 45%) 50%,
+      hsl(45 92% 35%) 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -179,52 +160,50 @@
   .text-gradient-blue {
     background: linear-gradient(
       135deg,
-      hsl(210 80% 78%) 0%,
-      hsl(217 80% 58%) 50%,
-      hsl(222 72% 45%) 100%
+      hsl(218 72% 50%) 0%,
+      hsl(218 72% 40%) 50%,
+      hsl(218 72% 30%) 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* ── Gold + Blue combined gradient text (hero use) ── */
+  /* ── Brand gradient text ── */
   .text-gradient-brand {
     background: linear-gradient(
       135deg,
-      hsl(210 80% 78%) 0%,
-      hsl(43  85% 58%) 60%,
-      hsl(43  85% 44%) 100%
+      hsl(221 83% 16%) 0%,
+      hsl(45 92% 47%) 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* ── Section padding ── */
   .section-padding {
     @apply py-20 md:py-28 px-4;
   }
 
-  /* ── Chess pattern (navy squares) ── */
+  /* ── Chess pattern (faint blue) ── */
   .chess-pattern {
     background-image:
-      linear-gradient(45deg,  hsl(222 65% 11%) 25%, transparent 25%),
-      linear-gradient(-45deg, hsl(222 65% 11%) 25%, transparent 25%),
-      linear-gradient(45deg,  transparent 75%, hsl(222 65% 11%) 75%),
-      linear-gradient(-45deg, transparent 75%, hsl(222 65% 11%) 75%);
+      linear-gradient(45deg,  hsl(214 100% 94%) 25%, transparent 25%),
+      linear-gradient(-45deg, hsl(214 100% 94%) 25%, transparent 25%),
+      linear-gradient(45deg,  transparent 75%, hsl(214 100% 94%) 75%),
+      linear-gradient(-45deg, transparent 75%, hsl(214 100% 94%) 75%);
     background-size: 40px 40px;
     background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
-    opacity: 0.045;
+    opacity: 0.15;
   }
 
-  /* ── Navy hero gradient overlay ── */
+  /* ── Hero gradient overlay (light) ── */
   .hero-overlay {
     background: linear-gradient(
       105deg,
-      hsl(222 72% 7%)        0%,
-      hsl(222 72% 7% / 0.94) 38%,
-      hsl(222 72% 7% / 0.65) 68%,
+      hsl(214 100% 98%)        0%,
+      hsl(214 100% 98% / 0.9) 40%,
+      hsl(214 100% 98% / 0.5) 70%,
       transparent            100%
     );
   }
@@ -234,8 +213,8 @@
     height: 3px;
     background: linear-gradient(
       90deg,
-      hsl(217 80% 56%),
-      hsl(43  85% 50%),
+      hsl(45 92% 47%),
+      hsl(221 83% 16%),
       transparent
     );
     border-radius: 999px;
@@ -244,16 +223,16 @@
   /* ── Pill badge – blue ── */
   .badge-blue {
     @apply inline-flex items-center gap-1.5 text-xs font-semibold
-           bg-[hsl(217_80%_56%_/_0.12)] text-[hsl(217_80%_70%)]
-           border border-[hsl(217_80%_56%_/_0.30)]
+           bg-secondary/10 text-secondary
+           border border-secondary/20
            px-3 py-1 rounded-full;
   }
 
   /* ── Pill badge – gold ── */
   .badge-gold {
     @apply inline-flex items-center gap-1.5 text-xs font-semibold
-           bg-[hsl(43_85%_50%_/_0.12)] text-[hsl(43_85%_62%)]
-           border border-[hsl(43_85%_50%_/_0.30)]
+           bg-primary/10 text-primary
+           border border-primary/20
            px-3 py-1 rounded-full;
   }
 }
@@ -266,7 +245,6 @@
     @apply transition-transform duration-200 hover:scale-105;
   }
 
-  /* Animated entry */
   .animate-in {
     animation-fill-mode: both;
   }
