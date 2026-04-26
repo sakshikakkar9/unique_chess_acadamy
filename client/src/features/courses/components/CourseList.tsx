@@ -3,9 +3,10 @@ import CourseCard from "./CourseCard";
 
 interface CourseListProps {
   courses: Course[];
+  onEnroll?: (course: Course) => void;
 }
 
-const CourseList = ({ courses }: CourseListProps) => {
+const CourseList = ({ courses, onEnroll }: CourseListProps) => {
   if (courses.length === 0) {
     return (
       <div className="text-center py-20 bg-card/50 rounded-2xl border border-dashed border-border">
@@ -17,7 +18,7 @@ const CourseList = ({ courses }: CourseListProps) => {
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       {courses.map((course, i) => (
-        <CourseCard key={course.id} course={course} delay={i * 0.1} />
+        <CourseCard key={course.id} course={course} delay={i * 0.1} onEnroll={onEnroll} />
       ))}
     </div>
   );

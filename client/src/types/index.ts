@@ -1,50 +1,119 @@
 import { LucideIcon } from "lucide-react";
 
+export type AgeGroup = "CHILDREN" | "TEENAGERS" | "ADULTS";
+
+export const AGE_GROUP_LABELS: Record<AgeGroup, string> = {
+  CHILDREN: "Children",
+  TEENAGERS: "Teenagers",
+  ADULTS: "Adults",
+};
+
+export const AGE_GROUP_RANGES: Record<AgeGroup, string> = {
+  CHILDREN: "Ages 6–12",
+  TEENAGERS: "Ages 13–17",
+  ADULTS: "Ages 18+",
+};
+
 export interface Course {
-  id: string;
+  id: number;
   title: string;
+  ageGroup: AgeGroup;
+  minAge?: number | null;
+  maxAge?: number | null;
   level: string;
   duration: string;
-  description: string;
-  image: string;
+  description?: string;
+  image?: string;
   price?: string;
   features?: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Tournament {
-  [x: string]: ReactNode;
-  id: string;
+  id: number;
   title: string;
-  location: string;
+  location?: string;
   date: string;
-  status: "Open" | "Coming Soon" | "Completed";
-  image?: string;
-  type: "State" | "National" | "Open" | "Junior";
+  entryFee?: number;
+  description?: string;
+  status: "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED";
+  results?: TournamentResult[];
+  registrations?: Registration[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface PastResult {
+export interface TournamentResult {
+  id: number;
+  tournamentId: number;
+  position: number;
+  playerName: string;
+  score?: number;
+  prize?: string;
+}
+
+export interface Registration {
   id: string;
-  tournament: string;
-  winner: string;
-  runnerUp: string;
-  category: string;
+  studentName: string;
+  email: string;
+  phone: string;
+  tournamentId: number;
+  tournament?: { title: string };
+  status: string;
+  createdAt?: string;
+}
+
+export type EnrollmentStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "REJECTED";
+
+export interface CourseEnrollment {
+  id: number;
+  studentName: string;
+  email: string;
+  phone: string;
+  courseId: number;
+  course?: { id: number; title: string; ageGroup: AgeGroup };
+  message?: string;
+  status: EnrollmentStatus;
+  createdAt?: string;
+}
+
+export interface DemoRegistration {
+  id: number;
+  studentName: string;
+  email: string;
+  phone: string;
+  scheduledAt: string;
+  status: "PENDING" | "CONFIRMED" | "COMPLETED";
+  createdAt?: string;
 }
 
 export interface Event {
-  id: string;
+  id: number;
   title: string;
+  description?: string;
   date: string;
-  time: string;
-  location: string;
-  category: "Classes" | "Workshops" | "Tournaments";
+  location?: string;
+  category: "CLASS" | "WORKSHOP";
+  createdAt?: string;
 }
 
 export interface GalleryImage {
-  [x: string]: ReactNode;
   id: string;
-  url: string;
-  alt: string;
-  category: "Training" | "Tournaments" | "Coaching" | "Academy";
+  imageUrl: string;
+  caption?: string;
+  category: string;
+  createdAt?: string;
+}
+
+export interface ContactMessage {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  message: string;
+  isRead: boolean;
+  createdAt?: string;
 }
 
 export interface Testimonial {

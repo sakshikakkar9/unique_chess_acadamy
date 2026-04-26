@@ -1,45 +1,28 @@
-const express = require('express');
+import express from 'express';
+import { verifyAdmin } from '../middleware/auth.middleware.js';
+import {
+  createRegistration,
+  createDemoRegistration,
+  getAllRegistrations,
+  getAllDemoRegistrations,
+  updateDemoStatus,
+} from '../controllers/registrationController.js';
+
 const router = express.Router();
-const registrationController = require('../controllers/registrationController');
-const { verifyAdmin } = require('../middleware/auth.middleware');
 
-// ------------------------------------------------------
-// PUBLIC ROUTES (For Students)
-// ------------------------------------------------------
+// Public: Student tournament/course enrollment
+router.post('/register', createRegistration);
 
-/**
- * @route   POST /api/registrations/register
- * @desc    Full course enrollment (Join Now)
- */
-router.post('/register', registrationController.createRegistration);
+// Public: Free demo class signup
+router.post('/demo', createDemoRegistration);
 
-/**
- * @route   POST /api/registrations/demo
- * @desc    Free Demo class signup
- */
-router.post('/demo', registrationController.createDemoRegistration);
+// Admin: Get all course/tournament enrollments
+router.get('/admin/list', verifyAdmin, getAllRegistrations);
 
+// Admin: Get all demo requests
+router.get('/admin/demos', verifyAdmin, getAllDemoRegistrations);
 
-// ------------------------------------------------------
-// ADMIN ROUTES (Protected)
-// ------------------------------------------------------
+// Admin: Update demo status (PENDING → CONFIRMED → COMPLETED)
+router.patch('/admin/demo/:id', verifyAdmin, updateDemoStatus);
 
-/**
- * @route   GET /api/registrations/admin/list
- * @desc    Get all full course enrollments
- */
-router.get('/admin/list', verifyAdmin, registrationController.getAllRegistrations);
-
-/**
- * @route   GET /api/registrations/admin/demos
- * @desc    Get all free demo requests for the dashboard
- */
-router.get('/admin/demos', verifyAdmin, registrationController.getAllDemoRegistrations);
-
-/**
- * @route   PATCH /api/registrations/admin/demo/:id
- * @desc    Update demo status (PENDING -> CONFIRMED)
- */
-router.patch('/admin/demo/:id', verifyAdmin, registrationController.updateDemoStatus);
-
-module.exports = router;
+export default router;

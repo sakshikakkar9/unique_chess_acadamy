@@ -21,5 +21,5 @@ export const addImage = async (data) => {
 };
 
 export const deleteImage = async (id) => {
-  return await prisma.gallery.delete({ where: { id: parseInt(id) } });
+  return await prisma.gallery.delete({ where: { id } });
 };

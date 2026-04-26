@@ -16,7 +16,12 @@ export default defineConfig(({ mode }) => ({
       "/api": {
         target: "http://localhost:5000",
         changeOrigin: true,
-        secure: false, // Set to false since we are using http for local dev
+        secure: false,
+      },
+      "/uploads": {
+        target: "http://localhost:5000",
+        changeOrigin: true,
+        secure: false,
       },
     },
   },

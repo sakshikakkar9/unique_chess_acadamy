@@ -13,8 +13,9 @@ import tournamentRoutes from './src/routes/tournament.routes.js';
 import eventRoutes from './src/routes/event.routes.js';
 import galleryRoutes from './src/routes/gallery.routes.js';
 import contactRoutes from './src/routes/contact.routes.js';
-// ✅ ADDED: New route for Free Demo registrations
 import demoRoutes from './src/routes/demo.routes.js';
+import registrationRoutes from './src/routes/registration.routes.js';
+import courseRoutes from './src/routes/course.routes.js';
 
 // ------------------------------------------------------
 // ESM __DIRNAME CONFIGURATION
@@ -62,8 +63,9 @@ app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/contact', contactRoutes);
-// ✅ MOUNTED: Demo registration endpoint
 app.use('/api/demo', demoRoutes);
+app.use('/api/registrations', registrationRoutes);
+app.use('/api/courses', courseRoutes);
 
 // ------------------------------------------------------
 // GLOBAL ERROR HANDLER

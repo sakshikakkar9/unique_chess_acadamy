@@ -32,7 +32,7 @@ interface DataTableProps<T> {
   isLoading?: boolean;
 }
 
-const DataTable = <T extends { id: string }>({
+const DataTable = <T extends { id: string | number }>({
   columns,
   data,
   onEdit,

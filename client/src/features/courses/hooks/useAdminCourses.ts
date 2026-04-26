@@ -7,17 +7,16 @@ export const useAdminCourses = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  // 1. FETCH
-  const { data: courses = [], isLoading, error } = useQuery({
+  const { data: courses = [], isLoading, error } = useQuery<Course[]>({
     queryKey: ["courses"],
     queryFn: () => courseService.getAll(),
   });
 
-  // 2. ADD
   const addMutation = useMutation({
-    mutationFn: (course: Omit<Course, "id">) => courseService.create(course),
+    mutationFn: (course: Omit<Course, "id" | "createdAt" | "updatedAt">) =>
+      courseService.create(course),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["courses"] }); // Auto-refreshes the list!
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
       toast({ title: "Success", description: "Course added successfully." });
     },
     onError: () => {
@@ -25,9 +24,8 @@ export const useAdminCourses = () => {
     },
   });
 
-  // 3. UPDATE
   const updateMutation = useMutation({
-    mutationFn: ({ id, course }: { id: string; course: Partial<Course> }) => 
+    mutationFn: ({ id, course }: { id: number; course: Partial<Course> }) =>
       courseService.update(id, course),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
@@ -38,9 +36,8 @@ export const useAdminCourses = () => {
     },
   });
 
-  // 4. DELETE
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => courseService.delete(id),
+    mutationFn: (id: number) => courseService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
       toast({ title: "Success", description: "Course deleted successfully." });
@@ -55,8 +52,9 @@ export const useAdminCourses = () => {
     isLoading,
     error,
     addCourse: addMutation.mutateAsync,
-    updateCourse: (id: string, course: Partial<Course>) => updateMutation.mutateAsync({ id, course }),
-    deleteCourse: deleteMutation.mutateAsync,
+    updateCourse: (id: number, course: Partial<Course>) =>
+      updateMutation.mutateAsync({ id, course }),
+    deleteCourse: (id: number) => deleteMutation.mutateAsync(id),
     refresh: () => queryClient.invalidateQueries({ queryKey: ["courses"] }),
   };
 };

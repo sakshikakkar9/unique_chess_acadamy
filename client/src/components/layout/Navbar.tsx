@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Crown } from "lucide-react";
+import { Menu, X } from "lucide-react"; // Removed Crown as it's unused
 import { Button } from "@/components/ui/button";
 import NavLink from "./NavLink";
 import { cn } from "@/lib/utils";
+
+// Make sure this path correctly points from components/layout to assets
+import ucaLogo from "../../assets/logo.jpeg"; 
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,15 +32,20 @@ const Navbar = () => {
     <nav
       className={cn(
         "fixed top-0 w-full z-50 transition-all duration-300 px-4 md:px-8 py-4",
-        scrolled ? "bg-background/80 backdrop-blur-md border-b border-border py-3" : "bg-transparent"
+        scrolled
+          ? "bg-background/85 backdrop-blur-xl border-b border-border/60 py-3 shadow-md"
+          : "bg-transparent"
       )}
     >
       <div className="container mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <Crown className="h-8 w-8 text-primary transition-transform group-hover:rotate-12" />
-          <span className="font-heading font-bold text-xl tracking-tight">
-            Unique <span className="text-gradient-gold">Chess</span>
-          </span>
+        {/* LOGO SECTION */}
+        <Link to="/" className="flex items-center group">
+          <img 
+            src={ucaLogo} 
+            alt="Unique Chess Academy" 
+            className="h-12 w-auto object-contain transition-transform group-hover:scale-105 md:h-16" 
+            onError={(e) => console.error("Logo failed to load:", e)}
+          />
         </Link>
 
         {/* Desktop Links */}
