@@ -3,7 +3,7 @@ import { Crown, Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } fro
 
 const Footer = () => {
   return (
-    <footer className="bg-card pt-20 pb-10 border-t border-border">
+    <footer className="bg-muted/40 pt-20 pb-10 border-t border-border/50">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="space-y-6">
@@ -18,7 +18,7 @@ const Footer = () => {
             </p>
             <div className="flex gap-4">
               {[Facebook, Instagram, Twitter, Youtube].map((Icon, i) => (
-                <a key={i} href="#" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 text-muted-foreground hover:text-primary transition-all">
+                <a key={i} href="#" className="p-2 rounded-full bg-card border border-border/60 hover:border-primary/50 text-muted-foreground hover:text-primary transition-all shadow-sm">
                   <Icon className="h-4 w-4" />
                 </a>
               ))}

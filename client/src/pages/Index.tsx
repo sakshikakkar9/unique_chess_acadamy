@@ -42,7 +42,7 @@ export default function HomePage() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImg} alt="Chess" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/60" />
+          <div className="absolute inset-0 hero-overlay" />
         </div>
         <div className="relative container mx-auto px-4 pt-20">
           <div className="max-w-2xl">
@@ -82,7 +82,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {stats.map((stat, i) => (
               <ScrollReveal key={stat.id} delay={i * 0.1}>
-                <div className="bg-card border border-border rounded-2xl p-6 text-center shadow-lg hover:border-primary/50 transition-colors">
+                <div className="bg-card border border-border/60 rounded-2xl p-6 text-center shadow-xl shadow-secondary/5 hover:border-primary/50 transition-all duration-300">
                   <stat.icon className="h-6 w-6 text-primary mx-auto mb-3" />
                   <div className="font-heading font-bold text-2xl md:text-3xl text-gradient-gold">{stat.value}</div>
                   <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>

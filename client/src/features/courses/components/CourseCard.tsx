@@ -24,15 +24,15 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
             loading="lazy"
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-secondary/40 to-transparent" />
           <div className="absolute bottom-4 left-4 flex gap-2 flex-wrap">
-            <span className="text-xs font-medium bg-primary/20 text-primary px-3 py-1 rounded-full backdrop-blur-sm">
+            <span className="text-xs font-medium bg-primary/90 text-primary-foreground px-3 py-1 rounded-full shadow-sm">
               {ageRange}
             </span>
-            <span className="text-xs font-medium bg-secondary text-secondary-foreground px-3 py-1 rounded-full backdrop-blur-sm">
+            <span className="text-xs font-medium bg-secondary/90 text-secondary-foreground px-3 py-1 rounded-full shadow-sm">
               {course.level}
             </span>
-            <span className="text-xs font-medium bg-background/60 text-foreground px-3 py-1 rounded-full backdrop-blur-sm">
+            <span className="text-xs font-medium bg-card/90 text-secondary px-3 py-1 rounded-full shadow-sm">
               {course.duration}
             </span>
           </div>

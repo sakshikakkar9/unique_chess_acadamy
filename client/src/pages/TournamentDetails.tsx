@@ -63,7 +63,7 @@ export default function TournamentDetails() {
               </div>
 
               <Input name="transactionId" placeholder="Transaction ID (UTR)" required />
-              <Button type="submit" className="w-full bg-yellow-500 text-black hover:bg-yellow-600" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
                 {isLoading ? "Submitting..." : "Confirm Registration"}
               </Button>
             </form>

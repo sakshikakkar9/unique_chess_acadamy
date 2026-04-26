@@ -57,7 +57,7 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
       <div
-        className="relative w-full max-w-md rounded-2xl border border-border bg-card shadow-[0_0_60px_hsl(43_85%_50%_/_0.12)] overflow-hidden"
+        className="relative w-full max-w-md rounded-2xl border border-border bg-card shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top accent line */}
@@ -137,7 +137,7 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-primary-foreground font-bold py-3.5 rounded-xl transition-all duration-300 gold-glow hover:gold-glow-strong flex items-center justify-center gap-2 text-sm"
+                  className="w-full bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-primary-foreground font-bold py-3.5 rounded-xl transition-all duration-300 gold-glow flex items-center justify-center gap-2 text-sm"
                 >
                   {loading ? (
                     <><Loader2 className="h-4 w-4 animate-spin" /> Sending Request…</>
