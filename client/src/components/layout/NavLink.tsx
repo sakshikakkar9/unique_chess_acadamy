@@ -15,12 +15,19 @@ const NavLink = ({ to, children, className }: NavLinkProps) => {
     <Link
       to={to}
       className={cn(
-        "text-sm font-medium transition-colors hover:text-primary",
-        isActive ? "text-primary bg-primary/10 px-4 py-2 rounded-full" : "text-muted-foreground",
+        "relative text-sm font-medium transition-all duration-300 py-1",
+        isActive ? "text-primary text-glow-gold" : "text-muted-foreground hover:text-foreground",
+        "group",
         className
       )}
     >
       {children}
+      <span
+        className={cn(
+          "absolute bottom-0 left-0 h-[2px] bg-primary transition-all duration-300",
+          isActive ? "w-full" : "w-0 group-hover:w-full"
+        )}
+      />
     </Link>
   );
 };

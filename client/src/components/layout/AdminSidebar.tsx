@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   BookOpen,
@@ -34,7 +35,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, setOpen }) => {
       {/* Mobile overlay */}
       <div
         className={cn(
-          "fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300",
+          "fixed inset-0 bg-black/80 backdrop-blur-md z-40 md:hidden transition-opacity duration-500",
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={() => setOpen(false)}
@@ -43,36 +44,37 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, setOpen }) => {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed md:sticky top-0 left-0 z-50 h-screen w-64 flex flex-col",
-          "bg-sidebar border-r border-sidebar-border",
-          "transition-transform duration-300 ease-in-out md:translate-x-0",
+          "fixed md:sticky top-0 left-0 z-50 h-screen w-72 flex flex-col",
+          "bg-sidebar border-r border-white/5 shadow-2xl",
+          "transition-transform duration-500 ease-in-out md:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Logo */}
-        <div className="p-6 flex items-center justify-between border-b border-sidebar-border">
-          <Link to="/admin/dashboard" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center gold-glow">
-              <Crown className="h-4 w-4 text-primary-foreground" />
+        <div className="p-8 flex items-center justify-between border-b border-white/5">
+          <Link to="/admin/dashboard" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center gold-glow">
+              <Crown className="h-5 w-5 text-primary-foreground" />
             </div>
-            <div>
-              <span className="font-heading font-bold text-sm tracking-tight text-sidebar-foreground">
+            <div className="flex flex-col">
+              <span className="font-heading font-bold text-base tracking-tight text-sidebar-foreground">
                 UCA Admin
               </span>
+              <span className="text-[10px] text-primary font-bold uppercase tracking-widest">Premium Panel</span>
             </div>
           </Link>
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-sidebar-foreground hover:bg-sidebar-accent"
+            className="md:hidden text-sidebar-foreground hover:bg-white/5"
             onClick={() => setOpen(false)}
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </Button>
         </div>
 
         {/* Nav items */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.href;
             return (
@@ -81,16 +83,19 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, setOpen }) => {
                 to={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
+                  "flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 group relative overflow-hidden",
                   isActive
-                    ? "bg-primary/15 text-primary border border-primary/20 gold-glow"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                    ? "bg-primary text-primary-foreground gold-glow"
+                    : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-white/5"
                 )}
               >
-                <item.icon className={cn("h-4 w-4 flex-shrink-0", isActive && "text-primary")} />
+                <item.icon className={cn("h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110", isActive ? "text-primary-foreground" : "text-primary")} />
                 {item.label}
                 {isActive && (
-                  <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
+                  <motion.div
+                    layoutId="active-sidebar-pill"
+                    className="absolute right-4 w-1.5 h-1.5 rounded-full bg-primary-foreground"
+                  />
                 )}
               </Link>
             );
@@ -98,12 +103,12 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, setOpen }) => {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-sidebar-border">
+        <div className="p-6 border-t border-white/5 bg-black/20">
           <Link
             to="/"
-            className="flex items-center gap-2 text-xs text-sidebar-foreground/50 hover:text-primary transition-colors"
+            className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sidebar-foreground/40 hover:text-primary transition-all group"
           >
-            <ChevronLeft className="h-3 w-3" />
+            <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Back to Website
           </Link>
         </div>

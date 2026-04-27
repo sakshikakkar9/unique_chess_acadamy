@@ -1,64 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   COLOR PALETTE (UCA Professional Light Theme)
-   ─── Icy Blue    #F0F7FF  hsl(214 100% 98%)
-   ─── White       #FFFFFF  hsl(0 0% 100%)
-   ─── Deep Navy   #0A1A3A  hsl(221 83% 16%)
-   ─── Royal Blue  #1E4FAF  hsl(218 72% 40%)
-   ─── Gold        #D4A017  hsl(45 92% 47%)
+   COLOR PALETTE (Luxury Chess Academy Dark Theme)
+   ─── Deep Royal Blue #0B1F3A  hsl(215 68% 14%)
+   ─── Midnight Blue   #051121  hsl(215 73% 7%)
+   ─── Rich Gold       #D4AF37  hsl(46 65% 52%)
+   ─── Soft Glow Blue  #1E4FAF  hsl(218 72% 40%)
    ─────────────────────────────────────────────────────────────────────────────  */
 
 @layer base {
   :root {
     /* ── Backgrounds ── */
-    --background:        214 100% 98%;   /* Icy blue   */
-    --foreground:        222 47% 11%;    /* Deep navy  */
+    --background:        215 73% 7%;     /* Midnight blue */
+    --foreground:        210 40% 98%;    /* Off-white text */
 
     /* ── Cards / Surfaces ── */
-    --card:              0 0% 100%;      /* White      */
-    --card-foreground:   222 47% 11%;
+    --card:              215 68% 10%;    /* Slightly lighter navy */
+    --card-foreground:   210 40% 98%;
 
-    --popover:           0 0% 100%;
-    --popover-foreground:222 47% 11%;
+    --popover:           215 68% 10%;
+    --popover-foreground:210 40% 98%;
 
     /* ── Primary = Gold ── */
-    --primary:           45 92% 47%;     /* Gold       */
-    --primary-foreground: 222 47% 11%;   /* Navy text  */
+    --primary:           46 65% 52%;     /* Rich Gold */
+    --primary-foreground: 215 73% 7%;    /* Midnight text */
 
-    /* ── Secondary = Deep Navy ── */
-    --secondary:         221 83% 16%;    /* Deep navy  */
-    --secondary-foreground: 214 100% 98%;
+    /* ── Secondary = Deep Royal Blue ── */
+    --secondary:         215 68% 14%;    /* Deep Royal blue */
+    --secondary-foreground: 210 40% 98%;
 
     /* ── Muted ── */
-    --muted:             214 30% 92%;    /* Light blue-gray */
-    --muted-foreground:  215 16% 47%;    /* Muted navy/gray */
+    --muted:             215 40% 15%;    /* Dark muted blue */
+    --muted-foreground:  215 20% 65%;    /* Muted gray-blue text */
 
-    /* ── Accent = Royal Blue ── */
-    --accent:            218 72% 40%;    /* Royal blue */
-    --accent-foreground: 0 0% 100%;
+    /* ── Accent = Gold ── */
+    --accent:            46 65% 52%;     /* Gold as accent */
+    --accent-foreground: 215 73% 7%;
 
     /* ── Destructive ── */
     --destructive:       0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 210 40% 98%;
 
     /* ── Borders / Inputs ── */
-    --border:            214 32% 91%;
-    --input:             214 32% 91%;
-    --ring:              45 92% 47%;
+    --border:            215 40% 20%;
+    --input:             215 40% 20%;
+    --ring:              46 65% 52%;
 
     /* ── Radius ── */
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     /* ── Gold tokens ── */
-    --gold:              45 92% 47%;
-    --gold-light:        45 92% 60%;
-    --gold-dark:         45 92% 35%;
-    --gold-glow:         45 92% 47%;
+    --gold:              46 65% 52%;
+    --gold-light:        46 65% 65%;
+    --gold-dark:         46 65% 40%;
+    --gold-glow:         46 65% 52%;
 
     /* ── Royal blue token ── */
     --royal:             218 72% 40%;
@@ -66,17 +65,17 @@
     --royal-dark:        218 72% 25%;
 
     /* ── Elevated surface ── */
-    --surface-elevated:  0 0% 100%;
+    --surface-elevated:  215 68% 12%;
 
-    /* ── Admin Sidebar (Navy) ── */
-    --sidebar-background:     221 83% 16%;
-    --sidebar-foreground:     214 100% 98%;
-    --sidebar-primary:        45 92% 47%;
-    --sidebar-primary-foreground: 221 83% 16%;
-    --sidebar-accent:         221 83% 20%;
-    --sidebar-accent-foreground:  214 100% 98%;
-    --sidebar-border:         221 83% 12%;
-    --sidebar-ring:           45 92% 47%;
+    /* ── Admin Sidebar (Dark Navy) ── */
+    --sidebar-background:     215 73% 5%;
+    --sidebar-foreground:     210 40% 98%;
+    --sidebar-primary:        46 65% 52%;
+    --sidebar-primary-foreground: 215 73% 7%;
+    --sidebar-accent:         215 68% 12%;
+    --sidebar-accent-foreground:  210 40% 98%;
+    --sidebar-border:         215 40% 15%;
+    --sidebar-ring:           46 65% 52%;
   }
 }
 
@@ -90,17 +89,21 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
+    background-image:
+      radial-gradient(circle at 0% 0%, hsla(218, 72%, 40%, 0.15) 0%, transparent 35%),
+      radial-gradient(circle at 100% 100%, hsla(46, 65%, 52%, 0.05) 0%, transparent 35%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading text-secondary;
+    @apply font-heading text-foreground tracking-tight;
   }
 
   /* Scrollbar */
-  ::-webkit-scrollbar        { width: 6px; }
-  ::-webkit-scrollbar-track  { background: hsl(214 100% 98%); }
-  ::-webkit-scrollbar-thumb  { background: hsl(214 32% 85%); border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: hsl(45 92% 47%); }
+  ::-webkit-scrollbar        { width: 8px; }
+  ::-webkit-scrollbar-track  { background: hsl(215 73% 5%); }
+  ::-webkit-scrollbar-thumb  { background: hsl(215 40% 20%); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(46 65% 52%); }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -108,73 +111,72 @@
    ───────────────────────────────────────────────────────────────────────────── */
 @layer components {
 
-  /* ── Professional shadows ── */
+  /* ── Gold Glow ── */
   .gold-glow {
-    box-shadow: 0 10px 15px -3px hsl(var(--primary) / 0.2), 0 4px 6px -2px hsl(var(--primary) / 0.1);
-    @apply transition-shadow duration-300;
+    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.4);
+    @apply transition-all duration-300;
   }
   .gold-glow:hover {
-    box-shadow: 0 20px 25px -5px hsl(var(--primary) / 0.3), 0 10px 10px -5px hsl(var(--primary) / 0.15);
+    box-shadow: 0 0 30px -2px hsl(var(--primary) / 0.6);
+    transform: translateY(-2px);
   }
 
+  /* ── Blue Glow ── */
   .blue-glow {
-    box-shadow: 0 10px 15px -3px hsl(var(--accent) / 0.15), 0 4px 6px -2px hsl(var(--accent) / 0.1);
+    box-shadow: 0 0 20px -5px hsl(var(--royal) / 0.4);
   }
 
   /* ── Card elevation ── */
   .card-elevation {
-    box-shadow: 0 1px 3px 0 hsl(var(--foreground) / 0.1), 0 1px 2px 0 hsl(var(--foreground) / 0.06);
+    box-shadow: 0 10px 30px -10px hsl(0 0% 0% / 0.5);
   }
 
   /* ── Card hover ── */
   .card-hover {
-    @apply transition-all duration-300 ease-out border-transparent;
+    @apply transition-all duration-500 ease-out border-white/5;
   }
   .card-hover:hover {
-    transform: translateY(-4px);
-    @apply border-primary/20 shadow-xl shadow-secondary/5;
+    transform: translateY(-8px);
+    @apply border-primary/30 shadow-2xl shadow-black/50;
+    background: linear-gradient(145deg, hsl(var(--card)), hsl(var(--secondary)));
   }
 
-  /* ── Glass ── */
+  /* ── Glassmorphism ── */
   .glass {
-    background: hsla(0, 0%, 100%, 0.7);
+    background: hsla(215, 68%, 10%, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsla(210, 40%, 98%, 0.08);
+  }
+
+  .glass-light {
+    background: hsla(210, 40%, 98%, 0.03);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid hsla(214, 32%, 91%, 0.5);
+    border: 1px solid hsla(210, 40%, 98%, 0.05);
   }
 
   /* ── Gold gradient text ── */
   .text-gradient-gold {
     background: linear-gradient(
       135deg,
-      hsl(45 92% 55%) 0%,
-      hsl(45 92% 45%) 50%,
-      hsl(45 92% 35%) 100%
+      hsl(46 65% 70%) 0%,
+      hsl(46 65% 52%) 50%,
+      hsl(46 65% 35%) 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    filter: drop-shadow(0 2px 10px hsla(46, 65%, 52%, 0.2));
   }
 
   /* ── Royal blue gradient text ── */
   .text-gradient-blue {
     background: linear-gradient(
       135deg,
-      hsl(218 72% 50%) 0%,
+      hsl(218 72% 60%) 0%,
       hsl(218 72% 40%) 50%,
-      hsl(218 72% 30%) 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* ── Brand gradient text ── */
-  .text-gradient-brand {
-    background: linear-gradient(
-      135deg,
-      hsl(221 83% 16%) 0%,
-      hsl(45 92% 47%) 100%
+      hsl(218 72% 20%) 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -182,50 +184,50 @@
   }
 
   .section-padding {
-    @apply py-20 md:py-28 px-4;
+    @apply py-24 md:py-32 px-4;
   }
 
-  /* ── Chess pattern (faint blue) ── */
+  /* ── Chess pattern (faint dark) ── */
   .chess-pattern {
     background-image:
-      linear-gradient(45deg,  hsl(214 100% 94%) 25%, transparent 25%),
-      linear-gradient(-45deg, hsl(214 100% 94%) 25%, transparent 25%),
-      linear-gradient(45deg,  transparent 75%, hsl(214 100% 94%) 75%),
-      linear-gradient(-45deg, transparent 75%, hsl(214 100% 94%) 75%);
-    background-size: 40px 40px;
-    background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
-    opacity: 0.15;
+      linear-gradient(45deg,  hsl(215 73% 10%) 25%, transparent 25%),
+      linear-gradient(-45deg, hsl(215 73% 10%) 25%, transparent 25%),
+      linear-gradient(45deg,  transparent 75%, hsl(215 73% 10%) 75%),
+      linear-gradient(-45deg, transparent 75%, hsl(215 73% 10%) 75%);
+    background-size: 60px 60px;
+    background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+    opacity: 0.2;
   }
 
-  /* ── Hero gradient overlay (light) ── */
+  /* ── Hero gradient overlay (dark) ── */
   .hero-overlay {
-    background: linear-gradient(
-      105deg,
-      hsl(214 100% 98%)        0%,
-      hsl(214 100% 98% / 0.9) 40%,
-      hsl(214 100% 98% / 0.5) 70%,
-      transparent            100%
+    background: radial-gradient(
+      circle at center,
+      transparent 0%,
+      hsl(var(--background) / 0.4) 50%,
+      hsl(var(--background)) 100%
     );
   }
 
   /* ── Section divider accent line ── */
   .accent-line {
-    height: 3px;
+    height: 4px;
     background: linear-gradient(
       90deg,
-      hsl(45 92% 47%),
-      hsl(221 83% 16%),
+      transparent,
+      hsl(46 65% 52%),
       transparent
     );
     border-radius: 999px;
+    @apply w-24 mx-auto my-6;
   }
 
   /* ── Pill badge – blue ── */
   .badge-blue {
     @apply inline-flex items-center gap-1.5 text-xs font-semibold
-           bg-secondary/10 text-secondary
-           border border-secondary/20
-           px-3 py-1 rounded-full;
+           bg-royal/10 text-royal-light
+           border border-royal/20
+           px-4 py-1.5 rounded-full;
   }
 
   /* ── Pill badge – gold ── */
@@ -233,7 +235,7 @@
     @apply inline-flex items-center gap-1.5 text-xs font-semibold
            bg-primary/10 text-primary
            border border-primary/20
-           px-3 py-1 rounded-full;
+           px-4 py-1.5 rounded-full;
   }
 }
 
@@ -242,10 +244,18 @@
    ───────────────────────────────────────────────────────────────────────────── */
 @layer utilities {
   .hover-scale {
-    @apply transition-transform duration-200 hover:scale-105;
+    @apply transition-transform duration-300 hover:scale-105;
   }
 
   .animate-in {
     animation-fill-mode: both;
+  }
+
+  .text-glow-gold {
+    text-shadow: 0 0 15px hsla(46, 65%, 52%, 0.5);
+  }
+
+  .border-glow-gold {
+    box-shadow: inset 0 0 10px hsla(46, 65%, 52%, 0.2), 0 0 10px hsla(46, 65%, 52%, 0.2);
   }
 }

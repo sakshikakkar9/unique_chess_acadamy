@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { AGE_GROUP_RANGES, Course } from "@/types";
 import ScrollReveal from "@/components/shared/ScrollReveal";
+import { cn } from "@/lib/utils";
 
 interface CourseCardProps {
   course: Course;
@@ -8,23 +9,15 @@ interface CourseCardProps {
   onEnroll?: (course: Course) => void;
 }
 
-// ── CONFIGURATION ────────────────────────────────────────────────────────────
 const API_BASE_URL = "http://localhost:5000";
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&q=80&w=800";
 
 const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
-  // Logic to determine age label
   const ageRange =
     course.minAge && course.maxAge
       ? `Ages ${course.minAge}–${course.maxAge}`
       : AGE_GROUP_RANGES[course.ageGroup];
 
-  /**
-   * Helper to resolve image source:
-   * 1. If empty, use Unsplash default.
-   * 2. If it's an external link (starts with http), use as-is.
-   * 3. If it's a local path (starts with /uploads), prefix with Backend URL.
-   */
   const getFullImageUrl = (path?: string) => {
     if (!path) return DEFAULT_IMAGE;
     if (path.startsWith('http')) return path;
@@ -33,69 +26,64 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
 
   return (
     <ScrollReveal delay={delay}>
-      <div className="bg-card border border-border rounded-2xl overflow-hidden card-hover group h-full flex flex-col shadow-sm">
+      <div className="glass border-white/5 rounded-[2rem] overflow-hidden card-hover group h-full flex flex-col card-elevation">
         
         {/* IMAGE SECTION */}
-        <div className="relative overflow-hidden aspect-[4/3] bg-muted">
+        <div className="relative overflow-hidden aspect-[4/3] bg-secondary/30">
           <img
             src={getFullImageUrl(course.image)}
             alt={course.title}
             loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            // Fail-safe: if the file is missing on the server, swap to default
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = DEFAULT_IMAGE;
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-secondary/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
           
           {/* BADGES ON IMAGE */}
           <div className="absolute bottom-4 left-4 flex gap-2 flex-wrap">
-            <span className="text-[10px] font-bold uppercase tracking-wider bg-primary/90 text-primary-foreground px-3 py-1 rounded-full shadow-sm">
-              {ageRange}
-            </span>
-            <span className="text-[10px] font-bold uppercase tracking-wider bg-secondary/90 text-secondary-foreground px-3 py-1 rounded-full shadow-sm">
+            <span className="text-[10px] font-bold uppercase tracking-widest bg-primary text-primary-foreground px-4 py-1 rounded-full shadow-lg">
               {course.level}
             </span>
-            <span className="text-[10px] font-bold uppercase tracking-wider bg-card/90 text-secondary px-3 py-1 rounded-full shadow-sm">
-              {course.duration}
+            <span className="text-[10px] font-bold uppercase tracking-widest bg-background/80 backdrop-blur-md text-foreground px-4 py-1 rounded-full border border-white/10">
+              {ageRange}
             </span>
           </div>
         </div>
 
         {/* CONTENT SECTION */}
-        <div className="p-6 flex flex-col flex-grow">
-          <h3 className="font-heading font-bold text-xl mb-2 group-hover:text-primary transition-colors">
-            {course.title}
-          </h3>
-          <p className="text-muted-foreground text-sm mb-4 leading-relaxed line-clamp-3">
+        <div className="p-8 flex flex-col flex-grow">
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="font-heading font-bold text-2xl group-hover:text-primary transition-colors leading-tight">
+              {course.title}
+            </h3>
+            {course.price && (
+              <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-lg shrink-0">{course.price}</span>
+            )}
+          </div>
+
+          <p className="text-muted-foreground text-sm mb-6 leading-relaxed line-clamp-3">
             {course.description}
           </p>
 
           {/* FEATURES LIST */}
           {course.features && course.features.length > 0 && (
-            <ul className="space-y-2 mb-6 mt-auto pt-4 border-t border-border/50">
+            <ul className="space-y-3 mb-8 mt-auto pt-6 border-t border-white/5">
               {course.features.map((feat, i) => (
-                <li key={i} className="text-xs flex items-center gap-2 text-muted-foreground">
-                  <div className="h-1.5 w-1.5 rounded-full bg-primary/60" />
+                <li key={i} className="text-xs flex items-center gap-3 text-muted-foreground/80 font-medium">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                   {feat}
                 </li>
               ))}
             </ul>
           )}
 
-          {/* FOOTER: PRICE & ACTION */}
-          <div className="mt-auto flex items-center justify-between gap-4">
-            {course.price && (
-              <div className="flex flex-col">
-                <span className="text-[10px] text-muted-foreground uppercase font-bold">Fees</span>
-                <span className="text-sm font-bold text-primary">{course.price}</span>
-              </div>
-            )}
-            
+          {/* FOOTER: ACTION */}
+          <div className="mt-auto">
             <Button
-              className="flex-1 max-w-[140px] rounded-xl hover:shadow-lg transition-all"
+              className="w-full rounded-2xl gold-glow hover:shadow-primary/20 transition-all py-6 font-bold tracking-wide"
               onClick={() => onEnroll?.(course)}
             >
               Enroll Now
