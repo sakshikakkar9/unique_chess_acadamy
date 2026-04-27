@@ -17,20 +17,19 @@ const SectionHeading = ({
   className,
 }: SectionHeadingProps) => {
   return (
-    <div className={cn("mb-16", centered && "text-center", className)}>
+    <div className={cn("mb-12", centered && "text-center", className)}>
       <ScrollReveal>
         {label && (
-          <span className="inline-block text-[10px] font-heading font-bold uppercase tracking-[0.4em] text-primary mb-4 bg-primary/10 px-4 py-1 rounded-full">
+          <span className="inline-block text-xs font-heading font-semibold uppercase tracking-[0.3em] text-primary mb-3">
             {label}
           </span>
         )}
-        <h2 className="font-heading font-bold text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight">
+        <h2 className="font-heading font-bold text-3xl md:text-4xl lg:text-5xl mb-4">
           {title}
         </h2>
-        <div className="accent-line" />
         {description && (
           <p className={cn(
-            "text-muted-foreground text-lg max-w-2xl leading-relaxed mt-6",
+            "text-muted-foreground max-w-2xl leading-relaxed",
             centered && "mx-auto"
           )}>
             {description}
