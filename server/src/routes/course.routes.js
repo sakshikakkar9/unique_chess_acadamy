@@ -17,28 +17,61 @@ import {
 
 const router = express.Router();
 
-// ── Multer (image upload) ─────────────────────────────────────────────────────
+// ── Multer Configuration ─────────────────────────────────────────────────────
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
   filename: (req, file, cb) => {
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, unique + path.extname(file.originalname));
+    // Unique filenames prevent cache issues and overwrites
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
-const upload = multer({ storage });
 
-// ── Static routes (must be before /:id) ──────────────────────────────────────
-router.get('/age-group/:ageGroup', getCoursesByAgeGroup);
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|webp|gif/;
+  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = allowedTypes.test(file.mimetype);
+
+  if (extname && mimetype) {
+    return cb(null, true);
+  } else {
+    cb(new Error('Only images (jpg, png, webp) are allowed!'), false);
+  }
+};
+
+const upload = multer({ 
+  storage,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
+// Middleware to handle Multer errors gracefully
+const handleUpload = (req, res, next) => {
+  const uploadSingle = upload.single('image');
+  
+  uploadSingle(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ error: `Upload error: ${err.message}` });
+    } else if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    next();
+  });
+};
+
+// ── Enrollment Management (For Admin Dashboard) ──────────────────────────────
+// These must be ABOVE the /:id route
 router.get('/enrollments', verifyAdmin, getAllEnrollments);
 router.patch('/enrollments/:enrollmentId', verifyAdmin, updateEnrollmentStatus);
-router.post('/upload-image', verifyAdmin, upload.single('image'), uploadCourseImage);
 
-// ── Dynamic routes ────────────────────────────────────────────────────────────
+// ── Course Discovery & Public Routes ─────────────────────────────────────────
 router.get('/', getAllCourses);
+router.get('/age-group/:ageGroup', getCoursesByAgeGroup);
 router.get('/:id', getCourseById);
 router.post('/:id/enroll', enrollInCourse);
 
-// ── Admin CRUD ────────────────────────────────────────────────────────────────
+// ── Admin Course CRUD ────────────────────────────────────────────────────────
+router.post('/upload-image', verifyAdmin, handleUpload, uploadCourseImage);
 router.post('/', verifyAdmin, createCourse);
 router.put('/:id', verifyAdmin, updateCourse);
 router.delete('/:id', verifyAdmin, deleteCourse);

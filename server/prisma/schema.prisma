@@ -1,10 +1,15 @@
 // prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
+  // Required for Prisma 7+ features if you are using them
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
+  // If your terminal shows P1012, ensure this URL is also in prisma.config.ts
+  url      = env("DATABASE_URL")
 }
 
 // ------------------------------------------------------
@@ -72,7 +77,6 @@ model Event {
   updatedAt   DateTime      @updatedAt
 }
 
-// Updated Tournament Model
 model Tournament {
   id           Int                @id @default(autoincrement())
   title        String
@@ -84,34 +88,33 @@ model Tournament {
   
   // Relations
   results       TournamentResult[] 
-  registrations Registration[]     // ✅ Added this to fix the "missing opposite relation" error
+  registrations Registration[]     
   
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
 }
 
-// NEW: Structured Results for Completed Tournaments
 model TournamentResult {
-  id             Int        @id @default(autoincrement())
-  tournamentId   Int
+  id           Int        @id @default(autoincrement())
+  tournamentId Int
   
-  position       Int        // 1 for Winner, 2 for Runner-up, etc.
-  playerName     String     // e.g., "Sakshi"
-  score          Float?     // e.g., 5.5 (points)
-  prize          String?    // e.g., "Trophy", "₹5000", "Gold Medal"
+  position     Int        // 1 for Winner, 2 for Runner-up, etc.
+  playerName   String     
+  score        Float?     
+  prize        String?    
   
   // Links this result back to the specific tournament
-  tournament     Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   
-  createdAt      DateTime   @default(now())
+  createdAt    DateTime   @default(now())
 }
 
 model Gallery {
-  id        String   @id @default(uuid())
-  imageUrl  String   // Check: Is this named exactly 'imageUrl'?
-  caption   String?  // Check: Is this optional with the '?'
-  category  String   @default("ACADEMY")
-  createdAt DateTime @default(now())
+  id        String          @id @default(uuid())
+  imageUrl  String          
+  caption   String?         
+  category  GalleryCategory @default(ACADEMY) // Updated to use Enum
+  createdAt DateTime        @default(now())
 }
 
 model Contact {
@@ -119,7 +122,7 @@ model Contact {
   name      String
   email     String
   phone     String
-  message   String   // Verify this is not spelled 'messege'
+  message   String   
   createdAt DateTime @default(now())
 }
 
@@ -128,8 +131,9 @@ model Registration {
   studentName  String
   email        String
   phone        String
-  tournamentId Int        // ✅ Changed from String to Int to match Tournament.id
-  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId Int        
+  // Added onDelete: Cascade
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   status       String     @default("PENDING")
   createdAt    DateTime   @default(now())
 }
@@ -140,7 +144,7 @@ model DemoRegistration {
   email       String
   phone       String
   scheduledAt DateTime
-  status      String   @default("PENDING") // PENDING, CONFIRMED, COMPLETED
+  status      String   @default("PENDING") 
   createdAt   DateTime @default(now())
 }
 
@@ -150,8 +154,8 @@ model Course {
   ageGroup    AgeGroup           @default(ADULTS)
   minAge      Int?
   maxAge      Int?
-  level       String
-  duration    String
+  level       String             @default("Beginner")
+  duration    String             @default("Flexible")
   description String?            @db.Text
   image       String?
   price       String?

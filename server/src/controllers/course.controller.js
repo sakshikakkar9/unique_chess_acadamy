@@ -31,7 +31,7 @@ export const getCoursesByAgeGroup = async (req, res) => {
 
 export const getCourseById = async (req, res) => {
   try {
-    const course = await courseService.getCourseById(parseInt(req.params.id));
+    const course = await courseService.getCourseById(parseInt(req.params.id, 10));
     if (!course) return res.status(404).json({ error: 'Course not found' });
     res.json(course);
   } catch (error) {
@@ -42,31 +42,43 @@ export const getCourseById = async (req, res) => {
 
 export const createCourse = async (req, res) => {
   try {
+    // 1. Log the body to see exactly what the frontend "Save" button is sending
+    console.log("Frontend Payload Received:", req.body);
+
     const { title, level, duration } = req.body;
-    if (!title || !level || !duration) {
-      return res.status(400).json({ error: 'title, level, and duration are required.' });
+
+    // 2. More robust validation: title is usually the only strict requirement
+    // level and duration can fall back to defaults in the service/schema
+    if (!title) {
+      return res.status(400).json({ error: 'Course title is required.' });
     }
+
     const course = await courseService.createCourse(req.body);
     res.status(201).json(course);
   } catch (error) {
-    console.error('CREATE_COURSE_ERROR:', error);
-    res.status(500).json({ error: 'Failed to create course' });
+    // 3. This log will show the specific Prisma error in your terminal
+    console.error('CREATE_COURSE_ERROR:', error.message);
+    res.status(500).json({ 
+      error: 'Failed to create course', 
+      details: error.message 
+    });
   }
 };
 
 export const updateCourse = async (req, res) => {
   try {
-    const course = await courseService.updateCourse(parseInt(req.params.id), req.body);
+    const id = parseInt(req.params.id, 10);
+    const course = await courseService.updateCourse(id, req.body);
     res.json(course);
   } catch (error) {
-    console.error('UPDATE_COURSE_ERROR:', error);
+    console.error('UPDATE_COURSE_ERROR:', error.message);
     res.status(500).json({ error: 'Failed to update course' });
   }
 };
 
 export const deleteCourse = async (req, res) => {
   try {
-    await courseService.deleteCourse(parseInt(req.params.id));
+    await courseService.deleteCourse(parseInt(req.params.id, 10));
     res.status(200).json({ message: 'Course deleted successfully' });
   } catch (error) {
     console.error('DELETE_COURSE_ERROR:', error);
@@ -81,8 +93,14 @@ export const uploadCourseImage = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: 'No image file uploaded.' });
     }
+    
+    // Path matches your static route in index.js
     const imageUrl = `/uploads/${req.file.filename}`;
-    res.status(201).json({ imageUrl });
+    
+    res.status(201).json({ 
+      success: true,
+      imageUrl: imageUrl 
+    });
   } catch (error) {
     console.error('UPLOAD_COURSE_IMAGE_ERROR:', error);
     res.status(500).json({ error: 'Failed to upload image' });
@@ -93,7 +111,7 @@ export const uploadCourseImage = async (req, res) => {
 
 export const enrollInCourse = async (req, res) => {
   try {
-    const courseId = parseInt(req.params.id);
+    const courseId = parseInt(req.params.id, 10);
     const { studentName, email, phone } = req.body;
     if (!studentName || !email || !phone) {
       return res.status(400).json({ error: 'studentName, email, and phone are required.' });
@@ -108,6 +126,7 @@ export const enrollInCourse = async (req, res) => {
 
 export const getAllEnrollments = async (req, res) => {
   try {
+    // Calling the new service function we just wrote
     const enrollments = await courseService.getAllEnrollments();
     res.json(enrollments);
   } catch (error) {
@@ -118,12 +137,12 @@ export const getAllEnrollments = async (req, res) => {
 
 export const updateEnrollmentStatus = async (req, res) => {
   try {
-    const id = parseInt(req.params.enrollmentId);
+    const id = parseInt(req.params.enrollmentId, 10);
     const { status } = req.body;
-    if (!VALID_ENROLLMENT_STATUSES.includes(status)) {
+    if (!VALID_ENROLLMENT_STATUSES.includes(status.toUpperCase())) {
       return res.status(400).json({ error: `status must be one of: ${VALID_ENROLLMENT_STATUSES.join(', ')}` });
     }
-    const enrollment = await courseService.updateEnrollmentStatus(id, status);
+    const enrollment = await courseService.updateEnrollmentStatus(id, status.toUpperCase());
     res.json({ success: true, data: enrollment });
   } catch (error) {
     console.error('UPDATE_ENROLLMENT_STATUS_ERROR:', error);

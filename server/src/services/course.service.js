@@ -1,86 +1,106 @@
-import prisma from '../../lib/prisma.js';
-
-// ── Courses ───────────────────────────────────────────────────────────────────
+// IMPORT the shared instance, DO NOT create a new one here
+import prisma from '../../lib/prisma.js'; 
 
 export const getAllCourses = async () => {
-  return prisma.course.findMany({ orderBy: { createdAt: 'desc' } });
+  return await prisma.course.findMany({
+    orderBy: { createdAt: 'desc' },
+  });
 };
 
 export const getCoursesByAgeGroup = async (ageGroup) => {
-  return prisma.course.findMany({
+  return await prisma.course.findMany({
     where: { ageGroup },
     orderBy: { createdAt: 'desc' },
   });
 };
 
 export const getCourseById = async (id) => {
-  return prisma.course.findUnique({ where: { id } });
+  return await prisma.course.findUnique({
+    where: { id },
+  });
 };
 
 export const createCourse = async (data) => {
-  return prisma.course.create({
+  // Check your terminal for this log! It will show if fields are missing.
+  console.log("Incoming Course Data:", data);
+
+  try {
+    return await prisma.course.create({
+      data: {
+        title: data.title || "Untitled Course",
+        // CRITICAL: Ensure ageGroup is Uppercase to match Prisma Enum
+        ageGroup: data.ageGroup ? data.ageGroup.toUpperCase() : 'ADULTS',
+        minAge: data.minAge ? parseInt(data.minAge, 10) : null,
+        maxAge: data.maxAge ? parseInt(data.maxAge, 10) : null,
+        level: data.level || "Beginner",
+        duration: data.duration || "N/A",
+        description: data.description || "",
+        image: data.image || "", 
+        price: data.price ? data.price.toString() : "0",
+        // Ensure features is always an array
+        features: Array.isArray(data.features) ? data.features : (data.features ? [data.features] : []),
+      },
+    });
+  } catch (error) {
+    console.error("PRISMA ERROR:", error);
+    throw error; // Rethrow so the controller catches it
+  }
+};
+
+export const updateCourse = async (id, data) => {
+  return await prisma.course.update({
+    where: { id },
     data: {
       title: data.title,
-      ageGroup: data.ageGroup || 'ADULTS',
-      minAge: data.minAge != null ? parseInt(data.minAge, 10) : null,
-      maxAge: data.maxAge != null ? parseInt(data.maxAge, 10) : null,
+      ageGroup: data.ageGroup,
+      minAge: data.minAge ? parseInt(data.minAge, 10) : null,
+      maxAge: data.maxAge ? parseInt(data.maxAge, 10) : null,
       level: data.level,
       duration: data.duration,
-      description: data.description || null,
-      image: data.image || null,
-      price: data.price || null,
-      features: Array.isArray(data.features) ? data.features : [],
+      description: data.description,
+      image: data.image,
+      price: data.price ? data.price.toString() : '',
+      features: data.features,
     },
   });
 };
 
-export const updateCourse = async (id, data) => {
-  const update = {
-    title: data.title,
-    level: data.level,
-    duration: data.duration,
-    description: data.description ?? undefined,
-    image: data.image ?? undefined,
-    price: data.price ?? undefined,
-    features: Array.isArray(data.features) ? data.features : undefined,
-  };
-  if (data.ageGroup !== undefined) update.ageGroup = data.ageGroup;
-  if (data.minAge !== undefined) update.minAge = data.minAge ? parseInt(data.minAge, 10) : null;
-  if (data.maxAge !== undefined) update.maxAge = data.maxAge ? parseInt(data.maxAge, 10) : null;
-  return prisma.course.update({ where: { id }, data: update });
-};
-
 export const deleteCourse = async (id) => {
-  return prisma.course.delete({ where: { id } });
+  return await prisma.course.delete({
+    where: { id },
+  });
 };
 
-// ── Course Enrollments ────────────────────────────────────────────────────────
-
+// --- Enrollments ---
 export const createEnrollment = async (courseId, data) => {
-  return prisma.courseEnrollment.create({
+  return await prisma.courseEnrollment.create({
     data: {
+      courseId,
       studentName: data.studentName,
       email: data.email,
       phone: data.phone,
-      message: data.message || null,
-      courseId,
+      message: data.message,
       status: 'PENDING',
     },
-    include: { course: { select: { title: true } } },
   });
 };
 
 export const getAllEnrollments = async () => {
-  return prisma.courseEnrollment.findMany({
-    include: { course: { select: { id: true, title: true, ageGroup: true } } },
+  return await prisma.courseEnrollment.findMany({
+    include: {
+      course: {
+        select: {
+          title: true, // This allows the Admin to see WHICH course the student joined
+        }
+      }
+    },
     orderBy: { createdAt: 'desc' },
   });
 };
 
 export const updateEnrollmentStatus = async (id, status) => {
-  return prisma.courseEnrollment.update({
+  return await prisma.courseEnrollment.update({
     where: { id },
     data: { status },
-    include: { course: { select: { title: true } } },
   });
 };

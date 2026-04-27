@@ -13,7 +13,7 @@
   "type": "module",
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
-    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.7.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",

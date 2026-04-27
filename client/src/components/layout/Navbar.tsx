@@ -6,8 +6,8 @@ import NavLink from "./NavLink";
 import { cn } from "@/lib/utils";
 
 // Make sure this path correctly points from components/layout to assets
-import ucaLogo from "../../assets/logo.jpeg"; 
-
+// import ucaLogo from "../../assets/logo.jpeg"; 
+import ucaLogo from "../../assets/logo.png";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);

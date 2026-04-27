@@ -32,15 +32,13 @@ export const updateTournament = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const updated = await tournamentService.updateTournament(id, req.body);
-    
-    // Real-time update ke liye success message aur naya data bhejna zaroori hai
     res.status(200).json({
       message: 'Tournament updated successfully',
       tournament: updated
     });
   } catch (error) {
     console.error("Update Error:", error);
-    res.status(500).json({ error: 'Failed to update tournament. Check if the status value is correct.' });
+    res.status(500).json({ error: 'Failed to update tournament.' });
   }
 };
 
@@ -50,6 +48,44 @@ export const deleteTournament = async (req, res) => {
     res.status(200).json({ message: 'Tournament deleted' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete tournament' });
+  }
+};
+
+// ── NEW: Handle User Registration from Public Page ──────────────────────────
+export const registerForTournament = async (req, res) => {
+  try {
+    const tournamentId = parseInt(req.params.id);
+    const registration = await tournamentService.registerForTournament(tournamentId, req.body);
+    res.status(201).json({
+      message: 'Registration successful!',
+      registration
+    });
+  } catch (error) {
+    console.error('REGISTRATION_ERROR:', error);
+    res.status(500).json({ error: 'Failed to register for tournament' });
+  }
+};
+
+// ── NEW: Fetch All Registrations for Admin Dashboard ────────────────────────
+export const getAllRegistrations = async (req, res) => {
+  try {
+    const registrations = await tournamentService.getAllRegistrations();
+    res.json(registrations || []);
+  } catch (error) {
+    console.error('FETCH_REGISTRATIONS_ERROR:', error);
+    res.status(500).json({ error: 'Failed to fetch tournament registrations' });
+  }
+};
+
+// ── NEW: Update Status (Confirm/Reject) from Admin Dashboard ────────────────
+export const updateRegistrationStatus = async (req, res) => {
+  try {
+    const { registrationId } = req.params;
+    const { status } = req.body;
+    const updated = await tournamentService.updateRegistrationStatus(registrationId, status);
+    res.json({ message: 'Status updated', registration: updated });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update status' });
   }
 };
 

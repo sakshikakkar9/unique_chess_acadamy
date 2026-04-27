@@ -4,23 +4,21 @@ import { PrismaPg } from '@prisma/adapter-pg';
 
 const { Pool } = pg;
 
-// 1. Create a connection pool to your PostgreSQL database
-// Ensure DATABASE_URL is defined in your server/.env file
+// 1. Connection Pool
 const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL 
 });
 
-// 2. Initialize the Prisma Postgres adapter
+// 2. Initialize Adapter
 const adapter = new PrismaPg(pool);
 
-// 3. Create the Prisma Client instance
-// We use a global variable check to prevent multiple instances during development (nodemon restarts)
-const globalForPrisma = global;
+// 3. Global instance logic
+const globalForPrisma = globalThis;
 
+// Export the instance directly
 export const prisma = globalForPrisma.prisma || new PrismaClient({ 
   adapter,
-  // Optional: Enable logging to help you debug database queries in the terminal
-  log: ['query', 'info', 'warn', 'error'],
+  log: ['error', 'warn'], // Reduced noise for cleaner terminal
 });
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

@@ -1,127 +1,44 @@
 import React, { useRef, useState } from "react";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
-import DataTable, { Column } from "@/components/shared/admin/DataTable";
+import DataTable from "@/components/shared/admin/DataTable";
 import AdminFormModal from "@/components/shared/admin/AdminFormModal";
 import ConfirmDialog from "@/components/shared/admin/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Plus, Upload, Loader2, ImageIcon } from "lucide-react";
-import { AgeGroup, AGE_GROUP_LABELS, AGE_GROUP_RANGES, Course } from "@/types";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Upload, Loader2, ImageIcon, X } from "lucide-react";
+import { AGE_GROUP_LABELS, AGE_GROUP_RANGES } from "@/types";
 import { courseService } from "@/services/courseService";
 import { useToast } from "@/hooks/use-toast";
 
-const AGE_GROUP_OPTIONS: { value: AgeGroup; label: string }[] = [
-  { value: "CHILDREN",  label: `Children — ${AGE_GROUP_RANGES.CHILDREN}`  },
-  { value: "TEENAGERS", label: `Teenagers — ${AGE_GROUP_RANGES.TEENAGERS}` },
-  { value: "ADULTS",    label: `Adults — ${AGE_GROUP_RANGES.ADULTS}`    },
-];
+const API_BASE_URL = "http://localhost:5000";
 
-const DEFAULT_IMAGE =
-  "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&q=80&w=800";
-
-const EMPTY_FORM: Partial<Course> = {
-  title: "",
-  ageGroup: "ADULTS",
-  minAge: undefined,
-  maxAge: undefined,
-  level: "",
-  duration: "",
-  description: "",
-  image: "",
-  price: "",
-  features: [],
-};
-
-const AdminCourses: React.FC = () => {
+const AdminCourses = () => {
   const { courses, isLoading, addCourse, updateCourse, deleteCourse } = useAdminCourses();
   const { toast } = useToast();
-
-  const [isModalOpen, setIsModalOpen]     = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [formData, setFormData] = useState<Partial<Course>>(EMPTY_FORM);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [formData, setFormData] = useState<any>({ ageGroup: "ADULTS" });
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const columns: Column<Course>[] = [
-    {
-      header: "Title",
-      accessorKey: "title",
-      cell: (item) => (
-        <div className="flex items-center gap-3">
-          {item.image ? (
-            <img src={item.image} alt={item.title} className="h-8 w-12 rounded object-cover" />
-          ) : (
-            <div className="h-8 w-12 rounded bg-muted flex items-center justify-center">
-              <ImageIcon className="h-4 w-4 text-muted-foreground" />
-            </div>
-          )}
-          <span className="font-medium">{item.title}</span>
-        </div>
-      ),
-    },
-    {
-      header: "Age Group",
-      accessorKey: "ageGroup",
-      cell: (item) => (
-        <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-          {AGE_GROUP_LABELS[item.ageGroup]} · {AGE_GROUP_RANGES[item.ageGroup]}
-        </span>
-      ),
-    },
-    { header: "Level",    accessorKey: "level"    },
-    { header: "Duration", accessorKey: "duration" },
-    {
-      header: "Price",
-      accessorKey: "price",
-      cell: (item) => item.price || <span className="text-muted-foreground text-xs">Contact Us</span>,
-    },
-  ];
-
-  const handleAdd = () => {
-    setSelectedCourse(null);
-    setFormData(EMPTY_FORM);
-    setIsModalOpen(true);
-  };
-
-  const handleEdit = (course: Course) => {
-    setSelectedCourse(course);
-    setFormData({ ...course });
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteClick = (course: Course) => {
-    setSelectedCourse(course);
-    setIsConfirmOpen(true);
-  };
+  const getImageUrl = (path: string) => path?.startsWith('http') ? path : `${API_BASE_URL}${path}`;
 
   const handleSave = async () => {
     try {
       if (selectedCourse) {
         await updateCourse(selectedCourse.id, formData);
+        toast({ title: "Updated successfully" });
       } else {
-        await addCourse(formData as Omit<Course, "id">);
+        await addCourse(formData);
+        toast({ title: "Created successfully" });
       }
       setIsModalOpen(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleConfirmDelete = async () => {
-    if (selectedCourse) {
-      await deleteCourse(selectedCourse.id);
-      setIsConfirmOpen(false);
-      setSelectedCourse(null);
+    } catch (err) {
+      toast({ variant: "destructive", title: "Save Failed", description: "Check server logs for database errors." });
     }
   };
 
@@ -130,203 +47,75 @@ const AdminCourses: React.FC = () => {
     if (!file) return;
     setUploading(true);
     try {
-      const imageUrl = await courseService.uploadImage(file);
-      setFormData((prev) => ({ ...prev, image: imageUrl }));
-      toast({ title: "Image uploaded", description: "Image saved successfully." });
+      const url = await courseService.uploadImage(file);
+      setFormData((p: any) => ({ ...p, image: url }));
+      toast({ title: "Image uploaded" });
     } catch {
-      toast({ variant: "destructive", title: "Upload failed", description: "Could not upload the image." });
+      toast({ variant: "destructive", title: "Upload failed" });
     } finally {
       setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
-  const set = (key: keyof Course, value: unknown) =>
-    setFormData((prev) => ({ ...prev, [key]: value }));
+  const set = (key: string, val: any) => setFormData((p: any) => ({ ...p, [key]: val }));
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Courses</h1>
-          <p className="text-muted-foreground">Manage your academy's training programs.</p>
-        </div>
-        <Button onClick={handleAdd} className="gap-2">
-          <Plus className="h-4 w-4" /> Add Course
+    <div className="p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Manage Courses</h1>
+        <Button onClick={() => { setFormData({ ageGroup: "ADULTS" }); setSelectedCourse(null); setIsModalOpen(true); }}>
+          <Plus className="mr-2 h-4 w-4" /> Add Course
         </Button>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={courses}
-        isLoading={isLoading}
-        onEdit={handleEdit}
-        onDelete={handleDeleteClick}
+      <DataTable 
+        columns={[{ header: "Title", accessorKey: "title" }, { header: "Level", accessorKey: "level" }, { header: "Price", accessorKey: "price" }]} 
+        data={courses} 
+        isLoading={isLoading} 
+        onEdit={(c) => { setSelectedCourse(c); setFormData(c); setIsModalOpen(true); }} 
+        onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }} 
       />
 
-      <AdminFormModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        title={selectedCourse ? "Edit Course" : "Add New Course"}
-        onSave={handleSave}
-      >
-        <div className="grid gap-4">
-
-          {/* Title */}
-          <div className="grid gap-2">
-            <Label htmlFor="title">Course Title</Label>
-            <Input
-              id="title"
-              value={formData.title || ""}
-              onChange={(e) => set("title", e.target.value)}
-            />
-          </div>
-
-          {/* Age Group */}
-          <div className="grid gap-2">
-            <Label htmlFor="ageGroup">Age Group</Label>
-            <Select
-              value={formData.ageGroup || "ADULTS"}
-              onValueChange={(val) => set("ageGroup", val as AgeGroup)}
-            >
-              <SelectTrigger id="ageGroup">
-                <SelectValue placeholder="Select age group" />
-              </SelectTrigger>
-              <SelectContent>
-                {AGE_GROUP_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Min / Max Age */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="minAge">Min Age (optional)</Label>
-              <Input
-                id="minAge"
-                type="number"
-                placeholder="e.g. 6"
-                value={formData.minAge ?? ""}
-                onChange={(e) => set("minAge", e.target.value ? parseInt(e.target.value, 10) : undefined)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="maxAge">Max Age (optional)</Label>
-              <Input
-                id="maxAge"
-                type="number"
-                placeholder="e.g. 12"
-                value={formData.maxAge ?? ""}
-                onChange={(e) => set("maxAge", e.target.value ? parseInt(e.target.value, 10) : undefined)}
-              />
-            </div>
-          </div>
-
-          {/* Skill Level / Duration */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="level">Skill Level</Label>
-              <Input
-                id="level"
-                placeholder="e.g. Beginner"
-                value={formData.level || ""}
-                onChange={(e) => set("level", e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="duration">Duration</Label>
-              <Input
-                id="duration"
-                placeholder="e.g. 3 Months"
-                value={formData.duration || ""}
-                onChange={(e) => set("duration", e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Price */}
-          <div className="grid gap-2">
-            <Label htmlFor="price">Price (optional)</Label>
-            <Input
-              id="price"
-              placeholder="e.g. ₹5,000"
-              value={formData.price || ""}
-              onChange={(e) => set("price", e.target.value)}
-            />
-          </div>
-
-          {/* Description */}
-          <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              rows={3}
-              value={formData.description || ""}
-              onChange={(e) => set("description", e.target.value)}
-            />
-          </div>
-
-          {/* Image Upload */}
-          <div className="grid gap-2">
-            <Label>Course Image</Label>
-
-            {/* Preview */}
-            {formData.image && (
-              <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-border">
-                <img
-                  src={formData.image}
-                  alt="Course preview"
-                  className="w-full h-full object-cover"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                />
+      <AdminFormModal open={isModalOpen} onOpenChange={setIsModalOpen} title={selectedCourse ? "Edit" : "Add"} onSave={handleSave}>
+        <div className="max-h-[65vh] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="grid gap-4 py-2">
+            <Label>Course Title</Label>
+            <Input value={formData.title || ""} onChange={(e) => set("title", e.target.value)} />
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Min Age</Label>
+                <Input type="number" value={formData.minAge || ""} onChange={(e) => set("minAge", e.target.value)} />
               </div>
-            )}
-
-            {/* Upload button */}
-            <div className="flex gap-2">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="gap-2 flex-1"
-                disabled={uploading}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {uploading ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" /> Uploading…</>
-                ) : (
-                  <><Upload className="h-4 w-4" /> Upload Image</>
-                )}
-              </Button>
+              <div>
+                <Label>Max Age</Label>
+                <Input type="number" value={formData.maxAge || ""} onChange={(e) => set("maxAge", e.target.value)} />
+              </div>
             </div>
 
-            {/* URL fallback */}
-            <Input
-              placeholder="Or paste an image URL"
-              value={formData.image || ""}
-              onChange={(e) => set("image", e.target.value)}
-            />
-          </div>
+            <Label>Description</Label>
+            <Textarea value={formData.description || ""} onChange={(e) => set("description", e.target.value)} />
 
+            <div className="pt-4 border-t">
+              <Label className="font-bold">Course Image</Label>
+              {formData.image && (
+                <div className="relative mt-2 aspect-video rounded border overflow-hidden">
+                  <img src={getImageUrl(formData.image)} className="w-full h-full object-cover" />
+                  <Button size="icon" variant="destructive" className="absolute top-2 right-2" onClick={() => set("image", "")}><X /></Button>
+                </div>
+              )}
+              <Button variant="outline" className="w-full mt-2 border-dashed" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+                {uploading ? <Loader2 className="animate-spin" /> : <><Upload className="mr-2" /> Upload</>}
+              </Button>
+              <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
+            </div>
+          </div>
         </div>
       </AdminFormModal>
 
-      <ConfirmDialog
-        open={isConfirmOpen}
-        onOpenChange={setIsConfirmOpen}
-        onConfirm={handleConfirmDelete}
-        title="Delete Course"
-        description={`Are you sure you want to delete "${selectedCourse?.title}"? This action cannot be undone.`}
-      />
+      <ConfirmDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen} onConfirm={() => deleteCourse(selectedCourse.id)} />
+      
+      <style>{`.custom-scrollbar::-webkit-scrollbar { width: 4px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }`}</style>
     </div>
   );
 };

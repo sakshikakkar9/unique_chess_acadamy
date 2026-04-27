@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import path from 'path'; 
+import fs from 'fs'; // Added for folder management
 import { fileURLToPath } from 'url'; 
 
 // 👉 DATABASE CONNECTION
@@ -33,11 +34,22 @@ app.use(cors());
 app.use(express.json()); 
 
 // ------------------------------------------------------
-// STATIC FILES & ROUTES
+// STATIC FILES & DIRECTORY SETUP
 // ------------------------------------------------------
 
-// Static folder for uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
+// Ensure the uploads directory exists before serving it
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log('📁 Created "uploads" directory for course images');
+}
+
+// Serve static files from the uploads folder
+app.use('/uploads', express.static(uploadDir)); 
+
+// ------------------------------------------------------
+// ROUTES
+// ------------------------------------------------------
 
 // Health check route
 app.get('/', async (req, res) => {
