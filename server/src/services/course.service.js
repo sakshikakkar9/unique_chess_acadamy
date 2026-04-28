@@ -30,8 +30,8 @@ export const createCourse = async (data) => {
         title: data.title || "Untitled Course",
         // CRITICAL: Ensure ageGroup is Uppercase to match Prisma Enum
         ageGroup: data.ageGroup ? data.ageGroup.toUpperCase() : 'ADULTS',
-        minAge: data.minAge ? parseInt(data.minAge, 10) : null,
-        maxAge: data.maxAge ? parseInt(data.maxAge, 10) : null,
+        minAge: data.minAge && data.minAge !== "" ? parseInt(data.minAge, 10) : null,
+        maxAge: data.maxAge && data.maxAge !== "" ? parseInt(data.maxAge, 10) : null,
         level: data.level || "Beginner",
         duration: data.duration || "N/A",
         description: data.description || "",
@@ -42,27 +42,32 @@ export const createCourse = async (data) => {
       },
     });
   } catch (error) {
-    console.error("PRISMA ERROR:", error);
+    console.error("CREATE_COURSE_PRISMA_ERROR:", error);
     throw error; // Rethrow so the controller catches it
   }
 };
 
 export const updateCourse = async (id, data) => {
-  return await prisma.course.update({
-    where: { id },
-    data: {
-      title: data.title,
-      ageGroup: data.ageGroup,
-      minAge: data.minAge ? parseInt(data.minAge, 10) : null,
-      maxAge: data.maxAge ? parseInt(data.maxAge, 10) : null,
-      level: data.level,
-      duration: data.duration,
-      description: data.description,
-      image: data.image,
-      price: data.price ? data.price.toString() : '',
-      features: data.features,
-    },
-  });
+  try {
+    return await prisma.course.update({
+      where: { id },
+      data: {
+        title: data.title,
+        ageGroup: data.ageGroup ? data.ageGroup.toUpperCase() : undefined,
+        minAge: data.minAge && data.minAge !== "" ? parseInt(data.minAge, 10) : null,
+        maxAge: data.maxAge && data.maxAge !== "" ? parseInt(data.maxAge, 10) : null,
+        level: data.level,
+        duration: data.duration,
+        description: data.description,
+        image: data.image,
+        price: data.price ? data.price.toString() : '',
+        features: Array.isArray(data.features) ? data.features : (data.features ? [data.features] : []),
+      },
+    });
+  } catch (error) {
+    console.error("UPDATE_COURSE_PRISMA_ERROR:", error);
+    throw error;
+  }
 };
 
 export const deleteCourse = async (id) => {
