@@ -74,7 +74,7 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
           </p>
 
           {/* FEATURES LIST */}
-          {course.features && course.features.length > 0 && (
+          {Array.isArray(course.features) && course.features.length > 0 && (
             <ul className="space-y-2 mb-6 mt-auto pt-4 border-t border-border/50">
               {course.features.map((feat, i) => (
                 <li key={i} className="text-xs flex items-center gap-2 text-muted-foreground">

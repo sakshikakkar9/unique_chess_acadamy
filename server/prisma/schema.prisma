@@ -8,8 +8,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // If your terminal shows P1012, ensure this URL is also in prisma.config.ts
-  url      = env("DATABASE_URL")
 }
 
 // ------------------------------------------------------
