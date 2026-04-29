@@ -11,9 +11,9 @@ if (!fs.existsSync('verification')) {
   await page.setViewportSize({ width: 1280, height: 800 });
 
   const pages = [
-    { name: 'home', url: 'http://localhost:8080/' },
-    { name: 'courses', url: 'http://localhost:8080/courses' },
-    { name: 'events', url: 'http://localhost:8080/events' },
+    { name: 'home', url: 'http://localhost:5000/' },
+    { name: 'courses', url: 'http://localhost:5000/courses' },
+    { name: 'events', url: 'http://localhost:5000/events' },
     { name: 'gallery', url: 'http://localhost:8080/gallery' },
     { name: 'contact', url: 'http://localhost:8080/contact' }
   ];

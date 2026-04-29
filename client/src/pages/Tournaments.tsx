@@ -13,7 +13,7 @@ export default function TournamentsPage() {
   const handleTournamentRegister = async (tournamentId: string) => {
     try {
       // NOTE: Ensure this URL matches your backend route exactly
-      const response = await axios.post(`http://localhost:8080/api/tournaments/register`, {
+      const response = await axios.post(`http://localhost:5000/api/tournaments/register`, {
         tournamentId: tournamentId,
         // You might need to add user details here if logged in
       });
