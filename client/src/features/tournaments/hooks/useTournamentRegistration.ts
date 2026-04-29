@@ -6,7 +6,7 @@ export const useTournamentRegistration = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: (data: any) => api.post("/tournaments/register", data),
+    mutationFn: (data: any) => api.post(`/tournaments/${data.tournamentId}/register`, data),
     onSuccess: () => {
       toast({
         title: "Registration Successful!",

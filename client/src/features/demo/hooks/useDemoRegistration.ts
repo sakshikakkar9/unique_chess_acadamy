@@ -7,7 +7,7 @@ export const useDemoAdmin = () => {
 
   const fetchDemos = async () => {
     try {
-      const res = await api.get('/registrations/admin/demos');
+      const res = await api.get('/demo/admin/list');
       setDemos(res.data);
     } catch (err) {
       console.error("Failed to fetch demo requests", err);

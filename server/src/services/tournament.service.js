@@ -38,8 +38,10 @@ export const registerForTournament = async (tournamentId, data) => {
     data: {
       // Use logical OR (||) to catch different naming conventions from frontend
       studentName: data.studentName || data.fullName || data.name,
-      email: data.email || "not-provided@example.com", 
-      phone: data.phone || data.phoneNumber || "",
+      email: data.email || null,
+      phone: data.phone || data.phoneNumber || data.contact || "",
+      fideId: data.fideId || null,
+      transactionId: data.transactionId || null,
       tournamentId: parseInt(tournamentId),
       status: 'PENDING'
     }

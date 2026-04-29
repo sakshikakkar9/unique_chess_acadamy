@@ -276,7 +276,22 @@ const AdminCourses = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">Age Group</Label>
-                <Select value={formData.ageGroup} onValueChange={(val) => set("ageGroup", val)}>
+                <Select
+                  value={formData.ageGroup}
+                  onValueChange={(val: AgeGroup) => {
+                    const ageLimits: Record<AgeGroup, {min: number, max: number}> = {
+                      CHILDREN: { min: 6, max: 12 },
+                      TEENAGERS: { min: 13, max: 17 },
+                      ADULTS: { min: 18, max: 99 }
+                    };
+                    setFormData((p: any) => ({
+                      ...p,
+                      ageGroup: val,
+                      minAge: ageLimits[val].min,
+                      maxAge: ageLimits[val].max
+                    }));
+                  }}
+                >
                   <SelectTrigger className="h-11">
                     <SelectValue placeholder="Select group" />
                   </SelectTrigger>
@@ -290,6 +305,17 @@ const AdminCourses = () => {
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">Skill Level</Label>
                 <Input value={formData.level || ""} onChange={(e) => set("level", e.target.value)} placeholder="e.g. Beginner" className="h-11" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Min Age (Auto)</Label>
+                <Input value={formData.minAge || ""} readOnly disabled className="h-11 bg-muted" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Max Age (Auto)</Label>
+                <Input value={formData.maxAge || ""} readOnly disabled className="h-11 bg-muted" />
               </div>
             </div>
 

@@ -84,6 +84,7 @@ export const createEnrollment = async (courseId, data) => {
       studentName: data.studentName,
       email: data.email,
       phone: data.phone,
+      mode: data.mode || "OFFLINE",
       message: data.message,
       status: 'PENDING',
     },

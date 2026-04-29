@@ -25,10 +25,11 @@ interface FormState {
   studentName: string;
   email: string;
   phone: string;
+  mode: "ONLINE" | "OFFLINE";
   message: string;
 }
 
-const EMPTY: FormState = { studentName: "", email: "", phone: "", message: "" };
+const EMPTY: FormState = { studentName: "", email: "", phone: "", mode: "OFFLINE", message: "" };
 
 export default function CourseEnrollModal({ course, open, onOpenChange }: CourseEnrollModalProps) {
   const { toast } = useToast();
@@ -56,6 +57,7 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
         studentName: form.studentName,
         email: form.email,
         phone: form.phone,
+        mode: form.mode,
         message: form.message || undefined,
       });
       setSuccess(true);
@@ -113,6 +115,34 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
                 onChange={(e) => set("studentName", e.target.value)}
                 required
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Class Mode *</Label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="mode"
+                    value="OFFLINE"
+                    checked={form.mode === "OFFLINE"}
+                    onChange={(e) => set("mode", e.target.value as any)}
+                    className="w-4 h-4 text-primary"
+                  />
+                  <span className="text-sm">Offline</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="mode"
+                    value="ONLINE"
+                    checked={form.mode === "ONLINE"}
+                    onChange={(e) => set("mode", e.target.value as any)}
+                    className="w-4 h-4 text-primary"
+                  />
+                  <span className="text-sm">Online</span>
+                </label>
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="enroll-email">Email *</Label>
