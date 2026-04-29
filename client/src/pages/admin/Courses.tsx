@@ -13,8 +13,6 @@ import { AGE_GROUP_LABELS, AGE_GROUP_RANGES } from "@/types";
 import { courseService } from "@/services/courseService";
 import { useToast } from "@/hooks/use-toast";
 
-const API_BASE_URL = "http://localhost:5000";
-
 const AdminCourses = () => {
   const { courses, isLoading, addCourse, updateCourse, deleteCourse } = useAdminCourses();
   const { toast } = useToast();
@@ -25,7 +23,7 @@ const AdminCourses = () => {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const getImageUrl = (path: string) => path?.startsWith('http') ? path : `${API_BASE_URL}${path}`;
+  const getImageUrl = (path: string) => path;
 
   const handleSave = async () => {
     try {

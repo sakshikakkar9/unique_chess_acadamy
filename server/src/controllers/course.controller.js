@@ -42,13 +42,8 @@ export const getCourseById = async (req, res) => {
 
 export const createCourse = async (req, res) => {
   try {
-    // 1. Log the body to see exactly what the frontend "Save" button is sending
-    console.log("Frontend Payload Received:", req.body);
+    const { title } = req.body;
 
-    const { title, level, duration } = req.body;
-
-    // 2. More robust validation: title is usually the only strict requirement
-    // level and duration can fall back to defaults in the service/schema
     if (!title) {
       return res.status(400).json({ error: 'Course title is required.' });
     }
@@ -56,7 +51,6 @@ export const createCourse = async (req, res) => {
     const course = await courseService.createCourse(req.body);
     res.status(201).json(course);
   } catch (error) {
-    // 3. This log will show the specific Prisma error in your terminal
     console.error('CREATE_COURSE_ERROR:', error.message);
     res.status(500).json({ 
       error: 'Failed to create course', 
