@@ -1,0 +1,174 @@
+// prisma/schema.prisma
+
+generator client {
+  provider        = "prisma-client-js"
+  // Add this custom output line:
+  output          = "../src/generated/client"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  // ⛔ URL REMOVED TO FIX P1012
+}
+
+// ------------------------------------------------------
+// ENUMS
+// ------------------------------------------------------
+
+enum TournamentStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum EventCategory {
+  CLASS
+  WORKSHOP
+}
+
+enum GalleryCategory {
+  TRAINING
+  TOURNAMENT
+  COACHING
+  ACADEMY
+}
+
+enum AgeGroup {
+  CHILDREN // Ages 6–12
+  TEENAGERS // Ages 13–17
+  ADULTS // Ages 18+
+}
+
+// ------------------------------------------------------
+// MODELS
+// ------------------------------------------------------
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Event {
+  id          Int           @id @default(autoincrement())
+  title       String
+  description String?       @db.Text
+  date        DateTime
+  location    String?
+  category    EventCategory
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Tournament {
+  id          Int              @id @default(autoincrement())
+  title       String
+  description String?          @db.Text
+  date        DateTime
+  location    String?
+  entryFee    Float            @default(0.0)
+  status      TournamentStatus @default(UPCOMING)
+
+  // Relations
+  results       TournamentResult[]
+  registrations Registration[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TournamentResult {
+  id           Int @id @default(autoincrement())
+  tournamentId Int
+
+  position    Int // 1 for Winner, 2 for Runner-up, etc.
+  playerName  String
+  playerPhoto String? // Added for Winners Gallery
+  eloRating   String? // Added for Chess Profiles
+  score       Float?
+  prize       String?
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  createdAt  DateTime   @default(now())
+}
+
+model Gallery {
+  id        String          @id @default(uuid())
+  imageUrl  String
+  caption   String?
+  category  GalleryCategory @default(ACADEMY)
+  createdAt DateTime        @default(now())
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Registration {
+  id           String     @id @default(uuid())
+  studentName  String
+  email        String
+  phone        String
+  tournamentId Int
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  status       String     @default("PENDING")
+  createdAt    DateTime   @default(now())
+}
+
+model DemoRegistration {
+  id          Int      @id @default(autoincrement())
+  studentName String
+  email       String
+  phone       String
+  scheduledAt DateTime
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+}
+
+model Course {
+  id          Int                @id @default(autoincrement())
+  title       String
+  ageGroup    AgeGroup           @default(ADULTS)
+  minAge      Int?
+  maxAge      Int?
+  level       String             @default("Beginner")
+  duration    String             @default("Flexible")
+  description String?            @db.Text
+  image       String?
+  price       String?
+  features    String[]
+  enrollments CourseEnrollment[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model CourseEnrollment {
+  id          Int      @id @default(autoincrement())
+  studentName String
+  email       String
+  phone       String
+  courseId    Int
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  message     String?  @db.Text
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+}

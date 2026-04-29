@@ -13,20 +13,18 @@ import { AGE_GROUP_LABELS, AGE_GROUP_RANGES, AgeGroup } from "@/types";
 import { courseService } from "@/services/courseService";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-
-const ITEMS_PER_PAGE = 5;
-
+const API_BASE_URL = "http://localhost:5000";
+const ITEMS_PER_PAGE = 5; // Adjust pagination limit here
 const AdminCourses = () => {
   const { courses, isLoading, addCourse, updateCourse, deleteCourse } = useAdminCourses();
   const { toast } = useToast();
-
-  // State for Modal & Form
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [formData, setFormData] = useState<any>({ ageGroup: "ADULTS" });
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
 
   // State for Search, Filter & Pagination
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,7 +38,7 @@ const AdminCourses = () => {
     return courses.filter((course) => {
       const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           course.description?.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesFilter = filterGroup === "ALL" || course.ageGroup === filterGroup;
+      const matchesFilter = filterGroup == "ALL" || course.ageGroup == filterGroup;
       return matchesSearch && matchesFilter;
     });
   }, [courses, searchTerm, filterGroup]);
@@ -57,9 +55,11 @@ const AdminCourses = () => {
     setCurrentPage(1);
   }, [searchTerm, filterGroup]);
 
+  // Sidebar Menu & Pagination State
+  const [activeTab, setActiveTab] = useState<string>("ALL");
+ 
   const handleSave = async () => {
     try {
-      // Process features: convert comma-separated string to array
       const processedData = {
         ...formData,
         features: typeof formData.features === 'string'
@@ -96,6 +96,7 @@ const AdminCourses = () => {
   };
 
   const set = (key: string, val: any) => setFormData((p: any) => ({ ...p, [key]: val }));
+
 
   const categories = [
     { id: "ALL", label: "All Courses", icon: Layers },
@@ -259,6 +260,164 @@ const AdminCourses = () => {
                 placeholder="e.g. Chess Foundation for Beginners"
                 className="h-11"
               />
+
+  // --- Client-Side Filtering & Pagination Logic ---
+  const handleMenuClick = (menuId: string) => {
+    setActiveTab(menuId);
+    setCurrentPage(1); // Reset pagination when changing menu categories
+  };
+
+  const filteredCourses = useMemo(() => {
+    if (!courses) return [];
+    if (activeTab === "ALL") return courses;
+    return courses.filter((c: any) => c.ageGroup === activeTab);
+  }, [courses, activeTab]);
+
+  const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
+  
+  const paginatedCourses = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredCourses.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredCourses, currentPage]);
+
+  return (
+    <div className="p-6 space-y-6 max-w-[1400px] mx-auto">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-xl shadow-sm border">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Manage Courses</h1>
+          <p className="text-sm text-gray-500 mt-1">Select a category from the sidebar to view or manage specific programs.</p>
+        </div>
+        <Button 
+          size="lg"
+          onClick={() => { setFormData({ ageGroup: "ADULTS" }); setSelectedCourse(null); setIsModalOpen(true); }}
+        >
+          <Plus className="mr-2 h-5 w-5" /> Add Course
+        </Button>
+      </div>
+
+      {/* Main Layout: Sidebar + Content Area */}
+      <div className="flex flex-col md:flex-row gap-8">
+        
+        {/* SIDEBAR MENU */}
+        <aside className="w-full md:w-64 flex-shrink-0">
+          <div className="bg-white rounded-xl shadow-sm border p-4 sticky top-6">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 px-2">Categories</h2>
+            <nav className="flex flex-col space-y-1">
+              <button
+                onClick={() => handleMenuClick("ALL")}
+                className={`flex items-center w-full px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                  activeTab === "ALL" 
+                    ? "bg-slate-900 text-white" 
+                    : "text-gray-700 hover:bg-slate-100"
+                }`}
+              >
+                <Layers className="mr-3 h-4 w-4" />
+                All Courses
+              </button>
+              
+              {Object.entries(AGE_GROUP_LABELS).map(([value, label]) => (
+                <button
+                  key={value}
+                  onClick={() => handleMenuClick(value)}
+                  className={`flex items-center w-full px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                    activeTab === value 
+                      ? "bg-slate-900 text-white" 
+                      : "text-gray-700 hover:bg-slate-100"
+                  }`}
+                >
+                  <BookOpen className="mr-3 h-4 w-4" />
+                  {label as string}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </aside>
+
+        {/* CONTENT AREA (Table & Pagination) */}
+        <main className="flex-1 min-w-0">
+          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+            {/* Table Header showing active category */}
+            <div className="px-6 py-4 border-b bg-gray-50/50">
+              <h2 className="text-lg font-semibold text-gray-800">
+                {activeTab === "ALL" ? "All Courses" : AGE_GROUP_LABELS[activeTab as keyof typeof AGE_GROUP_LABELS]}
+                <span className="ml-2 text-sm font-normal text-gray-500">
+                  ({filteredCourses.length} {filteredCourses.length === 1 ? 'course' : 'courses'})
+                </span>
+              </h2>
+            </div>
+
+            {filteredCourses.length === 0 && !isLoading ? (
+              <div className="flex flex-col items-center justify-center p-16 text-center">
+                <div className="bg-gray-100 p-4 rounded-full mb-4">
+                  <BookOpen className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900">No courses in this category</h3>
+                <p className="text-gray-500 mt-1">Click "Add Course" to create one.</p>
+              </div>
+            ) : (
+              <>
+                <DataTable 
+                  columns={[
+                    { header: "Title", accessorKey: "title" },
+                    { header: "Age Group", accessorKey: "ageGroup" },
+                    { header: "Level", accessorKey: "level" },
+                    { header: "Price", accessorKey: "price" }
+                  ]}
+                  data={paginatedCourses} 
+                  isLoading={isLoading} 
+                  onEdit={(c) => {
+                    setSelectedCourse(c);
+                    setFormData({
+                      ...c,
+                      features: Array.isArray(c.features) ? c.features.join(", ") : c.features
+                    });
+                    setIsModalOpen(true);
+                  }}
+                  onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }} 
+                />
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50/50">
+                    <p className="text-sm text-gray-500">
+                      Showing <span className="font-medium">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> to <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, filteredCourses.length)}</span> of <span className="font-medium">{filteredCourses.length}</span> entries
+                    </p>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" /> Prev
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                      >
+                        Next <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </main>
+      </div>
+
+      {/* Admin Form Modal */}
+      <AdminFormModal open={isModalOpen} onOpenChange={setIsModalOpen} title={selectedCourse ? "Edit Course" : "Add New Course"} onSave={handleSave}>
+        {/* Form content remains exactly the same */}
+        <div className="max-h-[65vh] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="grid gap-4 py-2">
+            <div className="grid gap-2">
+              <Label>Course Title</Label>
+              <Input value={formData.title || ""} onChange={(e) => set("title", e.target.value)} placeholder="e.g. Chess Foundation" />
+
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -270,7 +429,7 @@ const AdminCourses = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(AGE_GROUP_LABELS).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                      <SelectItem key={value} value={value}>{label as string}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -395,10 +554,15 @@ const AdminCourses = () => {
       />
       
       <style>{`
+
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; } 
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
       `}</style>
     </div>
   );
