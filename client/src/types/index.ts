@@ -56,8 +56,10 @@ export interface TournamentResult {
 export interface Registration {
   id: string;
   studentName: string;
-  email: string;
+  email: string | null;
   phone: string;
+  fideId?: string | null;
+  transactionId?: string | null;
   tournamentId: number;
   tournament?: { title: string };
   status: string;
@@ -71,6 +73,7 @@ export interface CourseEnrollment {
   studentName: string;
   email: string;
   phone: string;
+  mode: "ONLINE" | "OFFLINE";
   courseId: number;
   course?: { id: number; title: string; ageGroup: AgeGroup };
   message?: string;

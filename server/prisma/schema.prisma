@@ -125,11 +125,13 @@ model Contact {
 }
 
 model Registration {
-  id           String     @id @default(uuid())
-  studentName  String
-  email        String
-  phone        String
-  tournamentId Int        
+  id            String     @id @default(uuid())
+  studentName   String
+  email         String?
+  phone         String
+  fideId        String?
+  transactionId String?
+  tournamentId  Int
   // Added onDelete: Cascade
   tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   status       String     @default("PENDING")
@@ -168,6 +170,7 @@ model CourseEnrollment {
   studentName String
   email       String
   phone       String
+  mode        String   @default("OFFLINE")
   courseId    Int
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   message     String?  @db.Text

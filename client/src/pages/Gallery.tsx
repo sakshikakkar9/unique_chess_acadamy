@@ -50,22 +50,13 @@ export default function GalleryPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {images.map((img, i) => {
-                const cleanPath = img.imageUrl.replace(/\\/g, '/');
-                const formattedImage = {
-                  ...img,
-                  imageUrl: cleanPath.startsWith('http')
-                    ? cleanPath
-                    : cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`,
-                };
-                return (
-                  <GalleryItem
-                    key={img.id}
-                    image={formattedImage}
-                    index={i}
-                  />
-                );
-              })}
+              {images.map((img, i) => (
+                <GalleryItem
+                  key={img.id}
+                  image={img}
+                  index={i}
+                />
+              ))}
             </div>
           )}
 

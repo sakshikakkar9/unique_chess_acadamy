@@ -71,7 +71,7 @@ function DemoRequestsTab() {
   const updateStatus = async (id: number, status: string) => {
     setUpdatingId(id);
     try {
-      await api.patch(`/registrations/admin/demo/${id}`, { status });
+      await api.patch(`/demo/admin/${id}`, { status });
       await refresh();
     } catch (err) {
       console.error("Failed to update status", err);
@@ -165,13 +165,13 @@ function CourseEnrollmentsTab() {
       <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
         <tr>
           <th className="p-4">Student</th><th className="p-4">Contact</th>
-          <th className="p-4">Course</th><th className="p-4">Message</th>
+          <th className="p-4">Course</th><th className="p-4">Mode</th><th className="p-4">Message</th>
           <th className="p-4">Enrolled On</th><th className="p-4">Status</th>
           <th className="p-4">Actions</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-border text-sm">
-        {enrollments.map((enr) => (
+        {enrollments.map((enr: any) => (
           <tr key={enr.id} className="hover:bg-muted/10 transition-colors">
             <td className="p-4 font-medium">{enr.studentName}</td>
             <td className="p-4 text-muted-foreground">{enr.phone}<br /><span className="text-xs">{enr.email}</span></td>
@@ -179,9 +179,14 @@ function CourseEnrollmentsTab() {
               <div className="space-y-0.5">
                 <p className="font-medium text-sm">{enr.course?.title ?? "—"}</p>
                 {enr.course?.ageGroup && (
-                  <span className="text-xs text-muted-foreground">{AGE_GROUP_LABELS[enr.course.ageGroup]}</span>
+                  <span className="text-xs text-muted-foreground">{AGE_GROUP_LABELS[enr.course.ageGroup as keyof typeof AGE_GROUP_LABELS]}</span>
                 )}
               </div>
+            </td>
+            <td className="p-4">
+              <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded border ${enr.mode === 'ONLINE' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' : 'bg-blue-500/10 text-blue-400 border-blue-500/30'}`}>
+                {enr.mode}
+              </span>
             </td>
             <td className="p-4 text-muted-foreground text-xs max-w-[180px] truncate">{enr.message || "—"}</td>
             <td className="p-4 text-muted-foreground">{enr.createdAt ? new Date(enr.createdAt).toLocaleDateString() : "—"}</td>
@@ -221,7 +226,7 @@ function TournamentEnrollmentsTab() {
   const { data: registrations = [], isLoading, refetch } = useQuery<Registration[]>({
     queryKey: ["registrations"],
     queryFn: async () => {
-      const res = await api.get("/registrations/admin/list");
+      const res = await api.get("/tournaments/registrations");
       return res.data;
     },
   });
@@ -234,20 +239,26 @@ function TournamentEnrollmentsTab() {
       <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
         <tr>
           <th className="p-4">Student</th><th className="p-4">Contact</th>
-          <th className="p-4">Tournament</th><th className="p-4">Registered On</th>
+          <th className="p-4">Tournament</th><th className="p-4">FIDE ID / UTR</th><th className="p-4">Registered On</th>
           <th className="p-4">Status</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-border text-sm">
-        {registrations.map((reg) => (
+        {registrations.map((reg: any) => (
           <tr key={reg.id} className="hover:bg-muted/10 transition-colors">
             <td className="p-4 font-medium">{reg.studentName}</td>
-            <td className="p-4 text-muted-foreground">{reg.phone}<br /><span className="text-xs">{reg.email}</span></td>
+            <td className="p-4 text-muted-foreground">{reg.phone}<br /><span className="text-xs">{reg.email || "No email"}</span></td>
             <td className="p-4">
               <span className="inline-flex items-center gap-1.5">
                 <Trophy className="h-3.5 w-3.5 text-amber-400" />
                 {reg.tournament?.title ?? "—"}
               </span>
+            </td>
+            <td className="p-4 text-muted-foreground">
+              <div className="flex flex-col gap-1">
+                <span className="text-xs font-medium">FIDE: {reg.fideId || "—"}</span>
+                <span className="text-[10px] text-muted-foreground">UTR: {reg.transactionId || "—"}</span>
+              </div>
             </td>
             <td className="p-4 text-muted-foreground">{reg.createdAt ? new Date(reg.createdAt).toLocaleDateString() : "—"}</td>
             <td className="p-4"><RegStatusBadge status={reg.status} /></td>

@@ -15,7 +15,6 @@ import eventRoutes from './src/routes/event.routes.js';
 import galleryRoutes from './src/routes/gallery.routes.js';
 import contactRoutes from './src/routes/contact.routes.js';
 import demoRoutes from './src/routes/demo.routes.js';
-import registrationRoutes from './src/routes/registration.routes.js';
 import courseRoutes from './src/routes/course.routes.js';
 
 // ------------------------------------------------------
@@ -76,7 +75,6 @@ app.use('/api/events', eventRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/demo', demoRoutes);
-app.use('/api/registrations', registrationRoutes);
 app.use('/api/courses', courseRoutes);
 
 // ------------------------------------------------------
