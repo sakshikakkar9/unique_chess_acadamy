@@ -9,7 +9,6 @@ interface CourseCardProps {
 }
 
 // ── CONFIGURATION ────────────────────────────────────────────────────────────
-const API_BASE_URL = "http://localhost:5000";
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&q=80&w=800";
 
 const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
@@ -23,12 +22,11 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
    * Helper to resolve image source:
    * 1. If empty, use Unsplash default.
    * 2. If it's an external link (starts with http), use as-is.
-   * 3. If it's a local path (starts with /uploads), prefix with Backend URL.
+   * 3. If it's a local path (starts with /uploads), use as-is (Vite proxy handles it).
    */
   const getFullImageUrl = (path?: string) => {
     if (!path) return DEFAULT_IMAGE;
-    if (path.startsWith('http')) return path;
-    return `${API_BASE_URL}${path}`;
+    return path;
   };
 
   return (

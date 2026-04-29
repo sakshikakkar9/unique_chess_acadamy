@@ -96,6 +96,7 @@ export const getAllEnrollments = async () => {
       course: {
         select: {
           title: true, // This allows the Admin to see WHICH course the student joined
+          ageGroup: true,
         }
       }
     },
