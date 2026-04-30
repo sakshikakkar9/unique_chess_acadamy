@@ -1,59 +1,48 @@
-// prisma/seed.js
-import prisma from '../lib/prisma.js'; // Ensure this points to your updated prisma.js
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import pg from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+
+// 1. Setup the same adapter logic as your prisma.js
+const pool = new pg.Pool({ 
+  connectionString: process.env.DATABASE_URL 
+});
+const adapter = new PrismaPg(pool);
+
+// 2. Pass the adapter to the constructor
+const prisma = new PrismaClient({
+  adapter,
+  log: ['info', 'warn', 'error'],
+});
 
 async function main() {
   console.log("🌱 Starting database seeding...");
 
   try {
-    console.log("🧹 Cleaning up old data...");
-    
-    // Order matters because of Foreign Key constraints (Children first, then Parents)
-    await prisma.tournamentResult.deleteMany();
-    await prisma.courseEnrollment.deleteMany();
-    await prisma.registration.deleteMany();
-    await prisma.gallery.deleteMany();
-    await prisma.tournament.deleteMany();
-    await prisma.event.deleteMany();
-    await prisma.admin.deleteMany();
-    await prisma.course.deleteMany();
-    await prisma.demoRegistration.deleteMany();
-    
-    console.log("✅ Cleanup complete.");
+    const hashedPassword = await bcrypt.hash("admin123", 10);
 
-    console.log("🔐 Hashing admin password...");
-    const hashedPassword = await bcrypt.hash("password123", 10);
-
-    // Using upsert ensures we don't create duplicate admins if run twice
+    console.log("👤 Creating admin user...");
+    
     await prisma.admin.upsert({
       where: { username: "sakshi_admin" },
       update: { passwordHash: hashedPassword },
       create: {
         username: "sakshi_admin",
-        passwordHash: hashedPassword, 
+        passwordHash: hashedPassword,
       },
     });
-    console.log("✅ Admin user created: sakshi_admin");
 
-    console.log("🏆 Seeding sample tournament...");
-    await prisma.tournament.create({
-      data: {
-        title: "Academy Grandmaster Open",
-        description: "The primary tournament for Unique Chess Academy students.",
-        date: new Date("2026-06-15T10:00:00Z"),
-        location: "Main Hall, Academy Campus",
-        entryFee: 500.0,
-        status: "UPCOMING",
-      }
-    });
+    console.log("--------------------------------------");
+    console.log("🚀 SEEDING SUCCESSFUL");
+    console.log("👤 Username: sakshi_admin");
+    console.log("--------------------------------------");
 
-    console.log("✨ Seeding finished successfully!");
   } catch (error) {
     console.error("❌ Error during seeding:", error);
     process.exit(1);
   } finally {
-    // Crucial: Always disconnect to close database pools
     await prisma.$disconnect();
+    await pool.end(); // Important: Close the pool so the process can exit
   }
 }
 
