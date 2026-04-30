@@ -25,15 +25,24 @@ const app = express();
 // ------------------------------------------------------
 // GLOBAL MIDDLEWARE
 // ------------------------------------------------------
-// ✅ UPDATED: Allow local development AND your Vercel frontend
+// ✅ UPDATED: Added your specific Vercel deployment URL to stop CORS errors
 const allowedOrigins = [
   'http://localhost:3000',
-  'http://localhost:5173', // Default for Vite
-  'https://unique-chess-academy.vercel.app' // 👈 Replace with your actual Vercel URL
+  'http://localhost:5173',
+  'https://unique-chess-academy.vercel.app',
+  'https://unique-chess-acadamy-tqe5.vercel.app' // 👈 Added this exactly as seen in your screenshot
 ];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 })); 
 
@@ -54,7 +63,6 @@ app.use('/uploads', express.static(uploadDir));
 // ------------------------------------------------------
 app.get('/', async (req, res) => {
   try {
-    // Quick health check for the DB
     await prisma.$queryRaw`SELECT 1`; 
     res.status(200).json({ 
       api: 'Online',
@@ -80,8 +88,6 @@ app.use('/api/courses', courseRoutes);
 // ------------------------------------------------------
 const PORT = process.env.PORT || 5000;
 
-// Render needs the server to start even if DB is slow, 
-// so we connect but don't block the app.listen if possible.
 app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   try {
