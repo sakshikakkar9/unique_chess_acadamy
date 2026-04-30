@@ -143,3 +143,14 @@ export const updateEnrollmentStatus = async (req, res) => {
     res.status(500).json({ error: 'Failed to update enrollment status' });
   }
 };
+
+export const deleteEnrollment = async (req, res) => {
+  try {
+    const id = parseInt(req.params.enrollmentId, 10);
+    await courseService.deleteEnrollment(id);
+    res.json({ success: true, message: 'Enrollment deleted successfully' });
+  } catch (error) {
+    console.error('DELETE_ENROLLMENT_ERROR:', error);
+    res.status(500).json({ error: 'Failed to delete enrollment' });
+  }
+};

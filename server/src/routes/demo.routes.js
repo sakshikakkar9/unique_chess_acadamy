@@ -13,4 +13,7 @@ router.get('/admin/list', verifyAdmin, demoController.getAllDemoRegistrations);
 // Admin: Update demo status
 router.patch('/admin/:id', verifyAdmin, demoController.updateDemoStatus);
 
+// Admin: Delete demo request
+router.delete('/admin/:id', verifyAdmin, demoController.deleteDemoRegistration);
+
 export default router;

@@ -51,6 +51,14 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!course) return;
+
+    // Client-side validation
+    const phoneRegex = /^[0-9+\s-]{10,}$/;
+    if (!phoneRegex.test(form.phone)) {
+      toast({ variant: "destructive", title: "Validation Error", description: "Please enter a valid phone number." });
+      return;
+    }
+
     setLoading(true);
     try {
       await courseService.enroll(course.id, {

@@ -111,3 +111,9 @@ export const updateEnrollmentStatus = async (id, status) => {
     data: { status },
   });
 };
+
+export const deleteEnrollment = async (id) => {
+  return await prisma.courseEnrollment.delete({
+    where: { id },
+  });
+};

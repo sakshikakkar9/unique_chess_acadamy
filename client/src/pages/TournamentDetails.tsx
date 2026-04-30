@@ -4,6 +4,7 @@ import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTourna
 import { useTournamentRegistration } from "@/features/tournaments/hooks/useTournamentRegistration";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, MapPin, Ticket, ArrowLeft } from "lucide-react";
 
@@ -24,7 +25,18 @@ export default function TournamentDetails() {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
     
-    // ✅ Data now includes 'phone' instead of 'contact'
+    // Client-side validation
+    const phoneRegex = /^[0-9+\s-]{10,}$/;
+    if (data.phone && !phoneRegex.test(data.phone.toString())) {
+      toast.error("Please enter a valid phone number.");
+      return;
+    }
+
+    if (data.email && !data.email.toString().includes("@")) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
     register({ ...data, tournamentId: id });
   };
 

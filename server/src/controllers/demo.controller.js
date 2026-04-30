@@ -1,4 +1,4 @@
-import prisma from '../../lib/prisma.js';
+import * as demoService from '../services/demo.service.js';
 
 export const createDemoRegistration = async (req, res) => {
   try {
@@ -8,16 +8,7 @@ export const createDemoRegistration = async (req, res) => {
       return res.status(400).json({ error: 'All fields are required.' });
     }
 
-    const demo = await prisma.demoRegistration.create({
-      data: {
-        studentName,
-        email,
-        phone,
-        scheduledAt: new Date(scheduledAt),
-        status: 'PENDING',
-      },
-    });
-
+    const demo = await demoService.createDemoRegistration(req.body);
     res.status(201).json({ success: true, message: 'Demo booked successfully!', data: demo });
   } catch (error) {
     console.error('Demo Registration Error:', error);
@@ -27,9 +18,7 @@ export const createDemoRegistration = async (req, res) => {
 
 export const getAllDemoRegistrations = async (req, res) => {
   try {
-    const demos = await prisma.demoRegistration.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+    const demos = await demoService.getAllDemoRegistrations();
     res.json(demos);
   } catch (error) {
     console.error('Fetch Demos Error:', error);
@@ -47,14 +36,21 @@ export const updateDemoStatus = async (req, res) => {
       return res.status(400).json({ error: `Invalid status. Must be one of: ${allowed.join(', ')}` });
     }
 
-    const updated = await prisma.demoRegistration.update({
-      where: { id: parseInt(id) },
-      data: { status },
-    });
-
+    const updated = await demoService.updateDemoStatus(id, status);
     res.json({ success: true, data: updated });
   } catch (error) {
     console.error('Update Demo Status Error:', error);
     res.status(500).json({ error: 'Failed to update demo status' });
+  }
+};
+
+export const deleteDemoRegistration = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await demoService.deleteDemoRegistration(id);
+    res.json({ success: true, message: 'Demo request deleted successfully' });
+  } catch (error) {
+    console.error('Delete Demo Error:', error);
+    res.status(500).json({ error: 'Failed to delete demo request' });
   }
 };

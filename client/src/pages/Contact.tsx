@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin, MessageCircle, Loader2, Sparkles, Send, Headphones } from "lucide-react";
 import { toast } from "sonner";
+import api from "@/lib/api";
 import SparkleCanvas from "@/components/shared/SparkleCanvas";
 import { scaleIn, fadeLeft, fadeRight, stagger, fadeUp } from "@/components/shared/motion";
 import { motion } from "framer-motion";
@@ -14,13 +15,21 @@ import { motion } from "framer-motion";
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      await api.post("/contact", data);
       toast.success("Message sent! We'll get back to you within 24 hours.");
-    }, 1000);
+      e.currentTarget.reset();
+    } catch (error) {
+      toast.error("Failed to send message. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,6 +79,7 @@ export default function ContactPage() {
                     <div className="space-y-2">
                       <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                       <Input
+                        name="name"
                         placeholder="Sakshi ..."
                         required
                         className="bg-slate-50 border-slate-100 h-14 rounded-2xl focus:bg-white focus:ring-4 focus:ring-orange-500/5 focus:border-orange-500/20 transition-all text-slate-900 font-medium"
@@ -78,6 +88,7 @@ export default function ContactPage() {
                     <div className="space-y-2">
                       <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
                       <Input
+                        name="phone"
                         placeholder="+91 XXXXX XXXXX"
                         className="bg-slate-50 border-slate-100 h-14 rounded-2xl focus:bg-white focus:ring-4 focus:ring-orange-500/5 focus:border-orange-500/20 transition-all text-slate-900 font-medium"
                       />
@@ -86,6 +97,7 @@ export default function ContactPage() {
                   <div className="space-y-2">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                     <Input
+                      name="email"
                       type="email"
                       placeholder="you@example.com"
                       required
@@ -95,6 +107,7 @@ export default function ContactPage() {
                   <div className="space-y-2">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Your Message</label>
                     <Textarea
+                      name="message"
                       placeholder="How can we help you master the board?"
                       rows={5}
                       required

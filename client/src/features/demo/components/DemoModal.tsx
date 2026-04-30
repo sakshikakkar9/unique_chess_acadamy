@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Loader2, CheckCircle } from 'lucide-react';
+import api from '@/lib/api';
 
 interface DemoModalProps {
   isOpen: boolean;
@@ -22,24 +23,13 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch('/api/demo/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          scheduledAt: new Date(formData.scheduledAt).toISOString(),
-        }),
+      await api.post('/demo/register', {
+        ...formData,
+        scheduledAt: new Date(formData.scheduledAt).toISOString(),
       });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        setSuccess(true);
-      } else {
-        alert(result.error || 'Registration failed. Please try again.');
-      }
-    } catch {
-      alert('Connection error. Please check your internet and try again.');
+      setSuccess(true);
+    } catch (error: any) {
+      alert(error.response?.data?.error || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
