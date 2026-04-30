@@ -25,9 +25,18 @@ const app = express();
 // ------------------------------------------------------
 // GLOBAL MIDDLEWARE
 // ------------------------------------------------------
-app.use(cors()); 
+// ✅ UPDATED: Allow local development AND your Vercel frontend
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173', // Default for Vite
+  'https://unique-chess-academy.vercel.app' // 👈 Replace with your actual Vercel URL
+];
 
-// ✅ FIXED: Increased limits for large image payloads
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+})); 
+
 app.use(express.json({ limit: '50mb' })); 
 app.use(express.urlencoded({ limit: '50mb', extended: true })); 
 
@@ -37,9 +46,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
-  console.log('📁 Created "uploads" directory');
 }
-
 app.use('/uploads', express.static(uploadDir)); 
 
 // ------------------------------------------------------
@@ -47,13 +54,15 @@ app.use('/uploads', express.static(uploadDir));
 // ------------------------------------------------------
 app.get('/', async (req, res) => {
   try {
+    // Quick health check for the DB
     await prisma.$queryRaw`SELECT 1`; 
     res.status(200).json({ 
       api: 'Online',
       database: 'Connected 🟢',
-      message: '♟️ Unique Chess Academy API is online!' 
+      message: '♟️ Unique Chess Academy API is live!' 
     });
   } catch (error) {
+    console.error('Health check failed:', error);
     res.status(500).json({ api: 'Online', database: 'Disconnected 🔴' });
   }
 });
@@ -67,29 +76,18 @@ app.use('/api/demo', demoRoutes);
 app.use('/api/courses', courseRoutes);
 
 // ------------------------------------------------------
-// GLOBAL ERROR HANDLER
-// ------------------------------------------------------
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went critically wrong on the server.' });
-});
-
-// ------------------------------------------------------
 // START SERVER
 // ------------------------------------------------------
 const PORT = process.env.PORT || 5000;
 
-async function startServer() {
+// Render needs the server to start even if DB is slow, 
+// so we connect but don't block the app.listen if possible.
+app.listen(PORT, async () => {
+  console.log(`🚀 Server running on port ${PORT}`);
   try {
     await prisma.$connect();
-    console.log('🟢 Successfully connected to the PostgreSQL database!');
-    app.listen(PORT, () => {
-      console.log(`🚀 Server is running on http://localhost:${PORT}`);
-    });
-  } catch (error) {
-    console.error('🔴 Failed to connect to the database:', error);
-    process.exit(1);
+    console.log('🟢 Database connected successfully!');
+  } catch (err) {
+    console.error('🔴 Database connection failed:', err);
   }
-}
-
-startServer();
+});

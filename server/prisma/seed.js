@@ -1,4 +1,5 @@
-import prisma from '../lib/prisma.js'; 
+// prisma/seed.js
+import prisma from '../lib/prisma.js'; // Ensure this points to your updated prisma.js
 import bcrypt from 'bcryptjs';
 
 async function main() {
@@ -7,24 +8,27 @@ async function main() {
   try {
     console.log("🧹 Cleaning up old data...");
     
-    // ✅ Use exact casing from your schema.prisma
-    // If the model is 'TournamentResult', use prisma.tournamentResult
-    // If the model is 'Admin', use prisma.admin
-    
+    // Order matters because of Foreign Key constraints (Children first, then Parents)
     await prisma.tournamentResult.deleteMany();
+    await prisma.courseEnrollment.deleteMany();
     await prisma.registration.deleteMany();
     await prisma.gallery.deleteMany();
     await prisma.tournament.deleteMany();
     await prisma.event.deleteMany();
     await prisma.admin.deleteMany();
+    await prisma.course.deleteMany();
+    await prisma.demoRegistration.deleteMany();
     
     console.log("✅ Cleanup complete.");
 
     console.log("🔐 Hashing admin password...");
     const hashedPassword = await bcrypt.hash("password123", 10);
 
-    await prisma.admin.create({
-      data: {
+    // Using upsert ensures we don't create duplicate admins if run twice
+    await prisma.admin.upsert({
+      where: { username: "sakshi_admin" },
+      update: { passwordHash: hashedPassword },
+      create: {
         username: "sakshi_admin",
         passwordHash: hashedPassword, 
       },
@@ -47,6 +51,9 @@ async function main() {
   } catch (error) {
     console.error("❌ Error during seeding:", error);
     process.exit(1);
+  } finally {
+    // Crucial: Always disconnect to close database pools
+    await prisma.$disconnect();
   }
 }
 

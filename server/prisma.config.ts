@@ -1,19 +1,14 @@
-import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
+import 'dotenv/config';
+import { defineConfig, env } from 'prisma/config';
 
 export default defineConfig({
-  // Point to where your schema file is
-  schema: "prisma/schema.prisma",
-  
+  schema: './prisma/schema.prisma',
   migrations: {
-    path: "prisma/migrations",
-    seed: 'node prisma/seed.js',
+    // This tells Prisma to run your javascript seed file
+    seed: 'node prisma/seed.js', 
   },
-  
-  
-  // This is where the URL lives now!
   datasource: {
-    url: env("DATABASE_URL"),
+    // Use DIRECT_URL for the seeding process
+    url: env('DIRECT_URL'), 
   },
 });
-
