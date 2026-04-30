@@ -1,42 +1,29 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import { TournamentCard } from "@/features/tournaments/components/TournamentCard";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
 import { Trophy, Calendar, Medal, Timer, Swords } from "lucide-react";
-import axios from "axios";
-import { toast } from "sonner"; // Recommended for professional alerts
 
 export default function TournamentsPage() {
   const { tournaments, isLoading } = useAdminTournaments();
+  const navigate = useNavigate();
 
-  const handleTournamentRegister = async (tournamentId: string) => {
-    try {
-      // NOTE: Ensure this URL matches your backend route exactly
-      const response = await axios.post(`http://localhost:5000/api/tournaments/register`, {
-        tournamentId: tournamentId,
-        // You might need to add user details here if logged in
-      });
-      
-      if (response.status === 200 || response.status === 201) {
-        alert("Success! Your registration is visible on the Admin Dashboard.");
-      }
-    } catch (error) {
-      console.error("Backend Error:", error);
-      alert("Failed to reach server. Ensure backend is running on port 8080.");
-    }
+  // ✅ FIXED: Navigates to the details page instead of calling the API with empty data
+  const handleViewDetails = (tournamentId: string) => {
+    navigate(`/tournaments/${tournamentId}`);
   };
 
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-
       <header className="relative h-[45vh] min-h-[400px] w-full flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img src="https://images.unsplash.com/photo-1528819622765-d6bcf132f793?q=80&w=2000" alt="Chess" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-900/80 to-white" />
         </div>
-
         <div className="container relative z-10 mx-auto px-6">
           <ScrollReveal direction="left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-200 text-xs font-bold uppercase tracking-widest mb-6">
@@ -84,13 +71,12 @@ export default function TournamentsPage() {
                 key={t.id} 
                 tournament={t} 
                 delay={index * 0.1}
-                onRegister={() => handleTournamentRegister(t.id)} 
+                onRegister={() => handleViewDetails(t.id.toString())} 
               />
             ))
           )}
         </div>
       </section>
-
       <Footer />
     </div>
   );

@@ -11,9 +11,9 @@ export default function TournamentDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { tournaments } = useAdminTournaments();
-  const tournamentRegistration = useTournamentRegistration();
-  const { mutate: register } = tournamentRegistration;
-  const isLoading = (tournamentRegistration as any).isLoading ?? false;
+  
+  // Custom hook for the API mutation
+  const { mutate: register, isPending } = useTournamentRegistration();
 
   const tournament = tournaments.find((t) => t.id.toString() === id);
 
@@ -23,6 +23,8 @@ export default function TournamentDetails() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
+    
+    // ✅ Data now includes 'phone' instead of 'contact'
     register({ ...data, tournamentId: id });
   };
 
@@ -33,7 +35,6 @@ export default function TournamentDetails() {
       </Button>
 
       <div className="grid lg:grid-cols-2 gap-12">
-        {/* Left Side: Info */}
         <div className="space-y-6">
           <h1 className="text-4xl font-bold text-gradient-gold">{tournament.title}</h1>
           <div className="flex flex-col gap-4 text-muted-foreground">
@@ -44,7 +45,6 @@ export default function TournamentDetails() {
           <p className="text-lg leading-relaxed">{tournament.description || "Join us for an exciting competitive event!"}</p>
         </div>
 
-        {/* Right Side: Registration Form */}
         <Card className="border-primary/20 bg-card/50 backdrop-blur-md">
           <CardHeader>
             <CardTitle>Register Now</CardTitle>
@@ -52,19 +52,24 @@ export default function TournamentDetails() {
           <CardContent>
             <form onSubmit={handleRegister} className="space-y-4">
               <Input name="studentName" placeholder="Full Name" required />
-              <Input name="contact" placeholder="Phone Number" required />
+              
+              {/* ✅ FIXED: name="phone" matches the Prisma schema 'phone' field */}
+              <Input name="phone" placeholder="Phone Number" required />
+              
+              <Input name="email" type="email" placeholder="Email (Optional)" />
+              
               <Input name="fideId" placeholder="FIDE ID (Optional)" />
               
               <div className="p-4 border border-dashed border-primary/30 rounded-xl bg-primary/5 text-center">
                 <p className="text-sm font-bold mb-2">Scan to Pay ₹{tournament.entryFee}</p>
-                {/* Replace with actual QR image path */}
                 <img src="/qr-placeholder.png" alt="Payment QR" className="w-32 h-32 mx-auto mb-2" />
                 <p className="text-[10px] text-muted-foreground">UPI ID: academy@upi</p>
               </div>
 
               <Input name="transactionId" placeholder="Transaction ID (UTR)" required />
-              <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
-                {isLoading ? "Submitting..." : "Confirm Registration"}
+              
+              <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isPending}>
+                {isPending ? "Submitting..." : "Confirm Registration"}
               </Button>
             </form>
           </CardContent>

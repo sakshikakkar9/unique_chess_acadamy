@@ -15,15 +15,20 @@ export const useAdminTournaments = () => {
   });
 
   const addMutation = useMutation({
-    mutationFn: (newTournament: any) => api.post("/tournaments", newTournament),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tournaments"] });
-      toast({ title: "Success", description: "Tournament added." });
-    },
-    onError: (error: any) => {
-      toast({ variant: "destructive", title: "Failed", description: error.response?.data?.error || "Check your data." });
-    }
-  });
+  // ✅ CHANGE: Add /admin/create to the path
+  mutationFn: (newTournament: any) => api.post("/tournaments/admin/create", newTournament),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["tournaments"] });
+    toast({ title: "Success", description: "Tournament added." });
+  },
+  onError: (error: any) => {
+    toast({ 
+      variant: "destructive", 
+      title: "Failed", 
+      description: error.response?.data?.error || "Check your data." 
+    });
+  }
+});
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: any }) => api.put(`/tournaments/${id}`, data),
@@ -34,12 +39,21 @@ export const useAdminTournaments = () => {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.delete(`/tournaments/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tournaments"] });
-      toast({ title: "Deleted", description: "Tournament removed." });
-    }
-  });
+  // ✅ CHANGE THIS: Add /admin/delete/ to the path
+  mutationFn: (id: number) => api.delete(`/tournaments/admin/delete/${id}`),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["tournaments"] });
+    toast({ title: "Deleted", description: "Tournament removed." });
+  },
+  // Added error handling to help diagnose issues
+  onError: (error: any) => {
+    toast({
+      variant: "destructive",
+      title: "Failed",
+      description: error.response?.data?.error || "Failed to delete tournament."
+    });
+  }
+});
 
   return {
     tournaments,

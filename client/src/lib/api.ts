@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
+  // ✅ Change this to your backend address and port
+  baseURL: 'http://localhost:5000/api', 
 });
 
-// Interceptor to attach token automatically
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('admin_token'); 
   if (token) {
@@ -13,12 +13,13 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Tournament Specific API Methods
+// Tournament Specific API Methods - Updated to match your new routes
 export const tournamentApi = {
   getAll: () => api.get('/tournaments'),
-  create: (data) => api.post('/tournaments', data),
-  update: (id, data) => api.put(`/tournaments/${id}`, data),
-  delete: (id) => api.delete(`/tournaments/${id}`),
+  // ✅ Added /admin segments
+  create: (data: any) => api.post('/tournaments/admin/create', data),
+  update: (id: number | string, data: any) => api.put(`/tournaments/admin/update/${id}`, data),
+  delete: (id: number | string) => api.delete(`/tournaments/admin/delete/${id}`),
 };
 
 export default api;
