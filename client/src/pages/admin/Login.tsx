@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth"; // Adjust path if needed
+import { useAuth } from "@/hooks/useAuth"; 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy, AlertCircle } from "lucide-react";
-import axios from "axios"; 
+
+// IMPORTANT: We are importing your CUSTOM instance defined above
+import axios from "@/lib/axios"; 
 
 const AdminLogin: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -18,29 +20,26 @@ const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Redirect back to where the user was trying to go, or default to dashboard
   const from = location.state?.from?.pathname || "/admin/dashboard";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setErrorMsg(""); // Clear previous errors
+    setErrorMsg(""); 
 
     try {
-      // 1. Call your Node.js backend using the relative path (Vite Proxy handles the rest)
-      // Note: Make sure this matches your Express router setup!
-      const response = await axios.post("https://unique-chess-acadamy-tqe5.vercel.app/admin/login", {
+      // This call now automatically uses the BaseURL from your axios.ts file
+      const response = await axios.post("/api/admin/login", {
         username,
         password,
       });
 
-      // 2. Use your existing useAuth hook to save the REAL token from the DB
+      // Saving the token to your Auth context
       login(response.data.token); 
 
-      // 3. Redirect to the dashboard
       navigate(from, { replace: true });
     } catch (err: any) {
-      // Extract the error message from your backend response
+      // Extracting the specific error message from your Express backend
       const message = err.response?.data?.message || err.response?.data?.error || "Invalid credentials. Please try again.";
       setErrorMsg(message);
     } finally {
@@ -63,10 +62,9 @@ const AdminLogin: React.FC = () => {
         
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
-            {/* Display error message beautifully if login fails */}
             {errorMsg && (
               <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md flex items-center gap-2">
-                <AlertCircle className="h-4 w-4" />
+                <span className="flex-shrink-0"><AlertCircle className="h-4 w-4" /></span>
                 <p>{errorMsg}</p>
               </div>
             )}
@@ -76,7 +74,7 @@ const AdminLogin: React.FC = () => {
               <Input
                 id="username"
                 type="text"
-                placeholder="admin"
+                placeholder="Enter username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
