@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
-  Users, Trophy, Star as StarIcon, BookOpen, Brain, Target, ArrowRight, PlayCircle, Sparkles
+  Users, Trophy, Star as StarIcon, BookOpen, Target, Brain, ArrowRight, PlayCircle
 } from "lucide-react";
 import heroImg from "@/assets/hero-chess.jpg";
 import ScrollReveal from "@/components/shared/ScrollReveal";
@@ -10,95 +10,16 @@ import DemoModal from "@/features/demo/components/DemoModal";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
 import { Button } from "@/components/ui/button";
-
-// --- ADVANCED JS: INTERACTIVE CANVAS PARTICLES ---
-// This handles the background animation without interfering with your app logic
-const InteractiveBackground = () => {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    let particles = [];
-    let animationFrameId;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 1.5 + 0.5;
-        this.speedX = Math.random() * 0.4 - 0.2;
-        this.speedY = Math.random() * 0.4 - 0.2;
-      }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x > canvas.width) this.x = 0;
-        else if (this.x < 0) this.x = canvas.width;
-        if (this.y > canvas.height) this.y = 0;
-        else if (this.y < 0) this.y = canvas.height;
-      }
-      draw() {
-        ctx.fillStyle = "rgba(56, 189, 248, 0.35)"; 
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    const init = () => {
-      particles = [];
-      const count = Math.floor((canvas.width * canvas.height) / 16000);
-      for (let i = 0; i < count; i++) particles.push(new Particle());
-    };
-
-    const connect = () => {
-      for (let a = 0; a < particles.length; a++) {
-        for (let b = a; b < particles.length; b++) {
-          const dx = particles[a].x - particles[b].x;
-          const dy = particles[a].y - particles[b].y;
-          const distance = Math.hypot(dx, dy);
-          if (distance < 150) {
-            ctx.strokeStyle = `rgba(56, 189, 248, ${0.12 * (1 - distance / 150)})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[a].x, particles[a].y);
-            ctx.lineTo(particles[b].x, particles[b].y);
-            ctx.stroke();
-          }
-        }
-      }
-    };
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => { p.update(); p.draw(); });
-      connect();
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    window.addEventListener("resize", resize);
-    resize(); init(); animate();
-    return () => {
-      window.removeEventListener("resize", resize);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0 opacity-70" />;
-};
+import SparkleCanvas from "@/components/shared/SparkleCanvas";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 // --- CONSTANTS ---
 const stats = [
-  { id: "1", icon: Users, value: "5,000+", label: "Students" },
-  { id: "2", icon: Trophy, value: "120+", label: "Tournaments" },
-  { id: "3", icon: StarIcon, value: "50+", label: "Champions" },
-  { id: "4", icon: BookOpen, value: "15+", label: "Coaches" },
+  { id: "1", icon: Users, value: 5000, label: "Students", suffix: "+" },
+  { id: "2", icon: Trophy, value: 120, label: "Tournaments", suffix: "+" },
+  { id: "3", icon: StarIcon, value: 50, label: "Champions", suffix: "+" },
+  { id: "4", icon: BookOpen, value: 15, label: "Coaches", suffix: "+" },
 ];
 
 const features = [
@@ -109,82 +30,145 @@ const features = [
 ];
 
 const levels = [
-  { id: "l1", icon: "♟", title: "Beginner", desc: "Start your journey with strong fundamentals.", points: ["Rules & basics", "Simple tactics", "Opening ideas"] },
-  { id: "l2", icon: "♜", title: "Intermediate", desc: "Build strategy and deeper understanding.", points: ["Middlegame planning", "Pattern recognition", "Better decisions"] },
-  { id: "l3", icon: "♚", title: "Advanced", desc: "Train like a competitive player.", points: ["Endgame mastery", "Game analysis", "Tournament mindset"] },
+  { id: "l1", icon: "♟", title: "Beginner", desc: "Start your journey with strong fundamentals.", points: ["Rules & basics", "Simple tactics", "Opening ideas"], color: "#3b82f6" },
+  { id: "l2", icon: "♜", title: "Intermediate", desc: "Build strategy and deeper understanding.", points: ["Middlegame planning", "Pattern recognition", "Better decisions"], color: "#0ea5e9" },
+  { id: "l3", icon: "♚", title: "Advanced", desc: "Train like a competitive player.", points: ["Endgame mastery", "Game analysis", "Tournament mindset"], color: "#f59e0b" },
 ];
+
+const CountUp = ({ end, suffix = "" }: { end: number; suffix?: string }) => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const duration = 2000;
+    const increment = end / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [end]);
+  return <>{count}{suffix}</>;
+};
 
 export default function HomePage() {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
-
-  // --- RESTORED LOGIC HOOKS ---
-  // Ensure your backend server is running to avoid "Connection error" alerts
   const { tournaments } = useAdminTournaments();
   const { courses } = useAdminCourses();
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-slate-50 selection:bg-sky-500/30 overflow-hidden">
-      
-      {/* ANIMATION LAYER */}
-      <InteractiveBackground />
+    <div className="min-h-screen bg-[#0a0f1e] text-[#cbd5e1] selection:bg-sky-500/30 overflow-hidden relative">
+      <SparkleCanvas />
+      <Navbar />
 
       {/* HERO SECTION */}
-      <section className="relative min-h-screen flex items-center pt-20">
-        <div className="absolute inset-0 z-0">
-          <img src={heroImg} alt="Chess" className="w-full h-full object-cover opacity-10 mix-blend-overlay" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0f172a] to-[#0f172a]" />
-        </div>
+      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+        {/* Repeating Grid Overlay */}
+        <div className="absolute inset-0 z-0 opacity-[0.03]"
+             style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(255,255,255,0.5) 50px), repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(255,255,255,0.5) 50px)', backgroundSize: '50px 50px' }} />
 
-        <div className="relative container mx-auto px-6 z-10">
-          <ScrollReveal>
-            <div className="max-w-4xl">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-400 text-xs font-bold tracking-widest uppercase mb-8 backdrop-blur-sm"
-              >
-                <Sparkles className="h-3 w-3 animate-pulse" /> India's Premier Chess Academy
-              </motion.div>
+        <div className="container mx-auto px-6 z-10 grid lg:grid-cols-2 gap-12 items-center">
+          <ScrollReveal direction="left">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#f59e0b]/30 bg-[#f59e0b]/10 text-[#f59e0b] text-[11px] font-black tracking-[0.15em] uppercase mb-8 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                <span className="animate-pulse">♟</span> India's Premier Chess Academy
+              </div>
 
-              <h1 className="font-heading font-extrabold text-6xl md:text-8xl mb-8 leading-[1.05] tracking-tight text-white">
-                Master the <span className="text-sky-400 drop-shadow-[0_0_20px_rgba(56,189,248,0.3)]">Board.</span>
-                <br />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-sky-100 to-indigo-300">
-                  Own the Game.
-                </span>
+              <h1 className="text-6xl md:text-8xl font-black mb-8 leading-[1.05] tracking-tight text-white">
+                Master the <br />
+                <span className="text-[#38bdf8] glow-text-blue">Board.</span><br />
+                Own the <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#f59e0b] to-[#fbbf24]">Game.</span>
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+                  className="inline-block w-[3px] h-[0.8em] bg-[#f59e0b] ml-2 align-middle"
+                />
               </h1>
 
-              <p className="text-xl text-slate-400 mb-12 max-w-2xl leading-relaxed">
+              <p className="text-[#94a3b8] text-xl mb-12 leading-relaxed">
                 Professional coaching for the next generation of Grandmasters. 
                 Combining logic with the fun of strategy to build future champions.
               </p>
 
-              <div className="flex flex-wrap gap-6 mb-20">
-                <Button size="lg" className="bg-sky-500 hover:bg-sky-400 text-white px-10 rounded-2xl font-bold h-16 shadow-xl shadow-sky-900/20 transition-all hover:scale-105 active:scale-95">
+              <div className="flex flex-wrap gap-6">
+                <Button size="lg" className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-black font-black px-10 rounded-full h-16 shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:scale-105 transition-all duration-300">
                   Start Learning <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 
-                <Button variant="outline" size="lg" onClick={() => setIsDemoModalOpen(true)} className="border-slate-700 bg-white/5 backdrop-blur-xl text-white hover:bg-white/10 px-10 rounded-2xl font-bold h-16 transition-all">
+                <Button variant="outline" size="lg" onClick={() => setIsDemoModalOpen(true)} className="glass-card-blue text-white border-none px-10 rounded-full h-16 transition-all hover:bg-[#3b82f6]/20">
                   <PlayCircle className="mr-2 h-5 w-5" /> Free Demo
                 </Button>
               </div>
             </div>
           </ScrollReveal>
+
+          {/* Floating Board Illustration */}
+          <div className="relative hidden lg:block h-[600px]">
+             <motion.div
+               animate={{
+                 y: [0, -12, 0],
+                 rotateX: [15, 17, 15],
+                 rotateY: [-10, -12, -10]
+               }}
+               transition={{
+                 duration: 6,
+                 repeat: Infinity,
+                 ease: "easeInOut"
+               }}
+               style={{ perspective: '800px', transformStyle: 'preserve-3d', rotateX: '15deg', rotateY: '-10deg' }}
+               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-[#111827] rounded-3xl border border-white/10 shadow-2xl overflow-hidden"
+             >
+                <div className="grid grid-cols-8 grid-rows-8 w-full h-full opacity-20">
+                  {[...Array(64)].map((_, i) => (
+                    <div key={i} className={(Math.floor(i / 8) + i) % 2 === 0 ? "bg-white" : "bg-transparent"} />
+                  ))}
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                   <div className="text-[180px] text-[#f59e0b] opacity-30 drop-shadow-2xl">♞</div>
+                </div>
+             </motion.div>
+
+             {/* Floating Stat Cards */}
+             <motion.div
+               animate={{ y: [0, -10, 0] }}
+               transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
+               className="absolute top-[10%] right-[5%] glass-card-blue p-6 glow-blue"
+             >
+                <div className="text-white font-black text-2xl">5000+</div>
+                <div className="accent-label text-[#93c5fd]">Students</div>
+             </motion.div>
+
+             <motion.div
+               animate={{ y: [0, 10, 0] }}
+               transition={{ duration: 5, repeat: Infinity, delay: 1 }}
+               className="absolute bottom-[20%] left-[0%] glass-card-blue p-6 glow-blue"
+             >
+                <div className="text-white font-black text-2xl">120+</div>
+                <div className="accent-label text-[#93c5fd]">Tournaments</div>
+             </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* STATS SECTION */}
-      <section className="-mt-20 z-20 relative px-6">
-        <div className="container mx-auto">
-          <div className="bg-slate-800/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-10 grid grid-cols-2 md:grid-cols-4 gap-8 shadow-2xl">
+      {/* STATS BAR */}
+      <section className="bg-[#0d1b2e] border-y border-white/5 py-20 relative z-10">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
             {stats.map((stat) => (
-              <div key={stat.id} className="text-center md:text-left flex flex-col md:flex-row items-center gap-5 group">
-                <div className="p-4 rounded-2xl bg-sky-500/10 border border-sky-400/20 group-hover:bg-sky-500 transition-all duration-300">
-                  <stat.icon className="h-7 w-7 text-sky-400 group-hover:text-white" />
+              <div key={stat.id} className="flex flex-col md:flex-row items-center gap-6 group">
+                <div className="w-16 h-16 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/30 flex items-center justify-center shrink-0">
+                  <stat.icon className="h-8 w-8 text-[#f59e0b]" />
                 </div>
-                <div>
-                  <div className="text-3xl md:text-4xl font-bold text-white tracking-tighter">{stat.value}</div>
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">{stat.label}</div>
+                <div className="text-center md:text-left">
+                  <div className="text-5xl font-black text-white leading-none mb-2">
+                    <CountUp end={stat.value} suffix={stat.suffix} />
+                  </div>
+                  <div className="accent-label text-[#94a3b8]">{stat.label}</div>
                 </div>
               </div>
             ))}
@@ -193,7 +177,7 @@ export default function HomePage() {
       </section>
 
       {/* FEATURES SECTION */}
-      <section className="py-32 relative">
+      <section className="py-32 relative z-10">
         <div className="container mx-auto px-6">
           <SectionHeading 
             label="The UCA Advantage" 
@@ -203,12 +187,12 @@ export default function HomePage() {
           <div className="grid md:grid-cols-4 gap-8 mt-24">
             {features.map((f, i) => (
               <ScrollReveal key={f.id} delay={i * 0.1}>
-                <div className="h-full bg-slate-800/20 backdrop-blur-md border border-white/5 rounded-[2.5rem] p-10 transition-all hover:bg-sky-500/10 hover:border-sky-500/30 group shadow-lg">
-                  <div className="w-16 h-16 bg-sky-500/10 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-sky-500 transition-all duration-500">
-                    <f.icon className="h-8 w-8 text-sky-400 group-hover:text-white" />
+                <div className="h-full glass-card p-10 group transition-smooth hover:translate-y-[-8px] hover:glow-blue">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#3b82f6] to-[#0ea5e9] flex items-center justify-center mb-8 transition-smooth group-hover:scale-110">
+                    <f.icon className="h-7 w-7 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-4 tracking-tight">{f.title}</h3>
-                  <p className="text-slate-400 leading-relaxed text-sm">{f.desc}</p>
+                  <h3 className="text-xl font-black text-white mb-4 uppercase tracking-tight">{f.title}</h3>
+                  <p className="text-[#94a3b8] leading-relaxed text-sm">{f.desc}</p>
                 </div>
               </ScrollReveal>
             ))}
@@ -217,20 +201,23 @@ export default function HomePage() {
       </section>
 
       {/* CURRICULUM SECTION */}
-      <section className="py-32 bg-slate-900/50 border-y border-white/5 relative">
+      <section className="py-32 bg-[#030712] relative z-10 border-y border-white/5">
         <div className="container mx-auto px-6">
           <SectionHeading label="Your Path" title="Tailored Learning Paths" />
           <div className="grid md:grid-cols-3 gap-10 mt-24">
             {levels.map((level, i) => (
               <ScrollReveal key={level.id} delay={i * 0.1}>
-                <div className="relative h-full bg-[#1e293b]/60 backdrop-blur-xl border border-white/10 rounded-[3rem] p-12 overflow-hidden hover:shadow-2xl hover:shadow-sky-500/10 transition-all">
-                  <div className="text-6xl mb-10 drop-shadow-lg">{level.icon}</div>
-                  <h3 className="font-extrabold text-3xl text-white mb-4 tracking-tight">{level.title}</h3>
-                  <p className="text-slate-400 mb-8 leading-relaxed">{level.desc}</p>
-                  <ul className="space-y-4">
+                <div
+                  className="relative h-full glass-card p-12 overflow-hidden transition-smooth hover:shadow-2xl border-l-[3px]"
+                  style={{ borderLeftColor: level.color }}
+                >
+                  <div className="text-7xl mb-10 drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]" style={{ filter: `drop-shadow(0 0 10px ${level.color}40)` }}>{level.icon}</div>
+                  <h3 className="font-black text-3xl text-white mb-6 uppercase tracking-tight">{level.title}</h3>
+                  <p className="text-[#94a3b8] mb-10 leading-relaxed">{level.desc}</p>
+                  <ul className="space-y-6">
                     {level.points.map((p, idx) => (
-                      <li key={idx} className="flex items-center text-sm text-slate-300 font-medium">
-                        <div className="h-2 w-2 rounded-full bg-sky-500 mr-4 shadow-[0_0_8px_#0ea5e9]" /> {p}
+                      <li key={idx} className="flex items-center text-sm font-bold text-[#cbd5e1] uppercase tracking-wider">
+                        <div className="h-2 w-2 rounded-full mr-4 shadow-[0_0_8px_currentColor]" style={{ backgroundColor: level.color, color: level.color }} /> {p}
                       </li>
                     ))}
                   </ul>
@@ -241,33 +228,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="pt-32 pb-12 bg-[#020617] border-t border-white/5">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-20 pb-20 border-b border-white/5">
-            <div className="space-y-8">
-              <h3 className="text-2xl font-black text-white uppercase italic">
-                Unique <span className="text-sky-500">Chess</span> Academy
-              </h3>
-              <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
-                Shaping the future of Indian chess through methodology, discipline, and champion mentorship.
-              </p>
-            </div>
-            <div className="space-y-8">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-500">Contact</h4>
-              <div className="text-sm font-bold text-slate-400 space-y-4">
-                <p>📍 Yamuna Nagar, Haryana</p>
-                <p>📧 play@uniquechess.in</p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-12 flex justify-between items-center text-[10px] text-slate-600 font-bold uppercase tracking-widest">
-            <p>© {new Date().getFullYear()} Unique Chess Academy</p>
-            <p className="text-sky-500/40">Designed by Sakshi</p>
-          </div>
-        </div>
-      </footer>
-
+      <Footer />
       <DemoModal isOpen={isDemoModalOpen} onClose={() => setIsDemoModalOpen(false)} />
     </div>
   );

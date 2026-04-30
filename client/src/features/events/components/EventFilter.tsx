@@ -8,16 +8,16 @@ interface EventFilterProps {
 
 const EventFilter = ({ categories, activeFilter, onFilterChange }: EventFilterProps) => {
   return (
-    <div className="flex flex-wrap justify-center gap-3 mb-12">
+    <div className="flex flex-wrap justify-center gap-4 mb-16">
       {categories.map((cat) => (
         <button
           key={cat}
           onClick={() => onFilterChange(cat)}
           className={cn(
-            "px-6 py-2 rounded-full text-sm font-medium transition-all duration-300",
+            "px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-smooth border-none backdrop-blur-xl",
             activeFilter === cat
-              ? "bg-primary text-primary-foreground gold-glow"
-              : "bg-card border border-border hover:border-primary/50 text-muted-foreground"
+              ? "bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-black shadow-[0_0_25px_rgba(245,158,11,0.4)] scale-110"
+              : "glass-card text-[#94a3b8] hover:text-white hover:bg-white/10"
           )}
         >
           {cat}

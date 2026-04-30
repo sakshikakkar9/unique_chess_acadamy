@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
+import SparkleCanvas from "./SparkleCanvas";
 
 interface CTAStripProps {
   title?: string;
@@ -14,17 +15,32 @@ const CTAStrip = ({
   buttonText = "Join Academy",
 }: CTAStripProps) => {
   return (
-    <section className="section-padding py-12">
-      <div className="container mx-auto px-4">
+    <section className="relative py-24 overflow-hidden border-t border-[#3b82f6]/20 bg-gradient-to-r from-[#0a0f1e] to-[#1e3a5f]">
+      <div className="absolute inset-0 z-0 opacity-40">
+        {/* Reduced density for CTAStrip */}
+        <SparkleCanvas />
+      </div>
+
+      <div className="container relative z-10 mx-auto px-6">
         <ScrollReveal>
-          <div className="bg-gradient-to-r from-secondary/10 via-primary/5 to-transparent border border-secondary/10 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="text-center md:text-left">
-              <h2 className="font-heading font-bold text-2xl md:text-3xl mb-2">{title}</h2>
-              <p className="text-muted-foreground">{subtitle}</p>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="text-center md:text-left max-w-2xl">
+              <h2 className="font-black text-4xl md:text-5xl text-white mb-6 leading-tight">
+                {title.split(' ').map((word, i) => (
+                  <span key={i} className={i === 4 ? "glow-text-gold text-[#f59e0b]" : ""}>
+                    {word}{' '}
+                  </span>
+                ))}
+              </h2>
+              <p className="text-[#cbd5e1] text-lg leading-relaxed">{subtitle}</p>
             </div>
-            <Button size="lg" className="gold-glow group shrink-0">
+
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-black font-black rounded-full px-12 py-8 text-xl hover:scale-105 transition-transform duration-300 shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:shadow-[0_0_35px_rgba(245,158,11,0.6)] border-none shrink-0 group"
+            >
               {buttonText}
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-2" />
             </Button>
           </div>
         </ScrollReveal>
