@@ -1,4 +1,0 @@
-🟢 Successfully connected to the PostgreSQL database!
-🚀 Server is running on http://localhost:5000
-prisma:error
-Invalid `prisma.$queryRaw()` invocation:

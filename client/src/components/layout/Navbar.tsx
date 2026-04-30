@@ -31,22 +31,31 @@ const Navbar = () => {
   return (
     <nav
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-500 px-6 py-4",
+        "fixed top-0 w-full z-50 transition-all duration-300",
         scrolled
-          ? "bg-[#0d1b2e]/70 backdrop-blur-[24px] border-b border-white/10 py-3 shadow-lg"
-          : "bg-transparent"
+          ? "bg-white border-b border-[#e2e8f0] py-3 shadow-[0_1px_8px_rgba(0,0,0,0.06)]"
+          : "bg-transparent py-5"
       )}
     >
-      <div className="container mx-auto flex items-center justify-between">
+      <div className="container mx-auto px-6 flex items-center justify-between">
         {/* LOGO SECTION */}
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="text-white text-2xl group-hover:scale-110 transition-transform duration-300">♞</div>
-          <div className="flex flex-col md:flex-row md:gap-2 leading-none">
-            <span className="text-white font-black tracking-widest text-lg">UNIQUE</span>
-            <div className="flex gap-2">
-              <span className="text-[#f59e0b] font-black tracking-widest text-lg">CHESS</span>
-              <span className="text-[#60a5fa] font-black tracking-widest text-lg">ACADEMY</span>
-            </div>
+          <div className="flex items-baseline">
+            <span className={cn(
+              "font-bold text-xl tracking-tight",
+              scrolled ? "text-[#0f172a]" : "text-white"
+            )}>
+              UNIQUE
+            </span>
+            <span className="font-bold text-xl tracking-tight text-[#2563eb] ml-1.5">
+              CHESS
+            </span>
+            <span className={cn(
+              "font-medium text-xs tracking-wider ml-1.5",
+              scrolled ? "text-[#64748b]" : "text-white/70"
+            )}>
+              ACADEMY
+            </span>
           </div>
         </Link>
 
@@ -57,21 +66,20 @@ const Navbar = () => {
               key={link.path}
               to={link.path}
               className={cn(
-                "relative text-sm font-bold uppercase tracking-widest transition-all duration-300 py-2",
+                "relative text-[14px] font-medium transition-colors duration-200 py-1",
                 isActive(link.path)
-                  ? "text-[#60a5fa] glow-text-blue"
-                  : "text-[#94a3b8] hover:text-white"
+                  ? "text-[#2563eb]"
+                  : scrolled
+                    ? "text-[#475569] hover:text-[#0f172a]"
+                    : "text-white/80 hover:text-white"
               )}
             >
               {link.name}
               {isActive(link.path) && (
                 <motion.div
                   layoutId="nav-underline"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#60a5fa] shadow-[0_0_10px_#3b82f6]"
+                  className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#2563eb]"
                 />
-              )}
-              {!isActive(link.path) && (
-                <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full group-hover:left-0" />
               )}
             </Link>
           ))}
@@ -80,18 +88,21 @@ const Navbar = () => {
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-4">
           <Button
-            className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-black font-black rounded-full px-8 hover:scale-105 transition-transform duration-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:shadow-[0_0_30px_rgba(245,158,11,0.6)] border-none"
+            className="bg-[#d97706] text-white font-semibold rounded-full px-6 py-2 h-auto hover:bg-[#b45309] transition-all duration-300 shadow-[0_4px_12px_rgba(217,119,6,0.35)]"
           >
-            JOIN NOW
+            Enroll Now
           </Button>
         </div>
 
         {/* Mobile Toggle */}
         <button
-          className="lg:hidden p-2 text-white"
+          className={cn(
+            "lg:hidden p-2 transition-colors",
+            scrolled ? "text-[#0f172a]" : "text-white"
+          )}
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
@@ -99,30 +110,38 @@ const Navbar = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="lg:hidden fixed inset-0 top-0 left-0 w-full h-screen bg-[#0d1b2e]/95 backdrop-blur-3xl z-40 flex flex-col items-center justify-center p-8"
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="lg:hidden fixed inset-0 w-full h-screen bg-white z-[60] flex flex-col p-8"
           >
-            <button
-              className="absolute top-6 right-6 p-2 text-white"
-              onClick={() => setIsOpen(false)}
-            >
-              <X size={32} />
-            </button>
-            <div className="flex flex-col items-center gap-8">
+            <div className="flex justify-between items-center mb-12">
+               <div className="flex items-baseline">
+                <span className="font-bold text-xl tracking-tight text-[#0f172a]">UNIQUE</span>
+                <span className="font-bold text-xl tracking-tight text-[#2563eb] ml-1.5">CHESS</span>
+              </div>
+              <button
+                className="p-2 text-[#0f172a]"
+                onClick={() => setIsOpen(false)}
+              >
+                <X size={28} />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-6">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.path}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
                 >
                   <Link
                     to={link.path}
                     className={cn(
-                      "text-2xl font-black uppercase tracking-widest",
-                      isActive(link.path) ? "text-[#60a5fa] glow-text-blue" : "text-white"
+                      "text-2xl font-bold transition-colors",
+                      isActive(link.path) ? "text-[#2563eb]" : "text-[#475569]"
                     )}
                     onClick={() => setIsOpen(false)}
                   >
@@ -131,15 +150,16 @@ const Navbar = () => {
                 </motion.div>
               ))}
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: navLinks.length * 0.05 }}
+                className="mt-8"
               >
                 <Button
-                  className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-black font-black rounded-full px-12 py-6 text-xl shadow-[0_0_20px_rgba(245,158,11,0.4)]"
+                  className="bg-[#d97706] text-white font-bold rounded-full w-full py-4 h-auto text-lg shadow-[0_4px_12px_rgba(217,119,6,0.35)]"
                   onClick={() => setIsOpen(false)}
                 >
-                  JOIN NOW
+                  Enroll Now
                 </Button>
               </motion.div>
             </div>

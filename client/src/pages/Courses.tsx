@@ -12,6 +12,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import { cn } from "@/lib/utils";
+import { scaleIn } from "@/components/shared/motion";
 
 const AGE_GROUP_ORDER: AgeGroup[] = ["CHILDREN", "TEENAGERS", "ADULTS"];
 const ITEMS_PER_PAGE = 6;
@@ -62,32 +63,27 @@ export default function CoursesPage() {
   }, [currentPage]);
 
   return (
-    <div className="min-h-screen bg-[#0a0f1e] text-[#cbd5e1] selection:bg-sky-500/30 overflow-hidden relative">
-      <SparkleCanvas />
+    <div className="min-h-screen bg-white selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden">
       <Navbar />
 
-      {/* HERO SECTION */}
-      <header className="relative h-[65vh] min-h-[600px] w-full flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img src={HERO_IMAGE} alt="Chess Academy" className="w-full h-full object-cover opacity-20" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-transparent to-[#0a0f1e]" />
+      {/* HERO SECTION (Dark) */}
+      <header className="relative min-h-[60vh] w-full flex items-center justify-center bg-[#0f172a] overflow-hidden pt-32 pb-20">
+        <SparkleCanvas density="full" />
+        <div className="absolute inset-0 z-0 opacity-20">
+          <img src={HERO_IMAGE} alt="Chess Academy" className="w-full h-full object-cover" />
         </div>
 
         <div className="container relative z-10 mx-auto px-6 text-center">
-          <ScrollReveal direction="scale">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card-blue mb-8 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
-              <Sparkles className="h-3.5 w-3.5 text-[#38bdf8]" />
-              <span className="accent-label text-[#38bdf8] font-black">Professional Academy</span>
-            </div>
-            <h1 className="text-5xl md:text-8xl font-black text-white mb-8 tracking-tight leading-tight">
+          <ScrollReveal variants={scaleIn}>
+            <h1 className="text-h1 text-white mb-8 playfair">
               Master the <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#3b82f6] to-[#0ea5e9]">Royal Game</span>
             </h1>
-            <p className="max-w-2xl mx-auto text-[#94a3b8] text-xl leading-relaxed mb-12">
+            <p className="max-w-2xl mx-auto text-[#94a3b8] text-body-lg leading-relaxed mb-12">
               From foundation to mastery — structured curriculum designed by Grandmasters for every stage of your chess journey.
             </p>
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-black font-black rounded-full px-12 h-16 text-lg shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:scale-105 transition-all border-none"
+              className="bg-[#d97706] text-white font-semibold rounded-full px-12 h-14 text-lg shadow-[0_4px_12px_rgba(217,119,6,0.35)] hover:bg-[#b45309] transition-all"
               onClick={() => document.getElementById('course-directory')?.scrollIntoView({ behavior: 'smooth' })}
             >
               View Our Programs
@@ -96,51 +92,48 @@ export default function CoursesPage() {
         </div>
       </header>
 
-      {/* FILTER & CONTENT SECTION */}
-      <section className="py-32 relative z-10" id="course-directory">
-        <div className="container mx-auto px-6">
+      {/* FILTER BAR (Sticky White) */}
+      <div className="sticky top-[72px] z-30 bg-white border-b border-[#e2e8f0] py-4" id="course-directory">
+        <div className="container mx-auto px-6 flex flex-wrap justify-center gap-4">
+          <button
+            onClick={() => handleCategoryChange("ALL")}
+            className={cn(
+              "px-6 py-2.5 rounded-full text-[13px] font-medium transition-all duration-200 border",
+              activeCategory === 'ALL'
+              ? 'bg-[#2563eb] text-white border-[#2563eb]'
+              : 'bg-white text-[#475569] border-[#e2e8f0] hover:border-[#cbd5e1]'
+            )}
+          >
+            All Programs
+          </button>
           
-          {/* Enhanced Navigation Tabs */}
-          <div className="flex flex-wrap justify-center gap-4 mb-20">
-            <Button
-              onClick={() => handleCategoryChange("ALL")}
+          {AGE_GROUP_ORDER.map((group) => (
+            <button
+              key={group}
+              onClick={() => handleCategoryChange(group)}
               className={cn(
-                "rounded-full px-8 h-14 font-black uppercase tracking-widest text-xs transition-smooth border-none",
-                activeCategory === 'ALL' 
-                ? 'bg-[#f59e0b] text-black glow-gold'
-                : 'glass-card text-[#94a3b8] hover:text-white hover:bg-white/10'
+                "px-6 py-2.5 rounded-full text-[13px] font-medium transition-all duration-200 border flex items-center gap-2",
+                activeCategory === group
+                ? 'bg-[#2563eb] text-white border-[#2563eb]'
+                : 'bg-white text-[#475569] border-[#e2e8f0] hover:border-[#cbd5e1]'
               )}
             >
-              <LayoutGrid className="mr-2 h-4 w-4" /> All Programs
-            </Button>
-            
-            {AGE_GROUP_ORDER.map((group) => (
-              <Button
-                key={group}
-                onClick={() => handleCategoryChange(group)}
-                className={cn(
-                  "rounded-full px-8 h-14 font-black uppercase tracking-widest text-xs transition-smooth border-none",
-                  activeCategory === group 
-                  ? 'bg-[#f59e0b] text-black glow-gold'
-                  : 'glass-card text-[#94a3b8] hover:text-white hover:bg-white/10'
-                )}
-              >
-                <span className="mr-2">{AGE_GROUP_ICONS[group]}</span>
-                {AGE_GROUP_LABELS[group]}
-              </Button>
-            ))}
-          </div>
+              {AGE_GROUP_ICONS[group]}
+              {AGE_GROUP_LABELS[group]}
+            </button>
+          ))}
+        </div>
+      </div>
 
+      {/* CONTENT SECTION (White) */}
+      <section className="py-20 bg-white min-h-[600px]">
+        <div className="container mx-auto px-6">
           {/* Heading Content */}
           <div className="mb-20 text-center max-w-3xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-black mb-6 text-white tracking-tight uppercase">
-              {activeCategory === "ALL" ? (
-                <>Available <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#3b82f6] to-[#0ea5e9]">Programs</span></>
-              ) : (
-                <>{AGE_GROUP_LABELS[activeCategory]} <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#3b82f6] to-[#0ea5e9]">Path</span></>
-              )}
+            <h2 className="text-h2 text-[#0f172a] mb-6">
+              {activeCategory === "ALL" ? "All Programs" : AGE_GROUP_LABELS[activeCategory]}
             </h2>
-            <p className="text-[#94a3b8] text-lg leading-relaxed">
+            <p className="text-[#475569] text-[17px] leading-[1.7]">
               {activeCategory === "ALL" 
                 ? "Browse our complete catalog of specialized chess training designed for every skill level."
                 : AGE_GROUP_DESCRIPTIONS[activeCategory]}
@@ -151,14 +144,14 @@ export default function CoursesPage() {
           <div className="w-full">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-32 text-[#94a3b8]">
-                <div className="h-12 w-12 border-4 border-[#3b82f6]/20 border-t-[#3b82f6] rounded-full animate-spin mb-6" />
-                <p className="font-black uppercase tracking-[0.2em] text-xs">Curating programs...</p>
+                <div className="h-12 w-12 border-4 border-[#2563eb]/20 border-t-[#2563eb] rounded-full animate-spin mb-6" />
+                <p className="text-label">Curating programs...</p>
               </div>
             ) : filteredCourses.length === 0 ? (
-              <div className="text-center py-32 glass-card border-dashed border-white/10">
-                <SearchX className="h-16 w-16 text-[#3b82f6]/30 mx-auto mb-6" />
-                <h3 className="text-2xl font-black text-white uppercase mb-4">No programs found</h3>
-                <p className="text-[#94a3b8]">We're updating our curriculum. Check back shortly!</p>
+              <div className="text-center py-32 border border-dashed border-[#e2e8f0] rounded-2xl">
+                <SearchX className="h-16 w-16 text-[#94a3b8]/30 mx-auto mb-6" />
+                <h3 className="text-2xl font-bold text-[#0f172a] mb-4">No programs found</h3>
+                <p className="text-[#475569]">We're updating our curriculum. Check back shortly!</p>
               </div>
             ) : (
               <div className="space-y-24">
@@ -168,35 +161,34 @@ export default function CoursesPage() {
                 
                 {/* Pagination UI */}
                 {totalPages > 1 && (
-                  <div className="flex flex-col items-center gap-12 pt-16 border-t border-white/5">
-                     <div className="flex gap-4">
-                      {[...Array(totalPages)].map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setCurrentPage(i + 1)}
-                          className={cn(
-                            "h-2 rounded-full transition-smooth",
-                            currentPage === i + 1 ? 'bg-[#f59e0b] w-12 glow-gold' : 'bg-white/10 hover:bg-white/20 w-2'
-                          )}
-                          aria-label={`Go to page ${i + 1}`}
-                        />
-                      ))}
-                    </div>
-                    
+                  <div className="flex flex-col items-center gap-12 pt-16 border-t border-[#e2e8f0]">
                     <div className="flex gap-6">
                       <Button
                         variant="outline"
                         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                         disabled={currentPage === 1}
-                        className="glass-card px-8 h-14 border-none font-black uppercase tracking-widest text-xs transition-smooth hover:bg-white/10"
+                        className="rounded-full px-8 h-12 border-[#e2e8f0] text-[#475569] hover:bg-[#f8fafc]"
                       >
                         <ChevronLeft className="h-4 w-4 mr-2" /> Previous
                       </Button>
+                      <div className="flex items-center gap-2">
+                        {[...Array(totalPages)].map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setCurrentPage(i + 1)}
+                            className={cn(
+                              "w-2.5 h-2.5 rounded-full transition-all",
+                              currentPage === i + 1 ? 'bg-[#2563eb] w-8' : 'bg-[#e2e8f0] hover:bg-[#cbd5e1]'
+                            )}
+                            aria-label={`Go to page ${i + 1}`}
+                          />
+                        ))}
+                      </div>
                       <Button
                         variant="outline"
                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                         disabled={currentPage === totalPages}
-                        className="glass-card px-8 h-14 border-none font-black uppercase tracking-widest text-xs transition-smooth hover:bg-white/10"
+                        className="rounded-full px-8 h-12 border-[#e2e8f0] text-[#475569] hover:bg-[#f8fafc]"
                       >
                         Next <ChevronRight className="h-4 w-4 ml-2" />
                       </Button>

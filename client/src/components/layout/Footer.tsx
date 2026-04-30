@@ -1,23 +1,19 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } from "lucide-react";
-import { cn } from "@/lib/utils";
+import SparkleCanvas from "@/components/shared/SparkleCanvas";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#020617] pt-24 pb-12 relative overflow-hidden">
-      {/* Top golden gradient line */}
-      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#f59e0b] to-transparent opacity-50" />
+    <footer className="bg-[#0d1421] pt-24 pb-12 relative overflow-hidden text-white">
+      <SparkleCanvas density="subtle" />
 
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-6 relative z-10">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
           <div className="space-y-8">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="text-white text-2xl group-hover:scale-110 transition-transform duration-300">♞</div>
-              <div className="flex flex-col leading-none">
-                <span className="text-white font-black tracking-widest text-lg uppercase">UNIQUE</span>
-                <div className="flex gap-1">
-                  <span className="text-[#f59e0b] font-black tracking-widest text-lg uppercase">CHESS</span>
-                </div>
+              <div className="flex items-baseline">
+                <span className="font-bold text-xl tracking-tight text-white">UNIQUE</span>
+                <span className="font-bold text-xl tracking-tight text-[#2563eb] ml-1.5">CHESS</span>
               </div>
             </Link>
             <p className="text-[#94a3b8] text-sm leading-relaxed max-w-xs">
@@ -28,7 +24,7 @@ const Footer = () => {
                 <a
                   key={i}
                   href="#"
-                  className="w-10 h-10 rounded-lg glass-card-blue flex items-center justify-center text-white hover:glow-blue hover:scale-110 transition-all duration-300"
+                  className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all duration-300"
                 >
                   <Icon className="h-5 w-5" />
                 </a>
@@ -37,7 +33,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-white font-black uppercase tracking-[0.2em] text-xs mb-8">Quick Links</h4>
+            <h4 className="text-white font-bold uppercase tracking-wider text-xs mb-8">Quick Links</h4>
             <ul className="space-y-4">
               {[
                 { name: "About Us", path: "/about" },
@@ -47,7 +43,7 @@ const Footer = () => {
                 { name: "Contact", path: "/contact" },
               ].map((link) => (
                 <li key={link.name}>
-                  <Link to={link.path} className="text-[#64748b] hover:text-[#93c5fd] text-sm font-bold transition-all duration-300">
+                  <Link to={link.path} className="text-[#94a3b8] hover:text-white text-sm font-medium transition-all duration-300">
                     {link.name}
                   </Link>
                 </li>
@@ -56,7 +52,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-white font-black uppercase tracking-[0.2em] text-xs mb-8">Our Programs</h4>
+            <h4 className="text-white font-bold uppercase tracking-wider text-xs mb-8">Our Programs</h4>
             <ul className="space-y-4">
               {[
                 "Beginner Program",
@@ -66,7 +62,7 @@ const Footer = () => {
                 "Corporate Workshops",
               ].map((program) => (
                 <li key={program}>
-                  <Link to="/courses" className="text-[#64748b] hover:text-[#93c5fd] text-sm font-bold transition-all duration-300">
+                  <Link to="/courses" className="text-[#94a3b8] hover:text-white text-sm font-medium transition-all duration-300">
                     {program}
                   </Link>
                 </li>
@@ -75,34 +71,34 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-white font-black uppercase tracking-[0.2em] text-xs mb-8">Contact Us</h4>
+            <h4 className="text-white font-bold uppercase tracking-wider text-xs mb-8">Contact Us</h4>
             <ul className="space-y-6">
               <li className="flex items-start gap-4 text-[#94a3b8]">
-                <MapPin className="h-5 w-5 text-[#f59e0b] shrink-0" />
+                <MapPin className="h-5 w-5 text-[#2563eb] shrink-0" />
                 <span className="text-sm leading-relaxed">Chess House, Andheri West, Mumbai, India</span>
               </li>
               <li className="flex items-center gap-4 text-[#94a3b8]">
-                <Phone className="h-5 w-5 text-[#f59e0b] shrink-0" />
-                <span className="text-sm font-bold">+91 98765 43210</span>
+                <Phone className="h-5 w-5 text-[#2563eb] shrink-0" />
+                <span className="text-sm font-semibold">+91 98765 43210</span>
               </li>
               <li className="flex items-center gap-4 text-[#94a3b8]">
-                <Mail className="h-5 w-5 text-[#f59e0b] shrink-0" />
-                <span className="text-sm font-bold">info@uniquechess.in</span>
+                <Mail className="h-5 w-5 text-[#2563eb] shrink-0" />
+                <span className="text-sm font-semibold">info@uniquechess.in</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-          <p className="text-[#64748b] text-[10px] font-black uppercase tracking-widest">
+          <p className="text-[#64748b] text-[11px] font-medium uppercase tracking-widest">
             © {new Date().getFullYear()} Unique Chess Academy. All rights reserved.
           </p>
           <div className="flex gap-8">
-            <a href="#" className="text-[#64748b] hover:text-[#93c5fd] text-[10px] font-black uppercase tracking-widest transition-colors">Privacy Policy</a>
-            <a href="#" className="text-[#64748b] hover:text-[#93c5fd] text-[10px] font-black uppercase tracking-widest transition-colors">Terms of Service</a>
+            <a href="#" className="text-[#64748b] hover:text-white text-[11px] font-medium uppercase tracking-widest transition-colors">Privacy Policy</a>
+            <a href="#" className="text-[#64748b] hover:text-white text-[11px] font-medium uppercase tracking-widest transition-colors">Terms of Service</a>
           </div>
-          <div className="glass-card-gold px-4 py-2 shadow-sm">
-             <span className="text-[#f59e0b] text-[10px] font-black uppercase tracking-widest">Designed by Sakshi</span>
+          <div className="border border-[#d97706]/40 px-4 py-2 rounded-full">
+             <span className="text-[#d97706] text-[11px] font-bold uppercase tracking-widest">Designed by Sakshi</span>
           </div>
         </div>
       </div>
