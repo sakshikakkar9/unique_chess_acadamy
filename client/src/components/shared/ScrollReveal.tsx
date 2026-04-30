@@ -1,51 +1,49 @@
-import { motion, useInView } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { useRef } from "react";
+import { motion, useInView } from 'framer-motion';
+import { useRef, ReactNode } from 'react';
+import { fadeUp, fadeLeft, fadeRight, scaleIn } from '@/components/shared/motion';
 
 interface ScrollRevealProps {
-  children: React.ReactNode;
-  direction?: "up" | "down" | "left" | "right" | "scale";
+  children: ReactNode;
+  direction?: 'up' | 'down' | 'left' | 'right';
   delay?: number;
-  duration?: number;
+  width?: 'fit-content' | '100%';
   className?: string;
   once?: boolean;
 }
 
-const ScrollReveal = ({
+export default function ScrollReveal({
   children,
-  direction = "up",
+  direction = 'up',
   delay = 0,
-  duration = 0.7,
-  className,
+  width = 'fit-content',
+  className = '',
   once = true,
-}: ScrollRevealProps) => {
+}: ScrollRevealProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once, margin: "-80px" });
+  const isInView = useInView(ref, { once, margin: '-80px 0px' });
 
-  const variants = {
-    up: { hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } },
-    down: { hidden: { opacity: 0, y: -40 }, visible: { opacity: 1, y: 0 } },
-    left: { hidden: { opacity: 0, x: 50 }, visible: { opacity: 1, x: 0 } },
-    right: { hidden: { opacity: 0, x: -50 }, visible: { opacity: 1, x: 0 } },
-    scale: { hidden: { opacity: 0, scale: 0.85 }, visible: { opacity: 1, scale: 1 } },
+  const getVariant = () => {
+    switch (direction) {
+      case 'up': return fadeUp;
+      case 'left': return fadeLeft;
+      case 'right': return fadeRight;
+      case 'down': return { ...fadeUp, hidden: { ...fadeUp.hidden, y: -32 } };
+      default: return fadeUp;
+    }
   };
 
-  return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={variants[direction]}
-      transition={{
-        duration,
-        delay,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      className={cn(className)}
-    >
-      {children}
-    </motion.div>
-  );
-};
+  const variants = getVariant();
 
-export default ScrollReveal;
+  return (
+    <div ref={ref} className={className} style={{ width }}>
+      <motion.div
+        variants={variants}
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+        transition={{ ...variants.visible.transition, delay }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+}
