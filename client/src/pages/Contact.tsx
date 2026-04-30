@@ -2,12 +2,12 @@ import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/shared/ScrollReveal";
-import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, MessageCircle, Loader2 } from "lucide-react";
+import { Mail, Phone, MapPin, MessageCircle, Loader2, Sparkles, Send } from "lucide-react";
 import { toast } from "sonner";
+import SparkleCanvas from "@/components/shared/SparkleCanvas";
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
@@ -22,70 +22,98 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#0a0f1e] text-[#cbd5e1] selection:bg-sky-500/30 overflow-hidden relative">
+      <SparkleCanvas />
       <Navbar />
 
-      <PageHeader
-        label="Contact"
-        title={
-          <>
-            Get in <span className="text-gradient-gold">Touch</span>
-          </>
-        }
-        description="Have questions? We'd love to hear from you."
-      />
+      {/* HERO SECTION */}
+      <header className="relative pt-48 pb-24 flex items-center">
+        <div className="container mx-auto px-6 z-10 text-center">
+          <ScrollReveal direction="scale">
+            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full glass-card-blue mb-10 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+              <Sparkles className="h-4 w-4 text-[#38bdf8] animate-pulse" />
+              <span className="accent-label text-[#38bdf8] font-black">Contact</span>
+            </div>
 
-      <section className="section-padding pt-0">
-        <div className="container mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12">
+            <h1 className="text-6xl md:text-9xl font-black text-white mb-10 tracking-tighter uppercase leading-none">
+              Get in <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] glow-text-gold">Touch</span>
+            </h1>
+
+            <p className="text-[#94a3b8] max-w-2xl mx-auto text-xl leading-relaxed font-medium">
+              Have questions? We'd love to hear from you. Our team is ready to help you start your chess journey.
+            </p>
+          </ScrollReveal>
+        </div>
+      </header>
+
+      <section className="pb-32 relative z-10">
+        <div className="container mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-20">
             <ScrollReveal direction="left">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium block">Name</label>
-                    <Input placeholder="Your name" required className="bg-card border-border" />
+              <div className="glass-card p-10 border-white/5">
+                <form onSubmit={handleSubmit} className="space-y-8">
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <label className="accent-label text-[#64748b] font-black">Name</label>
+                      <Input
+                        placeholder="Your name"
+                        required
+                        className="bg-white/5 border-white/10 h-14 rounded-xl focus:border-[#3b82f6] focus:ring-0 transition-smooth focus:glow-blue text-white"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="accent-label text-[#64748b] font-black">Phone</label>
+                      <Input
+                        placeholder="+91 XXXXX XXXXX"
+                        className="bg-white/5 border-white/10 h-14 rounded-xl focus:border-[#3b82f6] focus:ring-0 transition-smooth focus:glow-blue text-white"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium block">Phone</label>
-                    <Input placeholder="+91 XXXXX XXXXX" className="bg-card border-border" />
+                  <div className="space-y-3">
+                    <label className="accent-label text-[#64748b] font-black">Email</label>
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      required
+                      className="bg-white/5 border-white/10 h-14 rounded-xl focus:border-[#3b82f6] focus:ring-0 transition-smooth focus:glow-blue text-white"
+                    />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium block">Email</label>
-                  <Input
-                    type="email"
-                    placeholder="you@example.com"
-                    required
-                    className="bg-card border-border"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium block">Message</label>
-                  <Textarea
-                    placeholder="Tell us what you're looking for..."
-                    rows={5}
-                    required
-                    className="bg-card border-border"
-                  />
-                </div>
-                <Button type="submit" size="lg" className="gold-glow w-full sm:w-auto" disabled={loading}>
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    "Send Message"
-                  )}
-                </Button>
-              </form>
+                  <div className="space-y-3">
+                    <label className="accent-label text-[#64748b] font-black">Message</label>
+                    <Textarea
+                      placeholder="Tell us what you're looking for..."
+                      rows={5}
+                      required
+                      className="bg-white/5 border-white/10 rounded-xl focus:border-[#3b82f6] focus:ring-0 transition-smooth focus:glow-blue text-white"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-black font-black w-full sm:w-auto h-16 px-12 rounded-full shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:scale-[1.02] transition-all border-none"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                        SENDING...
+                      </>
+                    ) : (
+                      <>
+                        SEND MESSAGE
+                        <Send className="ml-3 h-5 w-5" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </div>
             </ScrollReveal>
 
             <ScrollReveal direction="right">
-              <div className="space-y-6">
-                <div className="bg-card border border-border rounded-2xl p-6">
-                  <h3 className="font-heading font-semibold text-lg mb-4">Contact Info</h3>
-                  <div className="space-y-4">
+              <div className="space-y-10">
+                <div className="glass-card-blue p-10 border-[#3b82f6]/20">
+                  <h3 className="font-black text-2xl text-white uppercase tracking-tight mb-8">Contact Info</h3>
+                  <div className="space-y-8">
                     <ContactInfoItem
                       icon={MapPin}
                       label="Address"
@@ -100,12 +128,14 @@ export default function ContactPage() {
                   href="https://wa.me/919876543210"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 bg-green-600/20 border border-green-500/30 rounded-2xl p-6 hover:bg-green-600/30 transition-colors group"
+                  className="flex items-center gap-6 glass-card p-10 border-green-500/20 hover:bg-green-500/5 transition-smooth group"
                 >
-                  <MessageCircle className="h-8 w-8 text-green-400" />
+                  <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-smooth">
+                    <MessageCircle className="h-8 w-8 text-green-400" />
+                  </div>
                   <div>
-                    <p className="font-heading font-semibold">Chat on WhatsApp</p>
-                    <p className="text-sm text-muted-foreground">Quick replies, usually within minutes</p>
+                    <p className="font-black text-xl text-white uppercase tracking-tight">Chat on WhatsApp</p>
+                    <p className="text-[#94a3b8] font-medium">Quick replies, usually within minutes</p>
                   </div>
                 </a>
               </div>
@@ -129,11 +159,13 @@ function ContactInfoItem({
   value: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <Icon className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+    <div className="flex items-start gap-6 group">
+      <div className="w-12 h-12 rounded-xl glass-card-blue flex items-center justify-center shrink-0 group-hover:scale-110 transition-smooth">
+        <Icon className="h-5 w-5 text-[#38bdf8]" />
+      </div>
       <div>
-        <p className="font-medium text-sm">{label}</p>
-        <p className="text-sm text-muted-foreground">{value}</p>
+        <p className="accent-label text-[#64748b] font-black">{label}</p>
+        <p className="text-white font-bold text-lg">{value}</p>
       </div>
     </div>
   );

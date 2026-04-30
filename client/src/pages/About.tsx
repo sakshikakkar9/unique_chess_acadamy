@@ -3,8 +3,9 @@ import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import SectionHeading from "@/components/shared/SectionHeading";
 import CTAStrip from "@/components/shared/CTAStrip";
+import SparkleCanvas from "@/components/shared/SparkleCanvas";
 import trainingImg from "@/assets/academy-training.jpg";
-import { Target, Eye, Shield, Award, Users, Lightbulb, Sparkles, ChevronRight } from "lucide-react";
+import { Target, Eye, Shield, Award, Users, Lightbulb, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const values = [
@@ -23,79 +24,80 @@ const coaches = [
   { name: "WIM Kavya Nair", title: "Junior Coach", elo: "2150 ELO", specialty: "Beginner Development", bio: "Dedicated to building strong foundations for our youngest prodigies." },
 ];
 
-// Professional Hero Background (Chess related)
 const ABOUT_HERO_BG = "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?q=80&w=2000&auto=format&fit=crop";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#0a0f1e] text-[#cbd5e1] selection:bg-sky-500/30 overflow-hidden relative">
+      <SparkleCanvas />
       <Navbar />
 
-      {/* NEW PROFESSIONAL HERO SECTION */}
-      <header className="relative h-[60vh] min-h-[500px] w-full flex items-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={ABOUT_HERO_BG} 
-            alt="Chess Academy Excellence" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-transparent" />
-        </div>
-
-        <div className="container relative z-10 mx-auto px-6">
-          <div className="max-w-3xl">
-            <ScrollReveal direction="left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-md">
-                <Sparkles className="h-3 w-3" /> Our Legacy
+      {/* HERO SECTION */}
+      <header className="relative min-h-screen flex items-center pt-20">
+        <div className="container mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+          <ScrollReveal direction="left">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card-gold mb-6 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                <Sparkles className="h-3 w-3 text-[#f59e0b]" />
+                <span className="accent-label text-[#f59e0b] font-black">Our Legacy</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-black text-white font-heading mb-6 tracking-tight leading-[1.1]">
+              <h1 className="text-5xl md:text-8xl font-black text-white mb-8 tracking-tight leading-[1.05]">
                 India's Premier <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Chess Ecosystem</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#3b82f6] to-[#0ea5e9]">Chess Ecosystem</span>
               </h1>
-              <p className="text-blue-100/80 text-lg md:text-xl leading-relaxed mb-8 max-w-xl">
+              <p className="text-[#94a3b8] text-xl leading-relaxed mb-10">
                 Founded with a singular mission — to make world-class chess education accessible to every aspiring player across the nation.
               </p>
-              <div className="flex gap-4">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-500 text-white rounded-full px-8 font-bold">
-                  Explore Our Journey
-                </Button>
-              </div>
-            </ScrollReveal>
-          </div>
+              <Button size="lg" className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-black font-black rounded-full px-10 h-16 shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:scale-105 transition-all duration-300 border-none">
+                Explore Our Journey
+              </Button>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal direction="right" className="hidden lg:block h-[700px]">
+            <div
+              className="w-full h-full object-cover rounded-3xl overflow-hidden shadow-2xl border border-white/10"
+              style={{ clipPath: 'polygon(8% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
+            >
+              <img src={ABOUT_HERO_BG} alt="Chess Academy Excellence" className="w-full h-full object-cover" />
+            </div>
+          </ScrollReveal>
         </div>
       </header>
 
-      {/* The Story Section */}
-      <section className="py-24 bg-white overflow-hidden">
+      {/* STORY SECTION */}
+      <section className="py-32 bg-[#0d1b2e] relative z-10 border-y border-white/5">
         <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
             <ScrollReveal direction="left">
-              <div className="relative">
-                <div className="absolute -top-4 -left-4 w-24 h-24 bg-blue-600/10 rounded-full blur-2xl" />
-                <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border-8 border-white">
-                  <img src={trainingImg} alt="Academy Training" className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700" />
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-[#3b82f6]/20 rounded-[2.5rem] blur-2xl group-hover:bg-[#3b82f6]/30 transition-all duration-500" />
+                <div className="relative rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
+                  <img src={trainingImg} alt="Academy Training" className="w-full h-auto transition-transform duration-700 group-hover:scale-110" />
                 </div>
-                <div className="absolute -bottom-6 -right-6 bg-slate-900 text-white p-8 rounded-2xl shadow-xl hidden md:block">
-                  <p className="text-4xl font-black text-blue-400">10+</p>
-                  <p className="text-sm font-bold uppercase tracking-widest text-slate-400">Years of Excellence</p>
+                <div className="absolute -bottom-8 -right-8 glass-card p-10 shadow-2xl border-[#3b82f6]/30">
+                  <p className="text-5xl font-black text-[#38bdf8] glow-text-blue leading-none">10+</p>
+                  <p className="accent-label text-[#94a3b8] mt-2 font-black">Years of Excellence</p>
                 </div>
               </div>
             </ScrollReveal>
             
             <ScrollReveal direction="right">
-              <span className="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4 block">Our Story</span>
-              <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-8 tracking-tight">A Decade of <br />Strategic Mastery</h2>
-              <div className="space-y-6 text-slate-600 text-lg leading-relaxed">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card-blue mb-6">
+                <span className="accent-label text-[#38bdf8] font-black">Our Story</span>
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-white mb-10 tracking-tight leading-[1.1]">A Decade of <br />Strategic Mastery</h2>
+              <div className="space-y-8 text-[#94a3b8] text-lg leading-relaxed">
                 <p>Unique Chess Academy was founded in 2016 with a vision to create a world-class chess training ecosystem in India. What started as a small coaching center has grown into one of the country's most respected institutions.</p>
                 <p>Our approach combines rigorous analytical training with the joy of competition. We believe every student has the potential for greatness — they just need the right guidance and structure.</p>
-                <div className="grid grid-cols-2 gap-6 pt-4">
+                <div className="grid grid-cols-2 gap-12 pt-6">
                   <div>
-                    <p className="text-2xl font-bold text-slate-900">5,000+</p>
-                    <p className="text-sm text-slate-500">Students Trained</p>
+                    <p className="text-4xl font-black text-white">5,000+</p>
+                    <p className="accent-label text-[#38bdf8] mt-2 font-black">Students Trained</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-slate-900">50+</p>
-                    <p className="text-sm text-slate-500">National Champions</p>
+                    <p className="text-4xl font-black text-white">50+</p>
+                    <p className="accent-label text-[#38bdf8] mt-2 font-black">National Champions</p>
                   </div>
                 </div>
               </div>
@@ -104,43 +106,17 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission & Vision - Modern Card Design */}
-      <section className="py-24 bg-slate-50/50">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-8">
-            <ScrollReveal>
-              <div className="group bg-white border border-slate-200 rounded-3xl p-10 shadow-sm hover:shadow-xl transition-all duration-500">
-                <div className="h-14 w-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                  <Target className="h-7 w-7" />
-                </div>
-                <h3 className="text-2xl font-bold mb-4 text-slate-900">Our Mission</h3>
-                <p className="text-slate-500 text-lg leading-relaxed">To provide structured, world-class chess education that develops analytical thinking, strategic decision-making, and competitive excellence.</p>
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={0.1}>
-              <div className="group bg-white border border-slate-200 rounded-3xl p-10 shadow-sm hover:shadow-xl transition-all duration-500">
-                <div className="h-14 w-14 bg-cyan-50 rounded-2xl flex items-center justify-center mb-6 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white transition-all">
-                  <Eye className="h-7 w-7" />
-                </div>
-                <h3 className="text-2xl font-bold mb-4 text-slate-900">Our Vision</h3>
-                <p className="text-slate-500 text-lg leading-relaxed">To become India's leading chess academy — nurturing the next generation of grandmasters while making chess accessible to every aspiring player.</p>
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Values Grid */}
-      <section className="py-24">
+      {/* VALUES GRID */}
+      <section className="py-32 relative z-10">
         <div className="container mx-auto px-6">
           <SectionHeading label="Why Choose Us" title="What Sets Us Apart" />
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
             {values.map((v, i) => (
-              <ScrollReveal key={v.title} delay={i * 0.05}>
-                <div className="p-8 rounded-3xl bg-white border border-slate-100 hover:border-blue-100 hover:bg-blue-50/30 transition-all group">
-                  <v.icon className="h-8 w-8 text-blue-600 mb-4 transition-transform group-hover:scale-110" />
-                  <h3 className="font-bold text-xl mb-3 text-slate-900">{v.title}</h3>
-                  <p className="text-slate-500 leading-relaxed">{v.text}</p>
+              <ScrollReveal key={v.title} delay={i * 0.1}>
+                <div className="glass-card-blue p-10 group transition-smooth hover:translate-y-[-8px] hover:glow-blue">
+                  <v.icon className="h-10 w-10 text-[#38bdf8] mb-8 transition-smooth group-hover:scale-110 group-hover:glow-text-blue" />
+                  <h3 className="font-black text-xl mb-4 text-white uppercase tracking-tight">{v.title}</h3>
+                  <p className="text-[#94a3b8] leading-relaxed">{v.text}</p>
                 </div>
               </ScrollReveal>
             ))}
@@ -148,27 +124,23 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Expert Coaches - Profile Card Style */}
-      <section className="py-24 bg-slate-900 text-white overflow-hidden">
+      {/* COACHES SECTION */}
+      <section className="py-32 bg-[#0d1b2e] relative z-10 border-t border-white/5">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-blue-400 font-bold tracking-widest text-sm uppercase">Our Faculty</span>
-            <h2 className="text-4xl md:text-5xl font-black mt-4">Learn From Champions</h2>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <SectionHeading label="Our Faculty" title="Learn From Champions" />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
             {coaches.map((c, i) => (
               <ScrollReveal key={c.name} delay={i * 0.1}>
-                <div className="bg-slate-800/50 border border-slate-700 rounded-3xl p-8 hover:bg-slate-800 transition-all group">
-                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 mb-6 flex items-center justify-center text-3xl font-black shadow-lg shadow-blue-500/20">
+                <div className="glass-card p-8 group transition-smooth hover:translate-y-[-8px] border-white/5">
+                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#3b82f6] to-[#0ea5e9] mb-8 flex items-center justify-center text-3xl font-black text-white shadow-xl shadow-[#3b82f6]/20 transition-smooth group-hover:scale-110">
                     {c.name.split(" ").map(n => n[0]).join("")}
                   </div>
-                  <h3 className="text-xl font-bold mb-1">{c.name}</h3>
-                  <p className="text-blue-400 font-bold text-xs uppercase tracking-wider mb-4">{c.title}</p>
-                  <div className="flex gap-2 mb-4">
-                    <span className="bg-slate-700 px-2 py-1 rounded text-[10px] font-bold text-slate-300">{c.elo}</span>
-                    <span className="bg-slate-700 px-2 py-1 rounded text-[10px] font-bold text-slate-300">{c.specialty}</span>
+                  <h3 className="text-xl font-black text-white mb-2 uppercase tracking-tight">{c.name}</h3>
+                  <div className="inline-flex px-3 py-1 rounded-full glass-card-gold mb-6 border-[#f59e0b]/30">
+                    <span className="accent-label text-[#f59e0b] font-black">{c.elo}</span>
                   </div>
-                  <p className="text-slate-400 text-sm leading-relaxed">{c.bio}</p>
+                  <p className="text-[#38bdf8] text-xs font-black uppercase tracking-widest mb-6">{c.title} • {c.specialty}</p>
+                  <p className="text-[#94a3b8] text-sm leading-relaxed">{c.bio}</p>
                 </div>
               </ScrollReveal>
             ))}
