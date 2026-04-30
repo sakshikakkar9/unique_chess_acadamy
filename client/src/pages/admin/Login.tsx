@@ -29,7 +29,7 @@ const AdminLogin: React.FC = () => {
     try {
       // 1. Call your Node.js backend using the relative path (Vite Proxy handles the rest)
       // Note: Make sure this matches your Express router setup!
-      const response = await axios.post("/api/admin/login", {
+      const response = await axios.post("https://unique-chess-acadamy-tqe5.vercel.app/admin/login", {
         username,
         password,
       });
