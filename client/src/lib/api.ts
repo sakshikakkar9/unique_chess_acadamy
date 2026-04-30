@@ -1,21 +1,31 @@
 import axios from 'axios';
 
+// The baseURL will prioritize the Vercel Environment Variable we just added.
+// In production, this will be: https://unique-chess-acadamy.onrender.com/api
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: `${import.meta.env.VITE_API_URL}/api` || 'http://localhost:5000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
+// Interceptor to attach the Admin JWT token for protected routes
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('admin_token'); 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
+}, (error) => {
+  return Promise.reject(error);
 });
 
-// Tournament Specific API Methods - Updated to match your new routes
+// Tournament Specific API Methods
 export const tournamentApi = {
+  // Public route: fetch all tournaments
   getAll: () => api.get('/tournaments'),
-  // ✅ Added /admin segments
+  
+  // Protected Admin routes: matches your new backend logic
   create: (data: any) => api.post('/tournaments/admin/create', data),
   update: (id: number | string, data: any) => api.put(`/tournaments/admin/update/${id}`, data),
   delete: (id: number | string) => api.delete(`/tournaments/admin/delete/${id}`),
