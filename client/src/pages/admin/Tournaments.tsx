@@ -80,13 +80,19 @@ const AdminTournaments: React.FC = () => {
   ];
 
   // --- Handlers ---
+  
+  // ✅ AUTO-SELECT LOGIC ADDED HERE
   const handleAdd = () => {
     setSelectedTournament(null);
+    
+    // Determine default status: If on a specific tab, use it. If on "ALL", default to "UPCOMING"
+    const defaultStatus = activeTab === "ALL" ? "UPCOMING" : activeTab;
+
     setFormData({ 
       title: "", 
       location: "", 
       date: new Date().toISOString().split('T')[0], 
-      status: "UPCOMING", 
+      status: defaultStatus, // Set based on active UI tab
       entryFee: 0,
       description: "",
       imageUrl: "" 
@@ -109,7 +115,6 @@ const AdminTournaments: React.FC = () => {
     if (!file) return;
 
     setUploading(true);
-    // Mocking an upload logic - replace with your Cloudinary/S3 logic
     try {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -125,17 +130,25 @@ const AdminTournaments: React.FC = () => {
 
   const handleSave = async () => {
     const payload = { 
-      ...formData, 
-      entryFee: Number(formData.entryFee),
-      date: new Date(formData.date).toISOString() 
+      title: formData.title,
+      location: formData.location,
+      description: formData.description,
+      status: formData.status,
+      imageUrl: formData.imageUrl || null,
+      entryFee: parseFloat(formData.entryFee) || 0, 
+      date: formData.date 
     };
     
-    if (selectedTournament) {
-      await updateTournament(selectedTournament.id, payload);
-    } else {
-      await addTournament(payload);
+    try {
+      if (selectedTournament) {
+        await updateTournament(selectedTournament.id, payload);
+      } else {
+        await addTournament(payload);
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Save failed:", error);
     }
-    setIsModalOpen(false);
   };
 
   return (
@@ -166,8 +179,9 @@ const AdminTournaments: React.FC = () => {
         </div>
         
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TournamentStatus)} className="w-full md:w-auto">
-          <TabsList className="grid w-full grid-cols-2 md:flex h-11 bg-muted/50 p-1">
-            {["ALL", "UPCOMING", "ONGOING", "COMPLETED"].map((status) => (
+          {/* ✅ UPDATED: Added CANCELLED to the tab list */}
+          <TabsList className="grid w-full grid-cols-3 md:flex h-11 bg-muted/50 p-1">
+            {["ALL", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"].map((status) => (
               <TabsTrigger key={status} value={status} className="px-4 font-medium">
                 {status.charAt(0) + status.slice(1).toLowerCase()}
                 <span className="ml-2 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary">
@@ -214,6 +228,7 @@ const AdminTournaments: React.FC = () => {
                 <div className="relative w-full aspect-video">
                   <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover rounded-md" />
                   <button 
+                    type="button"
                     onClick={() => setFormData({...formData, imageUrl: ""})}
                     className="absolute top-2 right-2 p-1 bg-rose-500 text-white rounded-full hover:bg-rose-600"
                   >

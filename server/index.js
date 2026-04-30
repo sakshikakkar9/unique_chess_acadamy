@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import path from 'path'; 
-import fs from 'fs'; // Added for folder management
+import fs from 'fs'; 
 import { fileURLToPath } from 'url'; 
 
 // 👉 DATABASE CONNECTION
@@ -17,58 +17,47 @@ import contactRoutes from './src/routes/contact.routes.js';
 import demoRoutes from './src/routes/demo.routes.js';
 import courseRoutes from './src/routes/course.routes.js';
 
-// ------------------------------------------------------
-// ESM __DIRNAME CONFIGURATION
-// ------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Initialize Express App
 const app = express();
 
 // ------------------------------------------------------
 // GLOBAL MIDDLEWARE
 // ------------------------------------------------------
 app.use(cors()); 
-app.use(express.json()); 
+
+// ✅ FIXED: Increased limits for large image payloads
+app.use(express.json({ limit: '50mb' })); 
+app.use(express.urlencoded({ limit: '50mb', extended: true })); 
 
 // ------------------------------------------------------
 // STATIC FILES & DIRECTORY SETUP
 // ------------------------------------------------------
-
-// Ensure the uploads directory exists before serving it
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
-  console.log('📁 Created "uploads" directory for course images');
+  console.log('📁 Created "uploads" directory');
 }
 
-// Serve static files from the uploads folder
 app.use('/uploads', express.static(uploadDir)); 
 
 // ------------------------------------------------------
 // ROUTES
 // ------------------------------------------------------
-
-// Health check route
 app.get('/', async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`; 
     res.status(200).json({ 
       api: 'Online',
       database: 'Connected 🟢',
-      message: '♟️ Unique Chess Academy API is online and ready!' 
+      message: '♟️ Unique Chess Academy API is online!' 
     });
   } catch (error) {
-    res.status(500).json({ 
-      api: 'Online',
-      database: 'Disconnected 🔴',
-      error: 'Cannot reach the database' 
-    });
+    res.status(500).json({ api: 'Online', database: 'Disconnected 🔴' });
   }
 });
 
-// API Routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/events', eventRoutes);
@@ -94,7 +83,6 @@ async function startServer() {
   try {
     await prisma.$connect();
     console.log('🟢 Successfully connected to the PostgreSQL database!');
-
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on http://localhost:${PORT}`);
     });

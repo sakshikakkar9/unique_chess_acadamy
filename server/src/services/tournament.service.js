@@ -24,10 +24,11 @@ export const createTournament = async (data) => {
     data: {
       title: data.title,
       location: data.location,
-      date: new Date(data.date), // Ensure it's a valid Date object
+      description: data.description || "",
+      date: new Date(data.date), // Convert string to Date object
       status: data.status || 'UPCOMING',
       entryFee: parseFloat(data.entryFee || 0),
-      description: data.description || "",
+      imageUrl: data.imageUrl || null, // ✅ Explicitly map the image
     }
   });
 };
@@ -38,9 +39,13 @@ export const updateTournament = async (id, data) => {
   return await prisma.tournament.update({
     where: { id: numericId },
     data: {
-      ...data,
-      date: data.date ? new Date(data.date) : undefined,
+      title: data.title,
+      location: data.location,
+      description: data.description,
+      status: data.status,
+      imageUrl: data.imageUrl,
       entryFee: data.entryFee ? parseFloat(data.entryFee) : undefined,
+      date: data.date ? new Date(data.date) : undefined,
     }
   });
 };
@@ -48,9 +53,7 @@ export const updateTournament = async (id, data) => {
 // ✅ ADDED: DELETE TOURNAMENT
 export const deleteTournament = async (id) => {
   const numericId = parseInt(id);
-  return await prisma.tournament.delete({
-    where: { id: numericId }
-  });
+  return await prisma.tournament.delete({ where: { id: numericId } });
 };
 
 // --- HANDLE REGISTRATION ---
