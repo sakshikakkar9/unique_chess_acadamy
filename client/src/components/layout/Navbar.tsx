@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+
+// IMPORT THE LOGO FROM ASSETS
+import logoImg from "@/assets/logo.jpeg";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,7 +24,6 @@ const Navbar = () => {
     { name: "Courses", path: "/courses" },
     { name: "Tournaments", path: "/tournaments" },
     { name: "Gallery", path: "/gallery" },
-    { name: "Events", path: "/events" },
     { name: "Contact", path: "/contact" },
   ];
 
@@ -33,34 +34,27 @@ const Navbar = () => {
       className={cn(
         "fixed top-0 w-full z-50 transition-all duration-300",
         scrolled
-          ? "bg-white border-b border-[#e2e8f0] py-3 shadow-[0_1px_8px_rgba(0,0,0,0.06)]"
-          : "bg-transparent py-5"
+          ? "bg-white border-b border-slate-200 py-2 shadow-sm"
+          : "bg-transparent py-4"
       )}
     >
-      <div className="container mx-auto px-6 flex items-center justify-between">
-        {/* LOGO SECTION */}
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="flex items-baseline">
-            <span className={cn(
-              "font-bold text-xl tracking-tight",
-              scrolled ? "text-[#0f172a]" : "text-white"
-            )}>
-              UNIQUE
-            </span>
-            <span className="font-bold text-xl tracking-tight text-[#2563eb] ml-1.5">
-              CHESS
-            </span>
-            <span className={cn(
-              "font-medium text-xs tracking-wider ml-1.5",
-              scrolled ? "text-[#64748b]" : "text-white/70"
-            )}>
-              ACADEMY
-            </span>
-          </div>
-        </Link>
+      <div className="container mx-auto px-6 grid grid-cols-2 lg:grid-cols-3 items-center">
+        {/* LEFT SECTION: LOGO */}
+        <div className="flex justify-start">
+          <Link to="/" className="flex items-center group">
+            <img 
+              src={logoImg} 
+              alt="Unique Chess Academy"
+              className={cn(
+                "h-14 md:h-16 w-auto transition-all duration-300 object-contain rounded-lg", 
+                scrolled ? "mix-blend-multiply opacity-95" : "brightness-110 contrast-110"
+              )}
+            />
+          </Link>
+        </div>
 
-        {/* Desktop Links */}
-        <div className="hidden lg:flex items-center gap-8">
+        {/* CENTER SECTION: DESKTOP NAVIGATION */}
+        <div className="hidden lg:flex justify-center items-center gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.path}
@@ -68,9 +62,9 @@ const Navbar = () => {
               className={cn(
                 "relative text-[14px] font-medium transition-colors duration-200 py-1",
                 isActive(link.path)
-                  ? "text-[#2563eb]"
+                  ? "text-blue-600"
                   : scrolled
-                    ? "text-[#475569] hover:text-[#0f172a]"
+                    ? "text-slate-600 hover:text-slate-900"
                     : "text-white/80 hover:text-white"
               )}
             >
@@ -78,32 +72,25 @@ const Navbar = () => {
               {isActive(link.path) && (
                 <motion.div
                   layoutId="nav-underline"
-                  className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#2563eb]"
+                  className="absolute -bottom-1 left-0 right-0 h-[2px] bg-blue-600"
                 />
               )}
             </Link>
           ))}
         </div>
 
-        {/* Desktop Actions */}
-        <div className="hidden lg:flex items-center gap-4">
-          <Button
-            className="bg-[#d97706] text-white font-semibold rounded-full px-6 py-2 h-auto hover:bg-[#b45309] transition-all duration-300 shadow-[0_4px_12px_rgba(217,119,6,0.35)]"
+        {/* RIGHT SECTION: EMPTY (FOR BALANCING) OR MOBILE TOGGLE */}
+        <div className="flex justify-end">
+          <button
+            className={cn(
+              "lg:hidden p-2 transition-colors",
+              scrolled ? "text-slate-900" : "text-white"
+            )}
+            onClick={() => setIsOpen(!isOpen)}
           >
-            Enroll Now
-          </Button>
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
-
-        {/* Mobile Toggle */}
-        <button
-          className={cn(
-            "lg:hidden p-2 transition-colors",
-            scrolled ? "text-[#0f172a]" : "text-white"
-          )}
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
       </div>
 
       {/* Mobile Menu */}
@@ -117,19 +104,16 @@ const Navbar = () => {
             className="lg:hidden fixed inset-0 w-full h-screen bg-white z-[60] flex flex-col p-8"
           >
             <div className="flex justify-between items-center mb-12">
-               <div className="flex items-baseline">
-                <span className="font-bold text-xl tracking-tight text-[#0f172a]">UNIQUE</span>
-                <span className="font-bold text-xl tracking-tight text-[#2563eb] ml-1.5">CHESS</span>
-              </div>
+              <img src={logoImg} alt="Logo" className="h-12 w-auto mix-blend-multiply" />
               <button
-                className="p-2 text-[#0f172a]"
+                className="p-2 text-slate-900"
                 onClick={() => setIsOpen(false)}
               >
                 <X size={28} />
               </button>
             </div>
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 overflow-y-auto items-center text-center">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.path}
@@ -141,7 +125,7 @@ const Navbar = () => {
                     to={link.path}
                     className={cn(
                       "text-2xl font-bold transition-colors",
-                      isActive(link.path) ? "text-[#2563eb]" : "text-[#475569]"
+                      isActive(link.path) ? "text-blue-600" : "text-slate-600"
                     )}
                     onClick={() => setIsOpen(false)}
                   >
@@ -149,19 +133,6 @@ const Navbar = () => {
                   </Link>
                 </motion.div>
               ))}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navLinks.length * 0.05 }}
-                className="mt-8"
-              >
-                <Button
-                  className="bg-[#d97706] text-white font-bold rounded-full w-full py-4 h-auto text-lg shadow-[0_4px_12px_rgba(217,119,6,0.35)]"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Enroll Now
-                </Button>
-              </motion.div>
             </div>
           </motion.div>
         )}

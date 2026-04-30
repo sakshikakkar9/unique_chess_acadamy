@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
 import {
-  Users, Trophy, Star as StarIcon, BookOpen, Target, Brain, ArrowRight, PlayCircle
+  Trophy, Target, Brain, PlayCircle, CheckCircle2, Zap, Camera, Star
 } from "lucide-react";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import SectionHeading from "@/components/shared/SectionHeading";
@@ -10,28 +11,36 @@ import { Button } from "@/components/ui/button";
 import SparkleCanvas from "@/components/shared/SparkleCanvas";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { fadeLeft, stagger, scaleIn } from "@/components/shared/motion";
+import { fadeLeft, stagger, scaleIn, fadeIn } from "@/components/shared/motion";
 import { cn } from "@/lib/utils";
 
-// --- CONSTANTS ---
+const galleryImages = [
+  "https://images.unsplash.com/photo-1528819622765-d6bcf132f793?q=80&w=1200",
+  "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=1200",
+  "https://images.unsplash.com/photo-1529697210530-8c4bb1358ce5?q=80&w=1200",
+  "https://images.unsplash.com/photo-1611195974226-a6a9be9dd763?q=80&w=1200",
+  "https://images.unsplash.com/photo-1560174038-da43ac74f01b?q=80&w=1200",
+  "https://images.unsplash.com/photo-1523398002811-999ca8dec234?q=80&w=1200",
+];
+
 const stats = [
-  { id: "1", icon: Users, value: 5000, label: "Students", suffix: "+" },
-  { id: "2", icon: Trophy, value: 120, label: "Tournaments", suffix: "+" },
-  { id: "3", icon: StarIcon, value: 50, label: "Champions", suffix: "+" },
-  { id: "4", icon: BookOpen, value: 15, label: "Coaches", suffix: "+" },
+  { id: "1", value: 5000, label: "ACTIVE MINDS", suffix: "+" },
+  { id: "2", value: 120, label: "STATE TITLES", suffix: "+" },
+  { id: "3", value: 50, label: "FIDE RATED", suffix: "+" },
+  { id: "4", value: 15, label: "MASTERS", suffix: "" },
 ];
 
 const features = [
-  { id: "f1", icon: Target, title: "Structured Learning", desc: "Step-by-step curriculum from beginner to advanced level.", color: "blue" },
-  { id: "f2", icon: Trophy, title: "Tournament Exposure", desc: "Regular competitions to test real-world performance.", color: "sky" },
-  { id: "f3", icon: Users, title: "Expert Coaches", desc: "Learn from experienced and ranked players.", color: "gold" },
-  { id: "f4", icon: Brain, title: "Cognitive Growth", desc: "Improve focus, memory, and decision-making.", color: "blue" },
+  { id: "f1", icon: Target, title: "Tactical Precision", desc: "Master 5,000+ pattern recognition drills curated by International Masters.", color: "blue", highlight: "Accuracy" },
+  { id: "f2", icon: Zap, title: "Blitz Mastery", desc: "Specialized speed chess clinics to sharpen clock management.", color: "sky", highlight: "Speed" },
+  { id: "f3", icon: Trophy, title: "Elite Tournaments", desc: "Exclusive access to UCA Rated Opens with significant prize pools.", color: "gold", highlight: "Success" },
+  { id: "f4", icon: Brain, title: "Strategic Depth", desc: "Beyond the moves—learn psychological resilience and game theory.", color: "blue", highlight: "Focus" },
 ];
 
 const levels = [
-  { id: "l1", icon: "♟", title: "Beginner", desc: "Start your journey with strong fundamentals.", points: ["Rules & basics", "Simple tactics", "Opening ideas"], color: "#2563eb" },
-  { id: "l2", icon: "♜", title: "Intermediate", desc: "Build strategy and deeper understanding.", points: ["Middlegame planning", "Pattern recognition", "Better decisions"], color: "#0ea5e9" },
-  { id: "l3", icon: "♚", title: "Advanced", desc: "Train like a competitive player.", points: ["Endgame mastery", "Game analysis", "Tournament mindset"], color: "#d97706" },
+  { id: "l1", icon: "♟", title: "Novice Pawn", desc: "For those picking up the pieces for the first time.", points: ["Piece coordination", "Basic Checkmate patterns", "Opening Principles"], bg: "bg-orange-500/20" },
+  { id: "l2", icon: "♞", title: "Intermediate Knight", desc: "Develop complex maneuvering and positional play.", points: ["Middlegame Strategy", "Endgame Fundamentals", "Introduction to Theory"], bg: "bg-blue-500/20" },
+  { id: "l3", icon: "♚", title: "Elite King", desc: "High-intensity training for competitive tournament players.", points: ["Grandmaster Analysis", "Psychological Prep", "Advanced Theory"], bg: "bg-amber-500/20" },
 ];
 
 const CountUp = ({ end, suffix = "" }: { end: number; suffix?: string }) => {
@@ -41,9 +50,7 @@ const CountUp = ({ end, suffix = "" }: { end: number; suffix?: string }) => {
 
   useEffect(() => {
     if (!ref) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setIsInView(true);
-    }, { threshold: 0.1 });
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) setIsInView(true); }, { threshold: 0.1 });
     observer.observe(ref);
     return () => observer.disconnect();
   }, [ref]);
@@ -51,150 +58,125 @@ const CountUp = ({ end, suffix = "" }: { end: number; suffix?: string }) => {
   useEffect(() => {
     if (!isInView) return;
     let start = 0;
-    const duration = 1500;
+    const duration = 2000;
     const frameRate = 1000 / 60;
     const totalFrames = duration / frameRate;
     const increment = end / totalFrames;
-
     const timer = setInterval(() => {
       start += increment;
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
+      if (start >= end) { setCount(end); clearInterval(timer); } 
+      else { setCount(Math.floor(start)); }
     }, frameRate);
     return () => clearInterval(timer);
   }, [end, isInView]);
 
-  return <div ref={setRef}>{count}{suffix}</div>;
+  return <div ref={setRef} className="tabular-nums">{count.toLocaleString()}{suffix}</div>;
 };
 
 export default function HomePage() {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+  const marqueeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (!marqueeRef.current) return;
+      gsap.to(marqueeRef.current, {
+        x: "-50%",
+        duration: 35,
+        repeat: -1,
+        ease: "none",
+      });
+    }, marqueeRef);
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden">
+    <div className="min-h-screen bg-white selection:bg-orange-100 selection:text-orange-900 overflow-x-hidden">
       <Navbar />
 
-      {/* HERO SECTION (Dark) */}
-      <section className="relative min-h-screen flex items-center bg-[#0f172a] overflow-hidden pt-20">
-        <SparkleCanvas density="full" />
-
-        {/* Chess Photo Overlay */}
-        <div
-          className="absolute inset-0 z-0 opacity-[0.12]"
-          style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1529699211952-734e80c4d42b?q=80&w=2000)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        />
-
-        <div className="container mx-auto px-6 z-10 grid lg:grid-cols-2 gap-12 items-center">
+      {/* HERO SECTION - Optimized Alignment */}
+      <section className="relative bg-[#020617] overflow-hidden">
+        <SparkleCanvas density="low" />
+        
+        <div className="container mx-auto px-6 z-10 pt-32 pb-48 grid lg:grid-cols-2 gap-16 items-center">
           <motion.div variants={stagger} initial="hidden" animate="visible">
+            <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-[11px] font-black uppercase tracking-[0.2em] mb-8">
+              <Star className="h-3.5 w-3.5 fill-current" /> India's Premier Chess Academy
+            </motion.div>
+            
             <motion.div variants={fadeLeft}>
-              <h1 className="text-h1 text-white mb-8 playfair">
-                Master the <br />
-                <span className="text-[#38bdf8]">Board.</span><br />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#60a5fa] to-[#a78bfa]">Own the Game.</span>
+              <h1 className="text-6xl md:text-8xl font-extrabold text-white mb-8 leading-[0.9] tracking-tighter">
+                Strategic <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-200 to-orange-500">Might.</span>
               </h1>
             </motion.div>
 
-            <motion.p variants={fadeLeft} className="text-[#94a3b8] text-body-lg mb-12 max-w-[480px]">
-              Professional coaching for the next generation of Grandmasters.
-              Combining logic with the fun of strategy to build future champions.
+            <motion.p variants={fadeLeft} className="text-slate-300 text-lg md:text-xl mb-12 max-w-[540px] leading-relaxed font-medium">
+              Join an elite community where every move is calculated for victory. We build champions through grandmaster-led logic.
             </motion.p>
 
-            <motion.div variants={scaleIn} className="flex flex-wrap gap-6">
-              <Button size="lg" className="bg-[#d97706] text-black font-semibold px-10 rounded-full h-14 hover:bg-[#b45309] shadow-[0_4px_12px_rgba(217,119,6,0.35)] transition-all animate-gold-pulse">
-                Start Learning <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-
-              <Button variant="outline" size="lg" onClick={() => setIsDemoModalOpen(true)} className="glass-stat text-white border-white/20 px-10 rounded-full h-14 hover:bg-white/10">
-                <PlayCircle className="mr-2 h-5 w-5" /> Free Demo
+            <motion.div variants={scaleIn}>
+              <Button 
+                size="lg" 
+                onClick={() => setIsDemoModalOpen(true)}
+                className="bg-orange-600 hover:bg-orange-500 text-white font-black px-12 h-16 rounded-2xl group transition-all active:scale-95 shadow-2xl shadow-orange-900/40"
+              >
+                BOOK A FREE DEMO <PlayCircle className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
               </Button>
             </motion.div>
           </motion.div>
 
-          {/* Right side: floating board card */}
-          <div className="relative hidden lg:block h-[600px]">
-             <motion.div
-               animate={{ y: [0, -20, 0] }}
-               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-               className="glass-hero absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] h-[480px] p-8 flex items-center justify-center"
-             >
-                <div className="grid grid-cols-8 grid-rows-8 w-full h-full border border-white/10">
-                  {[...Array(64)].map((_, i) => (
-                    <div key={i} className={cn("w-full h-full", (Math.floor(i / 8) + i) % 2 === 0 ? "bg-white/5" : "bg-transparent")} />
-                  ))}
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <div className="text-[240px] text-white/10 drop-shadow-2xl">♞</div>
-                </div>
-             </motion.div>
-
-             {/* Floating Stats */}
-             <motion.div
-               animate={{ y: [0, -15, 0] }}
-               transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
-               className="glass-stat absolute top-[15%] right-[0%] p-6"
-             >
-                <div className="text-white font-black text-2xl">5000+</div>
-                <div className="text-label text-[#94a3b8]">Students</div>
-             </motion.div>
-
-             <motion.div
-               animate={{ y: [0, 15, 0] }}
-               transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-               className="glass-stat absolute bottom-[20%] left-[-5%] p-6"
-             >
-                <div className="text-white font-black text-2xl">120+</div>
-                <div className="text-label text-[#94a3b8]">Tournaments</div>
-             </motion.div>
-          </div>
+          <motion.div variants={fadeIn} className="hidden lg:block relative">
+             <img 
+               src="https://images.unsplash.com/photo-1528819622765-d6bcf132f793?q=80&w=800" 
+               className="rounded-[3rem] opacity-60 grayscale-0 border-2 border-white/5 shadow-2xl transition-all duration-1000" 
+               alt="Chess Board"
+             />
+          </motion.div>
         </div>
-      </section>
 
-      {/* STATS BAR (Light) */}
-      <section className="bg-[#f8fafc] py-20 border-t-4 border-[#2563eb]">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
-            {stats.map((stat) => (
-              <div key={stat.id} className="flex flex-col md:flex-row items-center gap-6">
-                <div className="card-icon-box blue">
-                  <stat.icon className="h-6 w-6" />
-                </div>
-                <div className="text-center md:text-left">
-                  <div className="text-[44px] font-black text-[#0f172a] leading-none mb-1 tracking-[-0.04em]">
+        {/* STATS DOCK - Fixed Clipping and Alignment */}
+        <div className="absolute bottom-0 left-0 w-full px-6 pb-0">
+          <div className="container mx-auto">
+            <div className="grid grid-cols-2 lg:grid-cols-4 bg-[#0f172a]/80 backdrop-blur-xl border-x border-t border-white/10 rounded-t-[3rem] overflow-hidden">
+              {stats.map((stat, i) => (
+                <div key={stat.id} className={cn("flex flex-col items-center justify-center py-12 px-4 text-center", i !== 3 && "border-r border-white/10")}>
+                  <div className="text-5xl md:text-6xl font-black text-white mb-2 tabular-nums tracking-tighter">
                     <CountUp end={stat.value} suffix={stat.suffix} />
                   </div>
-                  <div className="text-label text-[#94a3b8]">{stat.label}</div>
+                  <div className="text-orange-400 font-black tracking-[0.25em] text-[10px] uppercase">{stat.label}</div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* FEATURES SECTION (White) */}
-      <section className="py-32 bg-white">
+      {/* FEATURES SECTION - Balanced Spacing */}
+      <section className="py-32 bg-white relative">
         <div className="container mx-auto px-6">
-          <SectionHeading 
-            label="The UCA Advantage" 
-            title="Why Choose One of Us"
-            description="High-performance training in a modern environment designed for serious players." 
-          />
-          <div className="grid md:grid-cols-4 gap-8 mt-24">
+          <div className="flex flex-col items-center text-center mb-24">
+             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-orange-600 border border-orange-100 text-[10px] font-black uppercase tracking-widest mb-6">
+               <Trophy className="h-3.5 w-3.5" /> WHY UNIQUE CHESS ACADEMY?
+             </div>
+             <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-8 leading-tight">
+               Strategic <span className="text-orange-600 italic">Advantage</span>
+             </h2>
+             <p className="text-slate-500 max-w-2xl text-lg font-medium leading-relaxed">
+               We combine traditional wisdom with modern engine analysis to sharpen your intuition and tactical awareness.
+             </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((f, i) => (
-              <ScrollReveal key={f.id} delay={i * 0.08}>
-                <div className="card-pro h-full group">
-                  <div className={cn("card-icon-box mb-8 group-hover:scale-110", f.color)}>
-                    <f.icon className="h-6 w-6" />
+              <ScrollReveal key={f.id} delay={i * 0.1}>
+                <div className="p-10 rounded-[3rem] border border-slate-200 bg-white hover:border-orange-200 hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] transition-all duration-500 group h-full flex flex-col">
+                  <div className={cn("inline-flex p-5 rounded-3xl mb-8 transition-transform group-hover:rotate-12 group-hover:scale-110 shadow-sm w-fit", f.color === 'gold' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600')}>
+                    <f.icon className="h-8 w-8" />
                   </div>
-                  <h3 className="text-h3 text-[#0f172a] mb-4">{f.title}</h3>
-                  <p className="text-[#475569] text-[15px] leading-[1.7]">{f.desc}</p>
+                  <div className="text-[11px] font-black text-orange-600 uppercase tracking-[0.2em] mb-4">{f.highlight}</div>
+                  <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tight">{f.title}</h3>
+                  <p className="text-slate-500 text-sm leading-relaxed font-medium flex-grow">{f.desc}</p>
                 </div>
               </ScrollReveal>
             ))}
@@ -202,30 +184,65 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CURRICULUM SECTION (Light Grey) */}
-      <section className="py-32 bg-[#f8fafc]">
-        <div className="container mx-auto px-6">
-          <SectionHeading label="Your Path" title="Tailored Learning Paths" />
-          <div className="grid md:grid-cols-3 gap-10 mt-24">
+      {/* GAMING STYLE ARENA CAROUSEL */}
+      <section className="py-28 bg-[#020617] overflow-hidden border-y border-white/5">
+        <div className="flex items-center gap-6 px-10 mb-16">
+          <div className="w-3 h-3 bg-orange-500 animate-ping rounded-full" />
+          <span className="text-white font-black uppercase tracking-[0.4em] text-xs">The Arena Gallery</span>
+          <div className="h-[1px] flex-grow bg-white/20" />
+          <Camera className="text-orange-500 h-5 w-5" />
+        </div>
+
+        <div className="relative flex">
+          <div ref={marqueeRef} className="flex gap-8 whitespace-nowrap">
+            {[...galleryImages, ...galleryImages].map((src, idx) => (
+              <div key={idx} className="w-[450px] h-[550px] shrink-0 relative group">
+                <div className="absolute inset-0 bg-orange-600 translate-x-2 translate-y-2 rounded-[2.5rem] -z-10 group-hover:translate-x-4 group-hover:translate-y-4 transition-transform duration-500" />
+                <div className="w-full h-full bg-slate-900 rounded-[2.5rem] overflow-hidden border-2 border-slate-800">
+                  <img src={src} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700" alt="Chess Match" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-90" />
+                  <div className="absolute bottom-8 left-8 text-white">
+                    <p className="text-[11px] font-black uppercase tracking-widest text-orange-400 mb-1">Academy Spotlights</p>
+                    <p className="font-bold text-2xl tracking-tight">Tournament Hall #{idx % 4 + 1}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CURRICULUM SECTION */}
+      <section className="py-32 bg-[#020617] relative overflow-hidden">
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="max-w-3xl mb-24">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[11px] font-black uppercase tracking-widest mb-6">
+              Academy Path
+            </div>
+            <h2 className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tighter">Structured for Growth.</h2>
+            <p className="text-slate-300 text-xl leading-relaxed font-medium">Precision-engineered for competitive success.</p>
+          </div>
+          
+          <div className="grid lg:grid-cols-3 gap-10">
             {levels.map((level, i) => (
-              <ScrollReveal key={level.id} delay={i * 0.08}>
-                <div
-                  className="card-pro h-full border-l-[3px]"
-                  style={{ borderLeftColor: level.color }}
-                >
-                  <div className={cn(
-                    "w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-10",
-                    i === 0 ? "bg-[#eff6ff]" : i === 1 ? "bg-[#f0f9ff]" : "bg-[#fffbeb]"
-                  )}>{level.icon}</div>
-                  <h3 className="text-[22px] font-bold text-[#0f172a] mb-6">{level.title}</h3>
-                  <p className="text-[#475569] mb-10 leading-[1.7]">{level.desc}</p>
-                  <ul className="space-y-4">
+              <ScrollReveal key={level.id} delay={i * 0.1}>
+                <div className="bg-white/5 backdrop-blur-md rounded-[3.5rem] p-12 border border-white/10 h-full flex flex-col group hover:bg-white transition-all duration-700 hover:scale-[1.02]">
+                  <div className={cn("w-24 h-24 rounded-[2.5rem] flex items-center justify-center text-5xl mb-10 transition-transform group-hover:-translate-y-2 group-hover:rotate-6 shadow-xl", level.bg)}>
+                    {level.icon}
+                  </div>
+                  <h3 className="text-3xl font-black text-white group-hover:text-slate-950 mb-6 transition-colors tracking-tight">{level.title}</h3>
+                  <p className="text-slate-300 group-hover:text-slate-600 mb-10 flex-grow leading-relaxed font-medium transition-colors">{level.desc}</p>
+                  
+                  <div className="space-y-6">
                     {level.points.map((p, idx) => (
-                      <li key={idx} className="flex items-center text-[15px] text-[#475569]">
-                        <div className="h-1.5 w-1.5 rounded-full mr-4" style={{ backgroundColor: level.color }} /> {p}
-                      </li>
+                      <div key={idx} className="flex items-center gap-5 text-slate-200 group-hover:text-slate-800 transition-colors">
+                        <div className="bg-orange-500/20 group-hover:bg-orange-100 p-1 rounded-full transition-colors">
+                          <CheckCircle2 className="h-5 w-5 text-orange-500 flex-shrink-0" />
+                        </div>
+                        <span className="text-[15px] font-bold tracking-tight">{p}</span>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               </ScrollReveal>
             ))}
