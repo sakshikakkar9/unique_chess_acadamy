@@ -13,6 +13,7 @@ import {
   enrollInCourse,
   getAllEnrollments,
   updateEnrollmentStatus,
+  deleteEnrollment
 } from '../controllers/course.controller.js';
 
 const router = express.Router();
@@ -63,6 +64,7 @@ const handleUpload = (req, res, next) => {
 // These must be ABOVE the /:id route
 router.get('/enrollments', verifyAdmin, getAllEnrollments);
 router.patch('/enrollments/:enrollmentId', verifyAdmin, updateEnrollmentStatus);
+router.delete('/enrollments/:enrollmentId', verifyAdmin, deleteEnrollment);
 
 // ── Course Discovery & Public Routes ─────────────────────────────────────────
 router.get('/', getAllCourses);

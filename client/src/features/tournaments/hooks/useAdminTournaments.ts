@@ -31,7 +31,7 @@ export const useAdminTournaments = () => {
 });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => api.put(`/tournaments/${id}`, data),
+    mutationFn: ({ id, data }: { id: number; data: any }) => api.put(`/tournaments/admin/update/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tournaments"] });
       toast({ title: "Updated", description: "Changes saved to database." });
