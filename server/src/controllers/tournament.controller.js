@@ -1,59 +1,102 @@
-import prisma from '../../lib/prisma.js';
-import { uploadToCloudinary } from '../utils/cloudinary.js'; // Import your new utility
+import prisma from '../../lib/prisma.js'; 
+import * as tournamentService from '../services/tournament.service.js';
 
-export const getGalleryImages = async (req, res) => {
+// --- Public Functions ---
+export const getAllTournaments = async (req, res) => {
   try {
-    const images = await prisma.gallery.findMany({
+    const data = await tournamentService.getAllTournaments();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getTournamentById = async (req, res) => {
+  try {
+    const data = await tournamentService.getTournamentById(req.params.id);
+    if (!data) return res.status(404).json({ error: 'Not found' });
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const registerForTournament = async (req, res) => {
+  try {
+    const data = await tournamentService.registerForTournament(req.params.id, req.body);
+    res.status(201).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// --- Admin Tournament Announcement Management ---
+
+// ✅ FIXED: Now actually creates a tournament
+export const createTournament = async (req, res) => {
+  try {
+    const data = await tournamentService.createTournament(req.body);
+    res.status(201).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// ✅ FIXED: Now actually updates a tournament
+export const updateTournament = async (req, res) => {
+  try {
+    const data = await tournamentService.updateTournament(req.params.id, req.body);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// ✅ FIXED: Now actually deletes a tournament
+export const deleteTournament = async (req, res) => {
+  try {
+    await tournamentService.deleteTournament(req.params.id);
+    res.json({ message: "Tournament deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// --- Admin Student Registration Management ---
+export const getAllRegistrations = async (req, res) => {
+  try {
+    const registrations = await prisma.registration.findMany({
+      include: { tournament: { select: { title: true } } },
       orderBy: { createdAt: 'desc' }
     });
-    res.json(images);
+    res.json(registrations);
   } catch (error) {
-    console.error("GET_GALLERY_ERROR:", error);
-    res.status(500).json({ error: "Failed to fetch images" });
+    res.status(500).json({ error: "Failed to fetch registrations" });
   }
 };
 
-export const uploadImage = async (req, res) => {
+export const updateRegistrationStatus = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No image file uploaded." });
-    }
-
-    const { caption, category } = req.body;
-
-    // 1. Upload the file from the local 'uploads' folder to Cloudinary
-    const cloudinaryUrl = await uploadToCloudinary(req.file.path);
-
-    if (!cloudinaryUrl) {
-      return res.status(500).json({ error: "Failed to upload image to Cloudinary" });
-    }
-
-    // 2. Save the Cloudinary URL (https://...) to the database
-    const newImage = await prisma.gallery.create({
-      data: {
-        imageUrl: cloudinaryUrl, // This is now a full https link
-        caption: caption || "",
-        category: (category || "ACADEMY").toUpperCase(),
-      },
+    const { registrationId } = req.params;
+    const { status } = req.body;
+    const data = await prisma.registration.update({
+      where: { id: registrationId },
+      data: { status: status.toUpperCase() }
     });
-
-    console.log("SUCCESS: Saved to Database with Cloudinary URL:", newImage);
-    return res.status(201).json(newImage);
+    res.json(data);
   } catch (error) {
-    console.error("UPLOAD_CONTROLLER_ERROR:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: error.message });
   }
 };
 
-export const deleteImage = async (req, res) => {
+export const deleteRegistration = async (req, res) => {
   try {
-    const { id } = req.params;
-    await prisma.gallery.delete({
-      where: { id: id }
-    });
-    res.status(200).json({ message: 'Image deleted successfully' });
+    const { registrationId } = req.params;
+    await prisma.registration.delete({ where: { id: registrationId } });
+    res.json({ message: "Deleted successfully" });
   } catch (error) {
-    console.error("DELETE_ERROR:", error);
-    res.status(500).json({ error: 'Failed to delete image' });
+    res.status(500).json({ error: "Delete failed" });
   }
 };
+
+export const addTournamentResult = async (req, res) => res.status(200).json({ msg: "Result" });
