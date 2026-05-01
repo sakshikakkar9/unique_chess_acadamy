@@ -98,8 +98,8 @@ export default function HomePage() {
       <section className="relative bg-[#020617] overflow-hidden">
         <SparkleCanvas density="low" />
         
-        <div className="container mx-auto px-6 z-10 pt-32 pb-48 grid lg:grid-cols-2 gap-16 items-center">
-          <motion.div variants={stagger} initial="hidden" animate="visible">
+        <div className="container mx-auto px-6 z-10 pt-28 pb-32 md:pt-32 md:pb-48 grid lg:grid-cols-2 gap-16 items-center">
+          <motion.div variants={stagger} initial="hidden" animate="visible" className="text-center lg:text-left">
             <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-[11px] font-black uppercase tracking-[0.2em] mb-8">
               <Star className="h-3.5 w-3.5 fill-current" /> India's Premier Chess Academy
             </motion.div>
@@ -111,7 +111,7 @@ export default function HomePage() {
               </h1>
             </motion.div>
 
-            <motion.p variants={fadeLeft} className="text-slate-300 text-lg md:text-xl mb-12 max-w-[540px] leading-relaxed font-medium">
+            <motion.p variants={fadeLeft} className="text-slate-300 text-lg md:text-xl mb-12 max-w-[540px] mx-auto lg:mx-0 leading-relaxed font-medium">
               Join an elite community where every move is calculated for victory. We build champions through grandmaster-led logic.
             </motion.p>
 
@@ -119,7 +119,7 @@ export default function HomePage() {
               <Button 
                 size="lg" 
                 onClick={() => setIsDemoModalOpen(true)}
-                className="bg-orange-600 hover:bg-orange-500 text-white font-black px-12 h-16 rounded-2xl group transition-all active:scale-95 shadow-2xl shadow-orange-900/40"
+                className="bg-orange-600 hover:bg-orange-500 text-white font-black px-8 h-14 md:px-12 md:h-16 rounded-2xl group transition-all active:scale-95 shadow-2xl shadow-orange-900/40"
               >
                 BOOK A FREE DEMO <PlayCircle className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
               </Button>
@@ -140,11 +140,11 @@ export default function HomePage() {
           <div className="container mx-auto">
             <div className="grid grid-cols-2 lg:grid-cols-4 bg-[#0f172a]/80 backdrop-blur-xl border-x border-t border-white/10 rounded-t-2xl sm:rounded-t-[3rem] overflow-hidden">
               {stats.map((stat, i) => (
-                <div key={stat.id} className={cn("flex flex-col items-center justify-center py-8 md:py-12 px-4 text-center", i !== 3 && "border-r border-white/10")}>
+                <div key={stat.id} className={cn("flex flex-col items-center justify-center py-6 md:py-12 px-4 text-center", i !== 3 && "border-r border-white/10")}>
                   <div className="text-3xl sm:text-5xl md:text-6xl font-black text-white mb-2 tabular-nums tracking-tighter">
                     <CountUp end={stat.value} suffix={stat.suffix} />
                   </div>
-                  <div className="text-orange-400 font-black tracking-[0.25em] text-[10px] uppercase">{stat.label}</div>
+                  <div className="text-orange-400 font-black tracking-[0.1em] sm:tracking-[0.25em] text-[10px] uppercase">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -153,9 +153,9 @@ export default function HomePage() {
       </section>
 
       {/* FEATURES SECTION - Balanced Spacing */}
-      <section className="py-32 bg-white relative">
+      <section className="py-16 md:py-32 bg-white relative">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col items-center text-center mb-24">
+          <div className="flex flex-col items-center text-center mb-12 md:mb-24">
              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-orange-600 border border-orange-100 text-[10px] font-black uppercase tracking-widest mb-6">
                <Trophy className="h-3.5 w-3.5" /> WHY UNIQUE CHESS ACADEMY?
              </div>
@@ -167,7 +167,7 @@ export default function HomePage() {
              </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
             {features.map((f, i) => (
               <ScrollReveal key={f.id} delay={i * 0.1}>
                 <div className="p-6 md:p-10 rounded-3xl md:rounded-[3rem] border border-slate-200 bg-white hover:border-orange-200 hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] transition-all duration-500 group h-full flex flex-col">
@@ -185,8 +185,8 @@ export default function HomePage() {
       </section>
 
       {/* GAMING STYLE ARENA CAROUSEL */}
-      <section className="py-28 bg-[#020617] overflow-hidden border-y border-white/5">
-        <div className="flex items-center gap-6 px-10 mb-16">
+      <section className="py-16 md:py-28 bg-[#020617] overflow-hidden border-y border-white/5">
+        <div className="flex items-center gap-6 px-6 md:px-10 mb-12 md:mb-16">
           <div className="w-3 h-3 bg-orange-500 animate-ping rounded-full" />
           <span className="text-white font-black uppercase tracking-[0.4em] text-xs">The Arena Gallery</span>
           <div className="h-[1px] flex-grow bg-white/20" />
@@ -213,9 +213,9 @@ export default function HomePage() {
       </section>
 
       {/* CURRICULUM SECTION */}
-      <section className="py-32 bg-[#020617] relative overflow-hidden">
+      <section className="py-16 md:py-32 bg-[#020617] relative overflow-hidden">
         <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-3xl mb-24">
+          <div className="max-w-3xl mb-12 md:mb-24 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[11px] font-black uppercase tracking-widest mb-6">
               Academy Path
             </div>
