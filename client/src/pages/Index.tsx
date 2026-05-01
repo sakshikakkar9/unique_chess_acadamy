@@ -105,7 +105,7 @@ export default function HomePage() {
             </motion.div>
             
             <motion.div variants={fadeLeft}>
-              <h1 className="text-6xl md:text-8xl font-extrabold text-white mb-8 leading-[0.9] tracking-tighter">
+              <h1 className="text-4xl sm:text-6xl md:text-8xl font-extrabold text-white mb-8 leading-[0.9] tracking-tighter">
                 Strategic <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-200 to-orange-500">Might.</span>
               </h1>
@@ -129,7 +129,7 @@ export default function HomePage() {
           <motion.div variants={fadeIn} className="hidden lg:block relative">
              <img 
                src="https://images.unsplash.com/photo-1528819622765-d6bcf132f793?q=80&w=800" 
-               className="rounded-[3rem] opacity-60 grayscale-0 border-2 border-white/5 shadow-2xl transition-all duration-1000" 
+               className="rounded-2xl sm:rounded-[3rem] opacity-60 grayscale-0 border-2 border-white/5 shadow-2xl transition-all duration-1000"
                alt="Chess Board"
              />
           </motion.div>
@@ -138,10 +138,10 @@ export default function HomePage() {
         {/* STATS DOCK - Fixed Clipping and Alignment */}
         <div className="absolute bottom-0 left-0 w-full px-6 pb-0">
           <div className="container mx-auto">
-            <div className="grid grid-cols-2 lg:grid-cols-4 bg-[#0f172a]/80 backdrop-blur-xl border-x border-t border-white/10 rounded-t-[3rem] overflow-hidden">
+            <div className="grid grid-cols-2 lg:grid-cols-4 bg-[#0f172a]/80 backdrop-blur-xl border-x border-t border-white/10 rounded-t-2xl sm:rounded-t-[3rem] overflow-hidden">
               {stats.map((stat, i) => (
-                <div key={stat.id} className={cn("flex flex-col items-center justify-center py-12 px-4 text-center", i !== 3 && "border-r border-white/10")}>
-                  <div className="text-5xl md:text-6xl font-black text-white mb-2 tabular-nums tracking-tighter">
+                <div key={stat.id} className={cn("flex flex-col items-center justify-center py-8 md:py-12 px-4 text-center", i !== 3 && "border-r border-white/10")}>
+                  <div className="text-3xl sm:text-5xl md:text-6xl font-black text-white mb-2 tabular-nums tracking-tighter">
                     <CountUp end={stat.value} suffix={stat.suffix} />
                   </div>
                   <div className="text-orange-400 font-black tracking-[0.25em] text-[10px] uppercase">{stat.label}</div>
@@ -159,7 +159,7 @@ export default function HomePage() {
              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-orange-600 border border-orange-100 text-[10px] font-black uppercase tracking-widest mb-6">
                <Trophy className="h-3.5 w-3.5" /> WHY UNIQUE CHESS ACADEMY?
              </div>
-             <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-8 leading-tight">
+             <h2 className="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-8 leading-tight">
                Strategic <span className="text-orange-600 italic">Advantage</span>
              </h2>
              <p className="text-slate-500 max-w-2xl text-lg font-medium leading-relaxed">
@@ -170,7 +170,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((f, i) => (
               <ScrollReveal key={f.id} delay={i * 0.1}>
-                <div className="p-10 rounded-[3rem] border border-slate-200 bg-white hover:border-orange-200 hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] transition-all duration-500 group h-full flex flex-col">
+                <div className="p-6 md:p-10 rounded-3xl md:rounded-[3rem] border border-slate-200 bg-white hover:border-orange-200 hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] transition-all duration-500 group h-full flex flex-col">
                   <div className={cn("inline-flex p-5 rounded-3xl mb-8 transition-transform group-hover:rotate-12 group-hover:scale-110 shadow-sm w-fit", f.color === 'gold' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600')}>
                     <f.icon className="h-8 w-8" />
                   </div>
@@ -196,9 +196,9 @@ export default function HomePage() {
         <div className="relative flex">
           <div ref={marqueeRef} className="flex gap-8 whitespace-nowrap">
             {[...galleryImages, ...galleryImages].map((src, idx) => (
-              <div key={idx} className="w-[450px] h-[550px] shrink-0 relative group">
-                <div className="absolute inset-0 bg-orange-600 translate-x-2 translate-y-2 rounded-[2.5rem] -z-10 group-hover:translate-x-4 group-hover:translate-y-4 transition-transform duration-500" />
-                <div className="w-full h-full bg-slate-900 rounded-[2.5rem] overflow-hidden border-2 border-slate-800">
+              <div key={idx} className="w-[280px] h-[380px] sm:w-[450px] sm:h-[550px] shrink-0 relative group">
+                <div className="absolute inset-0 bg-orange-600 translate-x-2 translate-y-2 rounded-2xl sm:rounded-[2.5rem] -z-10 group-hover:translate-x-4 group-hover:translate-y-4 transition-transform duration-500" />
+                <div className="w-full h-full bg-slate-900 rounded-2xl sm:rounded-[2.5rem] overflow-hidden border-2 border-slate-800">
                   <img src={src} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700" alt="Chess Match" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-90" />
                   <div className="absolute bottom-8 left-8 text-white">
@@ -219,15 +219,15 @@ export default function HomePage() {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[11px] font-black uppercase tracking-widest mb-6">
               Academy Path
             </div>
-            <h2 className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tighter">Structured for Growth.</h2>
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-8 tracking-tighter">Structured for Growth.</h2>
             <p className="text-slate-300 text-xl leading-relaxed font-medium">Precision-engineered for competitive success.</p>
           </div>
           
           <div className="grid lg:grid-cols-3 gap-10">
             {levels.map((level, i) => (
               <ScrollReveal key={level.id} delay={i * 0.1}>
-                <div className="bg-white/5 backdrop-blur-md rounded-[3.5rem] p-12 border border-white/10 h-full flex flex-col group hover:bg-white transition-all duration-700 hover:scale-[1.02]">
-                  <div className={cn("w-24 h-24 rounded-[2.5rem] flex items-center justify-center text-5xl mb-10 transition-transform group-hover:-translate-y-2 group-hover:rotate-6 shadow-xl", level.bg)}>
+                <div className="bg-white/5 backdrop-blur-md rounded-3xl md:rounded-[3.5rem] p-6 md:p-12 border border-white/10 h-full flex flex-col group hover:bg-white transition-all duration-700 hover:scale-[1.02]">
+                  <div className={cn("w-16 h-16 md:w-24 md:h-24 rounded-2xl md:rounded-[2.5rem] flex items-center justify-center text-3xl md:text-5xl mb-10 transition-transform group-hover:-translate-y-2 group-hover:rotate-6 shadow-xl", level.bg)}>
                     {level.icon}
                   </div>
                   <h3 className="text-3xl font-black text-white group-hover:text-slate-950 mb-6 transition-colors tracking-tight">{level.title}</h3>
