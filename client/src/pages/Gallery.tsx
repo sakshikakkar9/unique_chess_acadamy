@@ -31,7 +31,7 @@ export default function GalleryPage() {
               <span className="text-[11px] font-black uppercase tracking-[0.2em]">Visual Chronicle</span>
             </motion.div>
             
-            <motion.h1 variants={fadeUp} className="text-5xl md:text-8xl font-bold text-white mb-6 tracking-tighter">
+            <motion.h1 variants={fadeUp} className="text-4xl sm:text-7xl md:text-8xl font-bold text-white mb-6 tracking-tighter">
               Moments of <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Excellence</span>
             </motion.h1>
             
@@ -104,7 +104,7 @@ export default function GalleryPage() {
                 ) : (
                   <motion.div 
                     variants={fadeUp}
-                    className="col-span-full flex flex-col items-center justify-center py-40 border-2 border-dashed border-slate-200 rounded-[3rem] bg-white"
+                    className="col-span-full flex flex-col items-center justify-center py-40 border-2 border-dashed border-slate-200 rounded-3xl md:rounded-[3rem] bg-white"
                   >
                     <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center mb-6">
                       <ImageIcon className="h-10 w-10 text-slate-300" />
