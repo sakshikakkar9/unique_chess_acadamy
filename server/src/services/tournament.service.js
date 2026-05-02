@@ -4,7 +4,8 @@ import prisma from '../../lib/prisma.js';
 export const getAllTournaments = async () => {
   return await prisma.tournament.findMany({
     include: { results: true },
-    orderBy: { date: 'asc' },
+    // Changed 'date' to 'startDate' to match your new schema
+    orderBy: { startDate: 'asc' },
   });
 };
 
@@ -18,22 +19,30 @@ export const getTournamentById = async (id) => {
   });
 };
 
-// ✅ ADDED: CREATE TOURNAMENT
+// ✅ UPDATED: CREATE TOURNAMENT WITH NEW FIELDS
 export const createTournament = async (data) => {
   return await prisma.tournament.create({
     data: {
       title: data.title,
       location: data.location,
       description: data.description || "",
-      date: new Date(data.date), // Convert string to Date object
+      // Mapped new schema fields
+      startDate: new Date(data.startDate), 
+      endDate: data.endDate ? new Date(data.endDate) : null,
+      category: data.category || null,
+      totalPrizePool: data.totalPrizePool || null,
+      discountDetails: data.discountDetails || null,
+      brochureUrl: data.brochureUrl || null,
+      otherDetails: data.otherDetails || null,
+      contactDetails: data.contactDetails || null,
       status: data.status || 'UPCOMING',
       entryFee: parseFloat(data.entryFee || 0),
-      imageUrl: data.imageUrl || null, // ✅ Explicitly map the image
+      imageUrl: data.imageUrl || null,
     }
   });
 };
 
-// ✅ ADDED: UPDATE TOURNAMENT
+// ✅ UPDATED: UPDATE TOURNAMENT WITH NEW FIELDS
 export const updateTournament = async (id, data) => {
   const numericId = parseInt(id);
   return await prisma.tournament.update({
@@ -44,19 +53,27 @@ export const updateTournament = async (id, data) => {
       description: data.description,
       status: data.status,
       imageUrl: data.imageUrl,
+      category: data.category,
+      totalPrizePool: data.totalPrizePool,
+      discountDetails: data.discountDetails,
+      brochureUrl: data.brochureUrl,
+      otherDetails: data.otherDetails,
+      contactDetails: data.contactDetails,
       entryFee: data.entryFee ? parseFloat(data.entryFee) : undefined,
-      date: data.date ? new Date(data.date) : undefined,
+      // Fixed field names for update logic
+      startDate: data.startDate ? new Date(data.startDate) : undefined,
+      endDate: data.endDate ? new Date(data.endDate) : null,
     }
   });
 };
 
-// ✅ ADDED: DELETE TOURNAMENT
+// --- DELETE TOURNAMENT (No changes needed) ---
 export const deleteTournament = async (id) => {
   const numericId = parseInt(id);
   return await prisma.tournament.delete({ where: { id: numericId } });
 };
 
-// --- HANDLE REGISTRATION ---
+// --- HANDLE REGISTRATION (No changes needed) ---
 export const registerForTournament = async (tournamentId, data) => {
   const numericTournamentId = parseInt(tournamentId);
   if (isNaN(numericTournamentId)) throw new Error("Invalid Tournament ID");

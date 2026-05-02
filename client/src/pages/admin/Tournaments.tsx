@@ -1,16 +1,15 @@
 import React, { useState, useMemo } from "react";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
-import DataTable, { Column } from "@/components/shared/admin/DataTable";
+import DataTable from "@/components/shared/admin/DataTable";
 import AdminFormModal from "@/components/shared/admin/AdminFormModal";
 import ConfirmDialog from "@/components/shared/admin/ConfirmDialog";
 import StatusBadge from "@/components/shared/admin/StatusBadge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea"; // Ensure you have this shadcn component
-import { Plus, Search, Trophy, Calendar, MapPin, FilterX, Upload, X, Edit2, Trash2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Plus, Trophy, Upload, X } from "lucide-react";
 import { Tournament } from "@/types";
 
 type TournamentStatus = "ALL" | "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED";
@@ -24,17 +23,23 @@ const AdminTournaments: React.FC = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   
-  // Initialize with empty strings to avoid "undefined" input issues
+  // Updated initial state to match new Prisma schema fields
   const [formData, setFormData] = useState<any>({
     title: "",
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: "",
     location: "",
-    date: "",
+    category: "",
+    totalPrizePool: "",
     entryFee: 0,
+    discountDetails: "",
+    brochureUrl: "",
+    otherDetails: "",
+    contactDetails: "",
     status: "UPCOMING",
     description: "",
     imageUrl: ""
   });
-  const [uploading, setUploading] = useState(false);
 
   const filteredData = useMemo(() => {
     let result = tournaments;
@@ -52,10 +57,17 @@ const AdminTournaments: React.FC = () => {
     setSelectedTournament(null);
     setFormData({ 
       title: "", 
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: "",
       location: "", 
-      date: new Date().toISOString().split('T')[0], 
-      status: activeTab === "ALL" ? "UPCOMING" : activeTab,
+      category: "",
+      totalPrizePool: "",
       entryFee: 0,
+      discountDetails: "",
+      brochureUrl: "",
+      otherDetails: "",
+      contactDetails: "",
+      status: activeTab === "ALL" ? "UPCOMING" : activeTab,
       description: "",
       imageUrl: "" 
     });
@@ -66,7 +78,8 @@ const AdminTournaments: React.FC = () => {
     setSelectedTournament(t);
     setFormData({ 
       ...t, 
-      date: t.date ? new Date(t.date).toISOString().split('T')[0] : "",
+      startDate: t.startDate ? new Date(t.startDate).toISOString().split('T')[0] : "",
+      endDate: t.endDate ? new Date(t.endDate).toISOString().split('T')[0] : "",
       entryFee: t.entryFee || 0
     });
     setIsModalOpen(true);
@@ -76,8 +89,9 @@ const AdminTournaments: React.FC = () => {
     const payload = { 
       ...formData, 
       entryFee: parseFloat(formData.entryFee) || 0,
-      // Ensure date is sent as ISO string for Prisma DateTime field
-      date: new Date(formData.date).toISOString() 
+      // Syncing with new Prisma DateTime fields
+      startDate: new Date(formData.startDate).toISOString(),
+      endDate: formData.endDate ? new Date(formData.endDate).toISOString() : null
     };
     try {
       if (selectedTournament) await updateTournament(selectedTournament.id, payload);
@@ -103,12 +117,12 @@ const AdminTournaments: React.FC = () => {
         </Button>
       </div>
 
-      {/* Main Table/List Container */}
+      {/* Main Table Section */}
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
         <DataTable 
           columns={[
             { header: "Tournament", accessorKey: "title" },
-            { header: "Date", accessorKey: "date", cell: (item) => new Date(item.date).toLocaleDateString() },
+            { header: "Start Date", accessorKey: "startDate", cell: (item) => new Date(item.startDate).toLocaleDateString() },
             { header: "Status", accessorKey: "status", cell: (item) => <StatusBadge status={item.status} /> }
           ]} 
           data={filteredData} 
@@ -118,10 +132,6 @@ const AdminTournaments: React.FC = () => {
         />
       </div>
 
-      {/* 
-        FORM MODAL: IMPROVED VISIBILITY 
-        Added h-[80vh] and overflow-y-auto to ensure it scrolls on all phones.
-      */}
       <AdminFormModal 
         open={isModalOpen} 
         onOpenChange={setIsModalOpen} 
@@ -130,7 +140,7 @@ const AdminTournaments: React.FC = () => {
       >
         <div className="flex flex-col gap-6 py-4 px-1 overflow-y-auto max-h-[70vh] scrollbar-thin">
           
-          {/* 1. Image Upload */}
+          {/* 1. Banner Upload */}
           <div className="space-y-2">
             <Label className="text-sm font-bold">Tournament Banner</Label>
             <div className="border-2 border-dashed rounded-xl p-4 text-center hover:bg-muted/50 transition-colors">
@@ -149,7 +159,7 @@ const AdminTournaments: React.FC = () => {
               ) : (
                 <label className="cursor-pointer flex flex-col items-center py-6">
                   <Upload className="h-10 w-10 text-muted-foreground mb-2" />
-                  <span className="text-xs font-medium">Click to upload JPG/PNG</span>
+                  <span className="text-xs font-medium">Click to upload Banner</span>
                   <input 
                     type="file" 
                     className="hidden" 
@@ -167,57 +177,89 @@ const AdminTournaments: React.FC = () => {
             </div>
           </div>
 
-          {/* 2. Basic Info */}
+          {/* 2. Series-wise Inputs Based on Client Requirements */}
           <div className="grid gap-4">
+            {/* Title */}
             <div className="grid gap-2">
-              <Label htmlFor="title">Tournament Title</Label>
-              <Input id="title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="e.g. Rising Masters Elite" />
+              <Label htmlFor="title">Title</Label>
+              <Input id="title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="Tournament Title" />
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="location">Venue / Location</Label>
-              <Input id="location" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="e.g. Gurugram Academy" />
+            {/* Dates (Start and End) */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="startDate">Start Date</Label>
+                <Input id="startDate" type="date" value={formData.startDate} onChange={(e) => setFormData({...formData, startDate: e.target.value})} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="endDate">End Date</Label>
+                <Input id="endDate" type="date" value={formData.endDate} onChange={(e) => setFormData({...formData, endDate: e.target.value})} />
+              </div>
             </div>
-          </div>
 
-          {/* 3. Pricing & Date */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="date">Date</Label>
-              <Input id="date" type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+            {/* Location & Category */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="location">Location</Label>
+                <Input id="location" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="Venue" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="category">Category</Label>
+                <Input id="category" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} placeholder="e.g. Open, Under-19" />
+              </div>
             </div>
+
+            {/* Price Pool */}
             <div className="grid gap-2">
-              <Label htmlFor="fee">Entry Fee (₹)</Label>
+              <Label htmlFor="prize">Total Price Pool</Label>
+              <Input id="prize" value={formData.totalPrizePool} onChange={(e) => setFormData({...formData, totalPrizePool: e.target.value})} placeholder="e.g. ₹50,000" />
+            </div>
+
+            {/* Entry Fee & Discount Description */}
+            <div className="grid gap-2">
+              <Label htmlFor="fee">Entry Fee</Label>
               <Input id="fee" type="number" value={formData.entryFee} onChange={(e) => setFormData({...formData, entryFee: e.target.value})} />
+              <Input 
+                placeholder="Discount Details (e.g. Early bird 10% off)" 
+                value={formData.discountDetails} 
+                onChange={(e) => setFormData({...formData, discountDetails: e.target.value})} 
+                className="mt-1 text-sm"
+              />
             </div>
-          </div>
 
-          {/* 4. Status Selection */}
-          <div className="grid gap-2">
-            <Label>Current Status</Label>
-            <Select value={formData.status} onValueChange={(val) => setFormData({...formData, status: val})}>
-              <SelectTrigger className="h-11">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="UPCOMING">Upcoming</SelectItem>
-                <SelectItem value="ONGOING">Ongoing</SelectItem>
-                <SelectItem value="COMPLETED">Completed</SelectItem>
-                <SelectItem value="CANCELLED">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Brochure Upload */}
+            <div className="grid gap-2">
+              <Label htmlFor="brochure">Tournament Brochure (Link or Base64)</Label>
+              <Input id="brochure" value={formData.brochureUrl} onChange={(e) => setFormData({...formData, brochureUrl: e.target.value})} placeholder="Paste brochure link or upload info" />
+            </div>
 
-          {/* 5. Description */}
-          <div className="grid gap-2">
-            <Label htmlFor="desc">Event Description</Label>
-            <Textarea 
-              id="desc" 
-              placeholder="Detail the tournament rules, prizes, etc."
-              className="min-h-[120px] resize-none"
-              value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
-            />
+            {/* Other Details */}
+            <div className="grid gap-2">
+              <Label htmlFor="other">Other Details</Label>
+              <Textarea id="other" value={formData.otherDetails} onChange={(e) => setFormData({...formData, otherDetails: e.target.value})} placeholder="Rules, schedule, etc." />
+            </div>
+
+            {/* Contact Details */}
+            <div className="grid gap-2">
+              <Label htmlFor="contact">Contact Details</Label>
+              <Input id="contact" value={formData.contactDetails} onChange={(e) => setFormData({...formData, contactDetails: e.target.value})} placeholder="Name/Phone/Email" />
+            </div>
+
+            {/* Status Selection */}
+            <div className="grid gap-2">
+              <Label>Current Status</Label>
+              <Select value={formData.status} onValueChange={(val) => setFormData({...formData, status: val})}>
+                <SelectTrigger className="h-11">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UPCOMING">Upcoming</SelectItem>
+                  <SelectItem value="ONGOING">Ongoing</SelectItem>
+                  <SelectItem value="COMPLETED">Completed</SelectItem>
+                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </AdminFormModal>

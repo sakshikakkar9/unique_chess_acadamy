@@ -10,50 +10,56 @@ export const useAdminTournaments = () => {
     queryKey: ["tournaments"],
     queryFn: async () => {
       const res = await api.get("/tournaments");
+      // The backend now sends data sorted by 'startDate'
       return res.data;
     }
   });
 
   const addMutation = useMutation({
-  // ✅ CHANGE: Add /admin/create to the path
-  mutationFn: (newTournament: any) => api.post("/tournaments/admin/create", newTournament),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["tournaments"] });
-    toast({ title: "Success", description: "Tournament added." });
-  },
-  onError: (error: any) => {
-    toast({ 
-      variant: "destructive", 
-      title: "Failed", 
-      description: error.response?.data?.error || "Check your data." 
-    });
-  }
-});
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => api.put(`/tournaments/admin/update/${id}`, data),
+    mutationFn: (newTournament: any) => api.post("/tournaments/admin/create", newTournament),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tournaments"] });
-      toast({ title: "Updated", description: "Changes saved to database." });
+      toast({ title: "Success", description: "Tournament created successfully." });
+    },
+    onError: (error: any) => {
+      toast({ 
+        variant: "destructive", 
+        title: "Failed", 
+        description: error.response?.data?.error || "Check your network or data format." 
+      });
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) => 
+      api.put(`/tournaments/admin/update/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tournaments"] });
+      toast({ title: "Updated", description: "Tournament details have been synced." });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: error.response?.data?.error || "Could not save changes."
+      });
     }
   });
 
   const deleteMutation = useMutation({
-  // ✅ CHANGE THIS: Add /admin/delete/ to the path
-  mutationFn: (id: number) => api.delete(`/tournaments/admin/delete/${id}`),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["tournaments"] });
-    toast({ title: "Deleted", description: "Tournament removed." });
-  },
-  // Added error handling to help diagnose issues
-  onError: (error: any) => {
-    toast({
-      variant: "destructive",
-      title: "Failed",
-      description: error.response?.data?.error || "Failed to delete tournament."
-    });
-  }
-});
+    mutationFn: (id: number) => api.delete(`/tournaments/admin/delete/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tournaments"] });
+      toast({ title: "Deleted", description: "Tournament removed from database." });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Delete Failed",
+        description: error.response?.data?.error || "Failed to delete tournament."
+      });
+    }
+  });
 
   return {
     tournaments,
