@@ -81,19 +81,19 @@ export const registerForTournament = async (tournamentId, registrationData) => {
   return await prisma.registration.create({
     data: {
       studentName: registrationData.studentName,
-      gender: registrationData.gender, 
-      dob: new Date(registrationData.dob), 
+      gender: registrationData.gender,
+      dob: new Date(registrationData.dob),
       phone: registrationData.phone,
       email: registrationData.email || null,
       address: registrationData.address,
       fideId: registrationData.fideId || "NA",
-      fideRating: Number(registrationData.fideRating) || 0,
+      // Convert to Number to satisfy Prisma's Int requirement
+      fideRating: parseInt(registrationData.fideRating) || 0,
       discoverySource: registrationData.discoverySource,
       
-      // ✅ FIX: Change 'ageProofUrl' to 'ageProof' to match your Schema
-      // ✅ FIX: Change 'paymentProofUrl' to 'paymentProof' to match your Schema
-      ageProof: registrationData.ageProofUrl || "", 
-      paymentProof: registrationData.paymentProofUrl || "",
+      // ✅ MATCHING YOUR SCHEMA VERBATIM
+      ageProofUrl: registrationData.ageProofUrl || "", 
+      paymentProofUrl: registrationData.paymentProofUrl || "",
       
       status: "PENDING",
       tournament: {

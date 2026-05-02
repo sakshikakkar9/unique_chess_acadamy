@@ -23,20 +23,19 @@ export const getTournamentById = async (req, res) => {
 
 export const registerForTournament = async (req, res) => {
   try {
-    // 1. Combine text fields and file paths
+    // 1. Prepare data for the service
+    // Text fields are in req.body. File info is in req.files (from Multer)
     const registrationData = {
       ...req.body,
-      // If using multer, extract the file paths/cloud URLs
-      ageProofUrl: req.files?.['ageProof']?.[0]?.path || "",
-      paymentProofUrl: req.files?.['paymentProof']?.[0]?.path || ""
+      // Pass file identifiers or temporary paths if you aren't using a cloud provider yet
+      ageProofUrl: req.files?.['ageProof']?.[0]?.originalname || "pending_upload",
+      paymentProofUrl: req.files?.['paymentProof']?.[0]?.originalname || "pending_upload"
     };
 
-    // 2. Pass the combined object to your service
     const data = await tournamentService.registerForTournament(req.params.id, registrationData);
-    
     res.status(201).json(data);
   } catch (error) {
-    console.error("Registration Error:", error); // Smart logging for debugging
+    console.error("Prisma Error Details:", error);
     res.status(500).json({ error: error.message });
   }
 };
