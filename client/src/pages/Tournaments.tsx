@@ -43,7 +43,7 @@ export default function TournamentsPage() {
               <span className="text-[11px] font-black uppercase tracking-[0.2em]">Championship Hub</span>
             </motion.div>
             
-            <motion.h1 variants={fadeLeft} className="text-5xl md:text-8xl font-bold text-white mb-6 tracking-tighter leading-tight">
+            <motion.h1 variants={fadeLeft} className="text-4xl sm:text-7xl md:text-8xl font-bold text-white mb-6 tracking-tighter leading-tight">
               Prove Your <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-200">Strategic Might</span>
             </motion.h1>
@@ -68,7 +68,7 @@ export default function TournamentsPage() {
               <div 
                 key={stat.label} 
                 className={cn(
-                  "group relative flex flex-col md:flex-row items-center gap-4 py-10 px-8 transition-all duration-300 hover:bg-white/[0.02]",
+                  "group relative flex flex-col md:flex-row items-center gap-4 py-6 px-4 md:py-10 md:px-8 transition-all duration-300 hover:bg-white/[0.02]",
                   i !== 3 && "md:border-r border-white/5"
                 )}
               >
@@ -119,14 +119,14 @@ export default function TournamentsPage() {
                   viewport={{ once: true }}
                   variants={fadeUp}
                   custom={index}
-                  className="group relative bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-orange-900/10 hover:border-orange-200 transition-all duration-500 flex flex-col h-full"
+                  className="group relative bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-orange-900/10 hover:border-orange-200 transition-all duration-500 flex flex-col h-full"
                 >
                   {/* Status Indicator */}
                   <div className="h-2 w-full bg-slate-50 overflow-hidden">
                     <div className="h-full bg-orange-500 w-0 group-hover:w-full transition-all duration-1000" />
                   </div>
 
-                  <div className="p-9 flex flex-col h-full">
+                  <div className="p-6 md:p-9 flex flex-col h-full">
                     {/* Header Info */}
                     <div className="flex justify-between items-start mb-8">
                       <div className="flex flex-col">

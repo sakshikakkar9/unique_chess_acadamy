@@ -50,7 +50,7 @@ export default function ContactPage() {
               <span className="text-[11px] font-black uppercase tracking-[0.2em]">Support Center</span>
             </motion.div>
 
-            <motion.h1 variants={fadeUp} className="text-5xl md:text-8xl font-bold text-white mb-6 tracking-tighter">
+            <motion.h1 variants={fadeUp} className="text-4xl sm:text-7xl md:text-8xl font-bold text-white mb-6 tracking-tighter">
               Get in <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-200">Touch</span>
             </motion.h1>
 
@@ -68,7 +68,7 @@ export default function ContactPage() {
             
             {/* FORM CARD */}
             <ScrollReveal variants={fadeLeft}>
-              <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-slate-100 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)]">
+              <div className="bg-white p-6 md:p-12 rounded-2xl sm:rounded-[2.5rem] border border-slate-100 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)]">
                 <div className="mb-10">
                   <h2 className="text-2xl font-black text-slate-900 mb-2">Send a Message</h2>
                   <p className="text-slate-500 text-sm">We'll respond to your inquiry within 24 business hours.</p>

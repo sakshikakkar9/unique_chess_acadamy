@@ -46,7 +46,7 @@ const Navbar = () => {
               src={logoImg} 
               alt="Unique Chess Academy"
               className={cn(
-                "h-14 md:h-16 w-auto transition-all duration-300 object-contain rounded-lg", 
+                "h-10 sm:h-14 md:h-16 w-auto transition-all duration-300 object-contain rounded-lg",
                 scrolled ? "mix-blend-multiply opacity-95" : "brightness-110 contrast-110"
               )}
             />

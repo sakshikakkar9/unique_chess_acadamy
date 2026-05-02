@@ -53,7 +53,7 @@ export default function AboutPage() {
                 <Trophy className="h-3.5 w-3.5" /> The Grandmaster Standard
               </motion.div>
               
-              <motion.h1 variants={fadeLeft} className="text-6xl md:text-9xl font-extrabold text-white mb-10 leading-[0.85] tracking-tighter">
+              <motion.h1 variants={fadeLeft} className="text-4xl sm:text-7xl md:text-9xl font-extrabold text-white mb-10 leading-[0.85] tracking-tighter">
                 Architecting <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-200 to-blue-600">Pure Intellect.</span>
               </motion.h1>
@@ -80,7 +80,7 @@ export default function AboutPage() {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-black uppercase tracking-widest mb-6">
                  <Trophy className="h-3.5 w-3.5" /> Established 2016
               </div>
-              <h2 className="text-5xl md:text-7xl font-black text-slate-900 mb-10 tracking-tighter leading-[0.95]">
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-slate-900 mb-10 tracking-tighter leading-[0.95]">
                 Beyond <br /><span className="text-blue-600 italic">Memorization.</span>
               </h2>
               <div className="space-y-8 text-slate-600 text-lg md:text-xl leading-relaxed font-medium">
@@ -91,11 +91,11 @@ export default function AboutPage() {
 
             <ScrollReveal variants={scaleIn}>
               <div className="grid grid-cols-1 gap-8">
-                <div className="p-10 rounded-[3rem] bg-white border border-blue-100 shadow-[0_25px_80px_rgba(37,99,235,0.05)] backdrop-blur-md">
+                <div className="p-6 md:p-10 rounded-2xl md:rounded-[3rem] bg-white border border-blue-100 shadow-[0_25px_80px_rgba(37,99,235,0.05)] backdrop-blur-md">
                   <p className="text-6xl font-black text-slate-900 tracking-tighter">5K+</p>
                   <p className="text-[11px] font-black text-blue-500 uppercase tracking-[0.2em] mt-3">Elite Alumni Worldwide</p>
                 </div>
-                <div className="p-10 rounded-[3rem] bg-white border border-blue-100 shadow-[0_25px_80px_rgba(37,99,235,0.05)] backdrop-blur-md">
+                <div className="p-6 md:p-10 rounded-2xl md:rounded-[3rem] bg-white border border-blue-100 shadow-[0_25px_80px_rgba(37,99,235,0.05)] backdrop-blur-md">
                   <p className="text-6xl font-black text-slate-900 tracking-tighter">98%</p>
                   <p className="text-[11px] font-black text-blue-500 uppercase tracking-[0.2em] mt-3">Elo Growth Rate</p>
                 </div>
@@ -109,7 +109,7 @@ export default function AboutPage() {
       <section className="py-24 bg-[#f1f5f9] border-y border-slate-200">
         <div className="container mx-auto px-6 grid lg:grid-cols-2 gap-8">
           <ScrollReveal variants={fadeLeft}>
-            <div className="bg-white/70 backdrop-blur-xl border border-white p-10 lg:p-12 rounded-[3rem] group hover:bg-white transition-all duration-500 shadow-xl shadow-blue-900/5 h-full text-left">
+            <div className="bg-white/70 backdrop-blur-xl border border-white p-6 md:p-10 lg:p-12 rounded-2xl md:rounded-[3rem] group hover:bg-white transition-all duration-500 shadow-xl shadow-blue-900/5 h-full text-left">
               <div className="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-10 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
                 <Target className="h-7 w-7" />
               </div>
@@ -121,7 +121,7 @@ export default function AboutPage() {
           </ScrollReveal>
           
           <ScrollReveal variants={fadeRight}>
-            <div className="bg-white/70 backdrop-blur-xl border border-white p-10 lg:p-12 rounded-[3rem] group hover:bg-white transition-all duration-500 shadow-xl shadow-blue-900/5 h-full text-left">
+            <div className="bg-white/70 backdrop-blur-xl border border-white p-6 md:p-10 lg:p-12 rounded-2xl md:rounded-[3rem] group hover:bg-white transition-all duration-500 shadow-xl shadow-blue-900/5 h-full text-left">
               <div className="w-14 h-14 bg-cyan-500 text-white rounded-2xl flex items-center justify-center mb-10 shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
                 <TrendingUp className="h-7 w-7" />
               </div>
@@ -143,7 +143,7 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
             {values.map((v, i) => (
               <ScrollReveal key={v.title} delay={i * 0.1}>
-                <div className="group p-12 rounded-[3.5rem] bg-white border border-blue-50 hover:border-blue-200 hover:shadow-[0_30px_80px_rgba(0,0,0,0.06)] transition-all duration-500 h-full flex flex-col items-start text-left">
+                <div className="group p-6 md:p-12 rounded-3xl md:rounded-[3.5rem] bg-white border border-blue-50 hover:border-blue-200 hover:shadow-[0_30px_80px_rgba(0,0,0,0.06)] transition-all duration-500 h-full flex flex-col items-start text-left">
                   <div className={cn("w-16 h-16 rounded-[2rem] flex items-center justify-center mb-12 transition-all group-hover:rotate-6 group-hover:scale-110", 
                     v.color === 'blue' ? 'bg-blue-50 text-blue-600' : 
                     v.color === 'sky' ? 'bg-cyan-50 text-cyan-600' : 'bg-orange-50 text-orange-600')}>
@@ -165,7 +165,7 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-24">
             {coaches.map((c, i) => (
               <ScrollReveal key={c.name} delay={i * 0.1}>
-                <div className="bg-[#f8fafc] border border-blue-100 p-10 rounded-[3rem] group hover:bg-white hover:border-blue-300 transition-all duration-700 h-full flex flex-col items-start text-left hover:shadow-xl hover:shadow-blue-900/5">
+                <div className="bg-[#f8fafc] border border-blue-100 p-6 md:p-10 rounded-2xl md:rounded-[3rem] group hover:bg-white hover:border-blue-300 transition-all duration-700 h-full flex flex-col items-start text-left hover:shadow-xl hover:shadow-blue-900/5">
                   <div className="flex justify-between items-start mb-12 w-full">
                     <div className="w-20 h-20 rounded-[2rem] bg-blue-600 flex items-center justify-center text-3xl font-extrabold text-white group-hover:scale-110 transition-transform duration-500 shadow-xl shadow-blue-600/30">
                       {c.name.split(" ").map(n => n[0]).join("")}

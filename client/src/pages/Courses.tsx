@@ -74,7 +74,7 @@ export default function CoursesPage() {
               <Sparkles className="h-3 w-3" /> Professional Curriculum
             </motion.div>
             
-            <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tighter">
+            <motion.h1 variants={fadeUp} className="text-4xl sm:text-7xl font-bold text-white mb-6 tracking-tighter">
               The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Grandmaster</span> Path
             </motion.h1>
             
@@ -183,7 +183,7 @@ export default function CoursesPage() {
                         </div>
 
                         {/* Card Body */}
-                        <div className="p-7 flex flex-col flex-grow">
+                        <div className="p-5 md:p-7 flex flex-col flex-grow">
                           <div className="flex items-center gap-4 mb-4">
                             <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                               <BarChart3 className="h-3.5 w-3.5 text-blue-500" /> {course.level || 'All Levels'}
