@@ -33,14 +33,24 @@ export default function TournamentDetails() {
   if (isLoading) return <div className="min-h-screen bg-white flex items-center justify-center">Loading...</div>;
   if (!tournament) return <div className="p-20 text-center text-slate-900">Tournament not found.</div>;
 
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // 1. Check if ID exists
+    if (!id) {
+      console.error("No tournament ID found in URL");
+      return;
+    }
+
     const formData = new FormData(e.currentTarget);
     
-    // We send FormData directly because we have file uploads now
+    // 2. ✅ CRITICAL STEP: Add the ID from the URL into the FormData
+    // This allows the hook to find it using formData.get("tournamentId")
+    formData.append("tournamentId", id); 
+
+    // 3. Now call the register function as usual
     register(formData, {
       onSuccess: (data: any) => {
-        // Assuming your backend returns the new registration with referenceId
         setRefId(data.referenceId || "UCA-" + Math.random().toString(36).toUpperCase().substring(2, 10));
         setShowSuccess(true);
       }
