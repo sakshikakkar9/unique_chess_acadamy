@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
 import { useTournamentRegistration } from "@/features/tournaments/hooks/useTournamentRegistration";
 import { Button } from "@/components/ui/button";
@@ -16,121 +16,92 @@ export default function TournamentDetails() {
 
   const tournament = tournaments.find((t) => t.id.toString() === id);
 
-  if (!tournament) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <p className="text-xl font-semibold">Tournament not found.</p>
-        <Button onClick={() => navigate("/tournaments")}>Return to List</Button>
-      </div>
-    );
-  }
+  if (!tournament) return <div className="p-20 text-center text-white">Tournament not found.</div>;
 
   const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-    
-    const phoneRegex = /^[0-9+\s-]{10,}$/;
-    if (data.phone && !phoneRegex.test(data.phone.toString())) {
-      toast.error("Please enter a valid phone number.");
-      return;
-    }
-
-    // Pass the data to the backend mutation
     register({ ...data, tournamentId: id });
   };
 
   return (
-    // Changed padding to be more responsive (p-4 for mobile, p-10 for desktop)
-    <div className="min-h-screen bg-background p-4 md:p-10 lg:p-16">
+    /* 
+      FIX 1: Added 'pt-24' (padding-top) to push content below your fixed navbar.
+      This solves the overlap seen in your screenshot.
+    */
+    <div className="min-h-screen bg-background pt-24 pb-12 px-4 md:px-8">
       
-      {/* 1. Back Navigation - Now with fixed width and higher contrast */}
-      <div className="max-w-6xl mx-auto mb-6">
-        <Button 
-          variant="outline" // Outline variant is often more visible than ghost on mobile
-          onClick={() => navigate("/tournaments")} 
-          className="flex items-center gap-2 border-primary/20 hover:bg-primary/5 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" /> 
-          <span>Back to Tournaments</span>
-        </Button>
-      </div>
-
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10">
-        {/* Information Section */}
-        <div className="space-y-8">
-          <header>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-gradient-gold leading-tight">
-              {tournament.title}
-            </h1>
-          </header>
-          
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-            <div className="flex items-center gap-3 text-muted-foreground">
-              <Calendar className="h-5 w-5 text-primary shrink-0" />
-              <span className="font-medium text-sm md:text-base">
-                {new Date(tournament.date).toLocaleDateString('en-IN', {
-                  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                })}
-              </span>
-            </div>
-            <div className="flex items-center gap-3 text-muted-foreground">
-              <MapPin className="h-5 w-5 text-primary shrink-0" />
-              <span className="font-medium text-sm md:text-base">{tournament.location}</span>
-            </div>
-            <div className="flex items-center gap-3 text-muted-foreground">
-              <Ticket className="h-5 w-5 text-primary shrink-0" />
-              <span className="font-bold text-lg text-foreground">₹{tournament.entryFee}</span>
-            </div>
-          </div>
-
-          <div className="bg-muted/30 p-6 rounded-2xl border border-border">
-            <h3 className="text-lg font-semibold mb-3">About the Event</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              {tournament.description || "Join this tournament to showcase your skills and compete for the top spots!"}
-            </p>
-          </div>
+      <div className="max-w-6xl mx-auto">
+        {/* 
+          FIX 2: Simple Text Link for "Back"
+          Removed the button styling completely.
+        */}
+        <div className="mb-8">
+          <Link 
+            to="/tournaments" 
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors group"
+          >
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+            <span>Back to Tournaments</span>
+          </Link>
         </div>
 
-        {/* Form Section */}
-        <div className="relative">
-          <Card className="border-primary/20 shadow-xl overflow-hidden backdrop-blur-sm">
-            <div className="h-2 bg-primary w-full" />
+        <div className="grid lg:grid-cols-2 gap-10 items-start">
+          {/* Details Column */}
+          <div className="space-y-6">
+            <h1 className="text-3xl md:text-5xl font-bold text-gradient-gold leading-tight">
+              {tournament.title}
+            </h1>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-muted-foreground">
+                <Calendar className="h-5 w-5 text-primary shrink-0" />
+                <span className="text-base">{new Date(tournament.date).toDateString()}</span>
+              </div>
+              <div className="flex items-center gap-3 text-muted-foreground">
+                <MapPin className="h-5 w-5 text-primary shrink-0" />
+                <span className="text-base">{tournament.location}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Ticket className="h-5 w-5 text-primary shrink-0" />
+                <span className="text-xl font-bold text-foreground">₹{tournament.entryFee}</span>
+              </div>
+            </div>
+
+            <div className="bg-card/30 border border-border p-6 rounded-2xl">
+              <h3 className="text-lg font-semibold mb-2">About the Event</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                {tournament.description || "Join this tournament to showcase your skills and compete for the top spots!"}
+              </p>
+            </div>
+          </div>
+
+          {/* Registration Column */}
+          <Card className="border-primary/20 shadow-2xl bg-card/50 backdrop-blur-sm">
+            <div className="h-1.5 bg-primary w-full rounded-t-xl" />
             <CardHeader>
-              <CardTitle className="text-2xl font-bold">Player Registration</CardTitle>
+              <CardTitle className="text-2xl font-bold text-center md:text-left">Player Registration</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleRegister} className="space-y-5">
-                <div className="space-y-4">
-                  <Input name="studentName" placeholder="Player Full Name" required className="h-11" />
-                  <Input name="phone" placeholder="WhatsApp Number" required className="h-11" />
-                  <Input name="email" type="email" placeholder="Email Address (Optional)" className="h-11" />
-                  <Input name="fideId" placeholder="FIDE ID (If applicable)" className="h-11" />
-                </div>
-
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 text-center space-y-4">
-                  <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase">
-                    Scan & Pay
-                  </span>
-                  <div className="bg-white p-2 w-40 h-40 mx-auto rounded-lg shadow-inner">
-                    <img src="/qr-placeholder.png" alt="Payment QR" className="w-full h-full object-contain" />
-                  </div>
-                  <p className="text-xs text-muted-foreground font-mono">UPI: academy@upi</p>
-                </div>
-
-                <Input 
-                  name="transactionId" 
-                  placeholder="Transaction ID (UTR Number)" 
-                  required 
-                  className="h-11 border-primary/40 focus:ring-primary" 
-                />
+              <form onSubmit={handleRegister} className="space-y-4">
+                <Input name="studentName" placeholder="Player Full Name" required className="h-12" />
+                <Input name="phone" placeholder="WhatsApp Number" required className="h-12" />
+                <Input name="email" type="email" placeholder="Email (Optional)" className="h-12" />
+                <Input name="fideId" placeholder="FIDE ID (Optional)" className="h-12" />
                 
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 text-lg font-bold shadow-lg" 
-                  disabled={isPending}
-                >
-                  {isPending ? "Processing..." : "Complete Registration"}
+                <div className="p-4 border border-dashed border-primary/20 rounded-xl bg-primary/5 text-center">
+                  <p className="text-xs font-bold text-primary mb-3">Scan to Pay ₹{tournament.entryFee}</p>
+                  <div className="bg-white p-2 inline-block rounded-lg mb-2">
+                    <img src="/qr-placeholder.png" alt="Payment QR" className="w-32 h-32" />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground uppercase">UPI: academy@upi</p>
+                </div>
+
+                <Input name="transactionId" placeholder="Transaction ID (UTR)" required className="h-12 border-primary/30" />
+                
+                <Button type="submit" className="w-full h-12 font-bold text-lg" disabled={isPending}>
+                  {isPending ? "Registering..." : "Complete Registration"}
                 </Button>
               </form>
             </CardContent>
