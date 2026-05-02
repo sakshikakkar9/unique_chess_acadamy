@@ -84,15 +84,17 @@ export const registerForTournament = async (tournamentId, registrationData) => {
       gender: registrationData.gender, 
       dob: new Date(registrationData.dob), 
       phone: registrationData.phone,
-      // Handle empty strings from frontend as null for optional fields
       email: registrationData.email || null,
       address: registrationData.address,
       fideId: registrationData.fideId || "NA",
-      // Robust number parsing
       fideRating: Number(registrationData.fideRating) || 0,
       discoverySource: registrationData.discoverySource,
+      
+      // ✅ FIX: Change 'ageProofUrl' to 'ageProof' to match your Schema
+      // ✅ FIX: Change 'paymentProofUrl' to 'paymentProof' to match your Schema
       ageProof: registrationData.ageProofUrl || "", 
       paymentProof: registrationData.paymentProofUrl || "",
+      
       status: "PENDING",
       tournament: {
         connect: { id: id }
