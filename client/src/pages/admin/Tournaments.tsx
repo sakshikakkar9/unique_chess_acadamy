@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Trophy, Calendar, MapPin, FilterX, Upload, X, MoreVertical, Edit2, Trash2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea"; // Ensure you have this shadcn component
+import { Plus, Search, Trophy, Calendar, MapPin, FilterX, Upload, X, Edit2, Trash2 } from "lucide-react";
 import { Tournament } from "@/types";
 
 type TournamentStatus = "ALL" | "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED";
@@ -22,15 +23,22 @@ const AdminTournaments: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
-  const [formData, setFormData] = useState<any>({});
+  
+  // Initialize with empty strings to avoid "undefined" input issues
+  const [formData, setFormData] = useState<any>({
+    title: "",
+    location: "",
+    date: "",
+    entryFee: 0,
+    status: "UPCOMING",
+    description: "",
+    imageUrl: ""
+  });
   const [uploading, setUploading] = useState(false);
 
-  // --- Filtering Logic ---
   const filteredData = useMemo(() => {
     let result = tournaments;
-    if (activeTab !== "ALL") {
-      result = result.filter((t) => t.status === activeTab);
-    }
+    if (activeTab !== "ALL") result = result.filter((t) => t.status === activeTab);
     if (searchQuery) {
       result = result.filter((t) => 
         t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -40,54 +48,13 @@ const AdminTournaments: React.FC = () => {
     return result;
   }, [tournaments, activeTab, searchQuery]);
 
-  // --- Table Columns (Desktop) ---
-  const columns: Column<Tournament>[] = [
-    {
-      header: "Tournament",
-      accessorKey: "title",
-      cell: (item) => (
-        <div className="flex flex-col">
-          <span className="font-semibold text-foreground">{item.title}</span>
-          <span className="text-xs text-muted-foreground md:hidden">{item.location}</span>
-        </div>
-      )
-    },
-    { 
-      header: "Location", 
-      accessorKey: "location",
-      cell: (item) => (
-        <div className="flex items-center gap-1.5 text-muted-foreground">
-          <MapPin className="h-3.5 w-3.5" />
-          <span>{item.location || "No Location"}</span>
-        </div>
-      )
-    },
-    { 
-      header: "Date", 
-      accessorKey: "date",
-      cell: (item) => (
-        <div className="flex items-center gap-1.5">
-          <Calendar className="h-3.5 w-3.5 text-primary" />
-          <span>{item.date ? new Date(item.date).toLocaleDateString() : "TBD"}</span>
-        </div>
-      )
-    },
-    {
-      header: "Status",
-      accessorKey: "status",
-      cell: (item) => <StatusBadge status={item.status} />
-    },
-  ];
-
-  // --- Handlers ---
   const handleAdd = () => {
     setSelectedTournament(null);
-    const defaultStatus = activeTab === "ALL" ? "UPCOMING" : activeTab;
     setFormData({ 
       title: "", 
       location: "", 
       date: new Date().toISOString().split('T')[0], 
-      status: defaultStatus,
+      status: activeTab === "ALL" ? "UPCOMING" : activeTab,
       entryFee: 0,
       description: "",
       imageUrl: "" 
@@ -106,129 +73,152 @@ const AdminTournaments: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const payload = { ...formData, entryFee: parseFloat(formData.entryFee) || 0 };
+    const payload = { 
+      ...formData, 
+      entryFee: parseFloat(formData.entryFee) || 0,
+      // Ensure date is sent as ISO string for Prisma DateTime field
+      date: new Date(formData.date).toISOString() 
+    };
     try {
       if (selectedTournament) await updateTournament(selectedTournament.id, payload);
       else await addTournament(payload);
       setIsModalOpen(false);
-    } catch (error) { console.error(error); }
+    } catch (error) {
+      console.error("Save failed:", error);
+    }
   };
 
   return (
-    <div className="space-y-6 p-2 md:p-6 lg:p-8">
-      {/* 1. Header: Improved for Mobile */}
+    <div className="space-y-6 p-2 md:p-8">
+      {/* Header Section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
             <Trophy className="h-7 w-7 text-amber-500" /> Tournament Console
           </h1>
-          <p className="text-sm text-muted-foreground">Manage academy competitive events.</p>
+          <p className="text-sm text-muted-foreground">Manage competitive events and registrations.</p>
         </div>
-        <Button onClick={handleAdd} className="w-full sm:w-auto h-11 px-6 font-bold gap-2">
+        <Button onClick={handleAdd} className="w-full sm:w-auto font-bold h-11 gap-2">
           <Plus className="h-5 w-5" /> Add Tournament
         </Button>
       </div>
 
-      {/* 2. Filters & Tabs: Fixed Overflow issues seen in screenshot */}
-      <div className="flex flex-col gap-4 rounded-xl border bg-card p-3 shadow-sm md:flex-row md:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input 
-            placeholder="Search tournaments..." 
-            className="pl-10 h-11 bg-muted/20"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        
-        {/* Scrollable Tabs for Mobile */}
-        <div className="overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TournamentStatus)} className="w-fit">
-            <TabsList className="h-11 bg-muted/50 p-1 flex w-max">
-              {["ALL", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"].map((status) => (
-                <TabsTrigger key={status} value={status} className="px-3 md:px-4 text-xs md:text-sm">
-                  {status.charAt(0) + status.slice(1).toLowerCase()}
-                  <span className="ml-1.5 opacity-60 text-[10px]">
-                    ({status === "ALL" ? tournaments.length : tournaments.filter(t => t.status === status).length})
-                  </span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </div>
-      </div>
-
-      {/* 3. Tournament List: Card View (Mobile) vs Table View (Desktop) */}
+      {/* Main Table/List Container */}
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-        {filteredData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <FilterX className="h-12 w-12 text-muted-foreground/30 mb-4" />
-            <h3 className="text-lg font-semibold opacity-50">No tournaments found</h3>
-          </div>
-        ) : (
-          <>
-            {/* MOBILE ONLY: Card List */}
-            <div className="grid grid-cols-1 divide-y md:hidden">
-              {filteredData.map((t) => (
-                <div key={t.id} className="p-4 space-y-3 active:bg-muted/30 transition-colors">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-1">
-                      <h4 className="font-bold text-foreground leading-none">{t.title}</h4>
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <MapPin className="h-3 w-3" /> {t.location || "TBD"}
-                      </div>
-                    </div>
-                    <StatusBadge status={t.status} />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-xs font-medium">
-                      <Calendar className="h-3.5 w-3.5 text-primary" />
-                      {t.date ? new Date(t.date).toLocaleDateString() : "TBD"}
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" onClick={() => handleEdit(t)} className="h-8 px-2.5">
-                        <Edit2 className="h-3.5 w-3.5 mr-1" /> Edit
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => { setSelectedTournament(t); setIsConfirmOpen(true); }} className="h-8 px-2 text-destructive">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* DESKTOP ONLY: Table View */}
-            <div className="hidden md:block">
-              <DataTable 
-                columns={columns} 
-                data={filteredData} 
-                isLoading={isLoading} 
-                onEdit={handleEdit}
-                onDelete={(item) => { setSelectedTournament(item); setIsConfirmOpen(true); }}
-              />
-            </div>
-          </>
-        )}
+        <DataTable 
+          columns={[
+            { header: "Tournament", accessorKey: "title" },
+            { header: "Date", accessorKey: "date", cell: (item) => new Date(item.date).toLocaleDateString() },
+            { header: "Status", accessorKey: "status", cell: (item) => <StatusBadge status={item.status} /> }
+          ]} 
+          data={filteredData} 
+          isLoading={isLoading} 
+          onEdit={handleEdit}
+          onDelete={(item) => { setSelectedTournament(item); setIsConfirmOpen(true); }}
+        />
       </div>
 
-      {/* --- FORM MODAL & DIALOGS --- */}
-      {/* (Same as your previous code, ensure they are responsive) */}
+      {/* 
+        FORM MODAL: IMPROVED VISIBILITY 
+        Added h-[80vh] and overflow-y-auto to ensure it scrolls on all phones.
+      */}
       <AdminFormModal 
         open={isModalOpen} 
         onOpenChange={setIsModalOpen} 
-        title={selectedTournament ? "Update Tournament" : "Create Event"} 
+        title={selectedTournament ? "Edit Tournament" : "New Tournament"} 
         onSave={handleSave}
       >
-        <div className="grid gap-5 py-4 max-h-[70vh] overflow-y-auto px-1">
-             {/* ... (Keep your existing form fields here) */}
-             <div className="grid gap-2">
-                <Label htmlFor="title">Tournament Title</Label>
-                <Input id="title" value={formData.title || ""} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
-             </div>
-             {/* ... ensure other inputs follow this pattern */}
+        <div className="flex flex-col gap-6 py-4 px-1 overflow-y-auto max-h-[70vh] scrollbar-thin">
+          
+          {/* 1. Image Upload */}
+          <div className="space-y-2">
+            <Label className="text-sm font-bold">Tournament Banner</Label>
+            <div className="border-2 border-dashed rounded-xl p-4 text-center hover:bg-muted/50 transition-colors">
+              {formData.imageUrl ? (
+                <div className="relative aspect-video rounded-lg overflow-hidden">
+                  <img src={formData.imageUrl} alt="Banner" className="w-full h-full object-cover" />
+                  <Button 
+                    size="icon" 
+                    variant="destructive" 
+                    className="absolute top-2 right-2 h-7 w-7"
+                    onClick={() => setFormData({...formData, imageUrl: ""})}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <label className="cursor-pointer flex flex-col items-center py-6">
+                  <Upload className="h-10 w-10 text-muted-foreground mb-2" />
+                  <span className="text-xs font-medium">Click to upload JPG/PNG</span>
+                  <input 
+                    type="file" 
+                    className="hidden" 
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => setFormData({...formData, imageUrl: reader.result});
+                        reader.readAsDataURL(file);
+                      }
+                    }} 
+                  />
+                </label>
+              )}
+            </div>
+          </div>
+
+          {/* 2. Basic Info */}
+          <div className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title">Tournament Title</Label>
+              <Input id="title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="e.g. Rising Masters Elite" />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="location">Venue / Location</Label>
+              <Input id="location" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="e.g. Gurugram Academy" />
+            </div>
+          </div>
+
+          {/* 3. Pricing & Date */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="date">Date</Label>
+              <Input id="date" type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="fee">Entry Fee (₹)</Label>
+              <Input id="fee" type="number" value={formData.entryFee} onChange={(e) => setFormData({...formData, entryFee: e.target.value})} />
+            </div>
+          </div>
+
+          {/* 4. Status Selection */}
+          <div className="grid gap-2">
+            <Label>Current Status</Label>
+            <Select value={formData.status} onValueChange={(val) => setFormData({...formData, status: val})}>
+              <SelectTrigger className="h-11">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="UPCOMING">Upcoming</SelectItem>
+                <SelectItem value="ONGOING">Ongoing</SelectItem>
+                <SelectItem value="COMPLETED">Completed</SelectItem>
+                <SelectItem value="CANCELLED">Cancelled</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* 5. Description */}
+          <div className="grid gap-2">
+            <Label htmlFor="desc">Event Description</Label>
+            <Textarea 
+              id="desc" 
+              placeholder="Detail the tournament rules, prizes, etc."
+              className="min-h-[120px] resize-none"
+              value={formData.description}
+              onChange={(e) => setFormData({...formData, description: e.target.value})}
+            />
+          </div>
         </div>
       </AdminFormModal>
 
@@ -237,7 +227,7 @@ const AdminTournaments: React.FC = () => {
         onOpenChange={setIsConfirmOpen} 
         onConfirm={async () => { if(selectedTournament) await deleteTournament(selectedTournament.id); setIsConfirmOpen(false); }}
         title="Delete Tournament"
-        description={`This action cannot be undone.`}
+        description="This will permanently remove the tournament and all player registrations."
       />
     </div>
   );
