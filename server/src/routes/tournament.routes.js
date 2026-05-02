@@ -1,12 +1,26 @@
 import express from 'express';
+import multer from 'multer'; // 1. Import Multer
 import * as tournamentController from '../controllers/tournament.controller.js';
 
 const router = express.Router();
 
+// 2. Configure Multer (Using memory or disk storage)
+// For Vercel/Render, memoryStorage is often safest for temporary file handling
+const upload = multer({ storage: multer.memoryStorage() });
+
 // --- Public ---
 router.get('/', tournamentController.getAllTournaments);
 router.get('/:id', tournamentController.getTournamentById);
-router.post('/:id/register', tournamentController.registerForTournament);
+
+// 3. ✅ FIX: Add upload.fields to capture the files and the text data
+router.post(
+  '/:id/register', 
+  upload.fields([
+    { name: 'ageProof', maxCount: 1 }, 
+    { name: 'paymentProof', maxCount: 1 }
+  ]), 
+  tournamentController.registerForTournament
+);
 
 // --- Admin (Student Management) ---
 router.get('/admin/registrations/all', tournamentController.getAllRegistrations);

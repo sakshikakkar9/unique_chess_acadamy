@@ -74,20 +74,28 @@ export const deleteTournament = async (id) => {
 };
 
 // --- HANDLE REGISTRATION (No changes needed) ---
-export const registerForTournament = async (tournamentId, data) => {
-  const numericTournamentId = parseInt(tournamentId);
-  if (isNaN(numericTournamentId)) throw new Error("Invalid Tournament ID");
+export const registerForTournament = async (tournamentId, registrationData) => {
+  const id = parseInt(tournamentId);
+  if (isNaN(id)) throw new Error("Invalid Tournament ID");
 
   return await prisma.registration.create({
     data: {
-      studentName: data.studentName || "Guest Player",
-      email: data.email && data.email.trim() !== "" ? data.email : null,
-      phone: String(data.phone || data.contact || "0000000000"),
-      fideId: data.fideId || null,
-      transactionId: data.transactionId || "OFFLINE_PENDING",
-      status: 'PENDING',
+      studentName: registrationData.studentName,
+      gender: registrationData.gender, 
+      dob: new Date(registrationData.dob), 
+      phone: registrationData.phone,
+      // Handle empty strings from frontend as null for optional fields
+      email: registrationData.email || null,
+      address: registrationData.address,
+      fideId: registrationData.fideId || "NA",
+      // Robust number parsing
+      fideRating: Number(registrationData.fideRating) || 0,
+      discoverySource: registrationData.discoverySource,
+      ageProof: registrationData.ageProofUrl || "", 
+      paymentProof: registrationData.paymentProofUrl || "",
+      status: "PENDING",
       tournament: {
-        connect: { id: numericTournamentId }
+        connect: { id: id }
       }
     }
   });

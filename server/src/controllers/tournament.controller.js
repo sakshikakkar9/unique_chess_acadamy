@@ -23,9 +23,20 @@ export const getTournamentById = async (req, res) => {
 
 export const registerForTournament = async (req, res) => {
   try {
-    const data = await tournamentService.registerForTournament(req.params.id, req.body);
+    // 1. Combine text fields and file paths
+    const registrationData = {
+      ...req.body,
+      // If using multer, extract the file paths/cloud URLs
+      ageProofUrl: req.files?.['ageProof']?.[0]?.path || "",
+      paymentProofUrl: req.files?.['paymentProof']?.[0]?.path || ""
+    };
+
+    // 2. Pass the combined object to your service
+    const data = await tournamentService.registerForTournament(req.params.id, registrationData);
+    
     res.status(201).json(data);
   } catch (error) {
+    console.error("Registration Error:", error); // Smart logging for debugging
     res.status(500).json({ error: error.message });
   }
 };

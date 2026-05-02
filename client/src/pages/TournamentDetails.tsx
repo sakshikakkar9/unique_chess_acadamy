@@ -34,28 +34,29 @@ export default function TournamentDetails() {
   if (!tournament) return <div className="p-20 text-center text-slate-900">Tournament not found.</div>;
 
 const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    // 1. Check if ID exists
-    if (!id) {
-      console.error("No tournament ID found in URL");
-      return;
+  e.preventDefault();
+  
+  if (!id) {
+    console.error("No tournament ID found in URL");
+    return;
+  }
+
+  // Create FormData from the form
+  const formData = new FormData(e.currentTarget);
+  
+  // Add the tournament ID so the hook can build the URL
+  formData.append("tournamentId", id); 
+
+  // LOG FOR DEBUGGING: Open your browser console to make sure 'gender' appears here
+  console.log("Gender in form:", formData.get("gender"));
+
+  register(formData, {
+    onSuccess: (data: any) => {
+      setRefId(data.referenceId || "UCA-" + Math.random().toString(36).toUpperCase().substring(2, 10));
+      setShowSuccess(true);
     }
-
-    const formData = new FormData(e.currentTarget);
-    
-    // 2. ✅ CRITICAL STEP: Add the ID from the URL into the FormData
-    // This allows the hook to find it using formData.get("tournamentId")
-    formData.append("tournamentId", id); 
-
-    // 3. Now call the register function as usual
-    register(formData, {
-      onSuccess: (data: any) => {
-        setRefId(data.referenceId || "UCA-" + Math.random().toString(36).toUpperCase().substring(2, 10));
-        setShowSuccess(true);
-      }
-    });
-  };
+  });
+};
 
   return (
     <div className="min-h-screen bg-white">
