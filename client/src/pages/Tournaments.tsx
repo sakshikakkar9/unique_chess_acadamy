@@ -2,12 +2,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import ScrollReveal from "@/components/shared/ScrollReveal";
-import { TournamentCard } from "@/features/tournaments/components/TournamentCard";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
-import { Trophy, Calendar, Medal, Timer, Swords, MapPin, ChevronRight, Sparkles } from "lucide-react";
+import { Trophy, Calendar, Medal, Timer, Swords, MapPin, ChevronRight } from "lucide-react";
 import SparkleCanvas from "@/components/shared/SparkleCanvas";
-import { fadeLeft, fadeUp, scaleIn, stagger } from "@/components/shared/motion";
+import { fadeLeft, fadeUp, stagger } from "@/components/shared/motion";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -55,7 +53,7 @@ export default function TournamentsPage() {
         </div>
       </header>
 
-      {/* REFINED STAT BAR - FIXED VISIBILITY */}
+      {/* STAT BAR */}
       <section className="relative z-20 -mt-20 mb-20">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-0 bg-[#0f172a] border border-white/10 rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
@@ -72,20 +70,12 @@ export default function TournamentsPage() {
                   i !== 3 && "md:border-r border-white/5"
                 )}
               >
-                <div className={cn(
-                  "w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center transition-colors duration-300", 
-                  stat.bg
-                )}>
+                <div className={cn("w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center transition-colors duration-300", stat.bg)}>
                   <stat.icon className={cn("h-7 w-7", stat.color)} />
                 </div>
-
                 <div className="text-center md:text-left">
-                  <p className="text-[13px] font-black text-white uppercase tracking-[0.2em] mb-1">
-                    {stat.label}
-                  </p>
-                  <p className="text-xs font-medium text-slate-400">
-                    {stat.desc}
-                  </p>
+                  <p className="text-[13px] font-black text-white uppercase tracking-[0.2em] mb-1">{stat.label}</p>
+                  <p className="text-xs font-medium text-slate-400">{stat.desc}</p>
                 </div>
                 <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-transparent via-orange-500 to-transparent group-hover:w-full transition-all duration-500" />
               </div>
@@ -121,41 +111,39 @@ export default function TournamentsPage() {
                   custom={index}
                   className="group relative bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-orange-900/10 hover:border-orange-200 transition-all duration-500 flex flex-col h-full"
                 >
-                  {/* Status Indicator */}
                   <div className="h-2 w-full bg-slate-50 overflow-hidden">
                     <div className="h-full bg-orange-500 w-0 group-hover:w-full transition-all duration-1000" />
                   </div>
 
                   <div className="p-6 md:p-9 flex flex-col h-full">
-                    {/* Header Info */}
                     <div className="flex justify-between items-start mb-8">
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Date</span>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Start Date</span>
                         <div className="flex items-center gap-2 text-slate-900 font-bold">
                           <Calendar className="h-4 w-4 text-orange-500" />
-                          {new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {/* LOGIC CHANGE: Uses startDate from new schema */}
+                          {new Date(t.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </div>
                       </div>
                       <span className="px-3 py-1 bg-orange-50 text-orange-600 text-[10px] font-black uppercase rounded-lg border border-orange-100 shadow-sm">
-                        Live Entry
+                        {t.category || 'Open'}
                       </span>
                     </div>
 
-                    {/* Content */}
                     <h3 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-orange-600 transition-colors">
                       {t.title}
                     </h3>
                     <div className="flex items-center gap-2 text-slate-500 text-sm mb-10 font-medium">
                       <MapPin className="h-4 w-4 text-slate-400" />
-                      {t.location || 'Official Arena'}
+                      {t.location || 'Unique Chess Academy'}
                     </div>
 
-                    {/* Footer - Pushed to bottom */}
                     <div className="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between">
                       <div className="flex flex-col">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Prize Fund</span>
                         <span className="text-2xl font-black text-slate-900">
-                          ₹{t.price?.toLocaleString() || 'TBD'}
+                          {/* LOGIC CHANGE: Uses totalPrizePool from new schema */}
+                          ₹{t.totalPrizePool?.toLocaleString() || 'TBD'}
                         </span>
                       </div>
                       <Button 
