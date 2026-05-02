@@ -55,15 +55,26 @@ export interface TournamentResult {
 
 export interface Registration {
   id: string;
+  tournamentId: number; // Changed to number to match Tournament.id
   studentName: string;
-  email: string | null;
+  email?: string;
   phone: string;
-  fideId?: string | null;
-  transactionId?: string | null;
-  tournamentId: number;
-  tournament?: { title: string };
-  status: string;
-  createdAt?: string;
+  gender: 'MALE' | 'FEMALE' | 'OTHER'; 
+  dob: string | Date;
+  address: string;
+  fideId?: string;
+  fideRating?: number;
+  ageProofUrl: string;
+  paymentProofUrl: string;
+  referenceId: string;
+  status: 'PENDING' | 'APPROVED' | 'CANCELLED' | 'COMPLETED';
+  createdAt: string;
+
+  // ✅ Add this so the Admin Page can show the Tournament Title
+  tournament?: {
+    id: number;
+    title: string;
+  };
 }
 
 export type EnrollmentStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "REJECTED";

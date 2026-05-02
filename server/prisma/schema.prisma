@@ -89,16 +89,33 @@ model Contact {
 }
 
 model Registration {
-  id            String     @id @default(uuid())
-  studentName   String
-  email         String?
-  phone         String
-  fideId        String?
-  transactionId String?
-  tournamentId  Int
-  status        String     @default("PENDING")
-  createdAt     DateTime   @default(now())
-  tournament    Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  id              String     @id @default(uuid())
+  referenceId     String     @unique @default(cuid()) // ✅ NEW: Unique Reference for the user
+  studentName     String
+  gender          String     // ✅ NEW: Male, Female, Other
+  category        String?    // ✅ NEW: Tournament category selected by player
+  dob             DateTime   // ✅ NEW: Date of Birth
+  email           String?    // ✅ Mandatory check handled in frontend logic
+  phone           String
+  
+  // FIDE Details
+  fideId          String     @default("NA") // ✅ NEW: Default set to NA
+  fideRating      Int        @default(0)    // ✅ NEW: Default set to 0
+  
+  address         String     @db.Text       // ✅ NEW
+  
+  // Proofs (Storage URLs)
+  ageProofUrl     String     // ✅ NEW: Document upload link
+  paymentProofUrl String     // ✅ NEW: Screenshot of payment link
+  
+  // Discovery
+  discoverySource String     // ✅ NEW: Social media, WhatsApp, etc.
+  
+  transactionId   String?
+  tournamentId    Int
+  status          String     @default("PENDING")
+  createdAt       DateTime   @default(now())
+  tournament      Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
 }
 
 model DemoRegistration {
