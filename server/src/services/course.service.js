@@ -1,5 +1,7 @@
 import prisma from '../../lib/prisma.js';
 
+// --- Course Services ---
+
 export const getAllCourses = async () => {
   return await prisma.course.findMany({
     orderBy: { createdAt: 'desc' },
@@ -15,12 +17,11 @@ export const getCoursesByAgeGroup = async (ageGroup) => {
 
 export const getCourseById = async (id) => {
   return await prisma.course.findUnique({
-    where: { id }, // id is a CUID string
+    where: { id },
   });
 };
 
 export const createCourse = async (data) => {
-  // Logic: Ensure 'days' is a proper array for Prisma
   let parsedDays = data.days;
   if (typeof data.days === 'string') {
     try { 
@@ -74,28 +75,8 @@ export const deleteCourse = async (id) => {
   return await prisma.course.delete({ where: { id } });
 };
 
-export const createEnrollment = async (courseId, data, proofs) => {
-  return await prisma.courseEnrollment.create({
-    data: {
-      courseId,
-      studentName: data.studentName,
-      gender: data.gender,
-      category: data.category || "General",
-      dob: data.dob ? new Date(data.dob) : new Date(),
-      email: data.email,
-      phone: data.phone,
-      address: data.address || "N/A",
-      fideId: data.fideId || "NA",
-      fideRating: parseInt(data.fideRating, 10) || 0,
-      ageProofUrl: proofs.ageProofUrl || "",
-      paymentProofUrl: proofs.paymentProofUrl || "",
-      discoverySource: data.discoverySource || "Website",
-      status: 'PENDING',
-    },
-  });
-};
+// --- Enrollment Services (FIXED: Only One Export) ---
 
-// --- Updated Enrollments ---
 export const createEnrollment = async (courseId, data, proofs) => {
   return await prisma.courseEnrollment.create({
     data: {
@@ -105,13 +86,13 @@ export const createEnrollment = async (courseId, data, proofs) => {
       phone: data.phone,
       gender: data.gender,
       dob: data.dob ? new Date(data.dob) : null,
-      fideId: data.fideId,
-      category: data.category,
+      fideId: data.fideId || "NA",
+      category: data.category || "General",
       mode: data.mode || "OFFLINE",
-      message: data.message,
-      // Use the URLs from the 'proofs' object we created in the controller
-      ageProof: proofs.ageProofUrl,
-      paymentProof: proofs.paymentProofUrl,
+      message: data.message || "",
+      // Aligning these with your Prisma schema field names
+      ageProof: proofs.ageProofUrl || "",
+      paymentProof: proofs.paymentProofUrl || "",
       status: 'PENDING',
     },
   });
