@@ -32,7 +32,6 @@ interface FormState {
   fideRating: string;
   address: string;
   discoverySource: string;
-  mode: "ONLINE" | "OFFLINE";
   message: string;
 }
 
@@ -47,7 +46,6 @@ const EMPTY: FormState = {
   fideRating: "0",
   address: "",
   discoverySource: "Social Media",
-  mode: "OFFLINE",
   message: "",
 };
 
@@ -86,10 +84,11 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
 
     setLoading(true);
     try {
-      // In a real scenario, you'd upload files to Supabase/S3 first to get URLs
-      // For now, we pass the data to your service
+      // Logic Update: Passing course.mode directly to the service 
+      // instead of using a value from the form state.
       await courseService.enroll(course.id, {
         ...form,
+        mode: course.mode as "ONLINE" | "OFFLINE", 
         ageProof, 
         paymentProof,
         fideRating: parseInt(form.fideRating) || 0
@@ -111,7 +110,9 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
       <DialogContent className="sm:max-w-2xl bg-card border-border max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Enroll in {course.title}</DialogTitle>
-          <DialogDescription>Please provide accurate details for registration.</DialogDescription>
+          <DialogDescription>
+            Registration for <strong>{course.mode}</strong> session. Please provide accurate details.
+          </DialogDescription>
         </DialogHeader>
 
         {success ? (
@@ -196,30 +197,17 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
               </div>
             </div>
 
-            {/* Discovery & Mode */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>How did you find us?</Label>
-                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        value={form.discoverySource} onChange={(e) => set("discoverySource", e.target.value)}>
-                  <option>Social Media</option>
-                  <option>Through Coach</option>
-                  <option>Academy Event</option>
-                  <option>Google Search</option>
-                  <option>Friend/Word of Mouth</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <Label>Preferred Mode</Label>
-                <div className="flex gap-4 pt-2">
-                  <label className="flex items-center gap-2 cursor-pointer text-sm">
-                    <input type="radio" checked={form.mode === "OFFLINE"} onChange={() => set("mode", "OFFLINE")} /> Offline
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer text-sm">
-                    <input type="radio" checked={form.mode === "ONLINE"} onChange={() => set("mode", "ONLINE")} /> Online
-                  </label>
-                </div>
-              </div>
+            {/* Discovery Row (Mode Radio Buttons Removed) */}
+            <div className="space-y-2">
+              <Label>How did you find us?</Label>
+              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={form.discoverySource} onChange={(e) => set("discoverySource", e.target.value)}>
+                <option>Social Media</option>
+                <option>Through Coach</option>
+                <option>Academy Event</option>
+                <option>Google Search</option>
+                <option>Friend/Word of Mouth</option>
+              </select>
             </div>
 
             <div className="flex justify-end gap-3 pt-4 border-t">
