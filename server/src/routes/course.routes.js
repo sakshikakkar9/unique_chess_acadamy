@@ -9,7 +9,6 @@ import {
   createCourse,
   updateCourse,
   deleteCourse,
-  uploadCourseImage,
   enrollInCourse,
   getAllEnrollments,
   updateEnrollmentStatus,
@@ -98,6 +97,5 @@ router.put('/:id', verifyAdmin, handleCourseUpload, updateCourse);
 router.delete('/:id', verifyAdmin, deleteCourse);
 
 // Legacy/Secondary endpoint
-router.post('/upload-image', verifyAdmin, handleCourseUpload, uploadCourseImage);
 
 export default router;
