@@ -31,7 +31,7 @@ export const getCoursesByAgeGroup = async (req, res) => {
 
 export const getCourseById = async (req, res) => {
   try {
-    const course = await courseService.getCourseById(parseInt(req.params.id, 10));
+    const course = await courseService.getCourseById(req.params.id);
     if (!course) return res.status(404).json({ error: 'Course not found' });
     res.json(course);
   } catch (error) {
@@ -46,8 +46,7 @@ export const createCourse = async (req, res) => {
 
     let imageUrl = '';
     if (req.file) {
-      // Use your utility to upload the local path to Cloudinary
-      imageUrl = await uploadToCloudinary(req.file.path, "courses");
+      imageUrl = await uploadToCloudinary(req.file.buffer, "courses");
     }
 
     const mappedData = {
@@ -77,7 +76,7 @@ export const updateCourse = async (req, res) => {
     let imageUrl = undefined;
 
     if (req.file) {
-      imageUrl = await uploadToCloudinary(req.file.path, "courses");
+      imageUrl = await uploadToCloudinary(req.file.buffer, "courses");
     }
 
     const updateData = {
@@ -96,7 +95,7 @@ export const updateCourse = async (req, res) => {
 
 export const deleteCourse = async (req, res) => {
   try {
-    await courseService.deleteCourse(parseInt(req.params.id, 10));
+    await courseService.deleteCourse(req.params.id);
     res.status(200).json({ message: 'Course deleted successfully' });
   } catch (error) {
     console.error('DELETE_COURSE_ERROR:', error);
@@ -108,21 +107,16 @@ export const deleteCourse = async (req, res) => {
 
 export const enrollInCourse = async (req, res) => {
   try {
-    // 1. ID Parsing Fix:
-    // If your DB uses Integer IDs, use parseInt. 
-    // If it uses String/CUID/UUID (like in your screenshot), leave it as is.
     const courseId = req.params.id; 
 
     const proofs = { ageProofUrl: null, paymentProofUrl: null };
 
-    // 2. Safety Check for Files:
-    // This prevents the 'cannot read property 0 of undefined' crash
     if (req.files) {
       if (req.files.ageProof && req.files.ageProof[0]) {
-        proofs.ageProofUrl = await uploadToCloudinary(req.files.ageProof[0].path, "enrollments");
+        proofs.ageProofUrl = await uploadToCloudinary(req.files.ageProof[0].buffer, "enrollments");
       }
       if (req.files.paymentProof && req.files.paymentProof[0]) {
-        proofs.paymentProofUrl = await uploadToCloudinary(req.files.paymentProof[0].path, "enrollments");
+        proofs.paymentProofUrl = await uploadToCloudinary(req.files.paymentProof[0].buffer, "enrollments");
       }
     }
 
@@ -159,7 +153,7 @@ export const getAllEnrollments = async (req, res) => {
 
 export const updateEnrollmentStatus = async (req, res) => {
   try {
-    const id = parseInt(req.params.enrollmentId, 10);
+    const id = req.params.enrollmentId;
     const { status } = req.body;
     if (!VALID_ENROLLMENT_STATUSES.includes(status.toUpperCase())) {
       return res.status(400).json({ error: `status must be one of: ${VALID_ENROLLMENT_STATUSES.join(', ')}` });
@@ -174,7 +168,7 @@ export const updateEnrollmentStatus = async (req, res) => {
 
 export const deleteEnrollment = async (req, res) => {
   try {
-    const id = parseInt(req.params.enrollmentId, 10);
+    const id = req.params.enrollmentId;
     await courseService.deleteEnrollment(id);
     res.json({ success: true, message: 'Enrollment deleted successfully' });
   } catch (error) {

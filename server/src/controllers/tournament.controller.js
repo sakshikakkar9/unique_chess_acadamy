@@ -59,7 +59,11 @@ export const registerForTournament = async (req, res) => {
 // ✅ FIXED: Now actually creates a tournament
 export const createTournament = async (req, res) => {
   try {
-    const data = await tournamentService.createTournament(req.body);
+    let imageUrl = req.body.imageUrl;
+    if (req.file) {
+      imageUrl = await uploadToCloudinary(req.file.buffer, "tournaments");
+    }
+    const data = await tournamentService.createTournament({ ...req.body, imageUrl });
     res.status(201).json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -69,7 +73,11 @@ export const createTournament = async (req, res) => {
 // ✅ FIXED: Now actually updates a tournament
 export const updateTournament = async (req, res) => {
   try {
-    const data = await tournamentService.updateTournament(req.params.id, req.body);
+    let imageUrl = req.body.imageUrl;
+    if (req.file) {
+      imageUrl = await uploadToCloudinary(req.file.buffer, "tournaments");
+    }
+    const data = await tournamentService.updateTournament(req.params.id, { ...req.body, imageUrl });
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
