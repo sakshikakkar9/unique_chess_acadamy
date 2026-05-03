@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 
-// 1. Configuration Module
+// Configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -9,8 +9,7 @@ cloudinary.config({
 });
 
 /**
- * Internal helper to handle Cloudinary Stream uploads (Buffers)
- * Best for Vercel and memory-based file handling.
+ * Handles Cloudinary Stream uploads (Buffers)
  */
 const uploadStream = (fileBuffer, folder) => {
   return new Promise((resolve, reject) => {
@@ -18,8 +17,8 @@ const uploadStream = (fileBuffer, folder) => {
       { resource_type: "auto", folder },
       (error, result) => {
         if (error) {
-          console.error("Cloudinary Stream Error:", error);
-          reject(null);
+          console.error(`[Cloudinary Stream Error] Folder: ${folder}`, error);
+          resolve(null); // Resolve with null instead of rejecting to prevent crashing the server
         } else {
           resolve(result.secure_url);
         }
@@ -30,8 +29,7 @@ const uploadStream = (fileBuffer, folder) => {
 };
 
 /**
- * Internal helper to handle Local Path uploads
- * Best for local development or environments with persistent storage.
+ * Handles Local Path uploads with cleanup
  */
 const uploadPath = async (filePath, folder) => {
   try {
@@ -40,29 +38,41 @@ const uploadPath = async (filePath, folder) => {
       folder
     });
 
-    // Cleanup local file
+    // Cleanup local file immediately after successful upload
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
     return response.secure_url;
   } catch (error) {
+    console.error(`[Cloudinary Path Error] Folder: ${folder}`, error);
+    // Ensure file is deleted even if upload fails to prevent disk fill-up
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    console.error("Cloudinary Path Error:", error);
     return null;
   }
 };
 
 /**
- * MAIN EXPORT: Polymorphic Upload Utility
- * Automatically detects if input is a Buffer or a File Path.
+ * Polymorphic Upload Utility
+ * detects if input is a Buffer or a File Path.
  */
 export const uploadToCloudinary = async (fileInput, folder = "uca_gallery") => {
   if (!fileInput) return null;
 
-  // Route to the correct internal module based on input type
-  if (Buffer.isBuffer(fileInput)) {
-    return await uploadStream(fileInput, folder);
-  }
+  try {
+    // 1. Check if it's a Buffer (Vercel/Serverless style)
+    if (Buffer.isBuffer(fileInput)) {
+      return await uploadStream(fileInput, folder);
+    }
 
-  return await uploadPath(fileInput, folder);
+    // 2. Check if it's a valid string path (Local/Multer style)
+    if (typeof fileInput === 'string' && fs.existsSync(fileInput)) {
+      return await uploadPath(fileInput, folder);
+    }
+
+    console.warn(`[Cloudinary Warning] Invalid file input type for folder: ${folder}`);
+    return null;
+  } catch (err) {
+    console.error(`[Cloudinary Unexpected Error]`, err);
+    return null;
+  }
 };

@@ -2,7 +2,7 @@ import * as courseService from '../services/course.service.js';
 
 const VALID_AGE_GROUPS = ['CHILDREN', 'TEENAGERS', 'ADULTS'];
 const VALID_ENROLLMENT_STATUSES = ['PENDING', 'CONFIRMED', 'COMPLETED', 'REJECTED'];
-
+import { uploadToCloudinary } from '../utils/cloudinary.js';
 // ── Courses ───────────────────────────────────────────────────────────────────
 
 export const getAllCourses = async (req, res) => {
@@ -42,62 +42,54 @@ export const getCourseById = async (req, res) => {
 
 export const createCourse = async (req, res) => {
   try {
-    const { 
-      title, 
-      ageGroup, 
-      level, 
-      duration, 
-      price, 
-      classTime, 
-      contactDetails,
-      minAge,
-      maxAge 
-    } = req.body;
-
-    if (!title) return res.status(400).json({ error: 'Course title is required.' });
+    const { title, ageGroup, level, duration, price, classTime, contactDetails, mode, days } = req.body;
 
     let imageUrl = '';
     if (req.file) {
+      // Use your utility to upload the local path to Cloudinary
       imageUrl = await uploadToCloudinary(req.file.path, "courses");
     }
 
-    // MAP FRONTEND TO BACKEND HERE
     const mappedData = {
       title,
       ageGroup: ageGroup || 'CHILDREN',
-      skillLevel: level ? level.toUpperCase() : 'BEGINNER', // Maps 'level' -> 'skillLevel'
+      skillLevel: level ? level.toUpperCase() : 'BEGINNER',
       duration: duration || '',
-      fee: parseFloat(price) || 0,                         // Maps 'price' -> 'fee'
-      classTime: classTime || "TBD",                       // Prevents the "Missing classTime" error
+      fee: price,
+      classTime: classTime || "TBD",
       contactDetails: contactDetails || "Unique Chess Academy",
+      mode: mode || "ONLINE",
+      days: days, 
       bannerUrl: imageUrl,
-      // Fixes the "NaN" error by ensuring they are numbers or null
-      minAge: parseInt(minAge, 10) || null,
-      maxAge: parseInt(maxAge, 10) || null,
     };
 
-    // Pass the cleaned object instead of req.body
     const course = await courseService.createCourse(mappedData);
     res.status(201).json(course);
   } catch (error) {
-    console.error('CREATE_COURSE_ERROR:', error.message);
-    res.status(500).json({ error: 'Failed to create course', details: error.message });
+    console.error('CREATE_CONTROLLER_ERROR:', error.message);
+    res.status(500).json({ error: 'Failed to create course' });
   }
 };
 
 export const updateCourse = async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const { id } = req.params;
     let imageUrl = undefined;
 
     if (req.file) {
       imageUrl = await uploadToCloudinary(req.file.path, "courses");
     }
 
-    const course = await courseService.updateCourse(id, req.body, imageUrl);
+    const updateData = {
+      ...req.body,
+      skillLevel: req.body.level ? req.body.level.toUpperCase() : undefined,
+      fee: req.body.price,
+      bannerUrl: imageUrl
+    };
+
+    const course = await courseService.updateCourse(id, updateData);
     res.json(course);
   } catch (error) {
-    console.error('UPDATE_COURSE_ERROR:', error.message);
     res.status(500).json({ error: 'Failed to update course' });
   }
 };
@@ -116,10 +108,9 @@ export const deleteCourse = async (req, res) => {
 
 export const enrollInCourse = async (req, res) => {
   try {
-    const courseId = parseInt(req.params.id, 10);
+    const courseId = req.params.id;
     const proofs = { ageProofUrl: null, paymentProofUrl: null };
 
-    // Upload enrollment documents to Cloudinary
     if (req.files?.ageProof) {
       proofs.ageProofUrl = await uploadToCloudinary(req.files.ageProof[0].path, "enrollments");
     }
@@ -130,7 +121,7 @@ export const enrollInCourse = async (req, res) => {
     const enrollment = await courseService.createEnrollment(courseId, req.body, proofs);
     res.status(201).json({ success: true, data: enrollment });
   } catch (error) {
-    console.error('ENROLL_COURSE_ERROR:', error);
+    console.error('ENROLL_ERROR:', error);
     res.status(500).json({ error: 'Failed to enroll' });
   }
 };

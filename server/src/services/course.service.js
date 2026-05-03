@@ -15,86 +15,83 @@ export const getCoursesByAgeGroup = async (ageGroup) => {
 
 export const getCourseById = async (id) => {
   return await prisma.course.findUnique({
-    where: { id },
+    where: { id }, // id is a CUID string
   });
 };
 
-export const createCourse = async (data, imageUrl) => {
-  try {
-    let parsedFeatures = data.features;
-    if (typeof data.features === 'string') {
-      try { 
-        parsedFeatures = JSON.parse(data.features); 
-      } catch (e) { 
-        parsedFeatures = data.features.split(',').map(f => f.trim()); 
-      }
+export const createCourse = async (data) => {
+  // Logic: Ensure 'days' is a proper array for Prisma
+  let parsedDays = data.days;
+  if (typeof data.days === 'string') {
+    try { 
+      parsedDays = JSON.parse(data.days); 
+    } catch (e) { 
+      parsedDays = data.days.split(',').map(f => f.trim()); 
     }
-
-    return await prisma.course.create({
-      data: {
-        title: data.title || "Untitled Course",
-        ageGroup: data.ageGroup ? data.ageGroup.toUpperCase() : 'ADULTS',
-        minAge: data.minAge ? parseInt(data.minAge, 10) : null,
-        maxAge: data.maxAge ? parseInt(data.maxAge, 10) : null,
-        
-        // --- SCHEMA ALIGNMENT FIXES ---
-        skillLevel: data.level || "BEGINNER",     // level -> skillLevel
-        duration: data.duration || "N/A",
-        description: data.description || "",
-        bannerUrl: imageUrl || data.image || "",   // image -> bannerUrl
-        fee: parseFloat(data.price) || 0,          // price -> fee (Float)
-        days: Array.isArray(parsedFeatures) ? parsedFeatures : [], // features -> days
-        
-        // --- ADDING REQUIRED MISSING FIELDS ---
-        classTime: data.classTime || "TBD", 
-        contactDetails: data.contactDetails || "Contact Academy Admin",
-      },
-    });
-  } catch (error) {
-    console.error("CREATE_COURSE_PRISMA_ERROR:", error);
-    throw error;
   }
+
+  return await prisma.course.create({
+    data: {
+      title: data.title || "Untitled Course",
+      ageGroup: data.ageGroup || 'ADULTS',
+      skillLevel: data.skillLevel || "BEGINNER",
+      duration: data.duration || "N/A",
+      bannerUrl: data.bannerUrl || "",
+      fee: parseFloat(data.fee) || 0,
+      days: Array.isArray(parsedDays) ? parsedDays : [],
+      classTime: data.classTime || "TBD", 
+      mode: data.mode || "ONLINE",
+      contactDetails: data.contactDetails || "Contact Academy Admin",
+    },
+  });
 };
 
-export const updateCourse = async (id, data, imageUrl) => {
-  try {
-    let parsedFeatures = data.features;
-    if (typeof data.features === 'string') {
-      try { 
-        parsedFeatures = JSON.parse(data.features); 
-      } catch (e) { 
-        parsedFeatures = data.features.split(',').map(f => f.trim()); 
-      }
-    }
-
-    return await prisma.course.update({
-      where: { id },
-      data: {
-        title: data.title,
-        ageGroup: data.ageGroup ? data.ageGroup.toUpperCase() : undefined,
-        minAge: data.minAge ? parseInt(data.minAge, 10) : undefined,
-        maxAge: data.maxAge ? parseInt(data.maxAge, 10) : undefined,
-        
-        // --- SCHEMA ALIGNMENT FIXES ---
-        skillLevel: data.level, 
-        duration: data.duration,
-        description: data.description,
-        ...(imageUrl && { bannerUrl: imageUrl }), 
-        fee: data.price ? parseFloat(data.price) : undefined,
-        days: Array.isArray(parsedFeatures) ? parsedFeatures : undefined,
-        classTime: data.classTime,
-        contactDetails: data.contactDetails,
-      },
-    });
-  } catch (error) {
-    console.error("UPDATE_COURSE_PRISMA_ERROR:", error);
-    throw error;
+export const updateCourse = async (id, data) => {
+  let parsedDays = data.days;
+  if (data.days && typeof data.days === 'string') {
+    try { parsedDays = JSON.parse(data.days); } 
+    catch (e) { parsedDays = data.days.split(',').map(f => f.trim()); }
   }
+
+  return await prisma.course.update({
+    where: { id },
+    data: {
+      title: data.title,
+      ageGroup: data.ageGroup,
+      skillLevel: data.skillLevel, 
+      duration: data.duration,
+      bannerUrl: data.bannerUrl, 
+      fee: data.fee ? parseFloat(data.fee) : undefined,
+      days: Array.isArray(parsedDays) ? parsedDays : undefined,
+      classTime: data.classTime,
+      mode: data.mode,
+      contactDetails: data.contactDetails,
+    },
+  });
 };
 
 export const deleteCourse = async (id) => {
-  return await prisma.course.delete({
-    where: { id },
+  return await prisma.course.delete({ where: { id } });
+};
+
+export const createEnrollment = async (courseId, data, proofs) => {
+  return await prisma.courseEnrollment.create({
+    data: {
+      courseId,
+      studentName: data.studentName,
+      gender: data.gender,
+      category: data.category || "General",
+      dob: data.dob ? new Date(data.dob) : new Date(),
+      email: data.email,
+      phone: data.phone,
+      address: data.address || "N/A",
+      fideId: data.fideId || "NA",
+      fideRating: parseInt(data.fideRating, 10) || 0,
+      ageProofUrl: proofs.ageProofUrl || "",
+      paymentProofUrl: proofs.paymentProofUrl || "",
+      discoverySource: data.discoverySource || "Website",
+      status: 'PENDING',
+    },
   });
 };
 

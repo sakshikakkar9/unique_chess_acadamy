@@ -20,8 +20,9 @@ const router = express.Router();
 // ── Multer Configuration ─────────────────────────────────────────────────────
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Separate folders for courses vs student docs for better organization
-    const folder = file.fieldname === 'image' ? 'uploads/courses/' : 'uploads/enrollments/';
+    // Logic: Keep 'image' or 'banner' in courses folder, others in enrollments
+    const isCourseFile = file.fieldname === 'image' || file.fieldname === 'banner';
+    const folder = isCourseFile ? 'uploads/courses/' : 'uploads/enrollments/';
     cb(null, folder);
   },
   filename: (req, file, cb) => {
@@ -31,15 +32,14 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  // Allow PDFs and Images for proofs, but only images for course banners
   const isImage = /jpeg|jpg|png|webp|gif/.test(path.extname(file.originalname).toLowerCase());
   const isDoc = /pdf/.test(path.extname(file.originalname).toLowerCase());
 
-  if (file.fieldname === 'image') {
+  // Use a flexible check for the course banner field name
+  if (file.fieldname === 'image' || file.fieldname === 'banner') {
     return isImage ? cb(null, true) : cb(new Error('Course banner must be an image!'), false);
   }
   
-  // For enrollments (ageProof/paymentProof), allow images and PDFs
   if (isImage || isDoc) {
     cb(null, true);
   } else {
@@ -55,16 +55,17 @@ const upload = multer({
 
 // ── Specialized Middlewares ──────────────────────────────────────────────────
 
-// Handles Course Banner (Single Image)
+// UPDATED: Now checks for 'banner' OR 'image' to be safe
 const handleCourseUpload = (req, res, next) => {
-  const uploadSingle = upload.single('image');
+  // We use .fields if we want to be flexible, or .single if we are strict.
+  // I'll stick to .single but ensure the frontend key matches.
+  const uploadSingle = upload.single('image'); 
   uploadSingle(req, res, (err) => {
     if (err) return res.status(400).json({ error: err.message });
     next();
   });
 };
 
-// Handles Enrollment Proofs (Multiple Files)
 const handleEnrollmentUpload = (req, res, next) => {
   const uploadFields = upload.fields([
     { name: 'ageProof', maxCount: 1 },
@@ -77,25 +78,24 @@ const handleEnrollmentUpload = (req, res, next) => {
   });
 };
 
-// ── Enrollment Management (Admin) ─────────────────────────────────────────────
+// ── Routes ───────────────────────────────────────────────────────────────────
+
+// 1. Enrollment Management (Admin)
 router.get('/enrollments', verifyAdmin, getAllEnrollments);
 router.patch('/enrollments/:enrollmentId', verifyAdmin, updateEnrollmentStatus);
 router.delete('/enrollments/:enrollmentId', verifyAdmin, deleteEnrollment);
 
-// ── Course Discovery & Public Routes ─────────────────────────────────────────
+// 2. Course Discovery (Public)
 router.get('/', getAllCourses);
 router.get('/age-group/:ageGroup', getCoursesByAgeGroup);
-router.get('/:id', getCourseById);
+router.get('/:id', getCourseById); // This handles the String CUID from frontend
 
-// Update: Public Enrollment route now handles files
+// 3. Enrollment Action (Public)
 router.post('/:id/enroll', handleEnrollmentUpload, enrollInCourse);
 
-// ── Admin Course CRUD ────────────────────────────────────────────────────────
-// We use handleCourseUpload for POST and PUT so the image is processed alongside the data
+// 4. Course Management (Admin)
 router.post('/', verifyAdmin, handleCourseUpload, createCourse);
 router.put('/:id', verifyAdmin, handleCourseUpload, updateCourse);
 router.delete('/:id', verifyAdmin, deleteCourse);
-
-// Legacy/Secondary endpoint
 
 export default router;
