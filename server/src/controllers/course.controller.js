@@ -42,17 +42,42 @@ export const getCourseById = async (req, res) => {
 
 export const createCourse = async (req, res) => {
   try {
-    const { title } = req.body;
+    const { 
+      title, 
+      ageGroup, 
+      level, 
+      duration, 
+      price, 
+      classTime, 
+      contactDetails,
+      minAge,
+      maxAge 
+    } = req.body;
+
     if (!title) return res.status(400).json({ error: 'Course title is required.' });
 
     let imageUrl = '';
-    // If Multer picked up a file, upload it to Cloudinary
     if (req.file) {
       imageUrl = await uploadToCloudinary(req.file.path, "courses");
     }
 
-    // Send the Cloudinary URL to the service instead of the file object
-    const course = await courseService.createCourse(req.body, imageUrl);
+    // MAP FRONTEND TO BACKEND HERE
+    const mappedData = {
+      title,
+      ageGroup: ageGroup || 'CHILDREN',
+      skillLevel: level ? level.toUpperCase() : 'BEGINNER', // Maps 'level' -> 'skillLevel'
+      duration: duration || '',
+      fee: parseFloat(price) || 0,                         // Maps 'price' -> 'fee'
+      classTime: classTime || "TBD",                       // Prevents the "Missing classTime" error
+      contactDetails: contactDetails || "Unique Chess Academy",
+      bannerUrl: imageUrl,
+      // Fixes the "NaN" error by ensuring they are numbers or null
+      minAge: parseInt(minAge, 10) || null,
+      maxAge: parseInt(maxAge, 10) || null,
+    };
+
+    // Pass the cleaned object instead of req.body
+    const course = await courseService.createCourse(mappedData);
     res.status(201).json(course);
   } catch (error) {
     console.error('CREATE_COURSE_ERROR:', error.message);

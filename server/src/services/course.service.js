@@ -36,13 +36,18 @@ export const createCourse = async (data, imageUrl) => {
         ageGroup: data.ageGroup ? data.ageGroup.toUpperCase() : 'ADULTS',
         minAge: data.minAge ? parseInt(data.minAge, 10) : null,
         maxAge: data.maxAge ? parseInt(data.maxAge, 10) : null,
-        level: data.level || "Beginner",
+        
+        // --- SCHEMA ALIGNMENT FIXES ---
+        skillLevel: data.level || "BEGINNER",     // level -> skillLevel
         duration: data.duration || "N/A",
         description: data.description || "",
-        // Save the Cloudinary URL directly here
-        image: imageUrl || data.image || "", 
-        price: data.price ? data.price.toString() : "0",
-        features: Array.isArray(parsedFeatures) ? parsedFeatures : [],
+        bannerUrl: imageUrl || data.image || "",   // image -> bannerUrl
+        fee: parseFloat(data.price) || 0,          // price -> fee (Float)
+        days: Array.isArray(parsedFeatures) ? parsedFeatures : [], // features -> days
+        
+        // --- ADDING REQUIRED MISSING FIELDS ---
+        classTime: data.classTime || "TBD", 
+        contactDetails: data.contactDetails || "Contact Academy Admin",
       },
     });
   } catch (error) {
@@ -69,13 +74,16 @@ export const updateCourse = async (id, data, imageUrl) => {
         ageGroup: data.ageGroup ? data.ageGroup.toUpperCase() : undefined,
         minAge: data.minAge ? parseInt(data.minAge, 10) : undefined,
         maxAge: data.maxAge ? parseInt(data.maxAge, 10) : undefined,
-        level: data.level,
+        
+        // --- SCHEMA ALIGNMENT FIXES ---
+        skillLevel: data.level, 
         duration: data.duration,
         description: data.description,
-        // Only include the image field if a new imageUrl exists
-        ...(imageUrl && { image: imageUrl }), 
-        price: data.price ? data.price.toString() : undefined,
-        features: Array.isArray(parsedFeatures) ? parsedFeatures : undefined,
+        ...(imageUrl && { bannerUrl: imageUrl }), 
+        fee: data.price ? parseFloat(data.price) : undefined,
+        days: Array.isArray(parsedFeatures) ? parsedFeatures : undefined,
+        classTime: data.classTime,
+        contactDetails: data.contactDetails,
       },
     });
   } catch (error) {
