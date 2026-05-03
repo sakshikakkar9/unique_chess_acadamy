@@ -19,15 +19,15 @@ export const getCourseById = async (id) => {
   });
 };
 
-export const createCourse = async (data, imageFile) => {
-  console.log("Incoming Course Data:", data);
-
+export const createCourse = async (data, imageUrl) => {
   try {
-    // 1. If features comes from FormData, it might be a JSON string. Parse it.
     let parsedFeatures = data.features;
     if (typeof data.features === 'string') {
-      try { parsedFeatures = JSON.parse(data.features); } 
-      catch (e) { parsedFeatures = data.features.split(',').map(f => f.trim()); }
+      try { 
+        parsedFeatures = JSON.parse(data.features); 
+      } catch (e) { 
+        parsedFeatures = data.features.split(',').map(f => f.trim()); 
+      }
     }
 
     return await prisma.course.create({
@@ -39,8 +39,8 @@ export const createCourse = async (data, imageFile) => {
         level: data.level || "Beginner",
         duration: data.duration || "N/A",
         description: data.description || "",
-        // 2. Use the file path from your upload middleware (e.g., Multer)
-        image: imageFile ? `/uploads/courses/${imageFile.filename}` : (data.image || ""),
+        // Save the Cloudinary URL directly here
+        image: imageUrl || data.image || "", 
         price: data.price ? data.price.toString() : "0",
         features: Array.isArray(parsedFeatures) ? parsedFeatures : [],
       },
@@ -51,12 +51,15 @@ export const createCourse = async (data, imageFile) => {
   }
 };
 
-export const updateCourse = async (id, data, imageFile) => {
+export const updateCourse = async (id, data, imageUrl) => {
   try {
     let parsedFeatures = data.features;
     if (typeof data.features === 'string') {
-      try { parsedFeatures = JSON.parse(data.features); } 
-      catch (e) { parsedFeatures = data.features.split(',').map(f => f.trim()); }
+      try { 
+        parsedFeatures = JSON.parse(data.features); 
+      } catch (e) { 
+        parsedFeatures = data.features.split(',').map(f => f.trim()); 
+      }
     }
 
     return await prisma.course.update({
@@ -69,8 +72,8 @@ export const updateCourse = async (id, data, imageFile) => {
         level: data.level,
         duration: data.duration,
         description: data.description,
-        // 3. Only update image if a new file was uploaded
-        ...(imageFile && { image: `/uploads/courses/${imageFile.filename}` }),
+        // Only include the image field if a new imageUrl exists
+        ...(imageUrl && { image: imageUrl }), 
         price: data.price ? data.price.toString() : undefined,
         features: Array.isArray(parsedFeatures) ? parsedFeatures : undefined,
       },
@@ -88,24 +91,22 @@ export const deleteCourse = async (id) => {
 };
 
 // --- Updated Enrollments ---
-export const createEnrollment = async (courseId, data, files) => {
-  // files will contain ageProof and paymentProof from your controller
+export const createEnrollment = async (courseId, data, proofs) => {
   return await prisma.courseEnrollment.create({
     data: {
       courseId,
       studentName: data.studentName,
       email: data.email,
       phone: data.phone,
-      // 4. Handle the new fields we added to the Frontend Modal
       gender: data.gender,
       dob: data.dob ? new Date(data.dob) : null,
       fideId: data.fideId,
       category: data.category,
       mode: data.mode || "OFFLINE",
       message: data.message,
-      // 5. Store file paths for the proofs
-      ageProof: files?.ageProof ? `/uploads/enrollments/${files.ageProof[0].filename}` : null,
-      paymentProof: files?.paymentProof ? `/uploads/enrollments/${files.paymentProof[0].filename}` : null,
+      // Use the URLs from the 'proofs' object we created in the controller
+      ageProof: proofs.ageProofUrl,
+      paymentProof: proofs.paymentProofUrl,
       status: 'PENDING',
     },
   });

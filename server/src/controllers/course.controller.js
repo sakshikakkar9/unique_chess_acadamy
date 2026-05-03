@@ -43,27 +43,33 @@ export const getCourseById = async (req, res) => {
 export const createCourse = async (req, res) => {
   try {
     const { title } = req.body;
-    if (!title) {
-      return res.status(400).json({ error: 'Course title is required.' });
+    if (!title) return res.status(400).json({ error: 'Course title is required.' });
+
+    let imageUrl = '';
+    // If Multer picked up a file, upload it to Cloudinary
+    if (req.file) {
+      imageUrl = await uploadToCloudinary(req.file.path, "courses");
     }
 
-    // Pass req.body and req.file (processed by Multer) to the service
-    const course = await courseService.createCourse(req.body, req.file);
+    // Send the Cloudinary URL to the service instead of the file object
+    const course = await courseService.createCourse(req.body, imageUrl);
     res.status(201).json(course);
   } catch (error) {
     console.error('CREATE_COURSE_ERROR:', error.message);
-    res.status(500).json({ 
-      error: 'Failed to create course', 
-      details: error.message 
-    });
+    res.status(500).json({ error: 'Failed to create course', details: error.message });
   }
 };
 
 export const updateCourse = async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
-    // Pass req.body and the optional new file
-    const course = await courseService.updateCourse(id, req.body, req.file);
+    let imageUrl = undefined;
+
+    if (req.file) {
+      imageUrl = await uploadToCloudinary(req.file.path, "courses");
+    }
+
+    const course = await courseService.updateCourse(id, req.body, imageUrl);
     res.json(course);
   } catch (error) {
     console.error('UPDATE_COURSE_ERROR:', error.message);
@@ -86,23 +92,21 @@ export const deleteCourse = async (req, res) => {
 export const enrollInCourse = async (req, res) => {
   try {
     const courseId = parseInt(req.params.id, 10);
-    const { studentName, email, phone } = req.body;
+    const proofs = { ageProofUrl: null, paymentProofUrl: null };
 
-    if (!studentName || !email || !phone) {
-      return res.status(400).json({ error: 'studentName, email, and phone are required.' });
+    // Upload enrollment documents to Cloudinary
+    if (req.files?.ageProof) {
+      proofs.ageProofUrl = await uploadToCloudinary(req.files.ageProof[0].path, "enrollments");
+    }
+    if (req.files?.paymentProof) {
+      proofs.paymentProofUrl = await uploadToCloudinary(req.files.paymentProof[0].path, "enrollments");
     }
 
-    // req.files will contain our ageProof and paymentProof fields
-    const enrollment = await courseService.createEnrollment(courseId, req.body, req.files);
-    
-    res.status(201).json({ 
-      success: true, 
-      message: 'Enrolled successfully!', 
-      data: enrollment 
-    });
+    const enrollment = await courseService.createEnrollment(courseId, req.body, proofs);
+    res.status(201).json({ success: true, data: enrollment });
   } catch (error) {
     console.error('ENROLL_COURSE_ERROR:', error);
-    res.status(500).json({ error: 'Failed to enroll in course' });
+    res.status(500).json({ error: 'Failed to enroll' });
   }
 };
 
