@@ -78,24 +78,42 @@ export const deleteCourse = async (id) => {
 // --- Enrollment Services (FIXED: Only One Export) ---
 
 export const createEnrollment = async (courseId, data, proofs) => {
-  return await prisma.courseEnrollment.create({
-    data: {
-      courseId,
-      studentName: data.studentName,
-      email: data.email,
-      phone: data.phone,
-      gender: data.gender,
-      dob: data.dob ? new Date(data.dob) : null,
-      fideId: data.fideId || "NA",
-      category: data.category || "General",
-      mode: data.mode || "OFFLINE",
-      message: data.message || "",
-      // Aligning these with your Prisma schema field names
-      ageProof: proofs.ageProofUrl || "",
-      paymentProof: proofs.paymentProofUrl || "",
-      status: 'PENDING',
-    },
-  });
+  // 1. Safety check for proofs object to prevent "cannot read property of undefined"
+  const ageProofUrl = proofs?.ageProofUrl || "";
+  const paymentProofUrl = proofs?.paymentProofUrl || "";
+
+  // 2. Robust Date parsing to prevent "Invalid Date" crash
+  let formattedDob = null;
+  if (data.dob && data.dob.trim() !== "") {
+    const parsedDate = new Date(data.dob);
+    if (!isNaN(parsedDate.getTime())) {
+      formattedDob = parsedDate;
+    }
+  }
+
+  try {
+    return await prisma.courseEnrollment.create({
+      data: {
+        courseId,
+        studentName: data.studentName || "Unknown Student",
+        email: data.email || "",
+        phone: data.phone || "",
+        gender: data.gender || "Other",
+        dob: formattedDob,
+        fideId: data.fideId || "NA",
+        category: data.category || "General",
+        // Ensure mode matches your enum (ONLINE/OFFLINE)
+        mode: (data.mode || "OFFLINE").toUpperCase(), 
+        message: data.message || "",
+        ageProof: ageProofUrl,
+        paymentProof: paymentProofUrl,
+        status: 'PENDING',
+      },
+    });
+  } catch (error) {
+    console.error("Prisma Enrollment Error:", error);
+    throw new Error("Database insertion failed: " + error.message);
+  }
 };
 
 export const getAllEnrollments = async () => {

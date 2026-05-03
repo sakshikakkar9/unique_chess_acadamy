@@ -108,21 +108,42 @@ export const deleteCourse = async (req, res) => {
 
 export const enrollInCourse = async (req, res) => {
   try {
-    const courseId = req.params.id;
+    // 1. ID Parsing Fix:
+    // If your DB uses Integer IDs, use parseInt. 
+    // If it uses String/CUID/UUID (like in your screenshot), leave it as is.
+    const courseId = req.params.id; 
+
     const proofs = { ageProofUrl: null, paymentProofUrl: null };
 
-    if (req.files?.ageProof) {
-      proofs.ageProofUrl = await uploadToCloudinary(req.files.ageProof[0].path, "enrollments");
-    }
-    if (req.files?.paymentProof) {
-      proofs.paymentProofUrl = await uploadToCloudinary(req.files.paymentProof[0].path, "enrollments");
+    // 2. Safety Check for Files:
+    // This prevents the 'cannot read property 0 of undefined' crash
+    if (req.files) {
+      if (req.files.ageProof && req.files.ageProof[0]) {
+        proofs.ageProofUrl = await uploadToCloudinary(req.files.ageProof[0].path, "enrollments");
+      }
+      if (req.files.paymentProof && req.files.paymentProof[0]) {
+        proofs.paymentProofUrl = await uploadToCloudinary(req.files.paymentProof[0].path, "enrollments");
+      }
     }
 
+    // 3. Validation: Ensure we actually got the URLs from Cloudinary
+    if (!proofs.ageProofUrl || !proofs.paymentProofUrl) {
+      return res.status(400).json({ 
+        error: 'File upload failed. Please ensure Age Proof and Payment Proof are valid images.' 
+      });
+    }
+
+    // 4. Calling the hardened service we created in the previous step
     const enrollment = await courseService.createEnrollment(courseId, req.body, proofs);
+    
     res.status(201).json({ success: true, data: enrollment });
   } catch (error) {
-    console.error('ENROLL_ERROR:', error);
-    res.status(500).json({ error: 'Failed to enroll' });
+    // This will now log the EXACT Prisma error in your Render console
+    console.error('ENROLL_ERROR_LOG:', error.message); 
+    res.status(500).json({ 
+      error: 'Failed to enroll', 
+      details: error.message // Sending this helps you see the error in the frontend console
+    });
   }
 };
 

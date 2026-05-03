@@ -20,14 +20,12 @@ const router = express.Router();
 // ── Multer Configuration ─────────────────────────────────────────────────────
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Logic: Keep 'image' or 'banner' in courses folder, others in enrollments
-    const isCourseFile = file.fieldname === 'image' || file.fieldname === 'banner';
-    const folder = isCourseFile ? 'uploads/courses/' : 'uploads/enrollments/';
-    cb(null, folder);
+    // Render/Node temporary directory is safer if folders aren't pre-created
+    cb(null, '/tmp'); 
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   },
 });
 
