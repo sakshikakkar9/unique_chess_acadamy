@@ -2,27 +2,96 @@ import api from "@/lib/api";
 import { Course, CourseEnrollment } from "@/types";
 
 export const courseService = {
-  // ... (keep your existing getAll, create, update, delete, and uploadImage functions)
+  getAll: async (): Promise<Course[]> => {
+    const res = await api.get("/courses");
+    return res.data;
+  },
 
   /**
-   * ENROLL SERVICE - UPDATED
-   * This function now converts the plain JS object into FormData 
-   * to support file uploads for ageProof and paymentProof.
+   * CREATE COURSE - UPDATED
+   * Converts JSON to FormData to support the banner image upload.
+   */
+  create: async (data: any): Promise<Course> => {
+    const formData = new FormData();
+
+    Object.keys(data).forEach((key) => {
+      // Skip the banner file key so we can append it specially
+      if (key !== "image" && key !== "bannerUrl" && key !== "banner" && data[key] !== undefined) {
+        // Arrays (like days) need to be stringified for FormData
+        if (Array.isArray(data[key])) {
+          formData.append(key, JSON.stringify(data[key]));
+        } else {
+          formData.append(key, data[key]);
+        }
+      }
+    });
+
+    // Check for the file in common state keys ('image' or 'bannerUrl')
+    const imageFile = data.image || data.bannerUrl || data.banner;
+    if (imageFile instanceof File) {
+      formData.append("image", imageFile);
+    }
+
+    const res = await api.post("/courses", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data;
+  },
+
+  /**
+   * UPDATE COURSE - UPDATED
+   * Uses FormData to allow updating the course details and banner image.
+   */
+  update: async (id: number | string, data: any): Promise<Course> => {
+    const formData = new FormData();
+
+    Object.keys(data).forEach((key) => {
+      if (key !== "image" && key !== "bannerUrl" && key !== "banner" && data[key] !== undefined) {
+        if (Array.isArray(data[key])) {
+          formData.append(key, JSON.stringify(data[key]));
+        } else {
+          formData.append(key, data[key]);
+        }
+      }
+    });
+
+    const imageFile = data.image || data.bannerUrl || data.banner;
+    if (imageFile instanceof File) {
+      formData.append("image", imageFile);
+    }
+
+    const res = await api.put(`/courses/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data;
+  },
+
+  delete: async (id: number | string): Promise<void> => {
+    await api.delete(`/courses/${id}`);
+  },
+
+  uploadImage: async (file: File): Promise<string> => {
+    const form = new FormData();
+    form.append("image", file);
+    const res = await api.post("/courses/upload-image", form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data.imageUrl; 
+  },
+
+  /**
+   * ENROLL SERVICE
+   * Handles user enrollment with age and payment proof documents.
    */
   enroll: async (courseId: string | number, data: any): Promise<CourseEnrollment> => {
     const formData = new FormData();
 
-    // 1. Append text fields 
-    // We iterate through the data object to append values like studentName, email, etc.
     Object.keys(data).forEach((key) => {
-      // We handle the file objects separately below to ensure they are appended correctly
       if (key !== "ageProof" && key !== "paymentProof" && data[key] !== undefined && data[key] !== null) {
         formData.append(key, data[key]);
       }
     });
 
-    // 2. Append File objects (Critical for Multer on the backend)
-    // These keys ('ageProof', 'paymentProof') must match your course.routes.js configuration
     if (data.ageProof instanceof File) {
       formData.append("ageProof", data.ageProof);
     }
@@ -31,15 +100,12 @@ export const courseService = {
       formData.append("paymentProof", data.paymentProof);
     }
 
-    // 3. Send the POST request
-    // Axios automatically sets the boundary for 'multipart/form-data' when it sees FormData
     const res = await api.post(`/courses/${courseId}/enroll`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
 
-    // Return the data nested within the success response
     return res.data.data;
   }
 };
