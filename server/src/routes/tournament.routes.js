@@ -1,12 +1,15 @@
 import express from 'express';
 import multer from 'multer'; // 1. Import Multer
 import * as tournamentController from '../controllers/tournament.controller.js';
-
 const router = express.Router();
 
 // 2. Configure Multer (Using memory or disk storage)
 // For Vercel/Render, memoryStorage is often safest for temporary file handling
-const upload = multer({ storage: multer.memoryStorage() });
+
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit safety
+});
 
 // --- Public ---
 router.get('/', tournamentController.getAllTournaments);

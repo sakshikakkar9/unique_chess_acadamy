@@ -1,6 +1,6 @@
 import prisma from '../../lib/prisma.js'; 
 import * as tournamentService from '../services/tournament.service.js';
-
+import { uploadToCloudinary } from '../utils/cloudinary.js';
 // --- Public Functions ---
 export const getAllTournaments = async (req, res) => {
   try {
@@ -23,19 +23,33 @@ export const getTournamentById = async (req, res) => {
 
 export const registerForTournament = async (req, res) => {
   try {
-    // 1. Prepare data for the service
-    // Text fields are in req.body. File info is in req.files (from Multer)
+    const { id } = req.params;
+    
+    const ageProofFile = req.files?.['ageProof']?.[0];
+    const paymentProofFile = req.files?.['paymentProof']?.[0];
+
+    if (!ageProofFile || !paymentProofFile) {
+      return res.status(400).json({ error: "Both Age Proof and Payment Proof are required." });
+    }
+
+    // FIX: Use .buffer instead of .path for MemoryStorage
+    const ageProofUrl = await uploadToCloudinary(ageProofFile.buffer);
+    const paymentProofUrl = await uploadToCloudinary(paymentProofFile.buffer);
+
+    if (!ageProofUrl || !paymentProofUrl) {
+      throw new Error("Failed to upload documents to Cloudinary");
+    }
+
     const registrationData = {
       ...req.body,
-      // Pass file identifiers or temporary paths if you aren't using a cloud provider yet
-      ageProofUrl: req.files?.['ageProof']?.[0]?.originalname || "pending_upload",
-      paymentProofUrl: req.files?.['paymentProof']?.[0]?.originalname || "pending_upload"
+      ageProofUrl,
+      paymentProofUrl
     };
 
-    const data = await tournamentService.registerForTournament(req.params.id, registrationData);
+    const data = await tournamentService.registerForTournament(id, registrationData);
     res.status(201).json(data);
   } catch (error) {
-    console.error("Prisma Error Details:", error);
+    console.error("Registration Error:", error);
     res.status(500).json({ error: error.message });
   }
 };

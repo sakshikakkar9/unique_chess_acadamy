@@ -28,35 +28,42 @@ export default function TournamentDetails() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [refId, setRefId] = useState("");
 
+  // --- SMART UPDATE: File Feedback State ---
+  const [files, setFiles] = useState<{ age?: string; payment?: string }>({});
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'age' | 'payment') => {
+    const fileName = e.target.files?.[0]?.name;
+    if (fileName) {
+      setFiles(prev => ({ ...prev, [type]: fileName }));
+    }
+  };
+  // ------------------------------------------
+
   const tournament = tournaments.find((t) => t.id.toString() === id);
 
   if (isLoading) return <div className="min-h-screen bg-white flex items-center justify-center">Loading...</div>;
   if (!tournament) return <div className="p-20 text-center text-slate-900">Tournament not found.</div>;
 
-const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  
-  if (!id) {
-    console.error("No tournament ID found in URL");
-    return;
-  }
-
-  // Create FormData from the form
-  const formData = new FormData(e.currentTarget);
-  
-  // Add the tournament ID so the hook can build the URL
-  formData.append("tournamentId", id); 
-
-  // LOG FOR DEBUGGING: Open your browser console to make sure 'gender' appears here
-  console.log("Gender in form:", formData.get("gender"));
-
-  register(formData, {
-    onSuccess: (data: any) => {
-      setRefId(data.referenceId || "UCA-" + Math.random().toString(36).toUpperCase().substring(2, 10));
-      setShowSuccess(true);
+  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (!id) {
+      console.error("No tournament ID found in URL");
+      return;
     }
-  });
-};
+
+    const formData = new FormData(e.currentTarget);
+    formData.append("tournamentId", id); 
+
+    console.log("Gender in form:", formData.get("gender"));
+
+    register(formData, {
+      onSuccess: (data: any) => {
+        setRefId(data.referenceId || "UCA-" + Math.random().toString(36).toUpperCase().substring(2, 10));
+        setShowSuccess(true);
+      }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -74,7 +81,7 @@ const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-16 items-start">
-          {/* Left Side: Tournament Info (Unchanged as requested) */}
+          {/* Left Side: Tournament Info */}
           <div className="space-y-10">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-orange-600 border border-orange-100 mb-6">
@@ -146,7 +153,6 @@ const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
             <CardContent className="px-10 pb-10">
               <form onSubmit={handleRegister} className="space-y-6">
                 
-                {/* Personal Details Row */}
                 <div className="space-y-4">
                   <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Personal Details</Label>
                   <Input name="studentName" placeholder="Player Full Name" required className="h-14 rounded-xl border-slate-200 bg-slate-50/50" />
@@ -162,7 +168,6 @@ const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
                   </div>
                 </div>
 
-                {/* Contact & FIDE */}
                 <div className="space-y-4">
                   <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Contact & Rating</Label>
                   <Input name="phone" placeholder="Phone Number" required className="h-14 rounded-xl border-slate-200 bg-slate-50/50" />
@@ -175,7 +180,6 @@ const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
                   <Input name="address" placeholder="Residential Address" required className="h-14 rounded-xl border-slate-200 bg-slate-50/50" />
                 </div>
 
-                {/* Discovery Source */}
                 <div className="space-y-4">
                   <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">How did you hear about us?</Label>
                   <select name="discoverySource" required className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50/50 px-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-500">
@@ -187,29 +191,46 @@ const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
                   </select>
                 </div>
 
-                {/* File Uploads */}
+                {/* SMART UPDATE: File Uploads with Feedback */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-[10px] font-bold uppercase text-slate-500">Age Proof</Label>
                     <div className="relative h-14 w-full">
-                      <Input name="ageProof" type="file" required className="absolute inset-0 opacity-0 z-10 cursor-pointer" />
-                      <div className="h-full w-full border border-dashed border-slate-300 rounded-xl flex items-center justify-center bg-slate-50 gap-2 text-slate-400">
-                        <Upload className="h-4 w-4" /> <span className="text-[10px] font-bold">Upload</span>
+                      <Input 
+                        name="ageProof" 
+                        type="file" 
+                        required 
+                        onChange={(e) => handleFileChange(e, 'age')}
+                        className="absolute inset-0 opacity-0 z-10 cursor-pointer" 
+                      />
+                      <div className={`h-full w-full border border-dashed rounded-xl flex items-center justify-center gap-2 transition-colors ${files.age ? 'border-emerald-500 bg-emerald-50 text-emerald-600' : 'border-slate-300 bg-slate-50 text-slate-400'}`}>
+                        {files.age ? <CheckCircle2 className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
+                        <span className="text-[10px] font-bold truncate px-2">
+                          {files.age || "Upload"}
+                        </span>
                       </div>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] font-bold uppercase text-slate-500">Payment Proof</Label>
                     <div className="relative h-14 w-full">
-                      <Input name="paymentProof" type="file" required className="absolute inset-0 opacity-0 z-10 cursor-pointer" />
-                      <div className="h-full w-full border border-dashed border-slate-300 rounded-xl flex items-center justify-center bg-slate-50 gap-2 text-slate-400">
-                        <Upload className="h-4 w-4" /> <span className="text-[10px] font-bold">Upload</span>
+                      <Input 
+                        name="paymentProof" 
+                        type="file" 
+                        required 
+                        onChange={(e) => handleFileChange(e, 'payment')}
+                        className="absolute inset-0 opacity-0 z-10 cursor-pointer" 
+                      />
+                      <div className={`h-full w-full border border-dashed rounded-xl flex items-center justify-center gap-2 transition-colors ${files.payment ? 'border-emerald-500 bg-emerald-50 text-emerald-600' : 'border-slate-300 bg-slate-50 text-slate-400'}`}>
+                        {files.payment ? <CheckCircle2 className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
+                        <span className="text-[10px] font-bold truncate px-2">
+                          {files.payment || "Upload"}
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Payment QR (Kept as requested) */}
                 <div className="p-6 border-2 border-dashed border-orange-100 rounded-2xl bg-orange-50/30 text-center">
                   <p className="text-xs font-black text-orange-600 mb-4 uppercase tracking-widest">UPI Payment: ₹{tournament.entryFee}</p>
                   <img src="/qr-placeholder.png" alt="Payment QR" className="w-32 h-32 mx-auto mb-2" />
