@@ -1,38 +1,45 @@
 import api from "@/lib/api";
-import { AgeGroup, Course, CourseEnrollment } from "@/types";
+import { Course, CourseEnrollment } from "@/types";
 
 export const courseService = {
-  getAll: async (): Promise<Course[]> => {
-    const res = await api.get("/courses");
-    return res.data;
-  },
+  // ... (keep your existing getAll, create, update, delete, and uploadImage functions)
 
-  create: async (course: Omit<Course, "id" | "createdAt" | "updatedAt">): Promise<Course> => {
-    const res = await api.post("/courses", course);
-    return res.data;
-  },
+  /**
+   * ENROLL SERVICE - UPDATED
+   * This function now converts the plain JS object into FormData 
+   * to support file uploads for ageProof and paymentProof.
+   */
+  enroll: async (courseId: string | number, data: any): Promise<CourseEnrollment> => {
+    const formData = new FormData();
 
-  update: async (id: number, course: Partial<Course>): Promise<Course> => {
-    const res = await api.put(`/courses/${id}`, course);
-    return res.data;
-  },
-
-  delete: async (id: number): Promise<void> => {
-    await api.delete(`/courses/${id}`);
-  },
-
-  // Updated to match your Controller's response: { success: true, imageUrl: "..." }
-  uploadImage: async (file: File): Promise<string> => {
-    const form = new FormData();
-    form.append("image", file);
-    const res = await api.post("/courses/upload-image", form, {
-      headers: { "Content-Type": "multipart/form-data" },
+    // 1. Append text fields 
+    // We iterate through the data object to append values like studentName, email, etc.
+    Object.keys(data).forEach((key) => {
+      // We handle the file objects separately below to ensure they are appended correctly
+      if (key !== "ageProof" && key !== "paymentProof" && data[key] !== undefined && data[key] !== null) {
+        formData.append(key, data[key]);
+      }
     });
-    return res.data.imageUrl; 
-  },
 
-  enroll: async (courseId: number, data: any): Promise<CourseEnrollment> => {
-    const res = await api.post(`/courses/${courseId}/enroll`, data);
+    // 2. Append File objects (Critical for Multer on the backend)
+    // These keys ('ageProof', 'paymentProof') must match your course.routes.js configuration
+    if (data.ageProof instanceof File) {
+      formData.append("ageProof", data.ageProof);
+    }
+    
+    if (data.paymentProof instanceof File) {
+      formData.append("paymentProof", data.paymentProof);
+    }
+
+    // 3. Send the POST request
+    // Axios automatically sets the boundary for 'multipart/form-data' when it sees FormData
+    const res = await api.post(`/courses/${courseId}/enroll`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    // Return the data nested within the success response
     return res.data.data;
   }
 };
