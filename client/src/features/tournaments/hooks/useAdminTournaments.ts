@@ -16,7 +16,14 @@ export const useAdminTournaments = () => {
   });
 
   const addMutation = useMutation({
-    mutationFn: (newTournament: any) => api.post("/tournaments/admin/create", newTournament),
+    mutationFn: (newTournament: any) => {
+      if (newTournament instanceof FormData) {
+        return api.post("/tournaments/admin/create", newTournament, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+      }
+      return api.post("/tournaments/admin/create", newTournament);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tournaments"] });
       toast({ title: "Success", description: "Tournament created successfully." });
@@ -31,8 +38,14 @@ export const useAdminTournaments = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => 
-      api.put(`/tournaments/admin/update/${id}`, data),
+    mutationFn: ({ id, data }: { id: number | string; data: any }) => {
+      if (data instanceof FormData) {
+        return api.put(`/tournaments/admin/update/${id}`, data, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+      }
+      return api.put(`/tournaments/admin/update/${id}`, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tournaments"] });
       toast({ title: "Updated", description: "Tournament details have been synced." });

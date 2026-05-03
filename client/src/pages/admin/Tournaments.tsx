@@ -22,7 +22,9 @@ const AdminTournaments: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
-  
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+
   // Updated initial state to match new Prisma schema fields
   const [formData, setFormData] = useState<any>({
     title: "",
@@ -55,6 +57,8 @@ const AdminTournaments: React.FC = () => {
 
   const handleAdd = () => {
     setSelectedTournament(null);
+    setSelectedFile(null);
+    setPreviewUrl("");
     setFormData({ 
       title: "", 
       startDate: new Date().toISOString().split('T')[0],
@@ -76,6 +80,8 @@ const AdminTournaments: React.FC = () => {
 
   const handleEdit = (t: Tournament) => {
     setSelectedTournament(t);
+    setSelectedFile(null);
+    setPreviewUrl(t.imageUrl || "");
     setFormData({ 
       ...t, 
       startDate: t.startDate ? new Date(t.startDate).toISOString().split('T')[0] : "",
@@ -86,16 +92,30 @@ const AdminTournaments: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const payload = { 
-      ...formData, 
-      entryFee: parseFloat(formData.entryFee) || 0,
-      // Syncing with new Prisma DateTime fields
-      startDate: new Date(formData.startDate).toISOString(),
-      endDate: formData.endDate ? new Date(formData.endDate).toISOString() : null
-    };
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("startDate", new Date(formData.startDate).toISOString());
+    if (formData.endDate) data.append("endDate", new Date(formData.endDate).toISOString());
+    data.append("location", formData.location || "");
+    data.append("category", formData.category || "");
+    data.append("totalPrizePool", formData.totalPrizePool || "");
+    data.append("entryFee", String(formData.entryFee || 0));
+    data.append("discountDetails", formData.discountDetails || "");
+    data.append("brochureUrl", formData.brochureUrl || "");
+    data.append("otherDetails", formData.otherDetails || "");
+    data.append("contactDetails", formData.contactDetails || "");
+    data.append("status", formData.status);
+    data.append("description", formData.description || "");
+
+    if (selectedFile) {
+      data.append("image", selectedFile);
+    } else if (formData.imageUrl) {
+      data.append("imageUrl", formData.imageUrl);
+    }
+
     try {
-      if (selectedTournament) await updateTournament(selectedTournament.id, payload);
-      else await addTournament(payload);
+      if (selectedTournament) await updateTournament(selectedTournament.id, data);
+      else await addTournament(data);
       setIsModalOpen(false);
     } catch (error) {
       console.error("Save failed:", error);
@@ -144,14 +164,18 @@ const AdminTournaments: React.FC = () => {
           <div className="space-y-2">
             <Label className="text-sm font-bold">Tournament Banner</Label>
             <div className="border-2 border-dashed rounded-xl p-4 text-center hover:bg-muted/50 transition-colors">
-              {formData.imageUrl ? (
+              {previewUrl ? (
                 <div className="relative aspect-video rounded-lg overflow-hidden">
-                  <img src={formData.imageUrl} alt="Banner" className="w-full h-full object-cover" />
+                  <img src={previewUrl} alt="Banner" className="w-full h-full object-cover" />
                   <Button 
                     size="icon" 
                     variant="destructive" 
                     className="absolute top-2 right-2 h-7 w-7"
-                    onClick={() => setFormData({...formData, imageUrl: ""})}
+                    onClick={() => {
+                      setPreviewUrl("");
+                      setSelectedFile(null);
+                      setFormData({...formData, imageUrl: ""});
+                    }}
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -163,12 +187,12 @@ const AdminTournaments: React.FC = () => {
                   <input 
                     type="file" 
                     className="hidden" 
+                    accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => setFormData({...formData, imageUrl: reader.result});
-                        reader.readAsDataURL(file);
+                        setSelectedFile(file);
+                        setPreviewUrl(URL.createObjectURL(file));
                       }
                     }} 
                   />

@@ -18,16 +18,7 @@ import {
 const router = express.Router();
 
 // ── Multer Configuration ─────────────────────────────────────────────────────
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // Render/Node temporary directory is safer if folders aren't pre-created
-    cb(null, '/tmp'); 
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  },
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   const isImage = /jpeg|jpg|png|webp|gif/.test(path.extname(file.originalname).toLowerCase());
