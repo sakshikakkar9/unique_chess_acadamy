@@ -1,5 +1,4 @@
-// IMPORT the shared instance, DO NOT create a new one here
-import prisma from '../../lib/prisma.js'; 
+import prisma from '../../lib/prisma.js';
 
 export const getAllCourses = async () => {
   return await prisma.course.findMany({
@@ -20,48 +19,60 @@ export const getCourseById = async (id) => {
   });
 };
 
-export const createCourse = async (data) => {
-  // Check your terminal for this log! It will show if fields are missing.
+export const createCourse = async (data, imageFile) => {
   console.log("Incoming Course Data:", data);
 
   try {
+    // 1. If features comes from FormData, it might be a JSON string. Parse it.
+    let parsedFeatures = data.features;
+    if (typeof data.features === 'string') {
+      try { parsedFeatures = JSON.parse(data.features); } 
+      catch (e) { parsedFeatures = data.features.split(',').map(f => f.trim()); }
+    }
+
     return await prisma.course.create({
       data: {
         title: data.title || "Untitled Course",
-        // CRITICAL: Ensure ageGroup is Uppercase to match Prisma Enum
         ageGroup: data.ageGroup ? data.ageGroup.toUpperCase() : 'ADULTS',
-        minAge: data.minAge && data.minAge !== "" ? parseInt(data.minAge, 10) : null,
-        maxAge: data.maxAge && data.maxAge !== "" ? parseInt(data.maxAge, 10) : null,
+        minAge: data.minAge ? parseInt(data.minAge, 10) : null,
+        maxAge: data.maxAge ? parseInt(data.maxAge, 10) : null,
         level: data.level || "Beginner",
         duration: data.duration || "N/A",
         description: data.description || "",
-        image: data.image || "", 
+        // 2. Use the file path from your upload middleware (e.g., Multer)
+        image: imageFile ? `/uploads/courses/${imageFile.filename}` : (data.image || ""),
         price: data.price ? data.price.toString() : "0",
-        // Ensure features is always an array
-        features: Array.isArray(data.features) ? data.features : (data.features ? [data.features] : []),
+        features: Array.isArray(parsedFeatures) ? parsedFeatures : [],
       },
     });
   } catch (error) {
     console.error("CREATE_COURSE_PRISMA_ERROR:", error);
-    throw error; // Rethrow so the controller catches it
+    throw error;
   }
 };
 
-export const updateCourse = async (id, data) => {
+export const updateCourse = async (id, data, imageFile) => {
   try {
+    let parsedFeatures = data.features;
+    if (typeof data.features === 'string') {
+      try { parsedFeatures = JSON.parse(data.features); } 
+      catch (e) { parsedFeatures = data.features.split(',').map(f => f.trim()); }
+    }
+
     return await prisma.course.update({
       where: { id },
       data: {
         title: data.title,
         ageGroup: data.ageGroup ? data.ageGroup.toUpperCase() : undefined,
-        minAge: data.minAge && data.minAge !== "" ? parseInt(data.minAge, 10) : null,
-        maxAge: data.maxAge && data.maxAge !== "" ? parseInt(data.maxAge, 10) : null,
+        minAge: data.minAge ? parseInt(data.minAge, 10) : undefined,
+        maxAge: data.maxAge ? parseInt(data.maxAge, 10) : undefined,
         level: data.level,
         duration: data.duration,
         description: data.description,
-        image: data.image,
-        price: data.price ? data.price.toString() : '',
-        features: Array.isArray(data.features) ? data.features : (data.features ? [data.features] : []),
+        // 3. Only update image if a new file was uploaded
+        ...(imageFile && { image: `/uploads/courses/${imageFile.filename}` }),
+        price: data.price ? data.price.toString() : undefined,
+        features: Array.isArray(parsedFeatures) ? parsedFeatures : undefined,
       },
     });
   } catch (error) {
@@ -76,16 +87,25 @@ export const deleteCourse = async (id) => {
   });
 };
 
-// --- Enrollments ---
-export const createEnrollment = async (courseId, data) => {
+// --- Updated Enrollments ---
+export const createEnrollment = async (courseId, data, files) => {
+  // files will contain ageProof and paymentProof from your controller
   return await prisma.courseEnrollment.create({
     data: {
       courseId,
       studentName: data.studentName,
       email: data.email,
       phone: data.phone,
+      // 4. Handle the new fields we added to the Frontend Modal
+      gender: data.gender,
+      dob: data.dob ? new Date(data.dob) : null,
+      fideId: data.fideId,
+      category: data.category,
       mode: data.mode || "OFFLINE",
       message: data.message,
+      // 5. Store file paths for the proofs
+      ageProof: files?.ageProof ? `/uploads/enrollments/${files.ageProof[0].filename}` : null,
+      paymentProof: files?.paymentProof ? `/uploads/enrollments/${files.paymentProof[0].filename}` : null,
       status: 'PENDING',
     },
   });
@@ -96,7 +116,7 @@ export const getAllEnrollments = async () => {
     include: {
       course: {
         select: {
-          title: true, // This allows the Admin to see WHICH course the student joined
+          title: true,
           ageGroup: true,
         }
       }

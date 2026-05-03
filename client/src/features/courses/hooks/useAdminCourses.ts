@@ -7,26 +7,28 @@ export const useAdminCourses = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  // 1. Fetch all courses
   const { data: courses = [], isLoading, error } = useQuery<Course[]>({
     queryKey: ["courses"],
     queryFn: () => courseService.getAll(),
   });
 
+  // 2. Add Course (Updated to accept FormData for Banner Uploads)
   const addMutation = useMutation({
-    mutationFn: (course: Omit<Course, "id" | "createdAt" | "updatedAt">) =>
-      courseService.create(course),
+    mutationFn: (courseData: FormData) => courseService.create(courseData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
-      toast({ title: "Success", description: "Course added successfully." });
+      toast({ title: "Success", description: "Course created successfully." });
     },
     onError: () => {
-      toast({ variant: "destructive", title: "Error", description: "Failed to add course." });
+      toast({ variant: "destructive", title: "Error", description: "Failed to create course." });
     },
   });
 
+  // 3. Update Course (Updated to handle ID and FormData)
   const updateMutation = useMutation({
-    mutationFn: ({ id, course }: { id: number; course: Partial<Course> }) =>
-      courseService.update(id, course),
+    mutationFn: ({ id, courseData }: { id: string; courseData: FormData }) =>
+      courseService.update(id, courseData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
       toast({ title: "Success", description: "Course updated successfully." });
@@ -36,11 +38,12 @@ export const useAdminCourses = () => {
     },
   });
 
+  // 4. Delete Course (Updated id type to string to match cuid)
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => courseService.delete(id),
+    mutationFn: (id: string) => courseService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
-      toast({ title: "Success", description: "Course deleted successfully." });
+      toast({ title: "Success", description: "Course removed successfully." });
     },
     onError: () => {
       toast({ variant: "destructive", title: "Error", description: "Failed to delete course." });
@@ -51,10 +54,11 @@ export const useAdminCourses = () => {
     courses,
     isLoading,
     error,
-    addCourse: addMutation.mutateAsync,
-    updateCourse: (id: number, course: Partial<Course>) =>
-      updateMutation.mutateAsync({ id, course }),
-    deleteCourse: (id: number) => deleteMutation.mutateAsync(id),
+    // Modular return functions
+    addCourse: (courseData: FormData) => addMutation.mutateAsync(courseData),
+    updateCourse: (id: string, courseData: FormData) =>
+      updateMutation.mutateAsync({ id, courseData }),
+    deleteCourse: (id: string) => deleteMutation.mutateAsync(id),
     refresh: () => queryClient.invalidateQueries({ queryKey: ["courses"] }),
   };
 };

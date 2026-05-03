@@ -25,6 +25,19 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  GRANDMASTER
+}
+
+enum ClassMode {
+  ONLINE
+  OFFLINE
+  HYBRID
+}
+
 model Event {
   id          Int           @id @default(autoincrement())
   title       String
@@ -129,33 +142,55 @@ model DemoRegistration {
 }
 
 model Course {
-  id          Int                @id @default(autoincrement())
-  title       String
-  ageGroup    AgeGroup           @default(ADULTS)
-  minAge      Int?
-  maxAge      Int?
-  level       String             @default("Beginner")
-  duration    String             @default("Flexible")
-  description String?
-  image       String?
-  price       String?
-  features    String[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  enrollments CourseEnrollment[]
+  id             String             @id @default(cuid())
+  title          String
+  ageGroup       String             // e.g., "Kids (5-10)", "Adults"
+  skillLevel     SkillLevel         @default(BEGINNER)
+  classTime      String             // e.g., "17:00"
+  duration       String             // e.g., "60 mins"
+  fee            Float
+  days           String[]           // e.g., ["Monday", "Wednesday"]
+  contactDetails String
+  mode           ClassMode          @default(ONLINE)
+  bannerUrl      String?            // URL from storage bucket
+  
+  enrollments    CourseEnrollment[] 
+
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@map("courses")
 }
 
 model CourseEnrollment {
-  id          Int      @id @default(autoincrement())
-  studentName String
-  email       String
-  phone       String
-  mode        String   @default("OFFLINE")
-  courseId    Int
-  message     String?
-  status      String   @default("PENDING")
-  createdAt   DateTime @default(now())
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  id              String   @id @default(uuid())
+  referenceId     String   @unique @default(cuid())
+  studentName     String
+  gender          String   // Male, Female, Other
+  category        String?  
+  dob             DateTime
+  email           String?  // Not mandatory
+  phone           String
+  
+  // FIDE Details
+  fideId          String   @default("NA")
+  fideRating      Int      @default(0)
+  
+  address         String   @db.Text
+  
+  // Proofs (Storage URLs)
+  ageProofUrl      String   
+  paymentProofUrl  String   
+  
+  // Discovery
+  discoverySource  String   
+  
+  status          String   @default("PENDING")
+  courseId        String   
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 enum TournamentStatus {

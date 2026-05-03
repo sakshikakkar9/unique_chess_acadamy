@@ -11,9 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { AGE_GROUP_RANGES, Course } from "@/types";
+import { Course } from "@/types";
 import { courseService } from "@/services/courseService";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2, Upload } from "lucide-react";
 
 interface CourseEnrollModalProps {
   course: Course | null;
@@ -23,13 +23,33 @@ interface CourseEnrollModalProps {
 
 interface FormState {
   studentName: string;
+  gender: string;
+  category: string;
+  dob: string;
   email: string;
   phone: string;
+  fideId: string;
+  fideRating: string;
+  address: string;
+  discoverySource: string;
   mode: "ONLINE" | "OFFLINE";
   message: string;
 }
 
-const EMPTY: FormState = { studentName: "", email: "", phone: "", mode: "OFFLINE", message: "" };
+const EMPTY: FormState = {
+  studentName: "",
+  gender: "Male",
+  category: "",
+  dob: "",
+  email: "",
+  phone: "",
+  fideId: "NA",
+  fideRating: "0",
+  address: "",
+  discoverySource: "Social Media",
+  mode: "OFFLINE",
+  message: "",
+};
 
 export default function CourseEnrollModal({ course, open, onOpenChange }: CourseEnrollModalProps) {
   const { toast } = useToast();
@@ -37,12 +57,18 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  // File states
+  const [ageProof, setAgeProof] = useState<File | null>(null);
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
+
   const set = (key: keyof FormState, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const handleClose = (val: boolean) => {
     if (!val) {
       setForm(EMPTY);
+      setAgeProof(null);
+      setPaymentProof(null);
       setSuccess(false);
     }
     onOpenChange(val);
@@ -52,22 +78,23 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
     e.preventDefault();
     if (!course) return;
 
-    // Client-side validation
-    const phoneRegex = /^[0-9+\s-]{10,}$/;
-    if (!phoneRegex.test(form.phone)) {
-      toast({ variant: "destructive", title: "Validation Error", description: "Please enter a valid phone number." });
+    // Validation for files
+    if (!ageProof || !paymentProof) {
+      toast({ variant: "destructive", title: "Missing Files", description: "Please upload both Age Proof and Payment Proof." });
       return;
     }
 
     setLoading(true);
     try {
+      // In a real scenario, you'd upload files to Supabase/S3 first to get URLs
+      // For now, we pass the data to your service
       await courseService.enroll(course.id, {
-        studentName: form.studentName,
-        email: form.email,
-        phone: form.phone,
-        mode: form.mode,
-        message: form.message || undefined,
+        ...form,
+        ageProof, 
+        paymentProof,
+        fideRating: parseInt(form.fideRating) || 0
       });
+
       setSuccess(true);
       toast({ title: "Enrollment submitted!", description: "We'll reach out to confirm your spot." });
     } catch {
@@ -79,22 +106,12 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
 
   if (!course) return null;
 
-  const ageRange = course.minAge && course.maxAge
-    ? `Ages ${course.minAge}–${course.maxAge}`
-    : AGE_GROUP_RANGES[course.ageGroup];
-
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md bg-card border-border">
+      <DialogContent className="sm:max-w-2xl bg-card border-border max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Enroll in Course</DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            <span className="font-semibold text-foreground">{course.title}</span>
-            <span className="mx-2">·</span>
-            {ageRange}
-            <span className="mx-2">·</span>
-            {course.duration}
-          </DialogDescription>
+          <DialogTitle className="text-xl font-bold">Enroll in {course.title}</DialogTitle>
+          <DialogDescription>Please provide accurate details for registration.</DialogDescription>
         </DialogHeader>
 
         {success ? (
@@ -102,101 +119,113 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
             <div className="h-14 w-14 rounded-full bg-green-500/10 flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-500" />
             </div>
-            <div>
-              <p className="font-semibold text-lg">You're enrolled!</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Our team will contact you at <span className="text-foreground">{form.email}</span> to confirm your spot.
-              </p>
-            </div>
-            <Button variant="outline" onClick={() => handleClose(false)} className="mt-2">
-              Close
-            </Button>
+            <p className="font-semibold text-lg">Application Submitted Successfully!</p>
+            <Button onClick={() => handleClose(false)}>Close</Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-            <div className="space-y-2">
-              <Label htmlFor="enroll-name">Full Name *</Label>
-              <Input
-                id="enroll-name"
-                placeholder="Your full name"
-                value={form.studentName}
-                onChange={(e) => set("studentName", e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Class Mode *</Label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="mode"
-                    value="OFFLINE"
-                    checked={form.mode === "OFFLINE"}
-                    onChange={(e) => set("mode", e.target.value as any)}
-                    className="w-4 h-4 text-primary"
-                  />
-                  <span className="text-sm">Offline</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="mode"
-                    value="ONLINE"
-                    checked={form.mode === "ONLINE"}
-                    onChange={(e) => set("mode", e.target.value as any)}
-                    className="w-4 h-4 text-primary"
-                  />
-                  <span className="text-sm">Online</span>
-                </label>
+          <form onSubmit={handleSubmit} className="space-y-6 pt-2">
+            
+            {/* Personal Details Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Full Name *</Label>
+                <Input value={form.studentName} onChange={(e) => set("studentName", e.target.value)} required />
+              </div>
+              <div className="space-y-2">
+                <Label>Gender *</Label>
+                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" 
+                        value={form.gender} onChange={(e) => set("gender", e.target.value)}>
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Other</option>
+                </select>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="enroll-email">Email *</Label>
-              <Input
-                id="enroll-email"
-                type="email"
-                placeholder="you@example.com"
-                value={form.email}
-                onChange={(e) => set("email", e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="enroll-phone">Phone *</Label>
-              <Input
-                id="enroll-phone"
-                type="tel"
-                placeholder="+91 98765 43210"
-                value={form.phone}
-                onChange={(e) => set("phone", e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="enroll-message">Message (optional)</Label>
-              <Textarea
-                id="enroll-message"
-                rows={3}
-                placeholder="Any questions or notes for us?"
-                value={form.message}
-                onChange={(e) => set("message", e.target.value)}
-              />
+
+            {/* DOB & Category */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Date of Birth *</Label>
+                <Input type="date" value={form.dob} onChange={(e) => set("dob", e.target.value)} required />
+              </div>
+              <div className="space-y-2">
+                <Label>Category (Optional)</Label>
+                <Input placeholder="e.g. Under-15" value={form.category} onChange={(e) => set("category", e.target.value)} />
+              </div>
             </div>
 
-            {course.price && (
-              <p className="text-sm text-muted-foreground">
-                Course fee: <span className="font-semibold text-foreground">{course.price}</span>
-              </p>
-            )}
+            {/* Contact Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Phone *</Label>
+                <Input type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} required />
+              </div>
+              <div className="space-y-2">
+                <Label>Email (Optional)</Label>
+                <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} />
+              </div>
+            </div>
 
-            <div className="flex justify-end gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => handleClose(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading} className="min-w-[120px]">
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enroll Now"}
+            {/* FIDE Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 bg-muted/30 rounded-lg">
+              <div className="space-y-2">
+                <Label>FIDE ID</Label>
+                <Input value={form.fideId} onChange={(e) => set("fideId", e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>FIDE Rating</Label>
+                <Input type="number" value={form.fideRating} onChange={(e) => set("fideRating", e.target.value)} />
+              </div>
+            </div>
+
+            {/* Address */}
+            <div className="space-y-2">
+              <Label>Full Address *</Label>
+              <Textarea value={form.address} onChange={(e) => set("address", e.target.value)} required />
+            </div>
+
+            {/* Upload Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">Age Proof * <Upload className="h-3 w-3"/></Label>
+                <Input type="file" onChange={(e) => setAgeProof(e.target.files?.[0] || null)} required className="cursor-pointer" />
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">Payment Proof * <Upload className="h-3 w-3"/></Label>
+                <Input type="file" onChange={(e) => setPaymentProof(e.target.files?.[0] || null)} required className="cursor-pointer" />
+              </div>
+            </div>
+
+            {/* Discovery & Mode */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>How did you find us?</Label>
+                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={form.discoverySource} onChange={(e) => set("discoverySource", e.target.value)}>
+                  <option>Social Media</option>
+                  <option>Through Coach</option>
+                  <option>Academy Event</option>
+                  <option>Google Search</option>
+                  <option>Friend/Word of Mouth</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label>Preferred Mode</Label>
+                <div className="flex gap-4 pt-2">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm">
+                    <input type="radio" checked={form.mode === "OFFLINE"} onChange={() => set("mode", "OFFLINE")} /> Offline
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer text-sm">
+                    <input type="radio" checked={form.mode === "ONLINE"} onChange={() => set("mode", "ONLINE")} /> Online
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button type="button" variant="outline" onClick={() => handleClose(false)}>Cancel</Button>
+              <Button type="submit" disabled={loading} className="min-w-[150px]">
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit Enrollment"}
               </Button>
             </div>
           </form>

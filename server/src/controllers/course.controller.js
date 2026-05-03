@@ -43,12 +43,12 @@ export const getCourseById = async (req, res) => {
 export const createCourse = async (req, res) => {
   try {
     const { title } = req.body;
-
     if (!title) {
       return res.status(400).json({ error: 'Course title is required.' });
     }
 
-    const course = await courseService.createCourse(req.body);
+    // Pass req.body and req.file (processed by Multer) to the service
+    const course = await courseService.createCourse(req.body, req.file);
     res.status(201).json(course);
   } catch (error) {
     console.error('CREATE_COURSE_ERROR:', error.message);
@@ -62,7 +62,8 @@ export const createCourse = async (req, res) => {
 export const updateCourse = async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
-    const course = await courseService.updateCourse(id, req.body);
+    // Pass req.body and the optional new file
+    const course = await courseService.updateCourse(id, req.body, req.file);
     res.json(course);
   } catch (error) {
     console.error('UPDATE_COURSE_ERROR:', error.message);
@@ -80,38 +81,25 @@ export const deleteCourse = async (req, res) => {
   }
 };
 
-// ── Image Upload ──────────────────────────────────────────────────────────────
-
-export const uploadCourseImage = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No image file uploaded.' });
-    }
-    
-    // Path matches your static route in index.js
-    const imageUrl = `/uploads/${req.file.filename}`;
-    
-    res.status(201).json({ 
-      success: true,
-      imageUrl: imageUrl 
-    });
-  } catch (error) {
-    console.error('UPLOAD_COURSE_IMAGE_ERROR:', error);
-    res.status(500).json({ error: 'Failed to upload image' });
-  }
-};
-
 // ── Course Enrollments ────────────────────────────────────────────────────────
 
 export const enrollInCourse = async (req, res) => {
   try {
     const courseId = parseInt(req.params.id, 10);
     const { studentName, email, phone } = req.body;
+
     if (!studentName || !email || !phone) {
       return res.status(400).json({ error: 'studentName, email, and phone are required.' });
     }
-    const enrollment = await courseService.createEnrollment(courseId, req.body);
-    res.status(201).json({ success: true, message: 'Enrolled successfully!', data: enrollment });
+
+    // req.files will contain our ageProof and paymentProof fields
+    const enrollment = await courseService.createEnrollment(courseId, req.body, req.files);
+    
+    res.status(201).json({ 
+      success: true, 
+      message: 'Enrolled successfully!', 
+      data: enrollment 
+    });
   } catch (error) {
     console.error('ENROLL_COURSE_ERROR:', error);
     res.status(500).json({ error: 'Failed to enroll in course' });
@@ -120,7 +108,6 @@ export const enrollInCourse = async (req, res) => {
 
 export const getAllEnrollments = async (req, res) => {
   try {
-    // Calling the new service function we just wrote
     const enrollments = await courseService.getAllEnrollments();
     res.json(enrollments);
   } catch (error) {

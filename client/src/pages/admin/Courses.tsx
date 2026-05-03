@@ -10,7 +10,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Upload, Loader2, X, Search, ChevronLeft, ChevronRight, BookOpen, Layers } from "lucide-react";
 import { AGE_GROUP_LABELS, AgeGroup } from "@/types";
-import { courseService } from "@/services/courseService";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +24,10 @@ const AdminCourses = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [formData, setFormData] = useState<any>({ ageGroup: "ADULTS" });
-  const [uploading, setUploading] = useState(false);
+  
+  // File upload state (Local preview and file reference)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Search, Filter & Pagination State
@@ -33,35 +35,28 @@ const AdminCourses = () => {
   const [activeTab, setActiveTab] = useState<string>("ALL");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const getImageUrl = (path: string) => path;
-
   // --- Logic Functions ---
 
   const handleMenuClick = (menuId: string) => {
     setActiveTab(menuId);
-    setCurrentPage(1); // Reset pagination when changing categories
+    setCurrentPage(1);
   };
 
-  // Reset to page 1 when search changes
   React.useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  // Combined Filtering Logic
   const filteredCourses = useMemo(() => {
     if (!courses) return [];
     return courses.filter((course) => {
       const matchesSearch = 
         course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         course.description?.toLowerCase().includes(searchTerm.toLowerCase());
-      
       const matchesTab = activeTab === "ALL" || course.ageGroup === activeTab;
-      
       return matchesSearch && matchesTab;
     });
   }, [courses, searchTerm, activeTab]);
 
-  // Pagination Logic
   const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
   const paginatedCourses = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -70,39 +65,57 @@ const AdminCourses = () => {
 
   const handleSave = async () => {
     try {
-      const processedData = {
-        ...formData,
-        features: typeof formData.features === 'string'
+      const data = new FormData();
+      
+      // Append basic fields
+      data.append("title", formData.title);
+      data.append("ageGroup", formData.ageGroup);
+      data.append("level", formData.level);
+      data.append("minAge", String(formData.minAge));
+      data.append("maxAge", String(formData.maxAge));
+      data.append("duration", formData.duration);
+      data.append("price", formData.price);
+      data.append("description", formData.description);
+
+      // Process features into JSON string for backend parsing
+      const featuresArray = typeof formData.features === 'string'
           ? formData.features.split(',').map((f: string) => f.trim()).filter((f: string) => f !== "")
-          : formData.features
-      };
+          : formData.features;
+      data.append("features", JSON.stringify(featuresArray));
+
+      // Append image if a new one was selected
+      if (selectedFile) {
+        data.append("image", selectedFile);
+      }
 
       if (selectedCourse) {
-        await updateCourse(selectedCourse.id, processedData);
+        await updateCourse(selectedCourse.id, data);
         toast({ title: "Updated successfully" });
       } else {
-        await addCourse(processedData);
+        await addCourse(data);
         toast({ title: "Created successfully" });
       }
-      setIsModalOpen(false);
+      
+      closeModal();
     } catch (err) {
       toast({ variant: "destructive", title: "Save Failed", description: "Check server logs." });
     }
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const url = await courseService.uploadImage(file);
-      setFormData((p: any) => ({ ...p, image: url }));
-      toast({ title: "Image uploaded" });
-    } catch {
-      toast({ variant: "destructive", title: "Upload failed" });
-    } finally {
-      setUploading(false);
+    if (file) {
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file)); // Create local preview
     }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedCourse(null);
+    setSelectedFile(null);
+    setPreviewUrl("");
+    setFormData({ ageGroup: "ADULTS" });
   };
 
   const set = (key: string, val: any) => setFormData((p: any) => ({ ...p, [key]: val }));
@@ -116,7 +129,7 @@ const AdminCourses = () => {
           <p className="text-muted-foreground">Create, edit and manage your academy programs.</p>
         </div>
         <Button
-          onClick={() => { setFormData({ ageGroup: "ADULTS" }); setSelectedCourse(null); setIsModalOpen(true); }}
+          onClick={() => { closeModal(); setIsModalOpen(true); }}
           className="shadow-lg hover:shadow-xl transition-all"
         >
           <Plus className="mr-2 h-4 w-4" /> Add New Course
@@ -192,7 +205,7 @@ const AdminCourses = () => {
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-lg bg-muted overflow-hidden flex-shrink-0">
                         {c.image ? (
-                          <img src={getImageUrl(c.image)} alt="" className="h-full w-full object-cover" />
+                          <img src={c.image} alt="" className="h-full w-full object-cover" />
                         ) : (
                           <div className="h-full w-full flex items-center justify-center bg-primary/10 text-primary">
                             <BookOpen className="h-5 w-5" />
@@ -229,12 +242,13 @@ const AdminCourses = () => {
                   ...c,
                   features: Array.isArray(c.features) ? c.features.join(", ") : c.features
                 });
+                setPreviewUrl(c.image || "");
                 setIsModalOpen(true);
               }}
               onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
             />
 
-            {/* Pagination Controls */}
+            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50/50">
                 <div className="text-sm text-muted-foreground">
@@ -257,7 +271,7 @@ const AdminCourses = () => {
       {/* Admin Form Modal */}
       <AdminFormModal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        onOpenChange={(val) => !val && closeModal()}
         title={selectedCourse ? "Update Course" : "Create New Course"}
         onSave={handleSave}
       >
@@ -268,7 +282,7 @@ const AdminCourses = () => {
               <Input
                 value={formData.title || ""}
                 onChange={(e) => set("title", e.target.value)}
-                placeholder="e.g. Chess Foundation for Beginners"
+                placeholder="e.g. Chess Foundation"
                 className="h-11"
               />
             </div>
@@ -326,7 +340,7 @@ const AdminCourses = () => {
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">Price / Fees</Label>
-                <Input value={formData.price || ""} onChange={(e) => set("price", e.target.value)} placeholder="e.g. ₹2000/mo" className="h-11" />
+                <Input value={formData.price || ""} onChange={(e) => set("price", e.target.value)} placeholder="e.g. ₹2000" className="h-11" />
               </div>
             </div>
 
@@ -337,21 +351,23 @@ const AdminCourses = () => {
 
             <div className="space-y-2">
               <Label className="text-sm font-semibold">Key Features (Comma separated)</Label>
-              <Textarea value={formData.features || ""} onChange={(e) => set("features", e.target.value)} placeholder="FIDE Certified Coach, Study Material..." className="min-h-[80px] resize-none" />
+              <Textarea value={formData.features || ""} onChange={(e) => set("features", e.target.value)} placeholder="FIDE Coach, Materials..." className="min-h-[80px] resize-none" />
             </div>
 
             <div className="pt-4 border-t">
               <Label className="text-sm font-semibold block mb-4">Course Banner</Label>
-              {formData.image ? (
+              {previewUrl ? (
                 <div className="relative aspect-video rounded-xl border overflow-hidden group">
-                  <img src={getImageUrl(formData.image)} className="w-full h-full object-cover" alt="" />
+                  <img src={previewUrl} className="w-full h-full object-cover" alt="Preview" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Button size="sm" variant="destructive" onClick={() => set("image", "")}><X className="h-4 w-4 mr-2" /> Remove</Button>
+                    <Button size="sm" variant="destructive" onClick={() => { setSelectedFile(null); setPreviewUrl(""); }}>
+                      <X className="h-4 w-4 mr-2" /> Remove
+                    </Button>
                   </div>
                 </div>
               ) : (
                 <button type="button" onClick={() => fileInputRef.current?.click()} className="w-full aspect-video rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors">
-                  {uploading ? <Loader2 className="animate-spin h-6 w-6" /> : <Upload className="h-6 w-6 text-muted-foreground" />}
+                  <Upload className="h-6 w-6 text-muted-foreground" />
                   <span className="text-xs font-medium">Click to upload banner</span>
                 </button>
               )}
@@ -368,11 +384,6 @@ const AdminCourses = () => {
         title="Delete Course?"
         description="This action cannot be undone."
       />
-      
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-      `}</style>
     </div>
   );
 };

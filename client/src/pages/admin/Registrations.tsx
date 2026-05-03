@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { 
   MessageCircle, Trophy, RefreshCw, MoreVertical,
-  CheckCircle, XCircle, Trash2, Mail, Phone, Eye, Calendar, User, UserCheck
+  CheckCircle, XCircle, Trash2, Mail, Phone, Eye, Calendar, User, UserCheck, BookOpen, Copy
 } from "lucide-react";
 import { useDemoAdmin } from "@/features/demo/hooks/useDemoRegistration";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,24 +14,24 @@ import {
   DropdownMenuTrigger, DropdownMenuSeparator 
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { toast } from "sonner";
 
-// ── Status Styles ────────────────────────────────────────────────────────────
+// ── 1. REFINED STATUS STYLES ──────────────────────────────────────────────────
 const statusStyles: Record<string, string> = {
-  PENDING:   "bg-amber-50 text-amber-600 border-amber-100",
-  APPROVED:  "bg-emerald-50 text-emerald-600 border-emerald-100",
-  CONFIRMED: "bg-blue-50 text-blue-600 border-blue-100",
-  CANCELLED: "bg-rose-50 text-rose-600 border-rose-100",
+  PENDING:   "bg-amber-50 text-amber-700 border-amber-200/50",
+  APPROVED:  "bg-emerald-50 text-emerald-700 border-emerald-200/50",
+  CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200/50",
+  CANCELLED: "bg-rose-50 text-rose-700 border-rose-200/50",
 };
 
 function StatusBadge({ status }: { status: string }) {
   return (
-    <span className={`px-2.5 py-1 rounded-full border text-[10px] font-black uppercase tracking-wider ${statusStyles[status] || "bg-slate-50 text-slate-500"}`}>
+    <span className={`px-3 py-1 rounded-full border text-[9px] font-bold uppercase tracking-[0.15em] ${statusStyles[status] || "bg-slate-50 text-slate-500"}`}>
       {status}
     </span>
   );
 }
 
-// ── Main Page Implementation ──────────────────────────────────────────────────
 export default function RegistrationsPage() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const qc = useQueryClient();
@@ -95,8 +95,8 @@ export default function RegistrationsPage() {
           </div>
         </td>
         <td className="p-4"><StatusBadge status={item.status} /></td>
-        <td className="p-4">
-          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <td className="p-4 text-right">
+          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             {item.status === "PENDING" && (
               <Button size="sm" className="h-8 bg-emerald-600 hover:bg-emerald-700 text-xs font-bold" 
                 onClick={() => handleAction(item.id, type, 'status', type === 'tournament' ? 'APPROVED' : 'CONFIRMED')}>
@@ -153,7 +153,7 @@ export default function RegistrationsPage() {
                 <th className="p-4">Date/Time</th>
                 <th className="p-4">Contact</th>
                 <th className="p-4">Status</th>
-                <th className="p-4 text-right">Actions</th>
+                <th className="p-4 text-right pr-6">Actions</th>
               </tr>
             </thead>
             <tbody className="text-sm">
@@ -171,58 +171,61 @@ export default function RegistrationsPage() {
         </div>
       </Tabs>
 
-      {/* ── Details Sheet (The "View" Action) ────────────────────────────────── */}
+      {/* ── 2. REFINED DETAILS SHEET ────────────────────────────────────────── */}
       <Sheet open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
-        <SheetContent className="sm:max-w-lg rounded-l-[3rem] p-0 border-none">
+        <SheetContent className="sm:max-w-lg rounded-l-[3rem] p-0 border-none shadow-2xl">
           {selectedItem && (
             <div className="h-full flex flex-col">
-              <div className="bg-slate-900 p-8 text-white">
-                <SheetHeader className="mb-6">
-                  <p className="text-orange-500 font-black text-[10px] uppercase tracking-[0.2em]">Full Application Data</p>
+              <div className="bg-slate-900 p-8 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
+                <SheetHeader className="mb-6 relative z-10">
+                  <p className="text-orange-500 font-black text-[10px] uppercase tracking-[0.2em]">Application Profile</p>
                   <SheetTitle className="text-3xl font-black text-white leading-tight">
                     {selectedItem.studentName}
                   </SheetTitle>
                 </SheetHeader>
-                <div className="flex gap-4">
-                  <div className="bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md">
-                    <p className="text-[9px] font-bold text-white/50 uppercase">Ref ID</p>
-                    <p className="text-sm font-mono font-bold tracking-tighter">{selectedItem.referenceId || selectedItem.id}</p>
+                <div className="flex gap-4 relative z-10">
+                  <div className="bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md border border-white/5">
+                    <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Ref ID</p>
+                    <p className="text-sm font-mono font-bold tracking-tighter">
+                      {selectedItem.referenceId?.slice(-10).toUpperCase() || selectedItem.id.toString().slice(-10).toUpperCase()}
+                    </p>
                   </div>
-                  <div className="bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md">
-                    <p className="text-[9px] font-bold text-white/50 uppercase">Status</p>
-                    <p className="text-sm font-bold">{selectedItem.status}</p>
+                  <div className="bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md border border-white/5">
+                    <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Status</p>
+                    <p className="text-sm font-bold text-orange-400">{selectedItem.status}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-8 space-y-8">
+              <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-white">
                 <section>
-                  <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest mb-4">Player Bio</h4>
+                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-4">Player Bio</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase">Gender</p>
-                      <p className="font-bold text-slate-900">{selectedItem.gender}</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Gender</p>
+                      <p className="font-bold text-slate-900">{selectedItem.gender || 'Not Specified'}</p>
                     </div>
                     <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase">DOB</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">DOB</p>
                       <p className="font-bold text-slate-900">{selectedItem.dob ? format(new Date(selectedItem.dob), "PPP") : 'N/A'}</p>
                     </div>
                     <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 col-span-2">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase">Address</p>
-                      <p className="font-bold text-slate-900 text-xs">{selectedItem.address || 'N/A'}</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Address</p>
+                      <p className="font-bold text-slate-900 text-xs leading-relaxed">{selectedItem.address || 'N/A'}</p>
                     </div>
                   </div>
                 </section>
 
                 {selectedItem.type === 'tournament' && (
                   <section>
-                    <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest mb-4">FIDE Credentials</h4>
+                    <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-4">FIDE Credentials</h4>
                     <div className="flex gap-4">
-                      <div className="flex-1 bg-amber-50 p-4 rounded-2xl border border-amber-100">
+                      <div className="flex-1 bg-amber-50/50 p-4 rounded-2xl border border-amber-100">
                         <p className="text-[9px] font-bold text-amber-600/60 uppercase tracking-tighter">FIDE ID</p>
                         <p className="text-xl font-black text-amber-700">{selectedItem.fideId || 'NA'}</p>
                       </div>
-                      <div className="flex-1 bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                      <div className="flex-1 bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
                         <p className="text-[9px] font-bold text-blue-600/60 uppercase tracking-tighter">Rating</p>
                         <p className="text-xl font-black text-blue-700">{selectedItem.fideRating || '0'}</p>
                       </div>
@@ -230,19 +233,22 @@ export default function RegistrationsPage() {
                   </section>
                 )}
 
+                {/* ── 3. REFINED VERIFICATION DOCUMENTS ───────────────────── */}
                 <section>
-                  <h4 className="text-[11px] font-black uppercase text-slate-400 tracking-widest mb-4">Verification Documents</h4>
+                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-4">Verification Documents</h4>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="group relative aspect-video bg-slate-100 rounded-2xl overflow-hidden border border-slate-200">
+                    <div className="group relative aspect-[4/3] bg-slate-100 rounded-2xl overflow-hidden border-2 border-slate-100 transition-all hover:border-orange-200">
                       <img src={selectedItem.ageProofUrl || '/placeholder-doc.png'} className="w-full h-full object-cover" alt="Age Proof" />
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                         <Button variant="secondary" size="sm" className="font-bold text-[10px]" onClick={() => window.open(selectedItem.ageProofUrl)}>View Age Proof</Button>
+                      <div className="absolute inset-0 bg-slate-900/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px]">
+                         <p className="text-[10px] font-bold text-white mb-2 uppercase tracking-widest">Age Verification</p>
+                         <Button variant="secondary" size="sm" className="h-7 text-[9px] font-black uppercase tracking-tight" onClick={() => window.open(selectedItem.ageProofUrl)}>View Original</Button>
                       </div>
                     </div>
-                    <div className="group relative aspect-video bg-slate-100 rounded-2xl overflow-hidden border border-slate-200">
+                    <div className="group relative aspect-[4/3] bg-slate-100 rounded-2xl overflow-hidden border-2 border-slate-100 transition-all hover:border-orange-200">
                       <img src={selectedItem.paymentProofUrl || '/placeholder-payment.png'} className="w-full h-full object-cover" alt="Payment Proof" />
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                         <Button variant="secondary" size="sm" className="font-bold text-[10px]" onClick={() => window.open(selectedItem.paymentProofUrl)}>View Payment</Button>
+                      <div className="absolute inset-0 bg-slate-900/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px]">
+                         <p className="text-[10px] font-bold text-white mb-2 uppercase tracking-widest">Fee Confirmation</p>
+                         <Button variant="secondary" size="sm" className="h-7 text-[9px] font-black uppercase tracking-tight" onClick={() => window.open(selectedItem.paymentProofUrl)}>View Receipt</Button>
                       </div>
                     </div>
                   </div>

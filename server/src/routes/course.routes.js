@@ -20,23 +20,31 @@ const router = express.Router();
 
 // ── Multer Configuration ─────────────────────────────────────────────────────
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
+  destination: (req, file, cb) => {
+    // Separate folders for courses vs student docs for better organization
+    const folder = file.fieldname === 'image' ? 'uploads/courses/' : 'uploads/enrollments/';
+    cb(null, folder);
+  },
   filename: (req, file, cb) => {
-    // Unique filenames prevent cache issues and overwrites
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|webp|gif/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = allowedTypes.test(file.mimetype);
+  // Allow PDFs and Images for proofs, but only images for course banners
+  const isImage = /jpeg|jpg|png|webp|gif/.test(path.extname(file.originalname).toLowerCase());
+  const isDoc = /pdf/.test(path.extname(file.originalname).toLowerCase());
 
-  if (extname && mimetype) {
-    return cb(null, true);
+  if (file.fieldname === 'image') {
+    return isImage ? cb(null, true) : cb(new Error('Course banner must be an image!'), false);
+  }
+  
+  // For enrollments (ageProof/paymentProof), allow images and PDFs
+  if (isImage || isDoc) {
+    cb(null, true);
   } else {
-    cb(new Error('Only images (jpg, png, webp) are allowed!'), false);
+    cb(new Error('Only images and PDFs are allowed for documents!'), false);
   }
 };
 
@@ -46,22 +54,31 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-// Middleware to handle Multer errors gracefully
-const handleUpload = (req, res, next) => {
+// ── Specialized Middlewares ──────────────────────────────────────────────────
+
+// Handles Course Banner (Single Image)
+const handleCourseUpload = (req, res, next) => {
   const uploadSingle = upload.single('image');
-  
   uploadSingle(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      return res.status(400).json({ error: `Upload error: ${err.message}` });
-    } else if (err) {
-      return res.status(400).json({ error: err.message });
-    }
+    if (err) return res.status(400).json({ error: err.message });
     next();
   });
 };
 
-// ── Enrollment Management (For Admin Dashboard) ──────────────────────────────
-// These must be ABOVE the /:id route
+// Handles Enrollment Proofs (Multiple Files)
+const handleEnrollmentUpload = (req, res, next) => {
+  const uploadFields = upload.fields([
+    { name: 'ageProof', maxCount: 1 },
+    { name: 'paymentProof', maxCount: 1 }
+  ]);
+
+  uploadFields(req, res, (err) => {
+    if (err) return res.status(400).json({ error: `Document upload error: ${err.message}` });
+    next();
+  });
+};
+
+// ── Enrollment Management (Admin) ─────────────────────────────────────────────
 router.get('/enrollments', verifyAdmin, getAllEnrollments);
 router.patch('/enrollments/:enrollmentId', verifyAdmin, updateEnrollmentStatus);
 router.delete('/enrollments/:enrollmentId', verifyAdmin, deleteEnrollment);
@@ -70,12 +87,17 @@ router.delete('/enrollments/:enrollmentId', verifyAdmin, deleteEnrollment);
 router.get('/', getAllCourses);
 router.get('/age-group/:ageGroup', getCoursesByAgeGroup);
 router.get('/:id', getCourseById);
-router.post('/:id/enroll', enrollInCourse);
+
+// Update: Public Enrollment route now handles files
+router.post('/:id/enroll', handleEnrollmentUpload, enrollInCourse);
 
 // ── Admin Course CRUD ────────────────────────────────────────────────────────
-router.post('/upload-image', verifyAdmin, handleUpload, uploadCourseImage);
-router.post('/', verifyAdmin, createCourse);
-router.put('/:id', verifyAdmin, updateCourse);
+// We use handleCourseUpload for POST and PUT so the image is processed alongside the data
+router.post('/', verifyAdmin, handleCourseUpload, createCourse);
+router.put('/:id', verifyAdmin, handleCourseUpload, updateCourse);
 router.delete('/:id', verifyAdmin, deleteCourse);
+
+// Legacy/Secondary endpoint
+router.post('/upload-image', verifyAdmin, handleCourseUpload, uploadCourseImage);
 
 export default router;
