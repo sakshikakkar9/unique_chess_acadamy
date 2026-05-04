@@ -64,6 +64,7 @@ const AdminCourses = () => {
       const data = new FormData();
       // Required Schema Fields
       data.append("title", formData.title);
+      data.append("description", formData.description || "");
       data.append("ageGroup", formData.ageGroup);
       data.append("skillLevel", formData.skillLevel);
       data.append("classTime", formData.classTime);
@@ -179,6 +180,7 @@ const AdminCourses = () => {
             <div className="space-y-2"><Label>Course Title</Label><Input value={formData.title || ""} onChange={(e) => setFormData({...formData, title: e.target.value})} /></div>
             <div className="space-y-2"><Label>Fee (Amount in ₹)</Label><Input type="number" value={formData.fee || ""} onChange={(e) => setFormData({...formData, fee: Number(e.target.value)})} /></div>
           </div>
+          <div className="space-y-2"><Label>Description</Label><Textarea value={formData.description || ""} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Describe the course curriculum..." /></div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">

@@ -38,6 +38,7 @@ export const createCourse = async (data) => {
   return await prisma.course.create({
     data: {
       title: data.title || "Untitled Course",
+      description: data.description || "",
       ageGroup: data.ageGroup || 'ADULTS',
       skillLevel: data.skillLevel || "BEGINNER",
       duration: data.duration || "N/A",
@@ -61,6 +62,7 @@ export const updateCourse = async (id, data) => {
 
   const updatePayload = {
     title: data.title,
+    description: data.description,
     ageGroup: data.ageGroup,
     skillLevel: data.skillLevel,
     duration: data.duration,

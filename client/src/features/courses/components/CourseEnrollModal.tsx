@@ -170,9 +170,20 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
               </div>
 
               <div className="p-8 space-y-8">
+                {course.description && (
+                  <div>
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                      <Info className="h-3 w-3 text-blue-500" /> Description
+                    </h4>
+                    <p className="text-[13px] text-slate-600 leading-relaxed italic">
+                      "{course.description}"
+                    </p>
+                  </div>
+                )}
+
                 <div>
                   <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <Info className="h-3 w-3 text-blue-500" /> Program Details
+                    <Layers className="h-3 w-3 text-blue-500" /> Program Summary
                   </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">

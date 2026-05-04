@@ -58,6 +58,7 @@ export const createCourse = async (req, res) => {
 
     const mappedData = {
       title,
+      description: req.body.description || '',
       ageGroup: ageGroup || 'CHILDREN',
       skillLevel: (skillLevel || level || 'BEGINNER').toUpperCase(),
       duration: duration || '',
@@ -95,6 +96,7 @@ export const updateCourse = async (req, res) => {
 
     const updateData = {
       ...req.body,
+      description: req.body.description,
       skillLevel: (req.body.skillLevel || req.body.level) ? (req.body.skillLevel || req.body.level).toUpperCase() : undefined,
       fee: req.body.fee || req.body.price,
       bannerUrl: imageUrl,
