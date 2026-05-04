@@ -32,7 +32,8 @@ interface FormState {
   fideRating: string;
   address: string;
   discoverySource: string;
-  message: string;
+  experienceLevel: string;
+  transactionId: string;
 }
 
 const EMPTY: FormState = {
@@ -46,7 +47,8 @@ const EMPTY: FormState = {
   fideRating: "0",
   address: "",
   discoverySource: "Social Media",
-  message: "",
+  experienceLevel: "BEGINNER",
+  transactionId: "",
 };
 
 export default function CourseEnrollModal({ course, open, onOpenChange }: CourseEnrollModalProps) {
@@ -197,7 +199,32 @@ export default function CourseEnrollModal({ course, open, onOpenChange }: Course
               </div>
             </div>
 
-            {/* Discovery Row (Mode Radio Buttons Removed) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Skill Level *</Label>
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={form.experienceLevel}
+                  onChange={(e) => set("experienceLevel", e.target.value)}
+                >
+                  <option value="BEGINNER">Beginner</option>
+                  <option value="INTERMEDIATE">Intermediate</option>
+                  <option value="ADVANCED">Advanced</option>
+                  <option value="GRANDMASTER">Expert</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label>Transaction ID *</Label>
+                <Input
+                  value={form.transactionId}
+                  onChange={(e) => set("transactionId", e.target.value)}
+                  required
+                  placeholder="UPI Reference No."
+                />
+              </div>
+            </div>
+
+            {/* Discovery Row */}
             <div className="space-y-2">
               <Label>How did you find us?</Label>
               <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"

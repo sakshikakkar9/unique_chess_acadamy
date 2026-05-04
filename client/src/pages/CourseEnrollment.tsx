@@ -301,6 +301,28 @@ export default function CourseEnrollmentPage() {
                       </div>
                     </div>
 
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">FIDE ID (Optional)</Label>
+                        <Input
+                          value={form.fideId}
+                          onChange={(e) => set("fideId", e.target.value)}
+                          placeholder="FIDE ID"
+                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">FIDE Rating (Optional)</Label>
+                        <Input
+                          type="number"
+                          value={form.fideRating}
+                          onChange={(e) => set("fideRating", e.target.value)}
+                          placeholder="0"
+                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
+                        />
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
                       <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Full Address *</Label>
                       <Textarea
