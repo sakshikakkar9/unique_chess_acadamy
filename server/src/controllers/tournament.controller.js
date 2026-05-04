@@ -60,10 +60,18 @@ export const registerForTournament = async (req, res) => {
 export const createTournament = async (req, res) => {
   try {
     let imageUrl = req.body.imageUrl;
-    if (req.file) {
-      imageUrl = await uploadToCloudinary(req.file.buffer, "tournaments");
+    let scannerUrl = req.body.scannerUrl;
+
+    if (req.files) {
+      if (req.files['image']?.[0]) {
+        imageUrl = await uploadToCloudinary(req.files['image'][0].buffer, "tournaments");
+      }
+      if (req.files['scanner']?.[0]) {
+        scannerUrl = await uploadToCloudinary(req.files['scanner'][0].buffer, "tournaments/scanners");
+      }
     }
-    const data = await tournamentService.createTournament({ ...req.body, imageUrl });
+
+    const data = await tournamentService.createTournament({ ...req.body, imageUrl, scannerUrl });
     res.status(201).json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -74,10 +82,18 @@ export const createTournament = async (req, res) => {
 export const updateTournament = async (req, res) => {
   try {
     let imageUrl = req.body.imageUrl;
-    if (req.file) {
-      imageUrl = await uploadToCloudinary(req.file.buffer, "tournaments");
+    let scannerUrl = req.body.scannerUrl;
+
+    if (req.files) {
+      if (req.files['image']?.[0]) {
+        imageUrl = await uploadToCloudinary(req.files['image'][0].buffer, "tournaments");
+      }
+      if (req.files['scanner']?.[0]) {
+        scannerUrl = await uploadToCloudinary(req.files['scanner'][0].buffer, "tournaments/scanners");
+      }
     }
-    const data = await tournamentService.updateTournament(req.params.id, { ...req.body, imageUrl });
+
+    const data = await tournamentService.updateTournament(req.params.id, { ...req.body, imageUrl, scannerUrl });
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });

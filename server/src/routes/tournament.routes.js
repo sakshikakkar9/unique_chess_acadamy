@@ -31,8 +31,16 @@ router.patch('/admin/registrations/:registrationId', tournamentController.update
 router.delete('/admin/registrations/:registrationId', tournamentController.deleteRegistration);
 
 // --- Admin (Tournament Management) ---
-router.post('/admin/create', upload.single('image'), tournamentController.createTournament);
-router.put('/admin/update/:id', upload.single('image'), tournamentController.updateTournament);
+router.post(
+  '/admin/create',
+  upload.fields([{ name: 'image', maxCount: 1 }, { name: 'scanner', maxCount: 1 }]),
+  tournamentController.createTournament
+);
+router.put(
+  '/admin/update/:id',
+  upload.fields([{ name: 'image', maxCount: 1 }, { name: 'scanner', maxCount: 1 }]),
+  tournamentController.updateTournament
+);
 router.delete('/admin/delete/:id', tournamentController.deleteTournament);
 
 export default router;

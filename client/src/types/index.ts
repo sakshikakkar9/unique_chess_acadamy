@@ -38,11 +38,20 @@ export interface Course {
 export interface Tournament {
   id: number;
   title: string;
-  location?: string;
-  date: string;
-  entryFee?: number;
   description?: string;
+  startDate: string;
+  endDate?: string;
+  location?: string;
+  category?: string;
+  totalPrizePool?: string;
+  entryFee: number;
+  discountDetails?: string;
+  brochureUrl?: string;
+  otherDetails?: string;
+  contactDetails?: string;
   status: "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED";
+  imageUrl?: string;
+  scannerUrl?: string;
   results?: TournamentResult[];
   registrations?: Registration[];
   createdAt?: string;
@@ -60,19 +69,22 @@ export interface TournamentResult {
 
 export interface Registration {
   id: string;
-  tournamentId: number; // Changed to number to match Tournament.id
+  referenceId: string;
   studentName: string;
+  gender: string;
+  category?: string;
+  dob: string | Date;
   email?: string;
   phone: string;
-  gender: 'MALE' | 'FEMALE' | 'OTHER'; 
-  dob: string | Date;
+  fideId: string;
+  fideRating: number;
   address: string;
-  fideId?: string;
-  fideRating?: number;
   ageProofUrl: string;
   paymentProofUrl: string;
-  referenceId: string;
-  status: 'PENDING' | 'APPROVED' | 'CANCELLED' | 'COMPLETED';
+  discoverySource: string;
+  transactionId?: string;
+  tournamentId: number;
+  status: 'PENDING' | 'APPROVED' | 'CANCELLED' | 'COMPLETED' | 'CONFIRMED' | 'REJECTED';
   createdAt: string;
 
   // ✅ Add this so the Admin Page can show the Tournament Title
