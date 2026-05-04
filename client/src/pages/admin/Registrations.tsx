@@ -22,6 +22,8 @@ const statusStyles: Record<string, string> = {
   APPROVED:  "bg-emerald-50 text-emerald-700 border-emerald-200/50",
   CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200/50",
   CANCELLED: "bg-rose-50 text-rose-700 border-rose-200/50",
+  REJECTED:  "bg-rose-50 text-rose-700 border-rose-200/50",
+  COMPLETED: "bg-purple-50 text-purple-700 border-purple-200/50",
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -99,13 +101,13 @@ export default function RegistrationsPage() {
           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             {item.status === "PENDING" && (
               <Button size="sm" className="h-8 bg-emerald-600 hover:bg-emerald-700 text-xs font-bold" 
-                onClick={() => handleAction(item.id, type, 'status', type === 'tournament' ? 'APPROVED' : 'CONFIRMED')}>
+                onClick={() => handleAction(item.id, type, 'status', type === 'course' ? 'CONFIRMED' : 'APPROVED')}>
                 Approve
               </Button>
             )}
             <Button size="sm" variant="outline" className="h-8 text-xs font-bold" 
-              onClick={() => handleAction(item.id, type, 'status', 'CANCELLED')}>
-              Cancel
+              onClick={() => handleAction(item.id, type, 'status', type === 'course' ? 'REJECTED' : 'CANCELLED')}>
+              {type === 'course' ? 'Reject' : 'Cancel'}
             </Button>
 
             <DropdownMenu>

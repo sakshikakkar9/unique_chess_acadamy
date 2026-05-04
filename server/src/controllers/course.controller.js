@@ -55,8 +55,8 @@ export const createCourse = async (req, res) => {
       duration,
       // 1. Force Float for Fee
       fee: parseFloat(fee), 
-      // 2. Handle potential string-to-array conversion for days
-      days: Array.isArray(days) ? days : days.split(',').map(d => d.trim()),
+      // 2. Pass days as is (service handles string/array)
+      days: days,
       // 3. Match Schema Enums (Upper Case)
       skillLevel: skillLevel ? skillLevel.toUpperCase() : "BEGINNER",
       mode: mode ? mode.toUpperCase() : "ONLINE",
@@ -76,7 +76,6 @@ export const updateCourse = async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Spread body but manually override the strict types
     const updateData = {
       ...req.body,
       // Ensure numeric types
@@ -84,11 +83,13 @@ export const updateCourse = async (req, res) => {
       // Ensure Enum types
       skillLevel: req.body.skillLevel ? req.body.skillLevel.toUpperCase() : undefined,
       mode: req.body.mode ? req.body.mode.toUpperCase() : undefined,
-      // Handle array updates
-      days: req.body.days ? (Array.isArray(req.body.days) ? req.body.days : req.body.days.split(',')) : undefined
+      // Pass raw days
+      days: req.body.days,
+      custom_banner_url: req.files?.image ? await uploadToCloudinary(req.files.image[0].buffer) : undefined,
+      scannerUrl: req.files?.scanner ? await uploadToCloudinary(req.files.scanner[0].buffer) : undefined,
     };
 
-    // Clean up nulls so we don't accidentally overwrite with undefined
+    // Clean up undefined so we don't accidentally overwrite with undefined
     Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
 
     const updated = await courseService.updateCourse(id, updateData);

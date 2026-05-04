@@ -145,7 +145,7 @@ export const createEnrollment = async (courseId, data, proofs) => {
         ageProofUrl: ageProofUrl,
         paymentProofUrl: paymentProofUrl,
         transactionId: data.transactionId || "",
-        experienceLevel: data.experienceLevel || "BEGINNER",
+        experienceLevel: data.experienceLevel || data.skillLevel || "BEGINNER",
         status: 'PENDING',
       },
     });
