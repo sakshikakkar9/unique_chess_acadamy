@@ -23,6 +23,13 @@ export interface Course {
   level: string;
   duration: string;
   description?: string;
+  bannerUrl?: string;
+  scannerUrl?: string;
+  fee: number;
+  mode: string;
+  classTime: string;
+  days: string[];
+  contactDetails: string;
   image?: string;
   price?: string;
   features?: string[];
@@ -85,9 +92,20 @@ export interface CourseEnrollment {
   email: string;
   phone: string;
   mode: "ONLINE" | "OFFLINE";
-  courseId: number;
-  course?: { id: number; title: string; ageGroup: AgeGroup };
+  courseId: string;
+  course?: { id: string; title: string; ageGroup: AgeGroup };
   message?: string;
+  gender: string;
+  dob: string;
+  address: string;
+  fideId?: string;
+  fideRating?: number;
+  category?: string;
+  discoverySource: string;
+  transactionId?: string;
+  experienceLevel?: string;
+  ageProofUrl?: string;
+  paymentProofUrl?: string;
   status: EnrollmentStatus;
   createdAt?: string;
 }

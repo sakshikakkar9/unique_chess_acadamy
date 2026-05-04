@@ -14,6 +14,7 @@ import { fadeIn, stagger, fadeUp } from "@/components/shared/motion";
 const AGE_GROUP_ORDER: AgeGroup[] = ["CHILDREN", "TEENAGERS", "ADULTS"];
 const ITEMS_PER_PAGE = 6;
 const HERO_IMAGE = "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2000&auto=format&fit=crop"; 
+const DEFAULT_COURSE_IMAGE = "https://images.unsplash.com/photo-1528819622765-d6bcf132f793?q=80&w=1000&auto=format&fit=crop";
 
 export default function CoursesPage() {
   const { courses, isLoading } = useAdminCourses();
@@ -85,7 +86,7 @@ export default function CoursesPage() {
               {paginatedCourses.map((course) => (
                 <motion.div key={course.id} variants={fadeUp} initial="hidden" animate="visible" className="group bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all flex flex-col h-full">
                   <div className="relative h-52 w-full bg-slate-100 overflow-hidden">
-                    <img src={course.bannerUrl || HERO_IMAGE} alt={course.title} className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-110" />
+                    <img src={course.bannerUrl || DEFAULT_COURSE_IMAGE} alt={course.title} className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-110" />
                     <div className="absolute top-4 left-4 flex gap-2">
                       <span className="px-3 py-1 bg-white/95 backdrop-blur-sm rounded-lg text-[10px] font-black text-blue-600 shadow-sm uppercase">
                         {course.mode}

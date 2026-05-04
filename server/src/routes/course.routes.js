@@ -44,12 +44,14 @@ const upload = multer({
 
 // ── Specialized Middlewares ──────────────────────────────────────────────────
 
-// UPDATED: Now checks for 'banner' OR 'image' to be safe
+// UPDATED: Now checks for 'banner' OR 'image' AND 'scanner'
 const handleCourseUpload = (req, res, next) => {
-  // We use .fields if we want to be flexible, or .single if we are strict.
-  // I'll stick to .single but ensure the frontend key matches.
-  const uploadSingle = upload.single('image'); 
-  uploadSingle(req, res, (err) => {
+  const uploadFields = upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'scanner', maxCount: 1 }
+  ]);
+
+  uploadFields(req, res, (err) => {
     if (err) return res.status(400).json({ error: err.message });
     next();
   });

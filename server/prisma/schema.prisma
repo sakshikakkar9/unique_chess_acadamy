@@ -153,6 +153,7 @@ model Course {
   contactDetails String
   mode           ClassMode          @default(ONLINE)
   bannerUrl      String?            // URL from storage bucket
+  scannerUrl     String?            // URL for QR Payment Scanner
   
   enrollments    CourseEnrollment[] 
 
@@ -184,6 +185,8 @@ model CourseEnrollment {
   
   // Discovery
   discoverySource  String   
+  transactionId    String?
+  experienceLevel  String?
   
   status          String   @default("PENDING")
   courseId        String   
