@@ -12,32 +12,33 @@ export const courseService = {
    * Converts JSON to FormData to support the banner image upload.
    */
   create: async (data: any): Promise<Course> => {
-    const formData = new FormData();
-
-    Object.keys(data).forEach((key) => {
-      // Skip the banner and scanner file keys so we can append them specially
-      if (key !== "image" && key !== "banner" && key !== "scanner" && key !== "scannerUrl" && data[key] !== undefined) {
-        // Arrays (like days) need to be stringified for FormData
-        if (Array.isArray(data[key])) {
-          formData.append(key, JSON.stringify(data[key]));
-        } else {
-          formData.append(key, data[key]);
+    let payload;
+    if (data instanceof FormData) {
+      payload = data;
+    } else {
+      payload = new FormData();
+      Object.keys(data).forEach((key) => {
+        if (key !== "image" && key !== "banner" && key !== "scanner" && key !== "scannerUrl" && data[key] !== undefined) {
+          if (Array.isArray(data[key])) {
+            payload.append(key, JSON.stringify(data[key]));
+          } else {
+            payload.append(key, data[key]);
+          }
         }
+      });
+
+      const imageFile = data.image || data.banner || data.custom_banner_url;
+      if (imageFile instanceof File) {
+        payload.append("image", imageFile);
       }
-    });
 
-    // Check for the files
-    const imageFile = data.image || data.banner || data.custom_banner_url;
-    if (imageFile instanceof File) {
-      formData.append("image", imageFile);
+      const scannerFile = data.scanner || data.scannerUrl;
+      if (scannerFile instanceof File) {
+        payload.append("scanner", scannerFile);
+      }
     }
 
-    const scannerFile = data.scanner || data.scannerUrl;
-    if (scannerFile instanceof File) {
-      formData.append("scanner", scannerFile);
-    }
-
-    const res = await api.post("/courses", formData, {
+    const res = await api.post("/courses", payload, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return res.data;
@@ -48,29 +49,33 @@ export const courseService = {
    * Uses FormData to allow updating the course details and banner image.
    */
   update: async (id: number | string, data: any): Promise<Course> => {
-    const formData = new FormData();
-
-    Object.keys(data).forEach((key) => {
-      if (key !== "image" && key !== "banner" && key !== "scanner" && key !== "scannerUrl" && data[key] !== undefined) {
-        if (Array.isArray(data[key])) {
-          formData.append(key, JSON.stringify(data[key]));
-        } else {
-          formData.append(key, data[key]);
+    let payload;
+    if (data instanceof FormData) {
+      payload = data;
+    } else {
+      payload = new FormData();
+      Object.keys(data).forEach((key) => {
+        if (key !== "image" && key !== "banner" && key !== "scanner" && key !== "scannerUrl" && data[key] !== undefined) {
+          if (Array.isArray(data[key])) {
+            payload.append(key, JSON.stringify(data[key]));
+          } else {
+            payload.append(key, data[key]);
+          }
         }
+      });
+
+      const imageFile = data.image || data.banner || data.custom_banner_url;
+      if (imageFile instanceof File) {
+        payload.append("image", imageFile);
       }
-    });
 
-    const imageFile = data.image || data.banner || data.custom_banner_url;
-    if (imageFile instanceof File) {
-      formData.append("image", imageFile);
+      const scannerFile = data.scanner || data.scannerUrl;
+      if (scannerFile instanceof File) {
+        payload.append("scanner", scannerFile);
+      }
     }
 
-    const scannerFile = data.scanner || data.scannerUrl;
-    if (scannerFile instanceof File) {
-      formData.append("scanner", scannerFile);
-    }
-
-    const res = await api.put(`/courses/${id}`, formData, {
+    const res = await api.put(`/courses/${id}`, payload, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return res.data;
