@@ -152,7 +152,8 @@ model Course {
   days           String[]           // e.g., ["Monday", "Wednesday"]
   contactDetails String
   mode           ClassMode          @default(ONLINE)
-  bannerUrl      String?            // URL from storage bucket
+  custom_banner_url String?            // URL from storage bucket
+  scannerUrl     String?            // New: QR Payment image
   
   enrollments    CourseEnrollment[] 
 
@@ -185,6 +186,9 @@ model CourseEnrollment {
   // Discovery
   discoverySource  String   
   
+  transactionId   String?
+  experienceLevel String?
+
   status          String   @default("PENDING")
   courseId        String   
   course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)

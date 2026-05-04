@@ -42,11 +42,18 @@ export const getCourseById = async (req, res) => {
 
 export const createCourse = async (req, res) => {
   try {
-    const { title, ageGroup, level, duration, price, classTime, contactDetails, mode, days } = req.body;
+    const { title, ageGroup, level, duration, price, fee, classTime, contactDetails, mode, days } = req.body;
 
     let imageUrl = '';
-    if (req.file) {
-      imageUrl = await uploadToCloudinary(req.file.buffer, "courses");
+    let scannerUrl = '';
+
+    if (req.files) {
+      if (req.files.image && req.files.image[0]) {
+        imageUrl = await uploadToCloudinary(req.files.image[0].buffer, "courses");
+      }
+      if (req.files.scanner && req.files.scanner[0]) {
+        scannerUrl = await uploadToCloudinary(req.files.scanner[0].buffer, "courses");
+      }
     }
 
     const mappedData = {
@@ -54,12 +61,13 @@ export const createCourse = async (req, res) => {
       ageGroup: ageGroup || 'CHILDREN',
       skillLevel: level ? level.toUpperCase() : 'BEGINNER',
       duration: duration || '',
-      fee: price,
+      fee: fee || price,
       classTime: classTime || "TBD",
       contactDetails: contactDetails || "Unique Chess Academy",
       mode: mode || "ONLINE",
       days: days, 
-      bannerUrl: imageUrl,
+      custom_banner_url: imageUrl,
+      scannerUrl: scannerUrl,
     };
 
     const course = await courseService.createCourse(mappedData);
@@ -74,16 +82,23 @@ export const updateCourse = async (req, res) => {
   try {
     const { id } = req.params;
     let imageUrl = undefined;
+    let scannerUrl = undefined;
 
-    if (req.file) {
-      imageUrl = await uploadToCloudinary(req.file.buffer, "courses");
+    if (req.files) {
+      if (req.files.image && req.files.image[0]) {
+        imageUrl = await uploadToCloudinary(req.files.image[0].buffer, "courses");
+      }
+      if (req.files.scanner && req.files.scanner[0]) {
+        scannerUrl = await uploadToCloudinary(req.files.scanner[0].buffer, "courses");
+      }
     }
 
     const updateData = {
       ...req.body,
       skillLevel: req.body.level ? req.body.level.toUpperCase() : undefined,
-      fee: req.body.price,
-      bannerUrl: imageUrl
+      fee: req.body.fee || req.body.price,
+      custom_banner_url: imageUrl,
+      scannerUrl: scannerUrl
     };
 
     const course = await courseService.updateCourse(id, updateData);

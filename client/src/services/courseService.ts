@@ -15,8 +15,8 @@ export const courseService = {
     const formData = new FormData();
 
     Object.keys(data).forEach((key) => {
-      // Skip the banner file key so we can append it specially
-      if (key !== "image" && key !== "bannerUrl" && key !== "banner" && data[key] !== undefined) {
+      // Skip the banner and scanner file keys so we can append them specially
+      if (key !== "image" && key !== "banner" && key !== "scanner" && key !== "scannerUrl" && data[key] !== undefined) {
         // Arrays (like days) need to be stringified for FormData
         if (Array.isArray(data[key])) {
           formData.append(key, JSON.stringify(data[key]));
@@ -26,10 +26,15 @@ export const courseService = {
       }
     });
 
-    // Check for the file in common state keys ('image' or 'bannerUrl')
-    const imageFile = data.image || data.bannerUrl || data.banner;
+    // Check for the files
+    const imageFile = data.image || data.banner || data.custom_banner_url;
     if (imageFile instanceof File) {
       formData.append("image", imageFile);
+    }
+
+    const scannerFile = data.scanner || data.scannerUrl;
+    if (scannerFile instanceof File) {
+      formData.append("scanner", scannerFile);
     }
 
     const res = await api.post("/courses", formData, {
@@ -46,7 +51,7 @@ export const courseService = {
     const formData = new FormData();
 
     Object.keys(data).forEach((key) => {
-      if (key !== "image" && key !== "bannerUrl" && key !== "banner" && data[key] !== undefined) {
+      if (key !== "image" && key !== "banner" && key !== "scanner" && key !== "scannerUrl" && data[key] !== undefined) {
         if (Array.isArray(data[key])) {
           formData.append(key, JSON.stringify(data[key]));
         } else {
@@ -55,9 +60,14 @@ export const courseService = {
       }
     });
 
-    const imageFile = data.image || data.bannerUrl || data.banner;
+    const imageFile = data.image || data.banner || data.custom_banner_url;
     if (imageFile instanceof File) {
       formData.append("image", imageFile);
+    }
+
+    const scannerFile = data.scanner || data.scannerUrl;
+    if (scannerFile instanceof File) {
+      formData.append("scanner", scannerFile);
     }
 
     const res = await api.put(`/courses/${id}`, formData, {
