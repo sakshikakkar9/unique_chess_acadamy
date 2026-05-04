@@ -210,6 +210,14 @@ export default function RegistrationsPage() {
                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">DOB</p>
                       <p className="font-bold text-slate-900">{selectedItem.dob ? format(new Date(selectedItem.dob), "PPP") : 'N/A'}</p>
                     </div>
+                    <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Phone</p>
+                      <p className="font-bold text-slate-900 text-xs">{selectedItem.phone || 'N/A'}</p>
+                    </div>
+                    <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Email</p>
+                      <p className="font-bold text-slate-900 text-xs truncate">{selectedItem.email || 'N/A'}</p>
+                    </div>
                     <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 col-span-2">
                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Address</p>
                       <p className="font-bold text-slate-900 text-xs leading-relaxed">{selectedItem.address || 'N/A'}</p>
@@ -217,17 +225,35 @@ export default function RegistrationsPage() {
                   </div>
                 </section>
 
-                {selectedItem.type === 'tournament' && (
+                {(selectedItem.type === 'tournament' || selectedItem.type === 'course') && (
                   <section>
-                    <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-4">FIDE Credentials</h4>
-                    <div className="flex gap-4">
-                      <div className="flex-1 bg-amber-50/50 p-4 rounded-2xl border border-amber-100">
+                    <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-4">Credentials & Enrollment</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-100">
                         <p className="text-[9px] font-bold text-amber-600/60 uppercase tracking-tighter">FIDE ID</p>
-                        <p className="text-xl font-black text-amber-700">{selectedItem.fideId || 'NA'}</p>
+                        <p className="text-lg font-black text-amber-700">{selectedItem.fideId || 'NA'}</p>
                       </div>
-                      <div className="flex-1 bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                      <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
                         <p className="text-[9px] font-bold text-blue-600/60 uppercase tracking-tighter">Rating</p>
-                        <p className="text-xl font-black text-blue-700">{selectedItem.fideRating || '0'}</p>
+                        <p className="text-lg font-black text-blue-700">{selectedItem.fideRating || '0'}</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Category</p>
+                        <p className="font-bold text-slate-900">{selectedItem.category || 'N/A'}</p>
+                      </div>
+                      {selectedItem.type === 'course' && (
+                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Skill Level</p>
+                          <p className="font-bold text-slate-900">{selectedItem.experienceLevel || 'N/A'}</p>
+                        </div>
+                      )}
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 col-span-2">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Discovery Source</p>
+                        <p className="font-bold text-slate-900">{selectedItem.discoverySource || 'N/A'}</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 col-span-2">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Transaction ID</p>
+                        <p className="font-bold text-slate-900 font-mono text-sm">{selectedItem.transactionId || 'N/A'}</p>
                       </div>
                     </div>
                   </section>

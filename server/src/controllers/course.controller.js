@@ -42,7 +42,7 @@ export const getCourseById = async (req, res) => {
 
 export const createCourse = async (req, res) => {
   try {
-    const { title, ageGroup, level, duration, price, fee, classTime, contactDetails, mode, days } = req.body;
+    const { title, ageGroup, level, skillLevel, duration, price, fee, classTime, contactDetails, mode, days } = req.body;
 
     let imageUrl = '';
     let scannerUrl = '';
@@ -59,7 +59,7 @@ export const createCourse = async (req, res) => {
     const mappedData = {
       title,
       ageGroup: ageGroup || 'CHILDREN',
-      skillLevel: level ? level.toUpperCase() : 'BEGINNER',
+      skillLevel: (skillLevel || level || 'BEGINNER').toUpperCase(),
       duration: duration || '',
       fee: fee || price,
       classTime: classTime || "TBD",
@@ -95,7 +95,7 @@ export const updateCourse = async (req, res) => {
 
     const updateData = {
       ...req.body,
-      skillLevel: req.body.level ? req.body.level.toUpperCase() : undefined,
+      skillLevel: (req.body.skillLevel || req.body.level) ? (req.body.skillLevel || req.body.level).toUpperCase() : undefined,
       fee: req.body.fee || req.body.price,
       custom_banner_url: imageUrl,
       scannerUrl: scannerUrl
