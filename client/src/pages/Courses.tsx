@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import CourseEnrollModal from "@/features/courses/components/CourseEnrollModal";
+import { useNavigate } from "react-router-dom";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
 import { AgeGroup, AGE_GROUP_LABELS, Course } from "@/types";
 import { Users, Baby, GraduationCap, ChevronLeft, ChevronRight, SearchX, Sparkles, Clock, BarChart3, Calendar, Globe } from "lucide-react";
@@ -16,8 +16,8 @@ const ITEMS_PER_PAGE = 6;
 const HERO_IMAGE = "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2000&auto=format&fit=crop"; 
 
 export default function CoursesPage() {
+  const navigate = useNavigate();
   const { courses, isLoading } = useAdminCourses();
-  const [enrollCourse, setEnrollCourse] = useState<Course | null>(null);
   const [activeCategory, setActiveCategory] = useState<AgeGroup | "ALL">("ALL");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -85,7 +85,7 @@ export default function CoursesPage() {
               {paginatedCourses.map((course) => (
                 <motion.div key={course.id} variants={fadeUp} initial="hidden" animate="visible" className="group bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all flex flex-col h-full">
                   <div className="relative h-52 w-full bg-slate-100 overflow-hidden">
-                    <img src={course.bannerUrl || HERO_IMAGE} alt={course.title} className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-110" />
+                    <img src={course.custom_banner_url || HERO_IMAGE} alt={course.title} className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-110" />
                     <div className="absolute top-4 left-4 flex gap-2">
                       <span className="px-3 py-1 bg-white/95 backdrop-blur-sm rounded-lg text-[10px] font-black text-blue-600 shadow-sm uppercase">
                         {course.mode}
@@ -113,7 +113,7 @@ export default function CoursesPage() {
                         <span className="text-[9px] font-bold text-slate-400 uppercase">Enrollment Fee</span>
                         <div className="text-xl font-black text-slate-900">₹{course.fee.toLocaleString()}</div>
                       </div>
-                      <Button onClick={() => setEnrollCourse(course)} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 font-bold shadow-lg shadow-blue-600/10">
+                      <Button onClick={() => navigate(`/courses/${course.id}/enroll`)} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 font-bold shadow-lg shadow-blue-600/10">
                         Enroll Now
                       </Button>
                     </div>
@@ -126,7 +126,6 @@ export default function CoursesPage() {
       </section>
 
       <Footer />
-      <CourseEnrollModal course={enrollCourse} open={!!enrollCourse} onOpenChange={(open) => !open && setEnrollCourse(null)} />
     </div>
   );
 }

@@ -15,16 +15,21 @@ export const AGE_GROUP_RANGES: Record<AgeGroup, string> = {
 };
 
 export interface Course {
-  id: number;
+  id: string; // Changed to string to match CUID
   title: string;
   ageGroup: AgeGroup;
   minAge?: number | null;
   maxAge?: number | null;
-  level: string;
+  skillLevel: string; // Renamed from level to match schema
   duration: string;
   description?: string;
-  image?: string;
-  price?: string;
+  custom_banner_url?: string;
+  scannerUrl?: string;
+  fee: number; // Replaced price with fee
+  days?: string[];
+  classTime?: string;
+  mode: "ONLINE" | "OFFLINE" | "HYBRID";
+  contactDetails?: string;
   features?: string[];
   createdAt?: string;
   updatedAt?: string;
@@ -80,14 +85,23 @@ export interface Registration {
 export type EnrollmentStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "REJECTED";
 
 export interface CourseEnrollment {
-  id: number;
+  id: string;
   studentName: string;
   email: string;
   phone: string;
-  mode: "ONLINE" | "OFFLINE";
-  courseId: number;
-  course?: { id: number; title: string; ageGroup: AgeGroup };
-  message?: string;
+  gender: string;
+  dob: string | Date;
+  address: string;
+  fideId?: string;
+  fideRating?: number;
+  discoverySource: string;
+  category?: string;
+  ageProofUrl: string;
+  paymentProofUrl: string;
+  transactionId?: string;
+  experienceLevel?: string;
+  courseId: string;
+  course?: { id: string; title: string; ageGroup: AgeGroup };
   status: EnrollmentStatus;
   createdAt?: string;
 }

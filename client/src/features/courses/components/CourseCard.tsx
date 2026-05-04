@@ -49,7 +49,7 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
         {/* IMAGE SECTION */}
         <div className="relative aspect-[16/9] overflow-hidden">
           <img
-            src={getFullImageUrl(course.image)}
+            src={course.custom_banner_url || DEFAULT_IMAGE}
             alt={course.title}
             loading="lazy"
             className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
@@ -67,7 +67,7 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
               {ageRange}
             </span>
             <span className="bg-[#f8fafc] text-[#94a3b8] text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-[#e2e8f0]">
-              {course.level}
+              {course.skillLevel}
             </span>
           </div>
 
@@ -82,7 +82,7 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
           <div className="mt-auto pt-6 border-t border-[#f1f5f9] flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-[11px] uppercase tracking-widest text-[#94a3b8] font-bold">Investment</span>
-              <span className="text-[20px] font-black text-[#0f172a]">{course.price || "Contact Us"}</span>
+              <span className="text-[20px] font-black text-[#0f172a]">₹{course.fee?.toLocaleString() || "Contact Us"}</span>
             </div>
             
             <Button

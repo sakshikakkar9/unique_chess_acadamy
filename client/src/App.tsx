@@ -16,6 +16,7 @@ import AdminLayout from "@/components/layout/AdminLayout";
 const Index = lazy(() => import("./pages/Index.tsx"));
 const About = lazy(() => import("./pages/About.tsx"));
 const Courses = lazy(() => import("./pages/Courses.tsx"));
+const CourseEnrollment = lazy(() => import("./pages/CourseEnrollment.tsx"));
 const Tournaments = lazy(() => import("./pages/Tournaments.tsx"));
 // ✅ New dynamic route for registration/details
 const TournamentDetails = lazy(() => import("./pages/TournamentDetails.tsx")); 
@@ -56,6 +57,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/courses" element={<Courses />} />
+                <Route path="/courses/:id/enroll" element={<CourseEnrollment />} />
                 <Route path="/tournaments" element={<Tournaments />} />
                 {/* ✅ Added the dynamic ID route here */}
                 <Route path="/tournaments/:id" element={<TournamentDetails />} />
