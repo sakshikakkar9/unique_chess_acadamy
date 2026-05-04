@@ -23,13 +23,17 @@ export const getCourseById = async (id) => {
 
 export const createCourse = async (data) => {
   let parsedDays = data.days;
-  if (typeof data.days === 'string') {
+  if (typeof data.days === 'string' && data.days.trim() !== "") {
     try { 
       parsedDays = JSON.parse(data.days); 
     } catch (e) { 
       parsedDays = data.days.split(',').map(f => f.trim()); 
     }
+  } else if (!data.days) {
+    parsedDays = [];
   }
+
+  const feeVal = parseFloat(data.fee);
 
   return await prisma.course.create({
     data: {
@@ -39,7 +43,7 @@ export const createCourse = async (data) => {
       duration: data.duration || "N/A",
       bannerUrl: data.bannerUrl || "",
       scannerUrl: data.scannerUrl || "",
-      fee: parseFloat(data.fee) || 0,
+      fee: !isNaN(feeVal) ? feeVal : 0,
       days: Array.isArray(parsedDays) ? parsedDays : [],
       classTime: data.classTime || "TBD", 
       mode: data.mode || "ONLINE",
@@ -50,26 +54,31 @@ export const createCourse = async (data) => {
 
 export const updateCourse = async (id, data) => {
   let parsedDays = data.days;
-  if (data.days && typeof data.days === 'string') {
+  if (data.days && typeof data.days === 'string' && data.days.trim() !== "") {
     try { parsedDays = JSON.parse(data.days); } 
     catch (e) { parsedDays = data.days.split(',').map(f => f.trim()); }
   }
 
+  const updatePayload = {
+    title: data.title,
+    ageGroup: data.ageGroup,
+    skillLevel: data.skillLevel,
+    duration: data.duration,
+    bannerUrl: data.bannerUrl,
+    scannerUrl: data.scannerUrl,
+    fee: data.fee !== undefined ? parseFloat(data.fee) : undefined,
+    days: Array.isArray(parsedDays) ? parsedDays : undefined,
+    classTime: data.classTime,
+    mode: data.mode,
+    contactDetails: data.contactDetails,
+  };
+
+  // Remove undefined fields to prevent Prisma from overwriting with null/default if not intended
+  Object.keys(updatePayload).forEach(key => updatePayload[key] === undefined && delete updatePayload[key]);
+
   return await prisma.course.update({
     where: { id },
-    data: {
-      title: data.title,
-      ageGroup: data.ageGroup,
-      skillLevel: data.skillLevel, 
-      duration: data.duration,
-      bannerUrl: data.bannerUrl, 
-      scannerUrl: data.scannerUrl,
-      fee: data.fee ? parseFloat(data.fee) : undefined,
-      days: Array.isArray(parsedDays) ? parsedDays : undefined,
-      classTime: data.classTime,
-      mode: data.mode,
-      contactDetails: data.contactDetails,
-    },
+    data: updatePayload,
   });
 };
 
@@ -93,6 +102,8 @@ export const createEnrollment = async (courseId, data, proofs) => {
     }
   }
 
+  const fideRatingVal = parseInt(data.fideRating);
+
   try {
     return await prisma.courseEnrollment.create({
       data: {
@@ -103,7 +114,7 @@ export const createEnrollment = async (courseId, data, proofs) => {
         gender: data.gender || "Other",
         dob: formattedDob || new Date(),
         fideId: data.fideId || "NA",
-        fideRating: parseInt(data.fideRating) || 0,
+        fideRating: !isNaN(fideRatingVal) ? fideRatingVal : 0,
         address: data.address || "NA",
         discoverySource: data.discoverySource || "NA",
         category: data.category || "General",

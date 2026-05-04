@@ -13,9 +13,7 @@ export const courseService = {
    */
   create: async (data: any): Promise<Course> => {
     if (data instanceof FormData) {
-      const res = await api.post("/courses", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await api.post("/courses", data);
       return res.data;
     }
 
@@ -63,9 +61,7 @@ export const courseService = {
    */
   update: async (id: number | string, data: any): Promise<Course> => {
     if (data instanceof FormData) {
-      const res = await api.put(`/courses/${id}`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await api.put(`/courses/${id}`, data);
       return res.data;
     }
 
@@ -111,9 +107,7 @@ export const courseService = {
   uploadImage: async (file: File): Promise<string> => {
     const form = new FormData();
     form.append("image", file);
-    const res = await api.post("/courses/upload-image", form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const res = await api.post("/courses/upload-image", form);
     return res.data.imageUrl; 
   },
 
@@ -138,11 +132,7 @@ export const courseService = {
       formData.append("paymentProof", data.paymentProof);
     }
 
-    const res = await api.post(`/courses/${courseId}/enroll`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const res = await api.post(`/courses/${courseId}/enroll`, formData);
 
     return res.data.data;
   }

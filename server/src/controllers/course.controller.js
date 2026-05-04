@@ -42,7 +42,7 @@ export const getCourseById = async (req, res) => {
 
 export const createCourse = async (req, res) => {
   try {
-    const { title, ageGroup, level, duration, price, classTime, contactDetails, mode, days } = req.body;
+    const { title, ageGroup, level, skillLevel, duration, price, fee, classTime, contactDetails, mode, days } = req.body;
 
     let imageUrl = '';
     let scannerUrl = '';
@@ -59,9 +59,9 @@ export const createCourse = async (req, res) => {
     const mappedData = {
       title,
       ageGroup: ageGroup || 'CHILDREN',
-      skillLevel: level ? level.toUpperCase() : 'BEGINNER',
+      skillLevel: (skillLevel || level || 'BEGINNER').toUpperCase(),
       duration: duration || '',
-      fee: price,
+      fee: fee || price,
       classTime: classTime || "TBD",
       contactDetails: contactDetails || "Unique Chess Academy",
       mode: mode || "ONLINE",
@@ -73,8 +73,8 @@ export const createCourse = async (req, res) => {
     const course = await courseService.createCourse(mappedData);
     res.status(201).json(course);
   } catch (error) {
-    console.error('CREATE_CONTROLLER_ERROR:', error.message);
-    res.status(500).json({ error: 'Failed to create course' });
+    console.error('CREATE_CONTROLLER_ERROR:', error);
+    res.status(500).json({ error: 'Failed to create course', message: error.message });
   }
 };
 
@@ -95,16 +95,21 @@ export const updateCourse = async (req, res) => {
 
     const updateData = {
       ...req.body,
-      skillLevel: req.body.level ? req.body.level.toUpperCase() : undefined,
-      fee: req.body.price,
+      skillLevel: (req.body.skillLevel || req.body.level) ? (req.body.skillLevel || req.body.level).toUpperCase() : undefined,
+      fee: req.body.fee || req.body.price,
       bannerUrl: imageUrl,
       scannerUrl: scannerUrl
     };
 
+    // Remove redundant fields that were mapped
+    delete updateData.level;
+    delete updateData.price;
+
     const course = await courseService.updateCourse(id, updateData);
     res.json(course);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update course' });
+    console.error('UPDATE_CONTROLLER_ERROR:', error);
+    res.status(500).json({ error: 'Failed to update course', message: error.message });
   }
 };
 
