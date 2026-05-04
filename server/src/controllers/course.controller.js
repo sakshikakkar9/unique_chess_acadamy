@@ -45,15 +45,8 @@ export const createCourse = async (req, res) => {
     const { title, ageGroup, level, duration, price, classTime, contactDetails, mode, days } = req.body;
 
     let imageUrl = '';
-    let scannerUrl = '';
-
-    if (req.files) {
-      if (req.files.image && req.files.image[0]) {
-        imageUrl = await uploadToCloudinary(req.files.image[0].buffer, "courses");
-      }
-      if (req.files.scanner && req.files.scanner[0]) {
-        scannerUrl = await uploadToCloudinary(req.files.scanner[0].buffer, "scanners");
-      }
+    if (req.file) {
+      imageUrl = await uploadToCloudinary(req.file.buffer, "courses");
     }
 
     const mappedData = {
@@ -67,7 +60,6 @@ export const createCourse = async (req, res) => {
       mode: mode || "ONLINE",
       days: days, 
       bannerUrl: imageUrl,
-      scannerUrl: scannerUrl,
     };
 
     const course = await courseService.createCourse(mappedData);
@@ -82,23 +74,16 @@ export const updateCourse = async (req, res) => {
   try {
     const { id } = req.params;
     let imageUrl = undefined;
-    let scannerUrl = undefined;
 
-    if (req.files) {
-      if (req.files.image && req.files.image[0]) {
-        imageUrl = await uploadToCloudinary(req.files.image[0].buffer, "courses");
-      }
-      if (req.files.scanner && req.files.scanner[0]) {
-        scannerUrl = await uploadToCloudinary(req.files.scanner[0].buffer, "scanners");
-      }
+    if (req.file) {
+      imageUrl = await uploadToCloudinary(req.file.buffer, "courses");
     }
 
     const updateData = {
       ...req.body,
       skillLevel: req.body.level ? req.body.level.toUpperCase() : undefined,
       fee: req.body.price,
-      bannerUrl: imageUrl,
-      scannerUrl: scannerUrl
+      bannerUrl: imageUrl
     };
 
     const course = await courseService.updateCourse(id, updateData);

@@ -12,25 +12,11 @@ export const courseService = {
    * Converts JSON to FormData to support the banner image upload.
    */
   create: async (data: any): Promise<Course> => {
-    if (data instanceof FormData) {
-      const res = await api.post("/courses", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      return res.data;
-    }
-
     const formData = new FormData();
 
     Object.keys(data).forEach((key) => {
-      // Skip file keys so we can append them specially
-      if (
-        key !== "image" &&
-        key !== "bannerUrl" &&
-        key !== "banner" &&
-        key !== "scanner" &&
-        key !== "scannerUrl" &&
-        data[key] !== undefined
-      ) {
+      // Skip the banner file key so we can append it specially
+      if (key !== "image" && key !== "bannerUrl" && key !== "banner" && data[key] !== undefined) {
         // Arrays (like days) need to be stringified for FormData
         if (Array.isArray(data[key])) {
           formData.append(key, JSON.stringify(data[key]));
@@ -40,15 +26,10 @@ export const courseService = {
       }
     });
 
-    // Check for files
+    // Check for the file in common state keys ('image' or 'bannerUrl')
     const imageFile = data.image || data.bannerUrl || data.banner;
     if (imageFile instanceof File) {
       formData.append("image", imageFile);
-    }
-
-    const scannerFile = data.scanner || data.scannerUrl;
-    if (scannerFile instanceof File) {
-      formData.append("scanner", scannerFile);
     }
 
     const res = await api.post("/courses", formData, {
@@ -62,24 +43,10 @@ export const courseService = {
    * Uses FormData to allow updating the course details and banner image.
    */
   update: async (id: number | string, data: any): Promise<Course> => {
-    if (data instanceof FormData) {
-      const res = await api.put(`/courses/${id}`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      return res.data;
-    }
-
     const formData = new FormData();
 
     Object.keys(data).forEach((key) => {
-      if (
-        key !== "image" &&
-        key !== "bannerUrl" &&
-        key !== "banner" &&
-        key !== "scanner" &&
-        key !== "scannerUrl" &&
-        data[key] !== undefined
-      ) {
+      if (key !== "image" && key !== "bannerUrl" && key !== "banner" && data[key] !== undefined) {
         if (Array.isArray(data[key])) {
           formData.append(key, JSON.stringify(data[key]));
         } else {
@@ -91,11 +58,6 @@ export const courseService = {
     const imageFile = data.image || data.bannerUrl || data.banner;
     if (imageFile instanceof File) {
       formData.append("image", imageFile);
-    }
-
-    const scannerFile = data.scanner || data.scannerUrl;
-    if (scannerFile instanceof File) {
-      formData.append("scanner", scannerFile);
     }
 
     const res = await api.put(`/courses/${id}`, formData, {
