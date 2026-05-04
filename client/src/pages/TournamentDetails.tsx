@@ -18,6 +18,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 import { fadeUp, stagger } from "@/components/shared/motion";
+import PaymentDisplay from "@/components/shared/PaymentDisplay";
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2000&auto=format&fit=crop";
 
@@ -227,22 +228,7 @@ export default function TournamentDetails() {
                   </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4">
-                  {tournament.scannerUrl ? (
-                    <div className="w-48 h-48 rounded-xl overflow-hidden shadow-sm border border-slate-100">
-                      <img src={tournament.scannerUrl} alt="Payment QR" className="w-full h-full object-contain p-2" />
-                    </div>
-                  ) : (
-                    <div className="w-48 h-48 bg-slate-100 rounded-xl flex flex-col items-center justify-center gap-2 text-slate-400">
-                      <Info className="h-8 w-8" />
-                      <p className="text-[10px] font-bold uppercase">Scanner not uploaded</p>
-                    </div>
-                  )}
-                  <div className="text-center">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Scan to Pay via UPI</p>
-                    <p className="text-slate-900 font-black">uniquechess@upi</p>
-                  </div>
-                </div>
+                <PaymentDisplay />
               </motion.div>
             </motion.div>
           </div>

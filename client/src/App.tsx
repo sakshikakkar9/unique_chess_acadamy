@@ -33,6 +33,7 @@ const AdminTournaments = lazy(() => import("./pages/admin/Tournaments.tsx"));
 // ✅ New admin route to see registered students
 const AdminRegistrations = lazy(() => import("./pages/admin/Registrations.tsx")); 
 const AdminGallery = lazy(() => import("./pages/admin/Gallery.tsx"));
+const AdminSettings = lazy(() => import("./pages/admin/Settings.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +84,7 @@ const App = () => (
                 {/* ✅ Added route for tracking tournament signups */}
                 <Route path="registrations" element={<AdminRegistrations />} />
                 <Route path="gallery" element={<AdminGallery />} />
+                <Route path="settings" element={<AdminSettings />} />
               </Route>
 
               {/* Fallback */}

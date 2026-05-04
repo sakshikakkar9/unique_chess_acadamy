@@ -27,18 +27,18 @@ router.post(
 
 // --- Admin (Student Management) ---
 router.get('/admin/registrations/all', tournamentController.getAllRegistrations);
-router.patch('/admin/registrations/:registrationId', tournamentController.updateRegistrationStatus);
+router.patch('/admin/registrations/:registrationId', tournamentController.updateRegistration);
 router.delete('/admin/registrations/:registrationId', tournamentController.deleteRegistration);
 
 // --- Admin (Tournament Management) ---
 router.post(
   '/admin/create',
-  upload.fields([{ name: 'image', maxCount: 1 }, { name: 'scanner', maxCount: 1 }]),
+  upload.fields([{ name: 'image', maxCount: 1 }]),
   tournamentController.createTournament
 );
 router.put(
   '/admin/update/:id',
-  upload.fields([{ name: 'image', maxCount: 1 }, { name: 'scanner', maxCount: 1 }]),
+  upload.fields([{ name: 'image', maxCount: 1 }]),
   tournamentController.updateTournament
 );
 router.delete('/admin/delete/:id', tournamentController.deleteTournament);

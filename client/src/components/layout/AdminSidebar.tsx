@@ -6,6 +6,7 @@ import {
   Trophy,
   Image as ImageIcon,
   Users,
+  Settings,
   Crown,
   ChevronLeft,
   X,
@@ -24,6 +25,7 @@ const menuItems = [
   { icon: Trophy,          label: "Tournaments",   href: "/admin/tournaments"  },
   { icon: Users,           label: "Registrations", href: "/admin/registrations"},
   { icon: ImageIcon,       label: "Gallery",       href: "/admin/gallery"      },
+  { icon: Settings,        label: "Settings",      href: "/admin/settings"     },
 ];
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, setOpen }) => {

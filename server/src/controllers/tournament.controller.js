@@ -60,18 +60,14 @@ export const registerForTournament = async (req, res) => {
 export const createTournament = async (req, res) => {
   try {
     let imageUrl = req.body.imageUrl;
-    let scannerUrl = req.body.scannerUrl;
 
     if (req.files) {
       if (req.files['image']?.[0]) {
         imageUrl = await uploadToCloudinary(req.files['image'][0].buffer, "tournaments");
       }
-      if (req.files['scanner']?.[0]) {
-        scannerUrl = await uploadToCloudinary(req.files['scanner'][0].buffer, "tournaments/scanners");
-      }
     }
 
-    const data = await tournamentService.createTournament({ ...req.body, imageUrl, scannerUrl });
+    const data = await tournamentService.createTournament({ ...req.body, imageUrl });
     res.status(201).json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -82,18 +78,14 @@ export const createTournament = async (req, res) => {
 export const updateTournament = async (req, res) => {
   try {
     let imageUrl = req.body.imageUrl;
-    let scannerUrl = req.body.scannerUrl;
 
     if (req.files) {
       if (req.files['image']?.[0]) {
         imageUrl = await uploadToCloudinary(req.files['image'][0].buffer, "tournaments");
       }
-      if (req.files['scanner']?.[0]) {
-        scannerUrl = await uploadToCloudinary(req.files['scanner'][0].buffer, "tournaments/scanners");
-      }
     }
 
-    const data = await tournamentService.updateTournament(req.params.id, { ...req.body, imageUrl, scannerUrl });
+    const data = await tournamentService.updateTournament(req.params.id, { ...req.body, imageUrl });
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -123,13 +115,18 @@ export const getAllRegistrations = async (req, res) => {
   }
 };
 
-export const updateRegistrationStatus = async (req, res) => {
+export const updateRegistration = async (req, res) => {
   try {
     const { registrationId } = req.params;
-    const { status } = req.body;
+    const { status, paymentStatus } = req.body;
+
+    const updateData = {};
+    if (status) updateData.status = status.toUpperCase();
+    if (paymentStatus) updateData.paymentStatus = paymentStatus.toUpperCase();
+
     const data = await prisma.registration.update({
       where: { id: registrationId },
-      data: { status: status.toUpperCase() }
+      data: updateData
     });
     res.json(data);
   } catch (error) {

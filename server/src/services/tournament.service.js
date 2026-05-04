@@ -38,7 +38,6 @@ export const createTournament = async (data) => {
       status: data.status || 'UPCOMING',
       entryFee: parseFloat(data.entryFee || 0),
       imageUrl: data.imageUrl || null,
-      scannerUrl: data.scannerUrl || null,
     }
   });
 };
@@ -54,7 +53,6 @@ export const updateTournament = async (id, data) => {
       description: data.description,
       status: data.status,
       imageUrl: data.imageUrl,
-      scannerUrl: data.scannerUrl,
       category: data.category,
       totalPrizePool: data.totalPrizePool,
       discountDetails: data.discountDetails,

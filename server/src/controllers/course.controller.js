@@ -62,7 +62,6 @@ export const createCourse = async (req, res) => {
       mode: mode ? mode.toUpperCase() : "ONLINE",
       // 4. Image handling (from your previous middleware)
       custom_banner_url: req.files?.image ? await uploadToCloudinary(req.files.image[0].buffer) : null,
-      scannerUrl: req.files?.scanner ? await uploadToCloudinary(req.files.scanner[0].buffer) : null,
     };
 
     const newCourse = await courseService.createCourse(courseData);
@@ -86,7 +85,6 @@ export const updateCourse = async (req, res) => {
       // Pass raw days
       days: req.body.days,
       custom_banner_url: req.files?.image ? await uploadToCloudinary(req.files.image[0].buffer) : undefined,
-      scannerUrl: req.files?.scanner ? await uploadToCloudinary(req.files.scanner[0].buffer) : undefined,
     };
 
     // Clean up undefined so we don't accidentally overwrite with undefined
@@ -157,18 +155,23 @@ export const getAllEnrollments = async (req, res) => {
   }
 };
 
-export const updateEnrollmentStatus = async (req, res) => {
+export const updateEnrollment = async (req, res) => {
   try {
     const id = req.params.enrollmentId;
-    const { status } = req.body;
-    if (!VALID_ENROLLMENT_STATUSES.includes(status.toUpperCase())) {
+    const { status, paymentStatus } = req.body;
+
+    if (status && !VALID_ENROLLMENT_STATUSES.includes(status.toUpperCase())) {
       return res.status(400).json({ error: `status must be one of: ${VALID_ENROLLMENT_STATUSES.join(', ')}` });
     }
-    const enrollment = await courseService.updateEnrollmentStatus(id, status.toUpperCase());
+
+    const enrollment = await courseService.updateEnrollment(id, {
+      status: status ? status.toUpperCase() : undefined,
+      paymentStatus: paymentStatus ? paymentStatus.toUpperCase() : undefined
+    });
     res.json({ success: true, data: enrollment });
   } catch (error) {
-    console.error('UPDATE_ENROLLMENT_STATUS_ERROR:', error);
-    res.status(500).json({ error: 'Failed to update enrollment status' });
+    console.error('UPDATE_ENROLLMENT_ERROR:', error);
+    res.status(500).json({ error: 'Failed to update enrollment' });
   }
 };
 

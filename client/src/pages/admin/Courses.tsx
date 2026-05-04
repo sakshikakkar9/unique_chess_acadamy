@@ -39,10 +39,6 @@ const AdminCourses = () => {
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [selectedScannerFile, setSelectedScannerFile] = useState<File | null>(null);
-  const [scannerPreviewUrl, setScannerPreviewUrl] = useState<string>("");
-  const scannerFileInputRef = useRef<HTMLInputElement>(null);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -77,7 +73,6 @@ const AdminCourses = () => {
       data.append("days", JSON.stringify(formData.days));
 
       if (selectedFile) data.append("image", selectedFile);
-      if (selectedScannerFile) data.append("scanner", selectedScannerFile);
 
       if (selectedCourse) {
         await updateCourse(selectedCourse.id, data);
@@ -97,8 +92,6 @@ const AdminCourses = () => {
     setSelectedCourse(null);
     setSelectedFile(null);
     setPreviewUrl("");
-    setSelectedScannerFile(null);
-    setScannerPreviewUrl("");
     setFormData({ 
       title: "",
       ageGroup: "ADULTS", 
@@ -187,7 +180,6 @@ const AdminCourses = () => {
                 setSelectedCourse(c); 
                 setFormData(c); 
                 setPreviewUrl(c.custom_banner_url); 
-                setScannerPreviewUrl(c.scannerUrl); 
                 setIsModalOpen(true); 
               }}
               onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
@@ -286,55 +278,28 @@ const AdminCourses = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6 pt-4 border-t">
-            <div className="space-y-4">
-              <Label className="block font-bold">Course Banner</Label>
-              <div 
-                className="relative aspect-video rounded-xl border-2 border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-muted/50 cursor-pointer transition-all border-slate-200" 
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {previewUrl ? <img src={previewUrl} className="w-full h-full object-cover" /> : (
-                  <div className="text-center">
-                    <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                    <span className="text-xs mt-2 block font-medium">Upload Banner</span>
-                  </div>
-                )}
-                <input 
-                  ref={fileInputRef} 
-                  type="file" 
-                  className="hidden" 
-                  accept="image/*" 
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) { setSelectedFile(file); setPreviewUrl(URL.createObjectURL(file)); }
-                  }} 
-                />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <Label className="block font-bold">Payment QR Scanner</Label>
-              <div 
-                className="relative aspect-video rounded-xl border-2 border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-muted/50 cursor-pointer transition-all border-slate-200" 
-                onClick={() => scannerFileInputRef.current?.click()}
-              >
-                {scannerPreviewUrl ? <img src={scannerPreviewUrl} className="w-full h-full object-cover" /> : (
-                  <div className="text-center">
-                    <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                    <span className="text-xs mt-2 block font-medium">Upload QR Code</span>
-                  </div>
-                )}
-                <input 
-                  ref={scannerFileInputRef} 
-                  type="file" 
-                  className="hidden" 
-                  accept="image/*" 
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) { setSelectedScannerFile(file); setScannerPreviewUrl(URL.createObjectURL(file)); }
-                  }} 
-                />
-              </div>
+          <div className="space-y-4 pt-4 border-t">
+            <Label className="block font-bold">Course Banner</Label>
+            <div
+              className="relative aspect-video rounded-xl border-2 border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-muted/50 cursor-pointer transition-all border-slate-200"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {previewUrl ? <img src={previewUrl} className="w-full h-full object-cover" /> : (
+                <div className="text-center">
+                  <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                  <span className="text-xs mt-2 block font-medium">Upload Banner</span>
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) { setSelectedFile(file); setPreviewUrl(URL.createObjectURL(file)); }
+                }}
+              />
             </div>
           </div>
         </div>

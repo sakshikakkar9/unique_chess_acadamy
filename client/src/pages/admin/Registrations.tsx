@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 const statusStyles: Record<string, string> = {
   PENDING:   "bg-amber-50 text-amber-700 border-amber-200/50",
   APPROVED:  "bg-emerald-50 text-emerald-700 border-emerald-200/50",
+  VERIFIED:  "bg-emerald-50 text-emerald-700 border-emerald-200/50",
   CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200/50",
   CANCELLED: "bg-rose-50 text-rose-700 border-rose-200/50",
   REJECTED:  "bg-rose-50 text-rose-700 border-rose-200/50",
@@ -99,7 +100,7 @@ export default function RegistrationsPage() {
     });
   }, [demos, searchTerm, statusFilter]);
 
-  const handleAction = async (id: string | number, type: string, action: 'status' | 'delete', value?: string) => {
+  const handleAction = async (id: string | number, type: string, action: 'status' | 'delete' | 'paymentStatus', value?: string) => {
     if (action === 'delete' && !window.confirm("Permanent delete? This cannot be undone.")) return;
     
     const paths: any = {
@@ -109,8 +110,13 @@ export default function RegistrationsPage() {
     };
 
     try {
-      if (action === 'delete') await api.delete(paths[type]);
-      else await api.patch(paths[type], { status: value });
+      if (action === 'delete') {
+        await api.delete(paths[type]);
+      } else if (action === 'paymentStatus') {
+        await api.patch(paths[type], { paymentStatus: value });
+      } else {
+        await api.patch(paths[type], { status: value });
+      }
       
       const queryKey = type === 'tournament' ? "registrations" : type === 'course' ? "course-enrollments" : type;
       qc.invalidateQueries({ queryKey: [queryKey] });
@@ -118,6 +124,7 @@ export default function RegistrationsPage() {
 
       if (selectedItem && selectedItem.id === id) {
         if (action === 'delete') setSelectedItem(null);
+        else if (action === 'paymentStatus') setSelectedItem({ ...selectedItem, paymentStatus: value });
         else setSelectedItem({ ...selectedItem, status: value });
       }
 
@@ -338,7 +345,7 @@ export default function RegistrationsPage() {
                   </p>
                 </SheetHeader>
 
-                <div className="flex gap-4 relative z-10">
+                <div className="flex flex-wrap gap-4 relative z-10">
                   <div className="bg-white/5 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/10 flex flex-col gap-1">
                     <p className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">Reference ID</p>
                     <div className="flex items-center gap-3">
@@ -357,6 +364,12 @@ export default function RegistrationsPage() {
                     <p className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">Registration Date</p>
                     <p className="text-xs font-bold">{format(new Date(selectedItem.createdAt), "PPP")}</p>
                   </div>
+                  {selectedItem.type !== 'demo' && (
+                    <div className="bg-white/5 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/10 flex flex-col gap-1">
+                      <p className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">Payment</p>
+                      <StatusBadge status={selectedItem.paymentStatus || 'PENDING'} />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -438,7 +451,26 @@ export default function RegistrationsPage() {
                             <CreditCard className="h-3 w-3 text-blue-500" /> Transaction Intel
                           </p>
                           <div className="flex items-center justify-between">
-                            <p className="text-xl font-black text-white font-mono tracking-[0.15em]">{selectedItem.transactionId || 'NOT_FOUND'}</p>
+                            <div>
+                              <p className="text-xl font-black text-white font-mono tracking-[0.15em]">{selectedItem.transactionId || 'NOT_FOUND'}</p>
+                              <div className="mt-2 flex items-center gap-2">
+                                <span className={cn(
+                                  "text-[10px] font-black uppercase px-2 py-0.5 rounded",
+                                  selectedItem.paymentStatus === 'VERIFIED' ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
+                                )}>
+                                  {selectedItem.paymentStatus || 'PENDING'}
+                                </span>
+                                {selectedItem.paymentStatus !== 'VERIFIED' && (
+                                  <Button
+                                    variant="link"
+                                    className="h-auto p-0 text-[10px] font-black text-blue-400 uppercase tracking-widest hover:text-blue-300"
+                                    onClick={() => handleAction(selectedItem.id, selectedItem.type, 'paymentStatus', 'VERIFIED')}
+                                  >
+                                    Mark Verified
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
                             <Button variant="ghost" size="icon" className="h-10 w-10 text-white/40 hover:text-white hover:bg-white/10 rounded-xl" onClick={() => {
                               if(selectedItem.transactionId) {
                                 navigator.clipboard.writeText(selectedItem.transactionId);
