@@ -155,7 +155,7 @@ export const getAllEnrollments = async (req, res) => {
   }
 };
 
-export const updateEnrollment = async (req, res) => {
+export const updateEnrollmentStatus = async (req, res) => {
   try {
     const id = req.params.enrollmentId;
     const { status, paymentStatus } = req.body;
