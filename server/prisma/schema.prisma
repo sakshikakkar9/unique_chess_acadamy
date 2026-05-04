@@ -65,6 +65,7 @@ model Tournament {
   contactDetails  String?           // New
   status          TournamentStatus  @default(UPCOMING)
   imageUrl        String?           
+  scannerUrl      String?
   
   results         TournamentResult[] 
   registrations   Registration[]     
