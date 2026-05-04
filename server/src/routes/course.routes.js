@@ -48,8 +48,7 @@ const upload = multer({
 const handleCourseUpload = (req, res, next) => {
   const uploadFields = upload.fields([
     { name: 'image', maxCount: 1 },
-    { name: 'banner', maxCount: 1 },
-    { name: 'scanner', maxCount: 1 }
+    { name: 'banner', maxCount: 1 }
   ]);
 
   uploadFields(req, res, (err) => {
@@ -74,7 +73,7 @@ const handleEnrollmentUpload = (req, res, next) => {
 
 // 1. Enrollment Management (Admin)
 router.get('/enrollments', verifyAdmin, getAllEnrollments);
-router.patch('/enrollments/:enrollmentId', verifyAdmin, updateEnrollmentStatus);
+router.patch('/enrollments/:enrollmentId', verifyAdmin, updateEnrollment);
 router.delete('/enrollments/:enrollmentId', verifyAdmin, deleteEnrollment);
 
 // 2. Course Discovery (Public)

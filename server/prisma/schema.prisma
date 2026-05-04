@@ -15,6 +15,12 @@ model Admin {
   updatedAt    DateTime @updatedAt
 }
 
+model GlobalSettings {
+  id            String   @id @default("default")
+  upiScannerUrl String?
+  updatedAt     DateTime @updatedAt
+}
+
 model ContactMessage {
   id        Int      @id @default(autoincrement())
   name      String
@@ -36,6 +42,11 @@ enum ClassMode {
   ONLINE
   OFFLINE
   HYBRID
+}
+
+enum PaymentStatus {
+  PENDING
+  VERIFIED
 }
 
 model Event {
@@ -65,7 +76,6 @@ model Tournament {
   contactDetails  String?           // New
   status          TournamentStatus  @default(UPCOMING)
   imageUrl        String?           
-  scannerUrl      String?
   
   results         TournamentResult[] 
   registrations   Registration[]     
@@ -128,6 +138,7 @@ model Registration {
   transactionId   String?
   tournamentId    Int
   status          String     @default("PENDING")
+  paymentStatus   PaymentStatus @default(PENDING)
   createdAt       DateTime   @default(now())
   tournament      Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
 }
@@ -154,7 +165,6 @@ model Course {
   contactDetails String
   mode           ClassMode          @default(ONLINE)
   custom_banner_url String?            // URL from storage bucket
-  scannerUrl     String?            // New: QR Payment image
   
   enrollments    CourseEnrollment[] 
 
@@ -191,6 +201,7 @@ model CourseEnrollment {
   experienceLevel String?
 
   status          String   @default("PENDING")
+  paymentStatus   PaymentStatus @default(PENDING)
   courseId        String   
   course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   

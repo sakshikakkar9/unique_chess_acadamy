@@ -24,8 +24,6 @@ const AdminTournaments: React.FC = () => {
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [selectedScannerFile, setSelectedScannerFile] = useState<File | null>(null);
-  const [previewScannerUrl, setPreviewScannerUrl] = useState<string>("");
 
   // Updated initial state to match new Prisma schema fields
   const [formData, setFormData] = useState<any>({
@@ -61,8 +59,6 @@ const AdminTournaments: React.FC = () => {
     setSelectedTournament(null);
     setSelectedFile(null);
     setPreviewUrl("");
-    setSelectedScannerFile(null);
-    setPreviewScannerUrl("");
     setFormData({ 
       title: "", 
       startDate: new Date().toISOString().split('T')[0],
@@ -87,8 +83,6 @@ const AdminTournaments: React.FC = () => {
     setSelectedTournament(t);
     setSelectedFile(null);
     setPreviewUrl(t.imageUrl || "");
-    setSelectedScannerFile(null);
-    setPreviewScannerUrl(t.scannerUrl || "");
     setFormData({ 
       ...t, 
       startDate: t.startDate ? new Date(t.startDate).toISOString().split('T')[0] : "",
@@ -118,12 +112,6 @@ const AdminTournaments: React.FC = () => {
       data.append("image", selectedFile);
     } else if (formData.imageUrl) {
       data.append("imageUrl", formData.imageUrl);
-    }
-
-    if (selectedScannerFile) {
-      data.append("scanner", selectedScannerFile);
-    } else if (formData.scannerUrl) {
-      data.append("scannerUrl", formData.scannerUrl);
     }
 
     try {
@@ -173,86 +161,44 @@ const AdminTournaments: React.FC = () => {
       >
         <div className="flex flex-col gap-6 py-4 px-1 overflow-y-auto max-h-[70vh] scrollbar-thin">
           
-          {/* 1. Banner & Scanner Upload */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-sm font-bold">Tournament Banner</Label>
-              <div className="border-2 border-dashed rounded-xl p-4 text-center hover:bg-muted/50 transition-colors min-h-[160px] flex items-center justify-center">
-                {previewUrl ? (
-                  <div className="relative aspect-video w-full rounded-lg overflow-hidden">
-                    <img src={previewUrl} alt="Banner" className="w-full h-full object-cover" />
-                    <Button
-                      size="icon"
-                      variant="destructive"
-                      className="absolute top-2 right-2 h-7 w-7"
-                      onClick={() => {
-                        setPreviewUrl("");
-                        setSelectedFile(null);
-                        setFormData({...formData, imageUrl: ""});
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <label className="cursor-pointer flex flex-col items-center py-4 w-full">
-                    <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                    <span className="text-[10px] font-medium">Upload Banner</span>
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setSelectedFile(file);
-                          setPreviewUrl(URL.createObjectURL(file));
-                        }
-                      }}
-                    />
-                  </label>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-sm font-bold">Payment QR Scanner</Label>
-              <div className="border-2 border-dashed rounded-xl p-4 text-center hover:bg-muted/50 transition-colors min-h-[160px] flex items-center justify-center">
-                {previewScannerUrl ? (
-                  <div className="relative aspect-square w-24 rounded-lg overflow-hidden mx-auto">
-                    <img src={previewScannerUrl} alt="Scanner" className="w-full h-full object-cover" />
-                    <Button
-                      size="icon"
-                      variant="destructive"
-                      className="absolute top-1 right-1 h-6 w-6"
-                      onClick={() => {
-                        setPreviewScannerUrl("");
-                        setSelectedScannerFile(null);
-                        setFormData({...formData, scannerUrl: ""});
-                      }}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ) : (
-                  <label className="cursor-pointer flex flex-col items-center py-4 w-full">
-                    <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                    <span className="text-[10px] font-medium">Upload QR</span>
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setSelectedScannerFile(file);
-                          setPreviewScannerUrl(URL.createObjectURL(file));
-                        }
-                      }}
-                    />
-                  </label>
-                )}
-              </div>
+          {/* 1. Banner Upload */}
+          <div className="space-y-2">
+            <Label className="text-sm font-bold">Tournament Banner</Label>
+            <div className="border-2 border-dashed rounded-xl p-4 text-center hover:bg-muted/50 transition-colors min-h-[160px] flex items-center justify-center">
+              {previewUrl ? (
+                <div className="relative aspect-video w-full rounded-lg overflow-hidden">
+                  <img src={previewUrl} alt="Banner" className="w-full h-full object-cover" />
+                  <Button
+                    size="icon"
+                    variant="destructive"
+                    className="absolute top-2 right-2 h-7 w-7"
+                    onClick={() => {
+                      setPreviewUrl("");
+                      setSelectedFile(null);
+                      setFormData({...formData, imageUrl: ""});
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <label className="cursor-pointer flex flex-col items-center py-4 w-full">
+                  <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                  <span className="text-[10px] font-medium">Upload Banner</span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setSelectedFile(file);
+                        setPreviewUrl(URL.createObjectURL(file));
+                      }
+                    }}
+                  />
+                </label>
+              )}
             </div>
           </div>
 

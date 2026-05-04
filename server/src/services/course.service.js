@@ -52,7 +52,6 @@ export const createCourse = async (data) => {
       skillLevel: (data.skillLevel || "BEGINNER").toUpperCase(), 
       duration: data.duration || "N/A",
       custom_banner_url: data.custom_banner_url || null,
-      scannerUrl: data.scannerUrl || null,
       // Ensure Float type for PostgreSQL
       fee: parseFloat(data.fee) || 0.0,
       days: Array.isArray(parsedDays) ? parsedDays : [],
@@ -85,7 +84,6 @@ export const updateCourse = async (id, data) => {
   if (data.skillLevel) updatePayload.skillLevel = data.skillLevel.toUpperCase();
   if (data.duration) updatePayload.duration = data.duration;
   if (data.custom_banner_url) updatePayload.custom_banner_url = data.custom_banner_url;
-  if (data.scannerUrl) updatePayload.scannerUrl = data.scannerUrl;
   
   // Explicitly check for fee to allow updating to 0 but avoiding 'undefined'
   if (data.fee !== undefined && data.fee !== null) {
@@ -173,12 +171,16 @@ export const getAllEnrollments = async () => {
 };
 
 /**
- * Updates the status (PENDING, APPROVED, etc.) of an enrollment.
+ * Updates the status or paymentStatus of an enrollment.
  */
-export const updateEnrollmentStatus = async (id, status) => {
+export const updateEnrollment = async (id, data) => {
+  const updateData = {};
+  if (data.status) updateData.status = data.status;
+  if (data.paymentStatus) updateData.paymentStatus = data.paymentStatus;
+
   return await prisma.courseEnrollment.update({
     where: { id },
-    data: { status },
+    data: updateData,
   });
 };
 
