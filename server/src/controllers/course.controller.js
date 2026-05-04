@@ -42,69 +42,59 @@ export const getCourseById = async (req, res) => {
 
 export const createCourse = async (req, res) => {
   try {
-    const { title, ageGroup, level, skillLevel, duration, price, fee, classTime, contactDetails, mode, days } = req.body;
+    const { 
+      title, ageGroup, skillLevel, classTime, 
+      duration, fee, days, contactDetails, mode 
+    } = req.body;
 
-    let imageUrl = '';
-    let scannerUrl = '';
-
-    if (req.files) {
-      if (req.files.image && req.files.image[0]) {
-        imageUrl = await uploadToCloudinary(req.files.image[0].buffer, "courses");
-      }
-      if (req.files.scanner && req.files.scanner[0]) {
-        scannerUrl = await uploadToCloudinary(req.files.scanner[0].buffer, "courses");
-      }
-    }
-
-    const mappedData = {
+    const courseData = {
       title,
-      ageGroup: ageGroup || 'CHILDREN',
-      skillLevel: (skillLevel || level || 'BEGINNER').toUpperCase(),
-      duration: duration || '',
-      fee: fee || price,
-      classTime: classTime || "TBD",
-      contactDetails: contactDetails || "Unique Chess Academy",
-      mode: mode || "ONLINE",
-      days: days, 
-      custom_banner_url: imageUrl,
-      scannerUrl: scannerUrl,
+      ageGroup,
+      contactDetails,
+      classTime,
+      duration,
+      // 1. Force Float for Fee
+      fee: parseFloat(fee), 
+      // 2. Handle potential string-to-array conversion for days
+      days: Array.isArray(days) ? days : days.split(',').map(d => d.trim()),
+      // 3. Match Schema Enums (Upper Case)
+      skillLevel: skillLevel ? skillLevel.toUpperCase() : "BEGINNER",
+      mode: mode ? mode.toUpperCase() : "ONLINE",
+      // 4. Image handling (from your previous middleware)
+      custom_banner_url: req.files?.image ? await uploadToCloudinary(req.files.image[0].buffer) : null,
+      scannerUrl: req.files?.scanner ? await uploadToCloudinary(req.files.scanner[0].buffer) : null,
     };
 
-    const course = await courseService.createCourse(mappedData);
-    res.status(201).json(course);
+    const newCourse = await courseService.createCourse(courseData);
+    res.status(201).json(newCourse);
   } catch (error) {
-    console.error('CREATE_CONTROLLER_ERROR:', error.message);
-    res.status(500).json({ error: 'Failed to create course' });
+    res.status(500).json({ error: error.message });
   }
 };
 
 export const updateCourse = async (req, res) => {
   try {
     const { id } = req.params;
-    let imageUrl = undefined;
-    let scannerUrl = undefined;
-
-    if (req.files) {
-      if (req.files.image && req.files.image[0]) {
-        imageUrl = await uploadToCloudinary(req.files.image[0].buffer, "courses");
-      }
-      if (req.files.scanner && req.files.scanner[0]) {
-        scannerUrl = await uploadToCloudinary(req.files.scanner[0].buffer, "courses");
-      }
-    }
-
+    
+    // Spread body but manually override the strict types
     const updateData = {
       ...req.body,
-      skillLevel: (req.body.skillLevel || req.body.level) ? (req.body.skillLevel || req.body.level).toUpperCase() : undefined,
-      fee: req.body.fee || req.body.price,
-      custom_banner_url: imageUrl,
-      scannerUrl: scannerUrl
+      // Ensure numeric types
+      fee: req.body.fee ? parseFloat(req.body.fee) : undefined,
+      // Ensure Enum types
+      skillLevel: req.body.skillLevel ? req.body.skillLevel.toUpperCase() : undefined,
+      mode: req.body.mode ? req.body.mode.toUpperCase() : undefined,
+      // Handle array updates
+      days: req.body.days ? (Array.isArray(req.body.days) ? req.body.days : req.body.days.split(',')) : undefined
     };
 
-    const course = await courseService.updateCourse(id, updateData);
-    res.json(course);
+    // Clean up nulls so we don't accidentally overwrite with undefined
+    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+
+    const updated = await courseService.updateCourse(id, updateData);
+    res.json(updated);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update course' });
+    res.status(500).json({ error: error.message });
   }
 };
 
