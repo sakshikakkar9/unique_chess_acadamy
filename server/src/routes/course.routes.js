@@ -11,7 +11,7 @@ import {
   deleteCourse,
   enrollInCourse,
   getAllEnrollments,
-  updateEnrollmentStatus,
+  updateEnrollmentStatus, // Matches the renamed function in your controller
   deleteEnrollment
 } from '../controllers/course.controller.js';
 
@@ -73,7 +73,10 @@ const handleEnrollmentUpload = (req, res, next) => {
 
 // 1. Enrollment Management (Admin)
 router.get('/enrollments', verifyAdmin, getAllEnrollments);
-router.patch('/enrollments/:enrollmentId', verifyAdmin, updateEnrollment);
+
+// FIXED: Changed updateEnrollment to updateEnrollmentStatus to match import/controller
+router.patch('/enrollments/:enrollmentId', verifyAdmin, updateEnrollmentStatus);
+
 router.delete('/enrollments/:enrollmentId', verifyAdmin, deleteEnrollment);
 
 // 2. Course Discovery (Public)
