@@ -28,25 +28,23 @@ const AdminTournaments: React.FC = () => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedBrochure, setSelectedBrochure] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const [formData, setFormData] = useState<any>({
     title: "",
     startDate: new Date().toISOString().split('T')[0],
     endDate: "",
-    regStartDate: "",
-    regEndDate: "",
-    posterOrientation: "LANDSCAPE",
     location: "",
     category: "",
     totalPrizePool: "",
     entryFee: 0,
     discountDetails: "",
-    brochureUrl: "",
     otherDetails: "",
+    brochureUrl: "",
     contactDetails: "",
+    posterOrientation: "LANDSCAPE",
     status: "UPCOMING",
-    description: "",
     imageUrl: ""
   });
 
@@ -65,24 +63,22 @@ const AdminTournaments: React.FC = () => {
   const handleAdd = () => {
     setSelectedTournament(null);
     setSelectedFile(null);
+    setSelectedBrochure(null);
     setPreviewUrl("");
     setFormData({ 
       title: "", 
       startDate: new Date().toISOString().split('T')[0],
       endDate: "",
-      regStartDate: "",
-      regEndDate: "",
-      posterOrientation: "LANDSCAPE",
       location: "", 
       category: "",
       totalPrizePool: "",
       entryFee: 0,
       discountDetails: "",
-      brochureUrl: "",
       otherDetails: "",
+      brochureUrl: "",
       contactDetails: "",
+      posterOrientation: "LANDSCAPE",
       status: activeTab === "ALL" ? "UPCOMING" : activeTab,
-      description: "",
       imageUrl: ""
     });
     setIsModalOpen(true);
@@ -91,13 +87,12 @@ const AdminTournaments: React.FC = () => {
   const handleEdit = (t: Tournament) => {
     setSelectedTournament(t);
     setSelectedFile(null);
+    setSelectedBrochure(null);
     setPreviewUrl(t.imageUrl || "");
     setFormData({ 
       ...t, 
       startDate: t.startDate ? new Date(t.startDate).toISOString().split('T')[0] : "",
       endDate: t.endDate ? new Date(t.endDate).toISOString().split('T')[0] : "",
-      regStartDate: t.regStartDate ? new Date(t.regStartDate).toISOString().split('T')[0] : "",
-      regEndDate: t.regEndDate ? new Date(t.regEndDate).toISOString().split('T')[0] : "",
       posterOrientation: t.posterOrientation || "LANDSCAPE",
       entryFee: t.entryFee || 0
     });
@@ -108,9 +103,9 @@ const AdminTournaments: React.FC = () => {
     const data = new FormData();
     Object.keys(formData).forEach(key => {
       if (formData[key] !== null && formData[key] !== undefined) {
-        if (key === 'startDate' || key === 'endDate' || key === 'regStartDate' || key === 'regEndDate') {
+        if (key === 'startDate' || key === 'endDate') {
           if (formData[key]) data.append(key, new Date(formData[key]).toISOString());
-        } else {
+        } else if (key !== 'imageUrl' && key !== 'brochureUrl') {
           data.append(key, String(formData[key]));
         }
       }
@@ -119,6 +114,9 @@ const AdminTournaments: React.FC = () => {
     if (selectedFile) {
       data.append("image", selectedFile);
     }
+    if (selectedBrochure) {
+      data.append("brochure", selectedBrochure);
+    }
 
     try {
       if (selectedTournament) await updateTournament(selectedTournament.id, data);
@@ -126,7 +124,6 @@ const AdminTournaments: React.FC = () => {
       setIsModalOpen(false);
     } catch (error: any) {
       console.error("Save failed:", error);
-      // Toast is already handled in the hook
     }
   };
 
@@ -189,100 +186,20 @@ const AdminTournaments: React.FC = () => {
       >
         <div className="flex flex-col gap-6 py-4 px-1 overflow-y-auto max-h-[70vh] scrollbar-thin pr-3">
           
-          {/* 1. Banner Upload */}
-          <div className="space-y-2">
-            <Label className="text-xs font-black uppercase text-slate-400 tracking-widest">Tournament Poster</Label>
-            <div className="border-2 border-dashed border-slate-200 rounded-[1.5rem] p-4 text-center hover:bg-slate-50 transition-colors min-h-[160px] flex items-center justify-center bg-slate-50/50">
-              {previewUrl ? (
-                <div className="relative aspect-video w-full rounded-xl overflow-hidden shadow-md">
-                  <img src={previewUrl} alt="Banner" className="w-full h-full object-cover" />
-                  <Button
-                    size="icon"
-                    variant="destructive"
-                    className="absolute top-2 right-2 h-7 w-7 rounded-lg"
-                    onClick={() => {
-                      setPreviewUrl("");
-                      setSelectedFile(null);
-                      setFormData({...formData, imageUrl: ""});
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ) : (
-                <label className="cursor-pointer flex flex-col items-center py-6 w-full group">
-                  <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                    <Upload className="h-6 w-6 text-orange-500" />
-                  </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Drop poster here or click</span>
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        setSelectedFile(file);
-                        setPreviewUrl(URL.createObjectURL(file));
-                      }
-                    }}
-                  />
-                </label>
-              )}
-            </div>
-          </div>
-
           <div className="grid gap-6">
-            <div className="grid gap-2">
-              <Label className="text-xs font-black uppercase text-slate-400 tracking-widest">Poster Orientation</Label>
-              <RadioGroup
-                value={formData.posterOrientation}
-                onValueChange={(val) => setFormData({...formData, posterOrientation: val})}
-                className="flex gap-4"
-              >
-                <div className="flex items-center space-x-2 bg-slate-50 px-4 py-3 rounded-xl border border-slate-100 cursor-pointer">
-                  <RadioGroupItem value="LANDSCAPE" id="landscape" />
-                  <Label htmlFor="landscape" className="font-bold text-sm cursor-pointer">Landscape (Hero)</Label>
-                </div>
-                <div className="flex items-center space-x-2 bg-slate-50 px-4 py-3 rounded-xl border border-slate-100 cursor-pointer">
-                  <RadioGroupItem value="PORTRAIT" id="portrait" />
-                  <Label htmlFor="portrait" className="font-bold text-sm cursor-pointer">Portrait (Split)</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
             <div className="grid gap-2">
               <Label htmlFor="title" className="text-xs font-black uppercase text-slate-400 tracking-widest">Arena Title</Label>
               <Input id="title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="e.g. Grand Master Invitational 2024" className="h-12 rounded-xl" />
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="description" className="text-xs font-black uppercase text-slate-400 tracking-widest">Description</Label>
-              <Textarea id="description" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Describe the competition..." className="rounded-xl min-h-[100px]" />
-            </div>
-
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-4 border-r pr-4">
-                <p className="text-[10px] font-black uppercase text-blue-600 tracking-widest">Registration Window</p>
-                <div className="grid gap-2">
-                  <Label htmlFor="regStartDate" className="text-[10px] font-bold">Opens On</Label>
-                  <Input id="regStartDate" type="date" value={formData.regStartDate} onChange={(e) => setFormData({...formData, regStartDate: e.target.value})} className="h-10 rounded-xl" />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="regEndDate" className="text-[10px] font-bold">Closes On</Label>
-                  <Input id="regEndDate" type="date" value={formData.regEndDate} onChange={(e) => setFormData({...formData, regEndDate: e.target.value})} className="h-10 rounded-xl" />
-                </div>
+              <div className="grid gap-2">
+                <Label htmlFor="startDate" className="text-xs font-black uppercase text-slate-400 tracking-widest">Starts On</Label>
+                <Input id="startDate" type="date" value={formData.startDate} onChange={(e) => setFormData({...formData, startDate: e.target.value})} className="h-12 rounded-xl border-orange-100" />
               </div>
-              <div className="space-y-4">
-                <p className="text-[10px] font-black uppercase text-orange-600 tracking-widest">Event Timeline</p>
-                <div className="grid gap-2">
-                  <Label htmlFor="startDate" className="text-[10px] font-bold">Starts On</Label>
-                  <Input id="startDate" type="date" value={formData.startDate} onChange={(e) => setFormData({...formData, startDate: e.target.value})} className="h-10 rounded-xl border-orange-100" />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="endDate" className="text-[10px] font-bold">Ends On</Label>
-                  <Input id="endDate" type="date" value={formData.endDate} onChange={(e) => setFormData({...formData, endDate: e.target.value})} className="h-10 rounded-xl border-orange-100" />
-                </div>
+              <div className="grid gap-2">
+                <Label htmlFor="endDate" className="text-xs font-black uppercase text-slate-400 tracking-widest">Ends On</Label>
+                <Input id="endDate" type="date" value={formData.endDate} onChange={(e) => setFormData({...formData, endDate: e.target.value})} className="h-12 rounded-xl border-orange-100" />
               </div>
             </div>
 
@@ -292,25 +209,56 @@ const AdminTournaments: React.FC = () => {
                 <Input id="location" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="Location name" className="h-12 rounded-xl" />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="category" className="text-xs font-black uppercase text-slate-400 tracking-widest">Division</Label>
+                <Label htmlFor="category" className="text-xs font-black uppercase text-slate-400 tracking-widest">Division/Category</Label>
                 <Input id="category" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} placeholder="e.g. Open / Under-19" className="h-12 rounded-xl" />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="fee" className="text-xs font-black uppercase text-slate-400 tracking-widest">Entry Fee (₹)</Label>
-                <Input id="fee" type="number" value={formData.entryFee} onChange={(e) => setFormData({...formData, entryFee: e.target.value})} className="h-12 rounded-xl" />
-              </div>
-              <div className="grid gap-2">
                 <Label htmlFor="prize" className="text-xs font-black uppercase text-slate-400 tracking-widest">Total Prize Pool</Label>
                 <Input id="prize" value={formData.totalPrizePool} onChange={(e) => setFormData({...formData, totalPrizePool: e.target.value})} placeholder="e.g. ₹1,00,000" className="h-12 rounded-xl border-amber-100" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="fee" className="text-xs font-black uppercase text-slate-400 tracking-widest">Entry Fee (₹)</Label>
+                <Input id="fee" type="number" value={formData.entryFee} onChange={(e) => setFormData({...formData, entryFee: e.target.value})} className="h-12 rounded-xl" />
               </div>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="discount" className="text-xs font-black uppercase text-slate-400 tracking-widest">Discount Details</Label>
-              <Input id="discount" value={formData.discountDetails} onChange={(e) => setFormData({...formData, discountDetails: e.target.value})} placeholder="e.g. Early bird 15% off until Oct 1st" className="h-12 rounded-xl italic text-sm" />
+              <Label htmlFor="discount" className="text-xs font-black uppercase text-slate-400 tracking-widest">Discount Information</Label>
+              <Textarea id="discount" value={formData.discountDetails} onChange={(e) => setFormData({...formData, discountDetails: e.target.value})} placeholder="Enter early bird or other discount details..." className="rounded-xl min-h-[80px] text-sm" />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="otherDetails" className="text-xs font-black uppercase text-slate-400 tracking-widest">Other Details</Label>
+              <Textarea id="otherDetails" value={formData.otherDetails} onChange={(e) => setFormData({...formData, otherDetails: e.target.value})} placeholder="Additional tournament rules or information..." className="rounded-xl min-h-[100px]" />
+            </div>
+
+            <div className="grid gap-2">
+              <Label className="text-xs font-black uppercase text-slate-400 tracking-widest">Tournament Brochure (PDF)</Label>
+              <div className="flex items-center gap-4">
+                <div className="relative flex-1">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    onChange={(e) => setSelectedBrochure(e.target.files?.[0] || null)}
+                  />
+                  <div className={`h-12 px-4 border-2 border-dashed rounded-xl flex items-center gap-2 transition-all ${selectedBrochure ? 'border-emerald-500 bg-emerald-50 text-emerald-600' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
+                    <Upload className="h-4 w-4" />
+                    <span className="text-xs font-bold truncate">{selectedBrochure ? selectedBrochure.name : (formData.brochureUrl ? "Change Brochure" : "Upload Brochure")}</span>
+                  </div>
+                </div>
+                {formData.brochureUrl && !selectedBrochure && (
+                   <a href={formData.brochureUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs font-bold">View Current</a>
+                )}
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="contactDetails" className="text-xs font-black uppercase text-slate-400 tracking-widest">Contact Details</Label>
+              <Input id="contactDetails" value={formData.contactDetails} onChange={(e) => setFormData({...formData, contactDetails: e.target.value})} placeholder="Email or Phone for queries" className="h-12 rounded-xl" />
             </div>
 
             <div className="grid gap-2">
@@ -326,6 +274,64 @@ const AdminTournaments: React.FC = () => {
                   <SelectItem value="CANCELLED">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-4 pt-4 border-t">
+              <Label className="text-xs font-black uppercase text-slate-400 tracking-widest">Poster & Orientation</Label>
+
+              <RadioGroup
+                value={formData.posterOrientation}
+                onValueChange={(val) => setFormData({...formData, posterOrientation: val})}
+                className="flex gap-4"
+              >
+                <div className="flex items-center space-x-2 bg-slate-50 px-4 py-3 rounded-xl border border-slate-100 cursor-pointer flex-1">
+                  <RadioGroupItem value="LANDSCAPE" id="landscape" />
+                  <Label htmlFor="landscape" className="font-bold text-sm cursor-pointer">Landscape</Label>
+                </div>
+                <div className="flex items-center space-x-2 bg-slate-50 px-4 py-3 rounded-xl border border-slate-100 cursor-pointer flex-1">
+                  <RadioGroupItem value="PORTRAIT" id="portrait" />
+                  <Label htmlFor="portrait" className="font-bold text-sm cursor-pointer">Portrait</Label>
+                </div>
+              </RadioGroup>
+
+              <div className="border-2 border-dashed border-slate-200 rounded-[1.5rem] p-4 text-center hover:bg-slate-50 transition-colors min-h-[160px] flex items-center justify-center bg-slate-50/50">
+                {previewUrl ? (
+                  <div className={`relative w-full rounded-xl overflow-hidden shadow-md ${formData.posterOrientation === 'PORTRAIT' ? 'aspect-[3/4] max-w-[200px]' : 'aspect-video'}`}>
+                    <img src={previewUrl} alt="Banner" className="w-full h-full object-cover" />
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      className="absolute top-2 right-2 h-7 w-7 rounded-lg"
+                      onClick={() => {
+                        setPreviewUrl("");
+                        setSelectedFile(null);
+                        setFormData({...formData, imageUrl: ""});
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="cursor-pointer flex flex-col items-center py-6 w-full group">
+                    <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <Upload className="h-6 w-6 text-orange-500" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Upload Poster ({formData.posterOrientation})</span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setSelectedFile(file);
+                          setPreviewUrl(URL.createObjectURL(file));
+                        }
+                      }}
+                    />
+                  </label>
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,0 @@
-🚀 Server running on port 5000
-🟢 Database connected successfully!
-prisma:error
-Invalid `prisma.admin.findUnique()` invocation:

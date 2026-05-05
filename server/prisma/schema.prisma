@@ -126,8 +126,8 @@ model Registration {
   phone           String
   
   // FIDE Details
-  fideId          String     @default("NA") // ✅ NEW: Default set to NA
-  fideRating      Int        @default(0)    // ✅ NEW: Default set to 0
+  fideId          String     @default("0") // ✅ Updated default
+  fideRating      Int        @default(0)    // ✅ Default set to 0
   
   address         String     @db.Text       // ✅ NEW
   

@@ -60,14 +60,18 @@ export const registerForTournament = async (req, res) => {
 export const createTournament = async (req, res) => {
   try {
     let imageUrl = req.body.imageUrl;
+    let brochureUrl = req.body.brochureUrl;
 
     if (req.files) {
       if (req.files['image']?.[0]) {
         imageUrl = await uploadToCloudinary(req.files['image'][0].buffer, "tournaments");
       }
+      if (req.files['brochure']?.[0]) {
+        brochureUrl = await uploadToCloudinary(req.files['brochure'][0].buffer, "brochures");
+      }
     }
 
-    const data = await tournamentService.createTournament({ ...req.body, imageUrl });
+    const data = await tournamentService.createTournament({ ...req.body, imageUrl, brochureUrl });
     res.status(201).json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -78,14 +82,18 @@ export const createTournament = async (req, res) => {
 export const updateTournament = async (req, res) => {
   try {
     let imageUrl = req.body.imageUrl;
+    let brochureUrl = req.body.brochureUrl;
 
     if (req.files) {
       if (req.files['image']?.[0]) {
         imageUrl = await uploadToCloudinary(req.files['image'][0].buffer, "tournaments");
       }
+      if (req.files['brochure']?.[0]) {
+        brochureUrl = await uploadToCloudinary(req.files['brochure'][0].buffer, "brochures");
+      }
     }
 
-    const data = await tournamentService.updateTournament(req.params.id, { ...req.body, imageUrl });
+    const data = await tournamentService.updateTournament(req.params.id, { ...req.body, imageUrl, brochureUrl });
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
