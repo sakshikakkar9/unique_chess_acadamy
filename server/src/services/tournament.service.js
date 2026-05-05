@@ -29,6 +29,22 @@ export const getTournamentById = async (id) => {
   });
 };
 
+const parseDate = (date) => {
+  if (!date || date === "null" || date === "undefined" || date === "") return null;
+  const d = new Date(date);
+  return isNaN(d.getTime()) ? null : d;
+};
+
+const parseFloatSafe = (val) => {
+  const parsed = parseFloat(val);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
+const parseIntSafe = (val, fallback = 0) => {
+  const parsed = parseInt(val);
+  return isNaN(parsed) ? fallback : parsed;
+};
+
 // ✅ UPDATED: CREATE TOURNAMENT WITH NEW FIELDS
 export const createTournament = async (data) => {
   return await prisma.tournament.create({
@@ -37,10 +53,10 @@ export const createTournament = async (data) => {
       location: data.location,
       description: data.description || "",
       // Mapped new schema fields
-      startDate: new Date(data.startDate), 
-      endDate: data.endDate ? new Date(data.endDate) : null,
-      regStartDate: data.regStartDate ? new Date(data.regStartDate) : null,
-      regEndDate: data.regEndDate ? new Date(data.regEndDate) : null,
+      startDate: parseDate(data.startDate) || new Date(),
+      endDate: parseDate(data.endDate),
+      regStartDate: parseDate(data.regStartDate),
+      regEndDate: parseDate(data.regEndDate),
       posterOrientation: data.posterOrientation || 'LANDSCAPE',
       category: data.category || null,
       totalPrizePool: data.totalPrizePool || null,
@@ -49,7 +65,7 @@ export const createTournament = async (data) => {
       otherDetails: data.otherDetails || null,
       contactDetails: data.contactDetails || null,
       status: data.status || 'UPCOMING',
-      entryFee: parseFloat(data.entryFee || 0),
+      entryFee: parseFloatSafe(data.entryFee),
       imageUrl: data.imageUrl || null,
     }
   });
@@ -72,12 +88,12 @@ export const updateTournament = async (id, data) => {
       brochureUrl: data.brochureUrl,
       otherDetails: data.otherDetails,
       contactDetails: data.contactDetails,
-      entryFee: data.entryFee !== undefined ? parseFloat(data.entryFee) : undefined,
+      entryFee: data.entryFee !== undefined ? parseFloatSafe(data.entryFee) : undefined,
       // Fixed field names for update logic
-      startDate: data.startDate ? new Date(data.startDate) : undefined,
-      endDate: data.endDate ? new Date(data.endDate) : null,
-      regStartDate: data.regStartDate ? new Date(data.regStartDate) : null,
-      regEndDate: data.regEndDate ? new Date(data.regEndDate) : null,
+      startDate: data.startDate !== undefined ? parseDate(data.startDate) : undefined,
+      endDate: data.endDate !== undefined ? parseDate(data.endDate) : undefined,
+      regStartDate: data.regStartDate !== undefined ? parseDate(data.regStartDate) : undefined,
+      regEndDate: data.regEndDate !== undefined ? parseDate(data.regEndDate) : undefined,
       posterOrientation: data.posterOrientation || undefined,
     }
   });
@@ -98,13 +114,13 @@ export const registerForTournament = async (tournamentId, registrationData) => {
     data: {
       studentName: registrationData.studentName,
       gender: registrationData.gender,
-      dob: new Date(registrationData.dob),
+      dob: parseDate(registrationData.dob) || new Date(),
       phone: registrationData.phone,
       email: registrationData.email || null,
       address: registrationData.address,
       fideId: registrationData.fideId || "NA",
       // Convert to Number to satisfy Prisma's Int requirement
-      fideRating: parseInt(registrationData.fideRating) || 0,
+      fideRating: parseIntSafe(registrationData.fideRating),
       discoverySource: registrationData.discoverySource,
       category: registrationData.category || null,
       transactionId: registrationData.transactionId || null,
