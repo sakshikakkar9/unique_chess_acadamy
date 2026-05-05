@@ -144,4 +144,19 @@ export const deleteRegistration = async (req, res) => {
   }
 };
 
+export const getRegistrationsByTournamentId = async (req, res) => {
+  try {
+    const { tournamentId } = req.query;
+    if (!tournamentId) return res.status(400).json({ error: "tournamentId query parameter is required" });
+
+    const registrations = await prisma.registration.findMany({
+      where: { tournamentId: parseInt(tournamentId) },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(registrations);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const addTournamentResult = async (req, res) => res.status(200).json({ msg: "Result" });

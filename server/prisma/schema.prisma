@@ -74,6 +74,9 @@ model Tournament {
   brochureUrl     String?           // New: For the brochure upload
   otherDetails    String?           @db.Text // New
   contactDetails  String?           // New
+  regStartDate    DateTime?         // New
+  regEndDate      DateTime?         // New
+  posterOrientation PosterOrientation @default(LANDSCAPE) // New
   status          TournamentStatus  @default(UPCOMING)
   imageUrl        String?           
   
@@ -214,6 +217,11 @@ enum TournamentStatus {
   ONGOING
   COMPLETED
   CANCELLED
+}
+
+enum PosterOrientation {
+  LANDSCAPE
+  PORTRAIT
 }
 
 enum EventCategory {
