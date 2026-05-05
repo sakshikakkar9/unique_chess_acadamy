@@ -25,6 +25,7 @@ const AdminCourses = () => {
   
   const [formData, setFormData] = useState<any>({ 
     title: "",
+    description: "",
     ageGroup: "ADULTS",
     skillLevel: "BEGINNER",
     mode: "ONLINE",
@@ -63,6 +64,7 @@ const AdminCourses = () => {
     try {
       const data = new FormData();
       data.append("title", formData.title);
+      data.append("description", formData.description || "");
       data.append("ageGroup", formData.ageGroup);
       data.append("skillLevel", formData.skillLevel);
       data.append("classTime", formData.classTime);
@@ -94,6 +96,7 @@ const AdminCourses = () => {
     setPreviewUrl("");
     setFormData({ 
       title: "",
+      description: "",
       ageGroup: "ADULTS", 
       skillLevel: "BEGINNER", 
       mode: "ONLINE", 
@@ -204,6 +207,16 @@ const AdminCourses = () => {
                 <Label>Fee (₹)</Label>
                 <Input type="number" value={formData.fee || ""} onChange={(e) => setFormData({...formData, fee: Number(e.target.value)})} />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Course Description</Label>
+            <Textarea
+              value={formData.description || ""}
+              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              placeholder="Provide a detailed description of the course, its objectives, and what students will learn."
+              className="min-h-[100px]"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

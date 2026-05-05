@@ -159,6 +159,7 @@ model DemoRegistration {
 model Course {
   id             String             @id @default(cuid())
   title          String
+  description    String?            @db.Text
   ageGroup       String             // e.g., "Kids (5-10)", "Adults"
   skillLevel     SkillLevel         @default(BEGINNER)
   classTime      String             // e.g., "17:00"
