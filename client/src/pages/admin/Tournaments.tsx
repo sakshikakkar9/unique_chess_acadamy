@@ -124,8 +124,9 @@ const AdminTournaments: React.FC = () => {
       if (selectedTournament) await updateTournament(selectedTournament.id, data);
       else await addTournament(data);
       setIsModalOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save failed:", error);
+      // Toast is already handled in the hook
     }
   };
 

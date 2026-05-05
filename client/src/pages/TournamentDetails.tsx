@@ -97,7 +97,13 @@ export default function TournamentDetails() {
       onSuccess: (data: any) => {
         setRefId(data.referenceId || "UCA-" + Math.random().toString(36).toUpperCase().substring(2, 10));
         setSuccess(true);
-        toast({ title: "Registration Successful!", description: "Your spot in the arena is now reserved." });
+      },
+      onError: (error: any) => {
+        toast({
+          variant: "destructive",
+          title: "Registration Failed",
+          description: error.response?.data?.error || "Could not process registration. Please check all fields and try again."
+        });
       }
     });
   };

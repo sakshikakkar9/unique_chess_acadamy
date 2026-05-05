@@ -16,13 +16,12 @@ export const useAdminTournaments = () => {
   });
 
   const addMutation = useMutation({
-    mutationFn: (newTournament: any) => {
-      if (newTournament instanceof FormData) {
-        return api.post("/tournaments/admin/create", newTournament, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
-      }
-      return api.post("/tournaments/admin/create", newTournament);
+    mutationFn: async (newTournament: any) => {
+      const config = newTournament instanceof FormData
+        ? { headers: { "Content-Type": "multipart/form-data" } }
+        : {};
+      const response = await api.post("/tournaments/admin/create", newTournament, config);
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tournaments"] });
@@ -38,13 +37,12 @@ export const useAdminTournaments = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number | string; data: any }) => {
-      if (data instanceof FormData) {
-        return api.put(`/tournaments/admin/update/${id}`, data, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
-      }
-      return api.put(`/tournaments/admin/update/${id}`, data);
+    mutationFn: async ({ id, data }: { id: number | string; data: any }) => {
+      const config = data instanceof FormData
+        ? { headers: { "Content-Type": "multipart/form-data" } }
+        : {};
+      const response = await api.put(`/tournaments/admin/update/${id}`, data, config);
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tournaments"] });
