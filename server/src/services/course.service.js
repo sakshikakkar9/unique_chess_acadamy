@@ -50,7 +50,7 @@ export const createCourse = async (data) => {
       description: data.description || null,
       ageGroup: data.ageGroup || 'ADULTS',
       // Force Uppercase to match Prisma SkillLevel Enum
-      skillLevel: (data.skillLevel || "BEGINNER").toUpperCase(), 
+      skillLevel: (data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
       duration: data.duration || "N/A",
       custom_banner_url: data.custom_banner_url || null,
       // Ensure Float type for PostgreSQL
@@ -83,7 +83,7 @@ export const updateCourse = async (id, data) => {
   if (data.title) updatePayload.title = data.title;
   if (data.description !== undefined) updatePayload.description = data.description;
   if (data.ageGroup) updatePayload.ageGroup = data.ageGroup;
-  if (data.skillLevel) updatePayload.skillLevel = data.skillLevel.toUpperCase();
+  if (data.skillLevel) updatePayload.skillLevel = data.skillLevel.toUpperCase().replace(/\s+/g, '_');
   if (data.duration) updatePayload.duration = data.duration;
   if (data.custom_banner_url) updatePayload.custom_banner_url = data.custom_banner_url;
   
@@ -145,7 +145,7 @@ export const createEnrollment = async (courseId, data, proofs) => {
         ageProofUrl: ageProofUrl,
         paymentProofUrl: paymentProofUrl,
         transactionId: data.transactionId || "",
-        experienceLevel: data.experienceLevel || data.skillLevel || "BEGINNER",
+        experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
         status: 'PENDING',
       },
     });

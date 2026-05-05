@@ -54,15 +54,17 @@ export const createCourse = async (req, res) => {
       contactDetails,
       classTime,
       duration,
-      // 1. Force Float for Fee
-      fee: parseFloat(fee), 
+      // 1. Force Float for Fee with fallback
+      fee: parseFloat(fee) || 0,
       // 2. Pass days as is (service handles string/array)
       days: days,
       // 3. Match Schema Enums (Upper Case)
       skillLevel: skillLevel ? skillLevel.toUpperCase() : "BEGINNER",
       mode: mode ? mode.toUpperCase() : "ONLINE",
-      // 4. Image handling (from your previous middleware)
-      custom_banner_url: req.files?.image ? await uploadToCloudinary(req.files.image[0].buffer) : null,
+      // 4. Image handling (checks both 'image' and 'banner' fields)
+      custom_banner_url: (req.files?.image || req.files?.banner)
+        ? await uploadToCloudinary((req.files.image || req.files.banner)[0].buffer)
+        : null,
     };
 
     const newCourse = await courseService.createCourse(courseData);
@@ -78,14 +80,16 @@ export const updateCourse = async (req, res) => {
     
     const updateData = {
       ...req.body,
-      // Ensure numeric types
-      fee: req.body.fee ? parseFloat(req.body.fee) : undefined,
+      // Ensure numeric types (check for undefined to allow 0)
+      fee: req.body.fee !== undefined ? parseFloat(req.body.fee) : undefined,
       // Ensure Enum types
       skillLevel: req.body.skillLevel ? req.body.skillLevel.toUpperCase() : undefined,
       mode: req.body.mode ? req.body.mode.toUpperCase() : undefined,
       // Pass raw days
       days: req.body.days,
-      custom_banner_url: req.files?.image ? await uploadToCloudinary(req.files.image[0].buffer) : undefined,
+      custom_banner_url: (req.files?.image || req.files?.banner)
+        ? await uploadToCloudinary((req.files.image || req.files.banner)[0].buffer)
+        : undefined,
     };
 
     // Clean up undefined so we don't accidentally overwrite with undefined
