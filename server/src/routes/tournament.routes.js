@@ -34,12 +34,18 @@ router.delete('/admin/registrations/:registrationId', tournamentController.delet
 // --- Admin (Tournament Management) ---
 router.post(
   '/admin/create',
-  upload.fields([{ name: 'image', maxCount: 1 }]),
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'brochure', maxCount: 1 }
+  ]),
   tournamentController.createTournament
 );
 router.put(
   '/admin/update/:id',
-  upload.fields([{ name: 'image', maxCount: 1 }]),
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'brochure', maxCount: 1 }
+  ]),
   tournamentController.updateTournament
 );
 router.delete('/admin/delete/:id', tournamentController.deleteTournament);
