@@ -41,6 +41,9 @@ export interface Tournament {
   description?: string;
   startDate: string;
   endDate?: string;
+  regStartDate?: string;
+  regEndDate?: string;
+  posterOrientation?: "LANDSCAPE" | "PORTRAIT";
   location?: string;
   category?: string;
   totalPrizePool?: string;
@@ -54,6 +57,9 @@ export interface Tournament {
   scannerUrl?: string;
   results?: TournamentResult[];
   registrations?: Registration[];
+  _count?: {
+    registrations: number;
+  };
   createdAt?: string;
   updatedAt?: string;
 }

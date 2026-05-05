@@ -19,6 +19,7 @@ import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 import { fadeUp, stagger } from "@/components/shared/motion";
 import PaymentDisplay from "@/components/shared/PaymentDisplay";
+import OrientationWrapper from "@/features/tournaments/components/OrientationWrapper";
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2000&auto=format&fit=crop";
 
@@ -170,23 +171,27 @@ export default function TournamentDetails() {
           </Link>
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-12 items-start">
-          {/* Left Section: Tournament Summary & Payment */}
-          <div className="lg:col-span-5 space-y-8">
+        <OrientationWrapper
+          orientation={tournament.posterOrientation}
+          poster={
+            <motion.div initial="hidden" animate="visible" variants={fadeUp} className={cn(
+              "relative rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white",
+              tournament.posterOrientation === 'PORTRAIT' ? "aspect-[3/4]" : "aspect-video"
+            )}>
+              <img
+                src={tournament.imageUrl || DEFAULT_BANNER}
+                alt={tournament.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-4 left-4">
+                <span className="px-4 py-1.5 bg-orange-600 text-white rounded-lg text-[10px] font-black uppercase tracking-wider shadow-lg">
+                  {tournament.category || "Professional"}
+                </span>
+              </div>
+            </motion.div>
+          }
+          details={
             <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-6">
-              <motion.div variants={fadeUp} className="relative aspect-video rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white">
-                <img
-                  src={tournament.imageUrl || DEFAULT_BANNER}
-                  alt={tournament.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 left-4">
-                  <span className="px-4 py-1.5 bg-orange-600 text-white rounded-lg text-[10px] font-black uppercase tracking-wider shadow-lg">
-                    {tournament.category || "Professional"}
-                  </span>
-                </div>
-              </motion.div>
-
               <motion.div variants={fadeUp} className="space-y-4">
                 <h1 className="text-4xl font-black text-slate-900 leading-tight tracking-tighter">
                   {tournament.title}
@@ -231,10 +236,8 @@ export default function TournamentDetails() {
                 <PaymentDisplay />
               </motion.div>
             </motion.div>
-          </div>
-
-          {/* Right Section: Registration Form */}
-          <div className="lg:col-span-7">
+          }
+          form={
             <Card className="border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden bg-white">
               <div className="h-2 bg-orange-600" />
               <CardContent className="p-10">
@@ -439,8 +442,8 @@ export default function TournamentDetails() {
                 </form>
               </CardContent>
             </Card>
-          </div>
-        </div>
+          }
+        />
       </main>
 
       <Footer />

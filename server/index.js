@@ -30,6 +30,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
+  'http://localhost:5176',
   'https://unique-chess-academy.vercel.app',
   'https://unique-chess-acadamy-tqe5.vercel.app' // 👈 Added this exactly as seen in your screenshot
 ];

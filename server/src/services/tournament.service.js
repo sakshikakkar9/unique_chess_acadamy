@@ -3,7 +3,12 @@ import prisma from '../../lib/prisma.js';
 // --- GET ALL TOURNAMENTS ---
 export const getAllTournaments = async () => {
   return await prisma.tournament.findMany({
-    include: { results: true },
+    include: {
+      results: true,
+      _count: {
+        select: { registrations: true }
+      }
+    },
     // Changed 'date' to 'startDate' to match your new schema
     orderBy: { startDate: 'asc' },
   });
@@ -15,7 +20,12 @@ export const getTournamentById = async (id) => {
   if (isNaN(numericId)) return null;
   return await prisma.tournament.findUnique({
     where: { id: numericId },
-    include: { results: { orderBy: { position: 'asc' } } },
+    include: {
+      results: { orderBy: { position: 'asc' } },
+      _count: {
+        select: { registrations: true }
+      }
+    },
   });
 };
 
@@ -29,6 +39,9 @@ export const createTournament = async (data) => {
       // Mapped new schema fields
       startDate: new Date(data.startDate), 
       endDate: data.endDate ? new Date(data.endDate) : null,
+      regStartDate: data.regStartDate ? new Date(data.regStartDate) : null,
+      regEndDate: data.regEndDate ? new Date(data.regEndDate) : null,
+      posterOrientation: data.posterOrientation || 'LANDSCAPE',
       category: data.category || null,
       totalPrizePool: data.totalPrizePool || null,
       discountDetails: data.discountDetails || null,
@@ -63,6 +76,9 @@ export const updateTournament = async (id, data) => {
       // Fixed field names for update logic
       startDate: data.startDate ? new Date(data.startDate) : undefined,
       endDate: data.endDate ? new Date(data.endDate) : null,
+      regStartDate: data.regStartDate ? new Date(data.regStartDate) : null,
+      regEndDate: data.regEndDate ? new Date(data.regEndDate) : null,
+      posterOrientation: data.posterOrientation || undefined,
     }
   });
 };

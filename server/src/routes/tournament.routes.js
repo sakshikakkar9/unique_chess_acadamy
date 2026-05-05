@@ -27,6 +27,7 @@ router.post(
 
 // --- Admin (Student Management) ---
 router.get('/admin/registrations/all', tournamentController.getAllRegistrations);
+router.get('/admin/registrations', tournamentController.getRegistrationsByTournamentId); // ✅ NEW
 router.patch('/admin/registrations/:registrationId', tournamentController.updateRegistration);
 router.delete('/admin/registrations/:registrationId', tournamentController.deleteRegistration);
 
