@@ -12,7 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft, CheckCircle2, Loader2, Upload,
   BookOpen, Clock, Calendar, BarChart3, Globe,
-  ShieldCheck, CreditCard, Info
+  ShieldCheck, CreditCard, Info, User, ChevronDown, MapPin,
+  Layers, Zap, HelpCircle
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -43,13 +44,9 @@ export default function CourseEnrollmentPage() {
     studentName: "",
     gender: "Male",
     dob: "",
-    email: "",
     phone: "",
-    fideId: "NA",
-    fideRating: "0",
     address: "",
     discoverySource: "Social Media",
-    experienceLevel: "BEGINNER",
     transactionId: "",
     category: ""
   });
@@ -83,7 +80,10 @@ export default function CourseEnrollmentPage() {
         ...form,
         ageProof: files.age,
         paymentProof: files.payment,
-        fideRating: parseInt(form.fideRating) || 0
+        experienceLevel: course.skillLevel,
+        email: "", // Default empty as removed from form
+        fideId: "NA",
+        fideRating: 0
       });
 
       setRefId(result.referenceId);
@@ -134,7 +134,7 @@ export default function CourseEnrollmentPage() {
               <p className="text-2xl font-black text-blue-600">{refId}</p>
             </div>
 
-            <Button onClick={() => navigate("/courses")} className="w-full h-14 bg-slate-900 hover:bg-blue-600 rounded-xl font-bold transition-all">
+            <Button onClick={() => navigate("/courses")} className="w-full h-14 bg-slate-900 hover:bg-blue-600 rounded-xl font-bold transition-all text-white">
               Return to Programs
             </Button>
           </motion.div>
@@ -157,10 +157,11 @@ export default function CourseEnrollmentPage() {
         </div>
 
         <div className="grid lg:grid-cols-12 gap-12 items-start">
-          {/* Left Section: Course Summary & Payment */}
+          {/* Left Section: Course Detailed Information */}
           <div className="lg:col-span-5 space-y-8">
-            <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-6">
-              <motion.div variants={fadeUp} className="relative aspect-video rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white">
+            <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-8">
+              {/* Banner */}
+              <motion.div variants={fadeUp} className="relative aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
                 <img
                   src={course.custom_banner_url || DEFAULT_BANNER}
                   alt={course.title}
@@ -173,99 +174,202 @@ export default function CourseEnrollmentPage() {
                 </div>
               </motion.div>
 
+              {/* Title & Description */}
               <motion.div variants={fadeUp} className="space-y-4">
-                <h1 className="text-4xl font-black text-slate-900 leading-tight tracking-tighter">
-                  {course.title}
-                </h1>
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex items-center gap-2 px-3 py-1 bg-white border border-slate-100 rounded-lg text-xs font-bold text-slate-600">
-                    <BarChart3 className="h-3.5 w-3.5 text-blue-500" /> {course.skillLevel}
-                  </div>
-                  <div className="flex items-center gap-2 px-3 py-1 bg-white border border-slate-100 rounded-lg text-xs font-bold text-slate-600">
-                    <Clock className="h-3.5 w-3.5 text-blue-500" /> {course.duration}
-                  </div>
+                <div className="space-y-2">
+                  <span className="px-4 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest">
+                    Course Details
+                  </span>
+                  <h1 className="text-4xl font-black text-slate-900 leading-tight tracking-tighter">
+                    {course.title}
+                  </h1>
                 </div>
-                <p className="text-slate-600 font-medium leading-relaxed">
-                  {course.contactDetails || "Master the game of kings with our structured training program designed for excellence."}
+
+                <p className="text-slate-600 font-medium leading-relaxed whitespace-pre-wrap">
+                  {course.description || "Embark on a journey of strategic mastery. This course is meticulously designed to take your skills to the next level through structured learning and expert guidance."}
                 </p>
               </motion.div>
 
-              <motion.div variants={fadeUp} className="p-8 bg-blue-600 rounded-[2rem] text-white shadow-xl shadow-blue-600/20">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <p className="text-blue-100 text-[10px] font-black uppercase tracking-widest mb-1">Total Fee</p>
-                    <p className="text-4xl font-black">₹{course.fee.toLocaleString()}</p>
+              {/* Info Grid */}
+              <motion.div variants={fadeUp} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-start gap-3 group hover:border-blue-200 transition-colors">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <BarChart3 className="h-5 w-5 text-blue-600" />
                   </div>
-                  <div className="h-12 w-12 bg-white/10 rounded-xl flex items-center justify-center">
-                    <CreditCard className="h-6 w-6" />
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Level</p>
+                    <p className="text-sm font-bold text-slate-900">{course.skillLevel}</p>
                   </div>
                 </div>
 
-                <PaymentDisplay />
+                <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-start gap-3 group hover:border-blue-200 transition-colors">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Clock className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Duration</p>
+                    <p className="text-sm font-bold text-slate-900">{course.duration}</p>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-start gap-3 group hover:border-blue-200 transition-colors">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Zap className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Age Group</p>
+                    <p className="text-sm font-bold text-slate-900">{course.ageGroup}</p>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-start gap-3 group hover:border-blue-200 transition-colors">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Calendar className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Class Time</p>
+                    <p className="text-sm font-bold text-slate-900">{course.classTime}</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Training Days */}
+              <motion.div variants={fadeUp} className="p-5 bg-white border border-slate-100 rounded-2xl">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Training Days</p>
+                <div className="flex flex-wrap gap-2">
+                  {course.days.map((day) => (
+                    <span key={day} className="px-3 py-1.5 bg-slate-50 text-slate-700 text-xs font-bold rounded-lg border border-slate-100">
+                      {day}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Fee and Payment */}
+              <motion.div variants={fadeUp} className="p-8 bg-slate-900 rounded-[2.5rem] text-white shadow-xl">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Total Fee</p>
+                    <p className="text-4xl font-black text-blue-500">₹{course.fee.toLocaleString()}</p>
+                  </div>
+                  <div className="h-12 w-12 bg-white/10 rounded-xl flex items-center justify-center">
+                    <CreditCard className="h-6 w-6 text-blue-500" />
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/5">
+                   <PaymentDisplay />
+                </div>
+              </motion.div>
+
+              {/* Contact Information */}
+              <motion.div variants={fadeUp} className="p-5 bg-blue-50 border border-blue-100 rounded-2xl flex items-center gap-4">
+                <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white">
+                  <HelpCircle className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-blue-600/60 uppercase tracking-widest">Questions? Contact Us</p>
+                  <p className="text-sm font-bold text-slate-900">{course.contactDetails}</p>
+                </div>
               </motion.div>
             </motion.div>
           </div>
 
           {/* Right Section: Registration Form */}
           <div className="lg:col-span-7">
-            <Card className="border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden bg-white">
+            <Card className="border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.08)] rounded-[2.5rem] overflow-hidden bg-white">
               <div className="h-2 bg-blue-600" />
-              <CardContent className="p-10">
+              <CardContent className="p-8 md:p-10">
                 <form onSubmit={handleSubmit} className="space-y-8">
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
                       <ShieldCheck className="h-5 w-5 text-blue-600" />
-                      <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Student Details</h2>
+                      <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Registration</h2>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      {/* Player Name */}
                       <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Full Name *</Label>
-                        <Input
-                          value={form.studentName}
-                          onChange={(e) => set("studentName", e.target.value)}
-                          required
-                          placeholder="John Doe"
-                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
-                        />
+                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Player Name *</Label>
+                        <div className="relative">
+                          <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                          <Input
+                            value={form.studentName}
+                            onChange={(e) => set("studentName", e.target.value)}
+                            required
+                            placeholder="Enter full name"
+                            className="h-14 pl-11 rounded-xl border-slate-200 bg-slate-50/50 font-medium"
+                          />
+                        </div>
                       </div>
+
+                      {/* Gender (Radio buttons) */}
                       <div className="space-y-2">
                         <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Gender *</Label>
-                        <select
-                          className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50/50 px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600"
-                          value={form.gender}
-                          onChange={(e) => set("gender", e.target.value)}
-                        >
-                          <option>Male</option>
-                          <option>Female</option>
-                          <option>Other</option>
-                        </select>
+                        <div className="flex gap-8 pt-1">
+                          {["Male", "Female", "Other"].map((g) => (
+                            <label key={g} className="flex items-center gap-2 cursor-pointer group">
+                              <div className="relative flex items-center justify-center">
+                                <input
+                                  type="radio"
+                                  name="gender"
+                                  value={g}
+                                  checked={form.gender === g}
+                                  onChange={(e) => set("gender", e.target.value)}
+                                  className="peer sr-only"
+                                />
+                                <div className="h-5 w-5 rounded-full border-2 border-slate-300 peer-checked:border-blue-600 transition-all" />
+                                <div className="absolute h-2.5 w-2.5 rounded-full bg-blue-600 scale-0 peer-checked:scale-100 transition-transform" />
+                              </div>
+                              <span className={cn("text-sm font-bold transition-colors", form.gender === g ? "text-blue-600" : "text-slate-500 group-hover:text-slate-700")}>
+                                {g}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Date of Birth *</Label>
-                        <Input
-                          type="date"
-                          value={form.dob}
-                          onChange={(e) => set("dob", e.target.value)}
-                          required
-                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Category (Optional)</Label>
-                        <Input
-                          placeholder="e.g. Under-15"
-                          value={form.category}
-                          onChange={(e) => set("category", e.target.value)}
-                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
-                        />
-                      </div>
-                    </div>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        {/* Category (Combobox/Select) */}
+                        <div className="space-y-2">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Category *</Label>
+                          <div className="relative">
+                            <select
+                              className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50/50 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer pr-10"
+                              value={form.category}
+                              onChange={(e) => set("category", e.target.value)}
+                              required
+                            >
+                              <option value="">Select Category</option>
+                              <option value="Beginner">Beginner</option>
+                              <option value="Intermediate">Intermediate</option>
+                              <option value="Advanced">Advanced</option>
+                              <option value="Professional">Professional</option>
+                              <option value="Under-7">Under-7</option>
+                              <option value="Under-9">Under-9</option>
+                              <option value="Under-11">Under-11</option>
+                              <option value="Under-13">Under-13</option>
+                              <option value="Under-15">Under-15</option>
+                              <option value="Open">Open</option>
+                            </select>
+                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                          </div>
+                        </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
+                        {/* Date of Birth */}
+                        <div className="space-y-2">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Date of Birth *</Label>
+                          <Input
+                            type="date"
+                            value={form.dob}
+                            onChange={(e) => set("dob", e.target.value)}
+                            required
+                            className="h-14 rounded-xl border-slate-200 bg-slate-50/50 font-bold"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Phone Number */}
                       <div className="space-y-2">
                         <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Phone Number *</Label>
                         <Input
@@ -274,146 +378,110 @@ export default function CourseEnrollmentPage() {
                           onChange={(e) => set("phone", e.target.value)}
                           required
                           placeholder="+91 98765 43210"
-                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
+                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50 font-medium"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Email Address</Label>
-                        <Input
-                          type="email"
-                          value={form.email}
-                          onChange={(e) => set("email", e.target.value)}
-                          placeholder="john@example.com"
-                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
-                        />
-                      </div>
-                    </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
+                      {/* Address */}
                       <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">FIDE ID (Optional)</Label>
-                        <Input
-                          value={form.fideId}
-                          onChange={(e) => set("fideId", e.target.value)}
-                          placeholder="FIDE ID"
-                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
+                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Full Address *</Label>
+                        <Textarea
+                          value={form.address}
+                          onChange={(e) => set("address", e.target.value)}
+                          required
+                          placeholder="Your complete residential address"
+                          className="rounded-xl border-slate-200 bg-slate-50/50 min-h-[100px] resize-none font-medium"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">FIDE Rating (Optional)</Label>
-                        <Input
-                          type="number"
-                          value={form.fideRating}
-                          onChange={(e) => set("fideRating", e.target.value)}
-                          placeholder="0"
-                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
-                        />
-                      </div>
-                    </div>
 
-                    <div className="space-y-2">
-                      <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Full Address *</Label>
-                      <Textarea
-                        value={form.address}
-                        onChange={(e) => set("address", e.target.value)}
-                        required
-                        placeholder="Your residential address"
-                        className="rounded-xl border-slate-200 bg-slate-50/50 min-h-[100px]"
-                      />
+                      {/* Discovery Source (How could you know about this course) */}
+                      <div className="space-y-2">
+                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">How did you find us? *</Label>
+                        <div className="relative">
+                          <select
+                            className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50/50 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer pr-10"
+                            value={form.discoverySource}
+                            onChange={(e) => set("discoverySource", e.target.value)}
+                            required
+                          >
+                            <option value="">Select Option</option>
+                            <option>Social Media</option>
+                            <option>Google Search</option>
+                            <option>Friend / Recommendation</option>
+                            <option>Academy Advertisement</option>
+                            <option>Through Coach</option>
+                            <option>Other</option>
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="space-y-6 pt-6">
-                    <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                      <BarChart3 className="h-5 w-5 text-blue-600" />
-                      <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Experience & Payment</h2>
+                  {/* Payment Proofs (Retained as essential) */}
+                  <div className="space-y-6 pt-6 border-t border-slate-100">
+                    <div className="flex items-center gap-2 pb-2">
+                      <CreditCard className="h-5 w-5 text-blue-600" />
+                      <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Payment Verification</h2>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Skill Level *</Label>
-                        <select
-                          className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50/50 px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600"
-                          value={form.experienceLevel}
-                          onChange={(e) => set("experienceLevel", e.target.value)}
-                        >
-                          <option value="BEGINNER">Beginner</option>
-                          <option value="INTERMEDIATE">Intermediate</option>
-                          <option value="ADVANCED">Advanced</option>
-                          <option value="GRANDMASTER">Expert</option>
-                        </select>
-                      </div>
+                    <div className="space-y-4">
                       <div className="space-y-2">
                         <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Transaction ID *</Label>
                         <Input
                           value={form.transactionId}
                           onChange={(e) => set("transactionId", e.target.value)}
                           required
-                          placeholder="UPI Reference No."
-                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
+                          placeholder="UPI Reference No. / ID"
+                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50 font-bold"
                         />
                       </div>
-                    </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Age Proof *</Label>
-                        <div className="relative h-14">
-                          <input
-                            type="file"
-                            onChange={(e) => handleFileChange(e, 'age')}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            required
-                          />
-                          <div className={cn(
-                            "h-full w-full border border-dashed rounded-xl flex items-center justify-center gap-2 px-4 transition-all",
-                            files.age ? "border-emerald-500 bg-emerald-50 text-emerald-600" : "border-slate-300 bg-slate-50 text-slate-400"
-                          )}>
-                            {files.age ? <CheckCircle2 className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
-                            <span className="text-xs font-bold truncate">{files.age ? files.age.name : "Upload Document"}</span>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Age Proof *</Label>
+                          <div className="relative h-14">
+                            <input
+                              type="file"
+                              onChange={(e) => handleFileChange(e, 'age')}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                              required
+                            />
+                            <div className={cn(
+                              "h-full w-full border-2 border-dashed rounded-xl flex items-center justify-center gap-2 px-4 transition-all",
+                              files.age ? "border-emerald-500 bg-emerald-50 text-emerald-600" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-blue-300"
+                            )}>
+                              {files.age ? <CheckCircle2 className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
+                              <span className="text-xs font-bold truncate">{files.age ? files.age.name : "Upload Document"}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Payment Screenshot *</Label>
+                          <div className="relative h-14">
+                            <input
+                              type="file"
+                              onChange={(e) => handleFileChange(e, 'payment')}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                              required
+                            />
+                            <div className={cn(
+                              "h-full w-full border-2 border-dashed rounded-xl flex items-center justify-center gap-2 px-4 transition-all",
+                              files.payment ? "border-emerald-500 bg-emerald-50 text-emerald-600" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-blue-300"
+                            )}>
+                              {files.payment ? <CheckCircle2 className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
+                              <span className="text-xs font-bold truncate">{files.payment ? files.payment.name : "Upload Proof"}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Payment Proof *</Label>
-                        <div className="relative h-14">
-                          <input
-                            type="file"
-                            onChange={(e) => handleFileChange(e, 'payment')}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            required
-                          />
-                          <div className={cn(
-                            "h-full w-full border border-dashed rounded-xl flex items-center justify-center gap-2 px-4 transition-all",
-                            files.payment ? "border-emerald-500 bg-emerald-50 text-emerald-600" : "border-slate-300 bg-slate-50 text-slate-400"
-                          )}>
-                            {files.payment ? <CheckCircle2 className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
-                            <span className="text-xs font-bold truncate">{files.payment ? files.payment.name : "Upload Screenshot"}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">How did you find us?</Label>
-                      <select
-                        className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50/50 px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600"
-                        value={form.discoverySource}
-                        onChange={(e) => set("discoverySource", e.target.value)}
-                      >
-                        <option>Social Media</option>
-                        <option>Through Coach</option>
-                        <option>Academy Event</option>
-                        <option>Google Search</option>
-                        <option>Friend/Word of Mouth</option>
-                      </select>
                     </div>
                   </div>
 
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-16 bg-blue-600 hover:bg-slate-900 text-white text-lg font-black rounded-2xl transition-all shadow-xl shadow-blue-600/10"
+                    className="w-full h-16 bg-blue-600 hover:bg-slate-900 text-white text-lg font-black rounded-2xl transition-all shadow-xl shadow-blue-600/20 active:scale-[0.98]"
                   >
                     {loading ? (
                       <span className="flex items-center gap-2">

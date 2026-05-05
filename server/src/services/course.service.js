@@ -47,6 +47,7 @@ export const createCourse = async (data) => {
   return await prisma.course.create({
     data: {
       title: data.title || "Untitled Course",
+      description: data.description || null,
       ageGroup: data.ageGroup || 'ADULTS',
       // Force Uppercase to match Prisma SkillLevel Enum
       skillLevel: (data.skillLevel || "BEGINNER").toUpperCase(), 
@@ -80,6 +81,7 @@ export const updateCourse = async (id, data) => {
   // Constructing a clean update object
   const updatePayload = {};
   if (data.title) updatePayload.title = data.title;
+  if (data.description !== undefined) updatePayload.description = data.description;
   if (data.ageGroup) updatePayload.ageGroup = data.ageGroup;
   if (data.skillLevel) updatePayload.skillLevel = data.skillLevel.toUpperCase();
   if (data.duration) updatePayload.duration = data.duration;

@@ -43,12 +43,13 @@ export const getCourseById = async (req, res) => {
 export const createCourse = async (req, res) => {
   try {
     const { 
-      title, ageGroup, skillLevel, classTime, 
+      title, description, ageGroup, skillLevel, classTime,
       duration, fee, days, contactDetails, mode 
     } = req.body;
 
     const courseData = {
       title,
+      description,
       ageGroup,
       contactDetails,
       classTime,
