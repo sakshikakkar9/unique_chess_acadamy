@@ -292,14 +292,14 @@ export default function TournamentDetails() {
                 </div>
 
                 {/* Payment Section (Sleek Card) */}
-                <motion.div variants={fadeUp} className="p-8 bg-white border-2 border-slate-100 rounded-[2.5rem] shadow-sm space-y-8">
-                  <div className="flex items-center justify-between pb-6 border-b border-slate-50">
+                <motion.div variants={fadeUp} className="space-y-4">
+                  <div className="px-8 py-6 bg-white border-2 border-slate-100 rounded-[2rem] shadow-sm flex items-center justify-between">
                     <div>
-                      <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Registration Fee</p>
-                      <p className="text-4xl font-black text-slate-900 tracking-tighter">₹{tournament.entryFee.toLocaleString()}</p>
+                      <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">Registration Fee</p>
+                      <p className="text-4xl font-black text-orange-600 tracking-tighter">₹{tournament.entryFee.toLocaleString()}</p>
                     </div>
-                    <div className="h-16 w-16 bg-orange-50 rounded-[1.5rem] flex items-center justify-center shadow-inner">
-                      <CreditCard className="h-8 w-8 text-orange-600" />
+                    <div className="h-14 w-14 bg-orange-50 rounded-2xl flex items-center justify-center">
+                      <CreditCard className="h-7 w-7 text-orange-600" />
                     </div>
                   </div>
 
@@ -310,9 +310,7 @@ export default function TournamentDetails() {
                     </div>
                   )}
 
-                  <div className="pt-2">
-                     <PaymentDisplay />
-                  </div>
+                  <PaymentDisplay />
                 </motion.div>
               </motion.div>
             </motion.div>
