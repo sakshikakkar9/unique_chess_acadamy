@@ -63,6 +63,28 @@ export default function TournamentDetails() {
   const set = (key: string, value: string) =>
     setForm(prev => ({ ...prev, [key]: value }));
 
+  const handleBrochureDownload = (e: React.MouseEvent, url: string) => {
+    e.preventDefault();
+
+    // Cloudinary force download flag
+    const downloadUrl = url.includes("cloudinary.com")
+      ? url.replace("/upload/", "/upload/fl_attachment/")
+      : url;
+
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.target = "_blank";
+    link.setAttribute("download", "");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Download Started",
+      description: "The tournament brochure is being downloaded to your system.",
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!tournament || !id) return;
@@ -206,6 +228,12 @@ export default function TournamentDetails() {
                   </h1>
                 </div>
 
+                {tournament.description && (
+                  <p className="text-slate-600 font-medium leading-relaxed whitespace-pre-wrap text-lg border-l-4 border-orange-600/20 pl-6">
+                    {tournament.description}
+                  </p>
+                )}
+
                 <div className="grid grid-cols-2 gap-6">
                   <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-orange-600/20 transition-all group">
                     <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
@@ -262,12 +290,9 @@ export default function TournamentDetails() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {tournament.brochureUrl && (
-                    <a
-                      href={tournament.brochureUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download
-                      className="flex items-center justify-between p-8 bg-white border border-slate-100 rounded-[2.5rem] group hover:border-orange-600 transition-all shadow-lg"
+                    <button
+                      onClick={(e) => handleBrochureDownload(e, tournament.brochureUrl!)}
+                      className="flex items-center justify-between p-8 bg-white border border-slate-100 rounded-[2.5rem] group hover:border-orange-600 transition-all shadow-lg text-left"
                     >
                       <div className="flex items-center gap-5">
                         <div className="h-16 w-16 rounded-2xl bg-orange-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shadow-inner">
@@ -278,7 +303,7 @@ export default function TournamentDetails() {
                           <p className="text-lg font-bold text-slate-900">Download PDF</p>
                         </div>
                       </div>
-                    </a>
+                    </button>
                   )}
 
                   <div className="p-8 bg-slate-900 rounded-[2.5rem] flex items-center gap-6 text-white shadow-xl relative overflow-hidden group">

@@ -13,7 +13,7 @@ import {
   ArrowLeft, CheckCircle2, Loader2, Upload,
   Clock, Calendar, BarChart3,
   ShieldCheck, CreditCard, User, ChevronDown,
-  Zap, HelpCircle
+  Zap, HelpCircle, FileText
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -59,6 +59,28 @@ export default function CourseEnrollmentPage() {
 
   const set = (key: string, value: string) =>
     setForm(prev => ({ ...prev, [key]: value }));
+
+  const handleBrochureDownload = (e: React.MouseEvent, url: string) => {
+    e.preventDefault();
+
+    // Cloudinary force download flag
+    const downloadUrl = url.includes("cloudinary.com")
+      ? url.replace("/upload/", "/upload/fl_attachment/")
+      : url;
+
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.target = "_blank";
+    link.setAttribute("download", "");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Download Started",
+      description: "The course brochure is being downloaded to your system.",
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -264,12 +286,9 @@ export default function CourseEnrollmentPage() {
               {/* Brochure Section */}
               {course.brochureUrl && (
                 <motion.div variants={fadeUp}>
-                  <a
-                    href={course.brochureUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                    className="flex items-center justify-between p-8 bg-white border border-slate-100 rounded-[2.5rem] group hover:border-blue-600 transition-all shadow-lg"
+                  <button
+                    onClick={(e) => handleBrochureDownload(e, course.brochureUrl!)}
+                    className="w-full flex items-center justify-between p-8 bg-white border border-slate-100 rounded-[2.5rem] group hover:border-blue-600 transition-all shadow-lg text-left"
                   >
                     <div className="flex items-center gap-5">
                       <div className="h-16 w-16 rounded-2xl bg-blue-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shadow-inner">
@@ -280,7 +299,7 @@ export default function CourseEnrollmentPage() {
                         <p className="text-lg font-bold text-slate-900">Download Course PDF</p>
                       </div>
                     </div>
-                  </a>
+                  </button>
                 </motion.div>
               )}
 
