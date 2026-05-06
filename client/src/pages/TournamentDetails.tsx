@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { fadeUp, stagger } from "@/components/shared/motion";
 import PaymentDisplay from "@/components/shared/PaymentDisplay";
 import OrientationWrapper from "@/features/tournaments/components/OrientationWrapper";
+import 'react-quill/dist/quill.snow.css';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2000&auto=format&fit=crop";
 
@@ -229,9 +230,10 @@ export default function TournamentDetails() {
                 </div>
 
                 {tournament.description && (
-                  <p className="text-slate-600 font-medium leading-relaxed whitespace-pre-wrap text-lg border-l-4 border-orange-600/20 pl-6">
-                    {tournament.description}
-                  </p>
+                  <div
+                    className="text-slate-600 font-medium leading-relaxed text-lg border-l-4 border-orange-600/20 pl-6 ql-editor ql-viewer p-0"
+                    dangerouslySetInnerHTML={{ __html: tournament.description }}
+                  />
                 )}
 
                 <div className="grid grid-cols-2 gap-6">
@@ -282,9 +284,10 @@ export default function TournamentDetails() {
                 {tournament.otherDetails && (
                   <div className="space-y-4">
                     <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">Tournament Rules & Info</p>
-                    <div className="p-8 bg-white border border-slate-100 rounded-[2.5rem] text-base text-slate-600 font-medium leading-relaxed whitespace-pre-wrap shadow-md border-l-4 border-l-orange-600">
-                      {tournament.otherDetails}
-                    </div>
+                    <div
+                      className="p-8 bg-white border border-slate-100 rounded-[2.5rem] text-base text-slate-600 font-medium leading-relaxed shadow-md border-l-4 border-l-orange-600 ql-editor ql-viewer"
+                      dangerouslySetInnerHTML={{ __html: tournament.otherDetails }}
+                    />
                   </div>
                 )}
 
