@@ -32,6 +32,11 @@ export const courseService = {
         payload.append("image", imageFile);
       }
 
+      const brochureFile = data.brochure || data.brochureUrl;
+      if (brochureFile instanceof File) {
+        payload.append("brochure", brochureFile);
+      }
+
       const scannerFile = data.scanner || data.scannerUrl;
       if (scannerFile instanceof File) {
         payload.append("scanner", scannerFile);
@@ -67,6 +72,11 @@ export const courseService = {
       const imageFile = data.image || data.banner || data.custom_banner_url;
       if (imageFile instanceof File) {
         payload.append("image", imageFile);
+      }
+
+      const brochureFile = data.brochure || data.brochureUrl;
+      if (brochureFile instanceof File) {
+        payload.append("brochure", brochureFile);
       }
 
       const scannerFile = data.scanner || data.scannerUrl;

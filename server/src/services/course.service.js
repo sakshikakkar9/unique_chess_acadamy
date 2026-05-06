@@ -53,6 +53,7 @@ export const createCourse = async (data) => {
       skillLevel: (data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
       duration: data.duration || "N/A",
       custom_banner_url: data.custom_banner_url || null,
+      brochureUrl: data.brochureUrl || null,
       // Ensure Float type for PostgreSQL
       fee: parseFloat(data.fee) || 0.0,
       days: Array.isArray(parsedDays) ? parsedDays : [],
@@ -87,6 +88,7 @@ export const updateCourse = async (id, data) => {
   if (data.skillLevel) updatePayload.skillLevel = data.skillLevel.toUpperCase().replace(/\s+/g, '_');
   if (data.duration) updatePayload.duration = data.duration;
   if (data.custom_banner_url) updatePayload.custom_banner_url = data.custom_banner_url;
+  if (data.brochureUrl !== undefined) updatePayload.brochureUrl = data.brochureUrl;
   
   // Explicitly check for fee to allow updating to 0 but avoiding 'undefined'
   if (data.fee !== undefined && data.fee !== null) {

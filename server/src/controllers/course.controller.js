@@ -66,6 +66,9 @@ export const createCourse = async (req, res) => {
       custom_banner_url: (req.files?.image || req.files?.banner)
         ? await uploadToCloudinary((req.files.image || req.files.banner)[0].buffer)
         : null,
+      brochureUrl: req.files?.brochure
+        ? await uploadToCloudinary(req.files.brochure[0].buffer, "brochures")
+        : null,
     };
 
     const newCourse = await courseService.createCourse(courseData);
@@ -90,6 +93,9 @@ export const updateCourse = async (req, res) => {
       days: req.body.days,
       custom_banner_url: (req.files?.image || req.files?.banner)
         ? await uploadToCloudinary((req.files.image || req.files.banner)[0].buffer)
+        : undefined,
+      brochureUrl: req.files?.brochure
+        ? await uploadToCloudinary(req.files.brochure[0].buffer, "brochures")
         : undefined,
     };
 

@@ -117,8 +117,8 @@ export default function TournamentDetails() {
   if (!tournament) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tighter">Tournament not found</h1>
-        <Button onClick={() => navigate("/tournaments")} className="rounded-xl font-bold">Back to Arenas</Button>
+        <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Tournament not found</h1>
+        <Button onClick={() => navigate("/tournaments")} className="rounded-xl font-semibold">Back to Arenas</Button>
       </div>
     );
   }
@@ -132,13 +132,13 @@ export default function TournamentDetails() {
             <div className="h-24 w-24 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="h-14 w-14 text-green-500" />
             </div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Registration Successful!</h1>
-            <p className="text-slate-500 font-bold leading-relaxed">Your registration for <span className="text-orange-600">{tournament.title}</span> has been submitted. Our team will review your application and contact you shortly.</p>
+            <h1 className="text-4xl font-bold text-slate-900 tracking-tight">Registration Successful!</h1>
+            <p className="text-slate-500 font-medium leading-relaxed">Your registration for <span className="text-orange-600 font-semibold">{tournament.title}</span> has been submitted. Our team will review your application and contact you shortly.</p>
 
             <div className="bg-slate-50 border border-slate-100 p-8 rounded-[2rem] space-y-2 relative group">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Reference ID</p>
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em]">Reference ID</p>
               <div className="flex items-center justify-center gap-2">
-                <p className="text-3xl font-black text-orange-600 tracking-tighter">{refId}</p>
+                <p className="text-3xl font-bold text-orange-600 tracking-tight">{refId}</p>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -153,7 +153,7 @@ export default function TournamentDetails() {
               </div>
             </div>
 
-            <Button onClick={() => navigate("/tournaments")} className="w-full h-16 bg-slate-900 hover:bg-orange-600 rounded-2xl font-black transition-all text-white text-lg shadow-xl shadow-slate-900/10">
+            <Button onClick={() => navigate("/tournaments")} className="w-full h-16 bg-slate-900 hover:bg-orange-600 rounded-2xl font-bold transition-all text-white text-lg shadow-lg shadow-slate-900/10">
               RETURN TO ARENAS
             </Button>
           </motion.div>
@@ -169,7 +169,7 @@ export default function TournamentDetails() {
 
       <main className="container mx-auto px-6 pt-32 pb-20">
         <div className="mb-12">
-          <Link to="/tournaments" className="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-orange-600 transition-colors group uppercase tracking-[0.2em]">
+          <Link to="/tournaments" className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-orange-600 transition-colors group uppercase tracking-[0.2em]">
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             <span>Back to Arenas</span>
           </Link>
@@ -188,7 +188,7 @@ export default function TournamentDetails() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute top-6 left-6">
-                <span className="px-4 py-2 bg-orange-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.15em] shadow-xl">
+                <span className="px-4 py-2 bg-orange-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] shadow-lg">
                   {tournament.category || "Professional"}
                 </span>
               </div>
@@ -198,63 +198,63 @@ export default function TournamentDetails() {
             <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-12">
               <motion.div variants={fadeUp} className="space-y-8">
                 <div className="space-y-3">
-                  <span className="px-4 py-1.5 bg-orange-100 text-orange-600 rounded-full text-[10px] font-black uppercase tracking-[0.15em]">
+                  <span className="px-4 py-1.5 bg-orange-100 text-orange-600 rounded-full text-[10px] font-bold uppercase tracking-[0.15em]">
                     Arena Details
                   </span>
-                  <h1 className="text-5xl font-black text-slate-900 leading-[0.9] tracking-tighter">
+                  <h1 className="text-4xl font-bold text-slate-900 leading-tight tracking-tight">
                     {tournament.title}
                   </h1>
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-orange-600/20 transition-all group">
-                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                  <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-orange-600/20 transition-all group">
+                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
                       <Calendar className="h-7 w-7 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Schedule</p>
-                      <p className="text-base font-black text-slate-900 tracking-tight">
+                      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Schedule</p>
+                      <p className="text-base font-bold text-slate-900 tracking-tight">
                         {new Date(tournament.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                         {tournament.endDate && ` - ${new Date(tournament.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`}
                       </p>
                     </div>
                   </div>
 
-                  <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-orange-600/20 transition-all group">
-                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                  <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-orange-600/20 transition-all group">
+                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
                       <MapPin className="h-7 w-7 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Venue</p>
-                      <p className="text-base font-black text-slate-900 tracking-tight line-clamp-1">{tournament.location}</p>
+                      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Venue</p>
+                      <p className="text-base font-bold text-slate-900 tracking-tight line-clamp-1">{tournament.location}</p>
                     </div>
                   </div>
 
-                  <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-orange-600/20 transition-all group">
-                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                  <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-orange-600/20 transition-all group">
+                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
                       <Trophy className="h-7 w-7 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Prize Pool</p>
-                      <p className="text-base font-black text-slate-900 tracking-tight">{tournament.totalPrizePool}</p>
+                      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Prize Pool</p>
+                      <p className="text-base font-bold text-slate-900 tracking-tight">{tournament.totalPrizePool}</p>
                     </div>
                   </div>
 
-                  <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-orange-600/20 transition-all group">
-                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                  <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-orange-600/20 transition-all group">
+                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
                       <Award className="h-7 w-7 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Category</p>
-                      <p className="text-base font-black text-slate-900 tracking-tight">{tournament.category}</p>
+                      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Category</p>
+                      <p className="text-base font-bold text-slate-900 tracking-tight">{tournament.category}</p>
                     </div>
                   </div>
                 </div>
 
                 {tournament.otherDetails && (
                   <div className="space-y-4">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Tournament Rules & Info</p>
-                    <div className="p-8 bg-white border-2 border-slate-100 rounded-[2.5rem] text-base text-slate-600 font-bold leading-relaxed whitespace-pre-wrap shadow-lg shadow-slate-200/50 border-l-4 border-l-orange-600">
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">Tournament Rules & Info</p>
+                    <div className="p-8 bg-white border border-slate-100 rounded-[2.5rem] text-base text-slate-600 font-medium leading-relaxed whitespace-pre-wrap shadow-md border-l-4 border-l-orange-600">
                       {tournament.otherDetails}
                     </div>
                   </div>
@@ -266,51 +266,52 @@ export default function TournamentDetails() {
                       href={tournament.brochureUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-between p-8 bg-white border-2 border-slate-100 rounded-[2.5rem] group hover:border-orange-600 transition-all shadow-xl shadow-slate-200/50"
+                      download
+                      className="flex items-center justify-between p-8 bg-white border border-slate-100 rounded-[2.5rem] group hover:border-orange-600 transition-all shadow-lg"
                     >
                       <div className="flex items-center gap-5">
-                        <div className="h-16 w-16 rounded-2xl bg-orange-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                        <div className="h-16 w-16 rounded-2xl bg-orange-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shadow-inner">
                           <FileText className="h-8 w-8 text-orange-600" />
                         </div>
                         <div>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-0.5">Brochure</p>
-                          <p className="text-lg font-black text-slate-900">Download PDF</p>
+                          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-0.5">Brochure</p>
+                          <p className="text-lg font-bold text-slate-900">Download PDF</p>
                         </div>
                       </div>
                     </a>
                   )}
 
-                  <div className="p-8 bg-slate-900 rounded-[2.5rem] flex items-center gap-6 text-white shadow-2xl shadow-slate-900/20 relative overflow-hidden group">
+                  <div className="p-8 bg-slate-900 rounded-[2.5rem] flex items-center gap-6 text-white shadow-xl relative overflow-hidden group">
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-orange-600/10 rounded-full blur-3xl transition-all group-hover:bg-orange-600/20" />
-                    <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 backdrop-blur-md border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                    <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 backdrop-blur-md border border-white/10 group-hover:scale-105 transition-transform duration-500">
                       <Phone className="h-8 w-8 text-orange-400" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Direct Help</p>
-                      <p className="text-xl font-black tracking-tight">{tournament.contactDetails}</p>
+                      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-1">Direct Help</p>
+                      <p className="text-xl font-bold tracking-tight">{tournament.contactDetails}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Payment Section (Sleek Card) */}
                 <motion.div variants={fadeUp} className="space-y-6">
-                  <div className="px-10 py-8 bg-white border-2 border-slate-100 rounded-[3rem] shadow-xl shadow-slate-200/50 flex items-center justify-between relative overflow-hidden group">
+                  <div className="px-10 py-8 bg-white border border-slate-100 rounded-[3rem] shadow-lg flex items-center justify-between relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-full bg-orange-50/50 -skew-x-12 translate-x-16 transition-transform group-hover:translate-x-8" />
                     <div className="relative">
-                      <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Registration Entry Fee</p>
-                      <p className="text-5xl font-black text-orange-600 tracking-tighter">₹{tournament.entryFee.toLocaleString()}</p>
+                      <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-[0.2em] mb-2">Registration Entry Fee</p>
+                      <p className="text-5xl font-bold text-orange-600 tracking-tighter">₹{tournament.entryFee.toLocaleString()}</p>
                     </div>
-                    <div className="relative h-16 w-16 bg-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-600/20 group-hover:rotate-12 transition-transform">
+                    <div className="relative h-16 w-16 bg-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-600/20 group-hover:rotate-6 transition-transform">
                       <CreditCard className="h-8 w-8 text-white" />
                     </div>
                   </div>
 
                   {tournament.discountDetails && (
-                    <div className="flex items-start gap-4 p-6 bg-orange-50/50 rounded-[2rem] border-2 border-orange-100/50 shadow-inner">
+                    <div className="flex items-start gap-4 p-6 bg-orange-50/50 rounded-[2rem] border border-orange-100/50 shadow-inner">
                       <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
                         <Info className="h-6 w-6 text-orange-600" />
                       </div>
-                      <p className="text-sm font-bold text-orange-700 leading-relaxed italic uppercase tracking-tight">{tournament.discountDetails}</p>
+                      <p className="text-sm font-semibold text-orange-700 leading-relaxed italic uppercase tracking-tight">{tournament.discountDetails}</p>
                     </div>
                   )}
 
@@ -320,30 +321,30 @@ export default function TournamentDetails() {
             </motion.div>
           }
           form={
-            <Card className="border-none shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)] rounded-[3rem] overflow-hidden bg-white">
+            <Card className="border-none shadow-xl rounded-[3rem] overflow-hidden bg-white">
               <div className="h-3 bg-orange-600" />
               <CardContent className="p-10 md:p-14">
                 <form onSubmit={handleSubmit} className="space-y-10">
                   <div className="space-y-8">
-                    <div className="flex items-center gap-3 pb-4 border-b-2 border-slate-50">
+                    <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
                       <User className="h-6 w-6 text-orange-600" />
-                      <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Enrollment Form</h2>
+                      <h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Enrollment Form</h2>
                     </div>
 
                     <div className="space-y-6">
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Player Name *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Player Name *</Label>
                         <Input
                           value={form.studentName}
                           onChange={(e) => set("studentName", e.target.value)}
                           required
                           placeholder="Enter your full name"
-                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6 focus:ring-orange-600 transition-all placeholder:text-slate-300"
+                          className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6 focus:ring-orange-600 transition-all placeholder:text-slate-300"
                         />
                       </div>
 
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Gender *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Gender *</Label>
                         <div className="flex gap-10 pt-2 px-1">
                           {["Male", "Female", "Other"].map((g) => (
                             <label key={g} className="flex items-center gap-3 cursor-pointer group">
@@ -356,10 +357,10 @@ export default function TournamentDetails() {
                                   onChange={(e) => set("gender", e.target.value)}
                                   className="peer sr-only"
                                 />
-                                <div className="h-6 w-6 rounded-full border-2 border-slate-200 peer-checked:border-orange-600 transition-all" />
+                                <div className="h-6 w-6 rounded-full border border-slate-200 peer-checked:border-orange-600 transition-all" />
                                 <div className="absolute h-3 w-3 rounded-full bg-orange-600 scale-0 peer-checked:scale-100 transition-transform" />
                               </div>
-                              <span className={cn("text-base font-black tracking-tight transition-colors", form.gender === g ? "text-orange-600" : "text-slate-400 group-hover:text-slate-600")}>
+                              <span className={cn("text-base font-semibold tracking-tight transition-colors", form.gender === g ? "text-orange-600" : "text-slate-400 group-hover:text-slate-600")}>
                                 {g}
                               </span>
                             </label>
@@ -369,10 +370,10 @@ export default function TournamentDetails() {
 
                       <div className="grid md:grid-cols-2 gap-8">
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Category *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Category *</Label>
                           <div className="relative">
                             <select
-                              className="w-full h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 px-6 text-base font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-600 transition-all appearance-none cursor-pointer pr-12"
+                              className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-6 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-600 transition-all appearance-none cursor-pointer pr-12"
                               value={form.category}
                               onChange={(e) => set("category", e.target.value)}
                               required
@@ -391,77 +392,77 @@ export default function TournamentDetails() {
                           </div>
                         </div>
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Date of Birth *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Date of Birth *</Label>
                           <Input
                             type="date"
                             value={form.dob}
                             onChange={(e) => set("dob", e.target.value)}
                             required
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6"
+                            className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6"
                           />
                         </div>
                       </div>
 
                       <div className="grid md:grid-cols-2 gap-8">
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Phone Number *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Phone Number *</Label>
                           <Input
                             type="tel"
                             value={form.phone}
                             onChange={(e) => set("phone", e.target.value)}
                             required
                             placeholder="+91 XXXXX XXXXX"
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6"
+                            className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6"
                           />
                         </div>
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Email (Optional)</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Email (Optional)</Label>
                           <Input
                             type="email"
                             value={form.email}
                             onChange={(e) => set("email", e.target.value)}
                             placeholder="john@example.com"
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6"
+                            className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6"
                           />
                         </div>
                       </div>
 
                       <div className="grid md:grid-cols-2 gap-8">
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">FIDE ID</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">FIDE ID</Label>
                           <Input
                             value={form.fideId}
                             onChange={(e) => set("fideId", e.target.value)}
                             placeholder="0"
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6"
+                            className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6"
                           />
                         </div>
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">FIDE Rating</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">FIDE Rating</Label>
                           <Input
                             type="number"
                             value={form.fideRating}
                             onChange={(e) => set("fideRating", e.target.value)}
                             placeholder="0"
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6"
+                            className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Full Address *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Full Address *</Label>
                         <Textarea
                           value={form.address}
                           onChange={(e) => set("address", e.target.value)}
                           required
                           placeholder="Enter your complete residential address"
-                          className="rounded-2xl border-2 border-slate-100 bg-slate-50/50 min-h-[120px] p-6 font-bold text-slate-900 resize-none focus:ring-orange-600 transition-all"
+                          className="rounded-2xl border border-slate-100 bg-slate-50/50 min-h-[120px] p-6 font-medium text-slate-900 resize-none focus:ring-orange-600 transition-all"
                         />
                       </div>
 
                       <div className="grid md:grid-cols-2 gap-8">
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 1 *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 1 *</Label>
                           <div className="relative h-20">
                             <input
                               type="file"
@@ -470,16 +471,16 @@ export default function TournamentDetails() {
                               required
                             />
                             <div className={cn(
-                              "h-full w-full border-2 border-dashed rounded-2xl flex items-center justify-center gap-3 px-6 transition-all",
+                              "h-full w-full border border-dashed rounded-2xl flex items-center justify-center gap-3 px-6 transition-all",
                               files.payment1 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-orange-400"
                             )}>
                               {files.payment1 ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
-                              <span className="text-sm font-black truncate">{files.payment1 ? files.payment1.name : "Upload Proof"}</span>
+                              <span className="text-sm font-semibold truncate">{files.payment1 ? files.payment1.name : "Upload Proof"}</span>
                             </div>
                           </div>
                         </div>
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 2 *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 2 *</Label>
                           <div className="relative h-20">
                             <input
                               type="file"
@@ -488,21 +489,21 @@ export default function TournamentDetails() {
                               required
                             />
                             <div className={cn(
-                              "h-full w-full border-2 border-dashed rounded-2xl flex items-center justify-center gap-3 px-6 transition-all",
+                              "h-full w-full border border-dashed rounded-2xl flex items-center justify-center gap-3 px-6 transition-all",
                               files.payment2 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-orange-400"
                             )}>
                               {files.payment2 ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
-                              <span className="text-sm font-black truncate">{files.payment2 ? files.payment2.name : "Upload Proof"}</span>
+                              <span className="text-sm font-semibold truncate">{files.payment2 ? files.payment2.name : "Upload Proof"}</span>
                             </div>
                           </div>
                         </div>
                       </div>
 
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">How did you find us?</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">How did you find us?</Label>
                         <div className="relative">
                           <select
-                            className="w-full h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 px-6 text-base font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-600 transition-all appearance-none cursor-pointer pr-12"
+                            className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-6 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-600 transition-all appearance-none cursor-pointer pr-12"
                             value={form.discoverySource}
                             onChange={(e) => set("discoverySource", e.target.value)}
                           >
@@ -521,7 +522,7 @@ export default function TournamentDetails() {
                   <Button
                     type="submit"
                     disabled={isPending}
-                    className="w-full h-20 bg-orange-600 hover:bg-slate-900 text-white text-xl font-black rounded-3xl transition-all shadow-2xl shadow-orange-600/30 active:scale-[0.98] uppercase tracking-wider"
+                    className="w-full h-20 bg-orange-600 hover:bg-slate-900 text-white text-xl font-bold rounded-3xl transition-all shadow-lg shadow-orange-600/30 active:scale-[0.98] uppercase tracking-wider"
                   >
                     {isPending ? (
                       <span className="flex items-center gap-3">

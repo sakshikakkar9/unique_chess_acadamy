@@ -48,7 +48,8 @@ const upload = multer({
 const handleCourseUpload = (req, res, next) => {
   const uploadFields = upload.fields([
     { name: 'image', maxCount: 1 },
-    { name: 'banner', maxCount: 1 }
+    { name: 'banner', maxCount: 1 },
+    { name: 'brochure', maxCount: 1 }
   ]);
 
   uploadFields(req, res, (err) => {

@@ -110,8 +110,8 @@ export default function CourseEnrollmentPage() {
   if (!course) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-black text-slate-900 tracking-tighter">Course not found</h1>
-        <Button onClick={() => navigate("/courses")} className="rounded-xl font-bold">Back to Courses</Button>
+        <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Course not found</h1>
+        <Button onClick={() => navigate("/courses")} className="rounded-xl font-semibold">Back to Courses</Button>
       </div>
     );
   }
@@ -125,15 +125,15 @@ export default function CourseEnrollmentPage() {
             <div className="h-24 w-24 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="h-14 w-14 text-green-500" />
             </div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Enrollment Successful!</h1>
-            <p className="text-slate-500 font-bold leading-relaxed">Your registration for <span className="text-blue-600">{course.title}</span> has been submitted. Our team will review your application and contact you shortly.</p>
+            <h1 className="text-4xl font-bold text-slate-900 tracking-tight">Enrollment Successful!</h1>
+            <p className="text-slate-500 font-medium leading-relaxed">Your registration for <span className="text-blue-600 font-semibold">{course.title}</span> has been submitted. Our team will review your application and contact you shortly.</p>
 
             <div className="bg-slate-50 border border-slate-100 p-8 rounded-[2rem] space-y-2">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Reference ID</p>
-              <p className="text-3xl font-black text-blue-600 tracking-tighter">{refId}</p>
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em]">Reference ID</p>
+              <p className="text-3xl font-bold text-blue-600 tracking-tight">{refId}</p>
             </div>
 
-            <Button onClick={() => navigate("/courses")} className="w-full h-16 bg-slate-900 hover:bg-blue-600 rounded-2xl font-black transition-all text-white text-lg shadow-xl shadow-slate-900/10">
+            <Button onClick={() => navigate("/courses")} className="w-full h-16 bg-slate-900 hover:bg-blue-600 rounded-2xl font-bold transition-all text-white text-lg shadow-lg shadow-slate-900/10">
               RETURN TO PROGRAMS
             </Button>
           </motion.div>
@@ -149,7 +149,7 @@ export default function CourseEnrollmentPage() {
 
       <main className="container mx-auto px-6 pt-32 pb-20">
         <div className="mb-12">
-          <Link to="/courses" className="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-blue-600 transition-colors group uppercase tracking-[0.2em]">
+          <Link to="/courses" className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-blue-600 transition-colors group uppercase tracking-[0.2em]">
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             <span>Back to Programs</span>
           </Link>
@@ -161,7 +161,7 @@ export default function CourseEnrollmentPage() {
             <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-10">
               {/* Banner */}
               <motion.div variants={fadeUp} className={cn(
-                "relative rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white",
+                "relative rounded-[2.5rem] overflow-hidden shadow-xl border-4 border-white",
                 course.posterOrientation === 'PORTRAIT' ? "aspect-[3/4]" : "aspect-video"
               )}>
                 <img
@@ -170,7 +170,7 @@ export default function CourseEnrollmentPage() {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-6 left-6">
-                  <span className="px-4 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.15em] shadow-xl">
+                  <span className="px-4 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] shadow-lg">
                     {course.mode}
                   </span>
                 </div>
@@ -179,16 +179,16 @@ export default function CourseEnrollmentPage() {
               {/* Title & Description */}
               <motion.div variants={fadeUp} className="space-y-6">
                 <div className="space-y-2">
-                  <span className="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest">
+                  <span className="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-widest">
                     Course Details
                   </span>
-                  <h1 className="text-5xl font-black text-slate-900 leading-[0.9] tracking-tighter">
+                  <h1 className="text-4xl font-bold text-slate-900 leading-tight tracking-tight">
                     {course.title}
                   </h1>
                 </div>
 
                 {course.description && (
-                  <p className="text-slate-600 font-bold leading-relaxed whitespace-pre-wrap text-lg border-l-4 border-blue-600/20 pl-6">
+                  <p className="text-slate-600 font-medium leading-relaxed whitespace-pre-wrap text-lg border-l-4 border-blue-600/20 pl-6">
                     {course.description}
                   </p>
                 )}
@@ -196,53 +196,53 @@ export default function CourseEnrollmentPage() {
 
               {/* Info Grid */}
               <motion.div variants={fadeUp} className="grid grid-cols-2 gap-6">
-                <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-blue-600/20 transition-all group">
-                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-blue-600/20 transition-all group">
+                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
                     <BarChart3 className="h-7 w-7 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Level</p>
-                    <p className="text-lg font-black text-slate-900 tracking-tight">{course.skillLevel}</p>
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Level</p>
+                    <p className="text-lg font-bold text-slate-900 tracking-tight">{course.skillLevel}</p>
                   </div>
                 </div>
 
-                <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-blue-600/20 transition-all group">
-                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-blue-600/20 transition-all group">
+                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
                     <Clock className="h-7 w-7 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Duration</p>
-                    <p className="text-lg font-black text-slate-900 tracking-tight">{course.duration}</p>
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Duration</p>
+                    <p className="text-lg font-bold text-slate-900 tracking-tight">{course.duration}</p>
                   </div>
                 </div>
 
-                <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-blue-600/20 transition-all group">
-                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-blue-600/20 transition-all group">
+                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
                     <Zap className="h-7 w-7 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Age Group</p>
-                    <p className="text-lg font-black text-slate-900 tracking-tight">{course.ageGroup}</p>
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Age Group</p>
+                    <p className="text-lg font-bold text-slate-900 tracking-tight">{course.ageGroup}</p>
                   </div>
                 </div>
 
-                <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-blue-600/20 transition-all group">
-                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-blue-600/20 transition-all group">
+                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
                     <Calendar className="h-7 w-7 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Class Time</p>
-                    <p className="text-lg font-black text-slate-900 tracking-tight">{course.classTime}</p>
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Class Time</p>
+                    <p className="text-lg font-bold text-slate-900 tracking-tight">{course.classTime}</p>
                   </div>
                 </div>
               </motion.div>
 
               {/* Training Days */}
-              <motion.div variants={fadeUp} className="p-8 bg-white border-2 border-slate-100 rounded-[2.5rem] shadow-lg shadow-slate-200/50">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Weekly Training Schedule</p>
+              <motion.div variants={fadeUp} className="p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-md">
+                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-6">Weekly Training Schedule</p>
                 <div className="flex flex-wrap gap-3">
                   {course.days.map((day) => (
-                    <span key={day} className="px-6 py-3 bg-blue-50 text-blue-700 text-xs font-black rounded-2xl border border-blue-100 uppercase tracking-[0.1em] shadow-sm">
+                    <span key={day} className="px-6 py-3 bg-blue-50 text-blue-700 text-xs font-bold rounded-2xl border border-blue-100 uppercase tracking-[0.1em] shadow-sm">
                       {day}
                     </span>
                   ))}
@@ -250,26 +250,49 @@ export default function CourseEnrollmentPage() {
               </motion.div>
 
               {/* Contact Information */}
-              <motion.div variants={fadeUp} className="p-8 bg-slate-900 rounded-[2.5rem] flex items-center gap-6 text-white shadow-2xl shadow-slate-900/20 relative overflow-hidden group">
+              <motion.div variants={fadeUp} className="p-8 bg-slate-900 rounded-[2.5rem] flex items-center gap-6 text-white shadow-xl relative overflow-hidden group">
                 <div className="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl transition-all group-hover:bg-blue-600/20" />
-                <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 backdrop-blur-md border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 backdrop-blur-md border border-white/10 group-hover:scale-105 transition-transform duration-500">
                   <HelpCircle className="h-8 w-8 text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Direct Support</p>
-                  <p className="text-xl font-black tracking-tight">{course.contactDetails}</p>
+                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-1">Direct Support</p>
+                  <p className="text-xl font-bold tracking-tight">{course.contactDetails}</p>
                 </div>
               </motion.div>
 
+              {/* Brochure Section */}
+              {course.brochureUrl && (
+                <motion.div variants={fadeUp}>
+                  <a
+                    href={course.brochureUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                    className="flex items-center justify-between p-8 bg-white border border-slate-100 rounded-[2.5rem] group hover:border-blue-600 transition-all shadow-lg"
+                  >
+                    <div className="flex items-center gap-5">
+                      <div className="h-16 w-16 rounded-2xl bg-blue-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shadow-inner">
+                        <FileText className="h-8 w-8 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-0.5">Brochure</p>
+                        <p className="text-lg font-bold text-slate-900">Download Course PDF</p>
+                      </div>
+                    </div>
+                  </a>
+                </motion.div>
+              )}
+
               {/* Payment Section (Sleek Card) */}
               <motion.div variants={fadeUp} className="space-y-6">
-                <div className="px-10 py-8 bg-white border-2 border-slate-100 rounded-[3rem] shadow-xl shadow-slate-200/50 flex items-center justify-between relative overflow-hidden group">
+                <div className="px-10 py-8 bg-white border border-slate-100 rounded-[3rem] shadow-lg flex items-center justify-between relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-32 h-full bg-blue-50/50 -skew-x-12 translate-x-16 transition-transform group-hover:translate-x-8" />
                   <div className="relative">
-                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Investment for Excellence</p>
-                    <p className="text-5xl font-black text-blue-600 tracking-tighter">₹{course.fee.toLocaleString()}</p>
+                    <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-[0.2em] mb-2">Investment for Excellence</p>
+                    <p className="text-5xl font-bold text-blue-600 tracking-tighter">₹{course.fee.toLocaleString()}</p>
                   </div>
-                  <div className="relative h-16 w-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:rotate-12 transition-transform">
+                  <div className="relative h-16 w-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:rotate-6 transition-transform">
                     <CreditCard className="h-8 w-8 text-white" />
                   </div>
                 </div>
@@ -281,20 +304,20 @@ export default function CourseEnrollmentPage() {
 
           {/* Right Section: Registration Form */}
           <div className="lg:col-span-7">
-            <Card className="border-none shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)] rounded-[3rem] overflow-hidden bg-white">
+            <Card className="border-none shadow-xl rounded-[3rem] overflow-hidden bg-white">
               <div className="h-3 bg-blue-600" />
               <CardContent className="p-10 md:p-14">
                 <form onSubmit={handleSubmit} className="space-y-10">
                   <div className="space-y-8">
-                    <div className="flex items-center gap-3 pb-4 border-b-2 border-slate-50">
+                    <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
                       <ShieldCheck className="h-6 w-6 text-blue-600" />
-                      <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Registration</h2>
+                      <h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Registration</h2>
                     </div>
 
                     <div className="space-y-6">
                       {/* Player Name */}
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Player Name *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Player Name *</Label>
                         <div className="relative">
                           <User className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                           <Input
@@ -302,14 +325,14 @@ export default function CourseEnrollmentPage() {
                             onChange={(e) => set("studentName", e.target.value)}
                             required
                             placeholder="Enter player's full name"
-                            className="h-16 pl-14 rounded-2xl border-slate-200 bg-slate-50/50 font-bold text-slate-900 focus:ring-blue-600 transition-all placeholder:text-slate-300"
+                            className="h-16 pl-14 rounded-2xl border-slate-200 bg-slate-50/50 font-semibold text-slate-900 focus:ring-blue-600 transition-all placeholder:text-slate-300"
                           />
                         </div>
                       </div>
 
                       {/* Gender */}
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Gender *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Gender *</Label>
                         <div className="flex gap-10 pt-2 px-1">
                           {["Male", "Female", "Other"].map((g) => (
                             <label key={g} className="flex items-center gap-3 cursor-pointer group">
@@ -322,10 +345,10 @@ export default function CourseEnrollmentPage() {
                                   onChange={(e) => set("gender", e.target.value)}
                                   className="peer sr-only"
                                 />
-                                <div className="h-6 w-6 rounded-full border-2 border-slate-200 peer-checked:border-blue-600 transition-all" />
+                                <div className="h-6 w-6 rounded-full border border-slate-200 peer-checked:border-blue-600 transition-all" />
                                 <div className="absolute h-3 w-3 rounded-full bg-blue-600 scale-0 peer-checked:scale-100 transition-transform" />
                               </div>
-                              <span className={cn("text-base font-black tracking-tight transition-colors", form.gender === g ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600")}>
+                              <span className={cn("text-base font-semibold tracking-tight transition-colors", form.gender === g ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600")}>
                                 {g}
                               </span>
                             </label>
@@ -336,10 +359,10 @@ export default function CourseEnrollmentPage() {
                       <div className="grid md:grid-cols-2 gap-8">
                         {/* Category */}
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Category *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Category *</Label>
                           <div className="relative">
                             <select
-                              className="w-full h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 px-5 text-base font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer pr-12"
+                              className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-5 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer pr-12"
                               value={form.category}
                               onChange={(e) => set("category", e.target.value)}
                               required
@@ -362,48 +385,48 @@ export default function CourseEnrollmentPage() {
 
                         {/* Date of Birth */}
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Date of Birth *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Date of Birth *</Label>
                           <Input
                             type="date"
                             value={form.dob}
                             onChange={(e) => set("dob", e.target.value)}
                             required
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-5"
+                            className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-5"
                           />
                         </div>
                       </div>
 
                       {/* Phone Number */}
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Phone Number *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Phone Number *</Label>
                         <Input
                           type="tel"
                           value={form.phone}
                           onChange={(e) => set("phone", e.target.value)}
                           required
                           placeholder="+91 XXXXX XXXXX"
-                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-5"
+                          className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-5"
                         />
                       </div>
 
                       {/* Address */}
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Full Residential Address *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Full Residential Address *</Label>
                         <Textarea
                           value={form.address}
                           onChange={(e) => set("address", e.target.value)}
                           required
                           placeholder="Enter complete address"
-                          className="rounded-2xl border-2 border-slate-100 bg-slate-50/50 min-h-[120px] p-5 font-bold text-slate-900 resize-none focus:ring-blue-600 transition-all"
+                          className="rounded-2xl border border-slate-100 bg-slate-50/50 min-h-[120px] p-5 font-medium text-slate-900 resize-none focus:ring-blue-600 transition-all"
                         />
                       </div>
 
                       {/* Discovery Source */}
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">How did you find us? *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">How did you find us? *</Label>
                         <div className="relative">
                           <select
-                            className="w-full h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 px-5 text-base font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer pr-12"
+                            className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-5 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer pr-12"
                             value={form.discoverySource}
                             onChange={(e) => set("discoverySource", e.target.value)}
                             required
@@ -423,15 +446,15 @@ export default function CourseEnrollmentPage() {
                   </div>
 
                   {/* Documents Section */}
-                  <div className="space-y-8 pt-10 border-t-2 border-slate-50">
+                  <div className="space-y-8 pt-10 border-t border-slate-50">
                     <div className="flex items-center gap-3">
                       <CreditCard className="h-6 w-6 text-blue-600" />
-                      <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Verification Documents</h2>
+                      <h2 className="text-xl font-bold text-slate-900 uppercase tracking-tight">Verification Documents</h2>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-8">
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Age Proof *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Age Proof *</Label>
                         <div className="relative h-20">
                           <input
                             type="file"
@@ -440,16 +463,16 @@ export default function CourseEnrollmentPage() {
                             required
                           />
                           <div className={cn(
-                            "h-full w-full border-2 border-dashed rounded-2xl flex items-center justify-center gap-3 px-5 transition-all",
+                            "h-full w-full border border-dashed rounded-2xl flex items-center justify-center gap-3 px-5 transition-all",
                             files.age ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-blue-400"
                           )}>
                             {files.age ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
-                            <span className="text-sm font-black truncate">{files.age ? files.age.name : "Upload ID Proof"}</span>
+                            <span className="text-sm font-semibold truncate">{files.age ? files.age.name : "Upload ID Proof"}</span>
                           </div>
                         </div>
                       </div>
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Screenshot *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Screenshot *</Label>
                         <div className="relative h-20">
                           <input
                             type="file"
@@ -458,11 +481,11 @@ export default function CourseEnrollmentPage() {
                             required
                           />
                           <div className={cn(
-                            "h-full w-full border-2 border-dashed rounded-2xl flex items-center justify-center gap-3 px-5 transition-all",
+                            "h-full w-full border border-dashed rounded-2xl flex items-center justify-center gap-3 px-5 transition-all",
                             files.payment ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-blue-400"
                           )}>
                             {files.payment ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
-                            <span className="text-sm font-black truncate">{files.payment ? files.payment.name : "Upload Proof"}</span>
+                            <span className="text-sm font-semibold truncate">{files.payment ? files.payment.name : "Upload Proof"}</span>
                           </div>
                         </div>
                       </div>
@@ -472,7 +495,7 @@ export default function CourseEnrollmentPage() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-20 bg-blue-600 hover:bg-slate-900 text-white text-xl font-black rounded-3xl transition-all shadow-2xl shadow-blue-600/30 active:scale-[0.98] uppercase tracking-wider"
+                    className="w-full h-20 bg-blue-600 hover:bg-slate-900 text-white text-xl font-bold rounded-3xl transition-all shadow-lg shadow-blue-600/30 active:scale-[0.98] uppercase tracking-wider"
                   >
                     {loading ? (
                       <span className="flex items-center gap-3">

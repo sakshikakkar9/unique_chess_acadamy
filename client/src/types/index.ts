@@ -24,6 +24,7 @@ export interface Course {
   duration: string;
   description?: string;
   custom_banner_url?: string;
+  brochureUrl?: string;
   posterOrientation?: "LANDSCAPE" | "PORTRAIT";
   scannerUrl?: string;
   fee: number; // Replaced price with fee

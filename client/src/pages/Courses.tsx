@@ -41,7 +41,7 @@ export default function CoursesPage() {
         <SparkleCanvas density="full" />
         <div className="container relative z-10 mx-auto px-6 text-center">
           <motion.div initial="hidden" animate="visible" variants={stagger}>
-            <motion.h1 variants={fadeUp} className="text-4xl sm:text-7xl font-bold text-white mb-6 tracking-tighter">
+            <motion.h1 variants={fadeUp} className="text-4xl sm:text-6xl font-bold text-white mb-6 tracking-tight">
               The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Grandmaster</span> Path
             </motion.h1>
             <motion.p variants={fadeUp} className="max-w-2xl mx-auto text-slate-400 text-lg italic mb-10">
@@ -90,7 +90,7 @@ export default function CoursesPage() {
                   )}>
                     <img src={course.custom_banner_url || HERO_IMAGE} alt={course.title} className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-110" />
                     <div className="absolute top-4 left-4 flex gap-2">
-                      <span className="px-3 py-1 bg-white/95 backdrop-blur-sm rounded-lg text-[10px] font-black text-blue-600 shadow-sm uppercase">
+                      <span className="px-3 py-1 bg-white/95 backdrop-blur-sm rounded-lg text-[10px] font-bold text-blue-600 shadow-sm uppercase">
                         {course.mode}
                       </span>
                     </div>
@@ -114,7 +114,7 @@ export default function CoursesPage() {
                     <div className="mt-auto pt-6 border-t flex items-center justify-between">
                       <div>
                         <span className="text-[9px] font-bold text-slate-400 uppercase">Enrollment Fee</span>
-                        <div className="text-xl font-black text-slate-900">₹{course.fee.toLocaleString()}</div>
+                        <div className="text-xl font-bold text-slate-900">₹{course.fee.toLocaleString()}</div>
                       </div>
                       <Button onClick={() => navigate(`/courses/${course.id}/enroll`)} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 font-bold shadow-lg shadow-blue-600/10">
                         Enroll Now
