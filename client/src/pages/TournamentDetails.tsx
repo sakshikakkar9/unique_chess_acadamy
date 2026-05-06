@@ -195,118 +195,122 @@ export default function TournamentDetails() {
             </motion.div>
           }
           details={
-            <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-10">
-              <motion.div variants={fadeUp} className="space-y-6">
-                <div className="space-y-2">
-                  <span className="px-4 py-1.5 bg-orange-100 text-orange-600 rounded-full text-[10px] font-black uppercase tracking-widest">
-                    Tournament Information
+            <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-12">
+              <motion.div variants={fadeUp} className="space-y-8">
+                <div className="space-y-3">
+                  <span className="px-4 py-1.5 bg-orange-100 text-orange-600 rounded-full text-[10px] font-black uppercase tracking-[0.15em]">
+                    Arena Details
                   </span>
                   <h1 className="text-5xl font-black text-slate-900 leading-[0.9] tracking-tighter">
                     {tournament.title}
                   </h1>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-6 bg-white border border-slate-100 rounded-[1.5rem] flex items-start gap-4 shadow-sm">
-                    <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
-                      <Calendar className="h-6 w-6 text-orange-600" />
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-orange-600/20 transition-all group">
+                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                      <Calendar className="h-7 w-7 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule</p>
-                      <p className="text-sm font-black text-slate-900">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Schedule</p>
+                      <p className="text-base font-black text-slate-900 tracking-tight">
                         {new Date(tournament.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                         {tournament.endDate && ` - ${new Date(tournament.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`}
                       </p>
                     </div>
                   </div>
 
-                  <div className="p-6 bg-white border border-slate-100 rounded-[1.5rem] flex items-start gap-4 shadow-sm">
-                    <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
-                      <MapPin className="h-6 w-6 text-orange-600" />
+                  <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-orange-600/20 transition-all group">
+                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                      <MapPin className="h-7 w-7 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Venue</p>
-                      <p className="text-sm font-black text-slate-900 line-clamp-1">{tournament.location || "Main Hall"}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Venue</p>
+                      <p className="text-base font-black text-slate-900 tracking-tight line-clamp-1">{tournament.location}</p>
                     </div>
                   </div>
 
-                  <div className="p-6 bg-white border border-slate-100 rounded-[1.5rem] flex items-start gap-4 shadow-sm">
-                    <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
-                      <Trophy className="h-6 w-6 text-orange-600" />
+                  <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-orange-600/20 transition-all group">
+                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                      <Trophy className="h-7 w-7 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Prize Pool</p>
-                      <p className="text-sm font-black text-slate-900">{tournament.totalPrizePool || 'TBD'}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Prize Pool</p>
+                      <p className="text-base font-black text-slate-900 tracking-tight">{tournament.totalPrizePool}</p>
                     </div>
                   </div>
 
-                  <div className="p-6 bg-white border border-slate-100 rounded-[1.5rem] flex items-start gap-4 shadow-sm">
-                    <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
-                      <Award className="h-6 w-6 text-orange-600" />
+                  <div className="p-6 bg-white border-2 border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-lg shadow-slate-200/50 hover:border-orange-600/20 transition-all group">
+                    <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                      <Award className="h-7 w-7 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Category</p>
-                      <p className="text-sm font-black text-slate-900">{tournament.category || "Professional"}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Category</p>
+                      <p className="text-base font-black text-slate-900 tracking-tight">{tournament.category}</p>
                     </div>
                   </div>
                 </div>
 
                 {tournament.otherDetails && (
-                  <div className="space-y-3">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Additional Details</p>
-                    <div className="p-6 bg-white border border-slate-100 rounded-[2rem] text-base text-slate-600 font-bold leading-relaxed whitespace-pre-wrap">
+                  <div className="space-y-4">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Tournament Rules & Info</p>
+                    <div className="p-8 bg-white border-2 border-slate-100 rounded-[2.5rem] text-base text-slate-600 font-bold leading-relaxed whitespace-pre-wrap shadow-lg shadow-slate-200/50 border-l-4 border-l-orange-600">
                       {tournament.otherDetails}
                     </div>
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {tournament.brochureUrl && (
                     <a
                       href={tournament.brochureUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-between p-6 bg-white border-2 border-slate-50 rounded-[2rem] group hover:border-orange-500 transition-all shadow-sm"
+                      className="flex items-center justify-between p-8 bg-white border-2 border-slate-100 rounded-[2.5rem] group hover:border-orange-600 transition-all shadow-xl shadow-slate-200/50"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <FileText className="h-6 w-6 text-orange-600" />
+                      <div className="flex items-center gap-5">
+                        <div className="h-16 w-16 rounded-2xl bg-orange-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                          <FileText className="h-8 w-8 text-orange-600" />
                         </div>
                         <div>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Brochure</p>
-                          <p className="text-base font-black text-slate-900">Download PDF</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-0.5">Brochure</p>
+                          <p className="text-lg font-black text-slate-900">Download PDF</p>
                         </div>
                       </div>
                     </a>
                   )}
 
-                  <div className="p-6 bg-blue-600 rounded-[2rem] flex items-center gap-4 text-white shadow-xl shadow-blue-600/20">
-                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0 backdrop-blur-sm">
-                      <Phone className="h-6 w-6" />
+                  <div className="p-8 bg-slate-900 rounded-[2.5rem] flex items-center gap-6 text-white shadow-2xl shadow-slate-900/20 relative overflow-hidden group">
+                    <div className="absolute -right-10 -top-10 w-32 h-32 bg-orange-600/10 rounded-full blur-3xl transition-all group-hover:bg-orange-600/20" />
+                    <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 backdrop-blur-md border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                      <Phone className="h-8 w-8 text-orange-400" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-blue-100 uppercase tracking-widest mb-0.5">Contact</p>
-                      <p className="text-base font-black tracking-tight">{tournament.contactDetails || "+91 XXXXXXXXXX"}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Direct Help</p>
+                      <p className="text-xl font-black tracking-tight">{tournament.contactDetails}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Payment Section (Sleek Card) */}
-                <motion.div variants={fadeUp} className="space-y-4">
-                  <div className="px-8 py-6 bg-white border-2 border-slate-100 rounded-[2rem] shadow-sm flex items-center justify-between">
-                    <div>
-                      <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">Registration Fee</p>
-                      <p className="text-4xl font-black text-orange-600 tracking-tighter">₹{tournament.entryFee.toLocaleString()}</p>
+                <motion.div variants={fadeUp} className="space-y-6">
+                  <div className="px-10 py-8 bg-white border-2 border-slate-100 rounded-[3rem] shadow-xl shadow-slate-200/50 flex items-center justify-between relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-full bg-orange-50/50 -skew-x-12 translate-x-16 transition-transform group-hover:translate-x-8" />
+                    <div className="relative">
+                      <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Registration Entry Fee</p>
+                      <p className="text-5xl font-black text-orange-600 tracking-tighter">₹{tournament.entryFee.toLocaleString()}</p>
                     </div>
-                    <div className="h-14 w-14 bg-orange-50 rounded-2xl flex items-center justify-center">
-                      <CreditCard className="h-7 w-7 text-orange-600" />
+                    <div className="relative h-16 w-16 bg-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-600/20 group-hover:rotate-12 transition-transform">
+                      <CreditCard className="h-8 w-8 text-white" />
                     </div>
                   </div>
 
                   {tournament.discountDetails && (
-                    <div className="flex items-start gap-3 p-5 bg-orange-50/50 rounded-2xl border border-orange-100">
-                      <Info className="h-5 w-5 text-orange-600 shrink-0 mt-0.5" />
-                      <p className="text-sm font-bold text-orange-700 leading-relaxed italic">{tournament.discountDetails}</p>
+                    <div className="flex items-start gap-4 p-6 bg-orange-50/50 rounded-[2rem] border-2 border-orange-100/50 shadow-inner">
+                      <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                        <Info className="h-6 w-6 text-orange-600" />
+                      </div>
+                      <p className="text-sm font-bold text-orange-700 leading-relaxed italic uppercase tracking-tight">{tournament.discountDetails}</p>
                     </div>
                   )}
 
