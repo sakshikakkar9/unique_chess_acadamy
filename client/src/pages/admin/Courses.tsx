@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Upload, Search, Calendar, BookOpen, Layers, X } from "lucide-react";
 import { AGE_GROUP_LABELS } from "@/types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import RichTextEditor from "@/components/shared/admin/RichTextEditor";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -227,11 +228,10 @@ const AdminCourses = () => {
 
           <div className="space-y-2">
             <Label>Course Description</Label>
-            <Textarea
+            <RichTextEditor
               value={formData.description || ""}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={(content) => setFormData({...formData, description: content})}
               placeholder="Provide a detailed description of the course, its objectives, and what students will learn."
-              className="min-h-[100px]"
             />
           </div>
 

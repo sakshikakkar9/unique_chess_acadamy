@@ -9,11 +9,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trophy, Upload, X, Search, Eye } from "lucide-react";
+import { Plus, Trophy, Upload, X, Search, Eye, Calendar, MapPin, FileText, Phone, CreditCard, Info, User, ChevronDown } from "lucide-react";
 import { Tournament } from "@/types";
 import TournamentTable from "@/features/tournaments/components/admin/TournamentTable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import RichTextEditor from "@/components/shared/admin/RichTextEditor";
+import { cn } from "@/lib/utils";
+import PaymentDisplay from "@/components/shared/PaymentDisplay";
+import OrientationWrapper from "@/features/tournaments/components/OrientationWrapper";
 
 type TournamentStatus = "ALL" | "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED";
 
@@ -33,6 +37,7 @@ const AdminTournaments: React.FC = () => {
 
   const [formData, setFormData] = useState<any>({
     title: "",
+    description: "",
     startDate: new Date().toISOString().split('T')[0],
     endDate: "",
     location: "",
@@ -67,6 +72,7 @@ const AdminTournaments: React.FC = () => {
     setPreviewUrl("");
     setFormData({ 
       title: "", 
+      description: "",
       startDate: new Date().toISOString().split('T')[0],
       endDate: "",
       location: "", 
@@ -82,6 +88,20 @@ const AdminTournaments: React.FC = () => {
       imageUrl: ""
     });
     setIsModalOpen(true);
+  };
+
+  const handleViewPreview = (t: Tournament) => {
+    // If we are currently editing this tournament, use formData for preview
+    if (selectedTournament?.id === t.id && isModalOpen) {
+      setSelectedTournament({
+        ...t,
+        ...formData,
+        imageUrl: previewUrl || t.imageUrl // Use preview URL if file selected
+      });
+    } else {
+      setSelectedTournament(t);
+    }
+    setIsPreviewOpen(true);
   };
 
   const handleEdit = (t: Tournament) => {
@@ -172,7 +192,7 @@ const AdminTournaments: React.FC = () => {
         data={filteredData}
         isLoading={isLoading}
         onRowClick={(t) => navigate(`/admin/tournaments/${t.id}/students`)}
-        onViewPreview={(t) => { setSelectedTournament(t); setIsPreviewOpen(true); }}
+        onViewPreview={handleViewPreview}
         onEdit={handleEdit}
         onDelete={(t) => { setSelectedTournament(t); setIsConfirmOpen(true); }}
       />
@@ -185,7 +205,17 @@ const AdminTournaments: React.FC = () => {
         onSave={handleSave}
       >
         <div className="flex flex-col gap-6 py-4 px-1 overflow-y-auto max-h-[70vh] scrollbar-thin pr-3">
-          
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="rounded-xl gap-2"
+              onClick={() => handleViewPreview(selectedTournament || formData)}
+            >
+              <Eye className="h-4 w-4" /> Live Preview
+            </Button>
+          </div>
           <div className="grid gap-6">
             <div className="grid gap-2">
               <Label htmlFor="title" className="text-xs font-black uppercase text-slate-400 tracking-widest">Arena Title</Label>
@@ -226,13 +256,26 @@ const AdminTournaments: React.FC = () => {
             </div>
 
             <div className="grid gap-2">
+              <Label className="text-xs font-black uppercase text-slate-400 tracking-widest">Mission Brief (Description)</Label>
+              <RichTextEditor
+                value={formData.description || ""}
+                onChange={(content) => setFormData({...formData, description: content})}
+                placeholder="Describe the tournament mission and goals..."
+              />
+            </div>
+
+            <div className="grid gap-2">
               <Label htmlFor="discount" className="text-xs font-black uppercase text-slate-400 tracking-widest">Discount Information</Label>
               <Textarea id="discount" value={formData.discountDetails} onChange={(e) => setFormData({...formData, discountDetails: e.target.value})} placeholder="Enter early bird or other discount details..." className="rounded-xl min-h-[80px] text-sm" />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="otherDetails" className="text-xs font-black uppercase text-slate-400 tracking-widest">Other Details</Label>
-              <Textarea id="otherDetails" value={formData.otherDetails} onChange={(e) => setFormData({...formData, otherDetails: e.target.value})} placeholder="Additional tournament rules or information..." className="rounded-xl min-h-[100px]" />
+              <Label className="text-xs font-black uppercase text-slate-400 tracking-widest">Other Details (Rules & Info)</Label>
+              <RichTextEditor
+                value={formData.otherDetails || ""}
+                onChange={(content) => setFormData({...formData, otherDetails: content})}
+                placeholder="Additional tournament rules or information..."
+              />
             </div>
 
             <div className="grid gap-2">
@@ -339,60 +382,187 @@ const AdminTournaments: React.FC = () => {
 
       {/* Preview Modal */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
-          <div className="bg-slate-900 text-white p-8">
-            <DialogHeader>
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500">Arena Preview</p>
-                  <DialogTitle className="text-3xl font-black">{selectedTournament?.title}</DialogTitle>
-                </div>
-                <div className="h-12 w-12 bg-white/10 rounded-2xl flex items-center justify-center">
-                  <Eye className="h-6 w-6 text-white" />
-                </div>
-              </div>
-            </DialogHeader>
+        <DialogContent className="max-w-[95vw] lg:max-w-7xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+          <div className="bg-slate-900 text-white p-6 md:p-8 flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500">Arena Preview Mode</p>
+              <DialogTitle className="text-xl md:text-3xl font-black">User Experience View</DialogTitle>
+            </div>
+            <Button variant="ghost" onClick={() => setIsPreviewOpen(false)} className="text-white hover:bg-white/10 rounded-xl">
+              <X className="h-6 w-6" />
+            </Button>
           </div>
-          <div className="p-8 bg-white grid lg:grid-cols-2 gap-8 max-h-[70vh] overflow-y-auto">
-             <div className="space-y-6">
-                <div className="aspect-video rounded-3xl overflow-hidden border-4 border-slate-50 shadow-lg">
-                  <img src={selectedTournament?.imageUrl} className="w-full h-full object-cover" alt="Tournament" />
-                </div>
-                <div className="p-6 bg-slate-50 rounded-3xl space-y-4">
-                  <h4 className="font-black text-slate-900 uppercase tracking-tight">Arena Intel</h4>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-500 font-medium">Division</span>
-                      <span className="font-bold text-slate-900">{selectedTournament?.category || 'Professional'}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-500 font-medium">Prize Pool</span>
-                      <span className="font-bold text-amber-600">{selectedTournament?.totalPrizePool || 'TBD'}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-500 font-medium">Entry Fee</span>
-                      <span className="font-bold text-blue-600">₹{selectedTournament?.entryFee}</span>
+
+          <div className="p-4 md:p-12 bg-slate-50/50 max-h-[85vh] overflow-y-auto">
+            {selectedTournament && (
+              <OrientationWrapper
+                orientation={selectedTournament.posterOrientation}
+                poster={
+                  <div className={cn(
+                    "relative rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white",
+                    selectedTournament.posterOrientation === 'PORTRAIT' ? "aspect-[3/4]" : "aspect-video"
+                  )}>
+                    <img
+                      src={selectedTournament.imageUrl || "/placeholder.jpg"}
+                      alt={selectedTournament.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-6 left-6">
+                      <span className="px-4 py-2 bg-orange-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] shadow-lg">
+                        {selectedTournament.category || "Professional"}
+                      </span>
                     </div>
                   </div>
-                </div>
-             </div>
-             <div className="space-y-6">
-                <div className="space-y-2">
-                   <h4 className="font-black text-slate-900 uppercase tracking-tight">Mission Brief</h4>
-                   <p className="text-slate-600 text-sm leading-relaxed">{selectedTournament?.description}</p>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                   <div className="p-4 border border-slate-100 rounded-2xl">
-                      <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-1">Registration</p>
-                      <p className="text-xs font-bold">{selectedTournament?.regStartDate ? format(new Date(selectedTournament.regStartDate), "MMM d") : 'TBD'} - {selectedTournament?.regEndDate ? format(new Date(selectedTournament.regEndDate), "MMM d") : 'TBD'}</p>
-                   </div>
-                   <div className="p-4 border border-orange-100 rounded-2xl bg-orange-50/30">
-                      <p className="text-[9px] font-black text-orange-500 uppercase tracking-widest mb-1">Event Dates</p>
-                      <p className="text-xs font-bold">{selectedTournament?.startDate ? format(new Date(selectedTournament.startDate), "MMM d") : 'TBD'} - {selectedTournament?.endDate ? format(new Date(selectedTournament.endDate), "MMM d") : 'TBD'}</p>
-                   </div>
-                </div>
-                <Button onClick={() => setIsPreviewOpen(false)} className="w-full h-14 bg-slate-900 hover:bg-orange-600 text-white font-black rounded-2xl transition-all">CLOSE PREVIEW</Button>
-             </div>
+                }
+                details={
+                  <div className="space-y-12">
+                    <div className="space-y-8">
+                      <div className="space-y-3">
+                        <span className="px-4 py-1.5 bg-orange-100 text-orange-600 rounded-full text-[10px] font-bold uppercase tracking-[0.15em]">
+                          Arena Details
+                        </span>
+                        <h1 className="text-4xl font-bold text-slate-900 leading-tight tracking-tight">
+                          {selectedTournament.title}
+                        </h1>
+                      </div>
+
+                      {selectedTournament.description && (
+                        <div
+                          className="text-slate-600 font-medium leading-relaxed text-lg border-l-4 border-orange-600/20 pl-6 ql-editor ql-viewer p-0"
+                          dangerouslySetInnerHTML={{ __html: selectedTournament.description }}
+                        />
+                      )}
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md">
+                          <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
+                            <Calendar className="h-7 w-7 text-orange-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Schedule</p>
+                            <p className="text-base font-bold text-slate-900 tracking-tight">
+                              {selectedTournament.startDate ? format(new Date(selectedTournament.startDate), "MMM d, yyyy") : 'TBD'}
+                              {selectedTournament.endDate && ` - ${format(new Date(selectedTournament.endDate), "MMM d, yyyy")}`}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md">
+                          <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
+                            <MapPin className="h-7 w-7 text-orange-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Venue</p>
+                            <p className="text-base font-bold text-slate-900 tracking-tight">{selectedTournament.location}</p>
+                          </div>
+                        </div>
+
+                        <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md">
+                          <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
+                            <Trophy className="h-7 w-7 text-orange-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Prize Pool</p>
+                            <p className="text-base font-bold text-slate-900 tracking-tight">{selectedTournament.totalPrizePool}</p>
+                          </div>
+                        </div>
+
+                        <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md">
+                          <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
+                            <Trophy className="h-7 w-7 text-orange-600" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Category</p>
+                            <p className="text-base font-bold text-slate-900 tracking-tight">{selectedTournament.category}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {selectedTournament.otherDetails && (
+                        <div className="space-y-4">
+                          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">Tournament Rules & Info</p>
+                          <div
+                            className="p-8 bg-white border border-slate-100 rounded-[2.5rem] text-base text-slate-600 font-medium leading-relaxed shadow-md border-l-4 border-l-orange-600 ql-editor ql-viewer"
+                            dangerouslySetInnerHTML={{ __html: selectedTournament.otherDetails }}
+                          />
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {selectedTournament.brochureUrl && (
+                          <div className="flex items-center justify-between p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-lg">
+                            <div className="flex items-center gap-5">
+                              <div className="h-16 w-16 rounded-2xl bg-orange-50 flex items-center justify-center">
+                                <FileText className="h-8 w-8 text-orange-600" />
+                              </div>
+                              <div>
+                                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-0.5">Brochure</p>
+                                <p className="text-lg font-bold text-slate-900">Download PDF</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="p-8 bg-slate-900 rounded-[2.5rem] flex items-center gap-6 text-white shadow-xl overflow-hidden relative">
+                          <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
+                            <Phone className="h-8 w-8 text-orange-400" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-1">Direct Help</p>
+                            <p className="text-xl font-bold tracking-tight">{selectedTournament.contactDetails}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        <div className="px-10 py-8 bg-white border border-slate-100 rounded-[3rem] shadow-lg flex items-center justify-between relative overflow-hidden group">
+                          <div className="relative">
+                            <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-[0.2em] mb-2">Registration Entry Fee</p>
+                            <p className="text-5xl font-bold text-orange-600 tracking-tighter">₹{selectedTournament.entryFee.toLocaleString()}</p>
+                          </div>
+                          <div className="relative h-16 w-16 bg-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <CreditCard className="h-8 w-8 text-white" />
+                          </div>
+                        </div>
+
+                        {selectedTournament.discountDetails && (
+                          <div className="flex items-start gap-4 p-6 bg-orange-50/50 rounded-[2rem] border border-orange-100/50">
+                            <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                              <Info className="h-6 w-6 text-orange-600" />
+                            </div>
+                            <p className="text-sm font-semibold text-orange-700 leading-relaxed italic uppercase tracking-tight">{selectedTournament.discountDetails}</p>
+                          </div>
+                        )}
+
+                        <PaymentDisplay />
+                      </div>
+                    </div>
+                  </div>
+                }
+                form={
+                  <div className="border-none shadow-xl rounded-[3rem] overflow-hidden bg-white">
+                    <div className="h-3 bg-orange-600" />
+                    <div className="p-10 md:p-14">
+                      <div className="space-y-10">
+                        <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
+                          <User className="h-6 w-6 text-orange-600" />
+                          <h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Static Registration Form</h2>
+                        </div>
+                        <div className="p-12 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200 text-center space-y-4">
+                           <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
+                             <Trophy className="h-8 w-8 text-orange-600" />
+                           </div>
+                           <p className="text-slate-500 font-medium">This is a preview of how users will see the registration form. In the live version, this will be a fully interactive enrollment experience.</p>
+                        </div>
+                        <Button disabled className="w-full h-20 bg-slate-200 text-slate-400 text-xl font-bold rounded-3xl uppercase tracking-wider">
+                          COMPLETE REGISTRATION (PREVIEW)
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                }
+              />
+            )}
           </div>
         </DialogContent>
       </Dialog>

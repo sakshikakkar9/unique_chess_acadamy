@@ -57,7 +57,7 @@ const TournamentTable: React.FC<TournamentTableProps> = ({
         <TableHeader className="bg-muted/50">
           <TableRow>
             <TableHead className="font-bold">Tournament Name</TableHead>
-            <TableHead className="font-bold">Registration Window</TableHead>
+            <TableHead className="font-bold">Division/Category</TableHead>
             <TableHead className="font-bold">Event Dates</TableHead>
             <TableHead className="font-bold">Reg. Count</TableHead>
             <TableHead className="font-bold">Status & Location</TableHead>
@@ -81,14 +81,11 @@ const TournamentTable: React.FC<TournamentTableProps> = ({
                 <TableCell>
                   <div className="font-bold text-slate-900">{tournament.title}</div>
                   <div className="text-xs text-muted-foreground truncate max-w-[200px]">
-                    {tournament.category || "Professional"}
+                    {tournament.location || "Online"}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2 text-sm text-slate-600">
-                    <Calendar className="h-3.5 w-3.5 text-blue-500" />
-                    {formatDateRange(tournament.regStartDate, tournament.regEndDate)}
-                  </div>
+                  <div className="font-bold text-slate-900">{tournament.category || "Professional"}</div>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">

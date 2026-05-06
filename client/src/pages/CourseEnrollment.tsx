@@ -20,6 +20,7 @@ import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 import { fadeUp, stagger } from "@/components/shared/motion";
 import PaymentDisplay from "@/components/shared/PaymentDisplay";
+import 'react-quill/dist/quill.snow.css';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2000&auto=format&fit=crop";
 
@@ -210,9 +211,10 @@ export default function CourseEnrollmentPage() {
                 </div>
 
                 {course.description && (
-                  <p className="text-slate-600 font-medium leading-relaxed whitespace-pre-wrap text-lg border-l-4 border-blue-600/20 pl-6">
-                    {course.description}
-                  </p>
+                  <div
+                    className="text-slate-600 font-medium leading-relaxed text-lg border-l-4 border-blue-600/20 pl-6 ql-editor ql-viewer p-0"
+                    dangerouslySetInnerHTML={{ __html: course.description }}
+                  />
                 )}
               </motion.div>
 
