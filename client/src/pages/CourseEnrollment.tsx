@@ -200,121 +200,116 @@ export default function CourseEnrollmentPage() {
               </motion.div>
 
               {/* Title & Description */}
-              <motion.div variants={fadeUp} className="space-y-6">
+              <motion.div variants={fadeUp} className="space-y-4">
                 <div className="space-y-2">
-                  <span className="px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]">
                     Course Details
                   </span>
-                  <h1 className="text-4xl font-bold text-slate-900 leading-tight tracking-tight">
+                  <h1 className="text-3xl font-bold text-slate-900 leading-tight tracking-tight">
                     {course.title}
                   </h1>
                 </div>
 
                 {course.description && (
                   <div
-                    className="text-slate-600 font-medium leading-relaxed text-lg border-l-4 border-blue-600/20 pl-6 ql-editor ql-viewer p-0"
+                    className="text-slate-600 font-medium leading-relaxed text-base ql-editor ql-viewer p-0"
                     dangerouslySetInnerHTML={{ __html: course.description }}
                   />
                 )}
               </motion.div>
 
-              {/* Info Grid */}
-              <motion.div variants={fadeUp} className="grid grid-cols-2 gap-6">
-                <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-blue-600/20 transition-all group">
-                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
-                    <BarChart3 className="h-7 w-7 text-blue-600" />
+              {/* Info Grid - Clean & Minimal */}
+              <motion.div variants={fadeUp} className="grid grid-cols-2 gap-y-8 gap-x-12 py-4 border-t border-b border-slate-100">
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                    <BarChart3 className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Level</p>
-                    <p className="text-lg font-bold text-slate-900 tracking-tight">{course.skillLevel}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Skill Level</p>
+                    <p className="text-base font-bold text-slate-900">{course.skillLevel}</p>
                   </div>
                 </div>
 
-                <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-blue-600/20 transition-all group">
-                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
-                    <Clock className="h-7 w-7 text-blue-600" />
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                    <Clock className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Duration</p>
-                    <p className="text-lg font-bold text-slate-900 tracking-tight">{course.duration}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Duration</p>
+                    <p className="text-base font-bold text-slate-900">{course.duration}</p>
                   </div>
                 </div>
 
-                <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-blue-600/20 transition-all group">
-                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
-                    <Zap className="h-7 w-7 text-blue-600" />
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                    <Zap className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Age Group</p>
-                    <p className="text-lg font-bold text-slate-900 tracking-tight">{course.ageGroup}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Age Group</p>
+                    <p className="text-base font-bold text-slate-900">{course.ageGroup}</p>
                   </div>
                 </div>
 
-                <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md hover:border-blue-600/20 transition-all group">
-                  <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
-                    <Calendar className="h-7 w-7 text-blue-600" />
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                    <Calendar className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Class Time</p>
-                    <p className="text-lg font-bold text-slate-900 tracking-tight">{course.classTime}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Class Time</p>
+                    <p className="text-base font-bold text-slate-900">{course.classTime}</p>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Training Days */}
-              <motion.div variants={fadeUp} className="p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-md">
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-6">Weekly Training Schedule</p>
-                <div className="flex flex-wrap gap-3">
+              {/* Training Days - Simplified Alignment */}
+              <motion.div variants={fadeUp} className="space-y-4">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Weekly Training Schedule</p>
+                <div className="flex flex-wrap gap-2">
                   {course.days.map((day) => (
-                    <span key={day} className="px-6 py-3 bg-blue-50 text-blue-700 text-xs font-bold rounded-2xl border border-blue-100 uppercase tracking-[0.1em] shadow-sm">
+                    <span key={day} className="px-4 py-2 bg-slate-50 text-slate-600 text-xs font-bold rounded-xl border border-slate-100 uppercase tracking-wider">
                       {day}
                     </span>
                   ))}
                 </div>
               </motion.div>
 
-              {/* Contact Information */}
-              <motion.div variants={fadeUp} className="p-8 bg-slate-900 rounded-[2.5rem] flex items-center gap-6 text-white shadow-xl relative overflow-hidden group">
-                <div className="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl transition-all group-hover:bg-blue-600/20" />
-                <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 backdrop-blur-md border border-white/10 group-hover:scale-105 transition-transform duration-500">
-                  <HelpCircle className="h-8 w-8 text-blue-400" />
+              {/* Contact & Resources - Clean Row */}
+              <motion.div variants={fadeUp} className="flex flex-wrap gap-8 py-6 border-t border-slate-100">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
+                    <HelpCircle className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Support</p>
+                    <p className="text-base font-bold text-slate-900">{course.contactDetails}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-1">Direct Support</p>
-                  <p className="text-xl font-bold tracking-tight">{course.contactDetails}</p>
-                </div>
-              </motion.div>
 
-              {/* Brochure Section */}
-              {course.brochureUrl && (
-                <motion.div variants={fadeUp}>
+                {course.brochureUrl && (
                   <button
                     onClick={(e) => handleBrochureDownload(e, course.brochureUrl!)}
-                    className="w-full flex items-center justify-between p-8 bg-white border border-slate-100 rounded-[2.5rem] group hover:border-blue-600 transition-all shadow-lg text-left"
+                    className="flex items-center gap-4 group"
                   >
-                    <div className="flex items-center gap-5">
-                      <div className="h-16 w-16 rounded-2xl bg-blue-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shadow-inner">
-                        <FileText className="h-8 w-8 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-0.5">Brochure</p>
-                        <p className="text-lg font-bold text-slate-900">Download Course PDF</p>
-                      </div>
+                    <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+                      <FileText className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Resources</p>
+                      <p className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors underline decoration-blue-600/20 underline-offset-4">Brochure PDF</p>
                     </div>
                   </button>
-                </motion.div>
-              )}
+                )}
+              </motion.div>
 
-              {/* Payment Section (Sleek Card) */}
-              <motion.div variants={fadeUp} className="space-y-6">
-                <div className="px-10 py-8 bg-white border border-slate-100 rounded-[3rem] shadow-lg flex items-center justify-between relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-32 h-full bg-blue-50/50 -skew-x-12 translate-x-16 transition-transform group-hover:translate-x-8" />
-                  <div className="relative">
-                    <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-[0.2em] mb-2">Investment for Excellence</p>
-                    <p className="text-5xl font-bold text-blue-600 tracking-tighter">₹{course.fee.toLocaleString()}</p>
+              {/* Payment Section - Refined */}
+              <motion.div variants={fadeUp} className="space-y-6 pt-6 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Investment</p>
+                    <p className="text-4xl font-bold text-blue-600 tracking-tighter">₹{course.fee.toLocaleString()}</p>
                   </div>
-                  <div className="relative h-16 w-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:rotate-6 transition-transform">
-                    <CreditCard className="h-8 w-8 text-white" />
+                  <div className="h-12 w-12 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg">
+                    <CreditCard className="h-6 w-6 text-white" />
                   </div>
                 </div>
 
