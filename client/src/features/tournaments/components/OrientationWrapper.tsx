@@ -1,5 +1,4 @@
 import React from "react";
-import { Tournament } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface OrientationWrapperProps {
@@ -15,41 +14,17 @@ const OrientationWrapper: React.FC<OrientationWrapperProps> = ({
   details,
   form
 }) => {
-  if (orientation === "PORTRAIT") {
-    return (
-      <div className="grid lg:grid-cols-12 gap-12 items-start">
-        {/* Left Side: Poster (Fixed/Sticky on Desktop) */}
-        <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-8">
-          {poster}
-          <div className="hidden lg:block">
-            {details}
-          </div>
-        </div>
-
-        {/* Right Side: Details (on mobile) and Form */}
-        <div className="lg:col-span-7 space-y-8">
-          <div className="lg:hidden">
-            {details}
-          </div>
-          {form}
-        </div>
-      </div>
-    );
-  }
-
-  // LANDSCAPE: Hero style (Full width top)
   return (
-    <div className="space-y-12">
-      <div className="w-full">
+    <div className="grid lg:grid-cols-12 gap-12 items-start">
+      {/* Left Column: Media + Info + Scanner */}
+      <div className="lg:col-span-5 space-y-10">
         {poster}
+        {details}
       </div>
-      <div className="grid lg:grid-cols-12 gap-12 items-start">
-        <div className="lg:col-span-5">
-          {details}
-        </div>
-        <div className="lg:col-span-7">
-          {form}
-        </div>
+
+      {/* Right Column: Registration Form */}
+      <div className="lg:col-span-7">
+        {form}
       </div>
     </div>
   );

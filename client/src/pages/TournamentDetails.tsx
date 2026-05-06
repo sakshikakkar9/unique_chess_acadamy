@@ -10,9 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  Calendar, MapPin, Ticket, ArrowLeft, Trophy, Users, 
-  Upload, CheckCircle2, Loader2, ShieldCheck,
-  CreditCard, Info, Copy, FileText, Phone, Mail, Award, Map, User, ChevronDown
+  Calendar, MapPin, ArrowLeft, Trophy,
+  Upload, CheckCircle2, Loader2,
+  CreditCard, Info, Copy, FileText, Phone, Award, User, ChevronDown
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -88,8 +88,8 @@ export default function TournamentDetails() {
     formData.append("address", form.address);
     formData.append("discoverySource", form.discoverySource);
     formData.append("category", form.category);
-    formData.append("ageProof", files.payment1); // mapping to ageProofUrl in DB for first image
-    formData.append("paymentProof", files.payment2); // mapping to paymentProofUrl in DB
+    formData.append("ageProof", files.payment1);
+    formData.append("paymentProof", files.payment2);
 
     register(formData, {
       onSuccess: (data: any) => {
@@ -117,8 +117,8 @@ export default function TournamentDetails() {
   if (!tournament) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Tournament not found</h1>
-        <Button onClick={() => navigate("/tournaments")}>Back to Arenas</Button>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tighter">Tournament not found</h1>
+        <Button onClick={() => navigate("/tournaments")} className="rounded-xl font-bold">Back to Arenas</Button>
       </div>
     );
   }
@@ -129,16 +129,16 @@ export default function TournamentDetails() {
         <Navbar />
         <div className="container mx-auto px-6 pt-40 pb-20 flex flex-col items-center justify-center text-center">
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md space-y-6">
-            <div className="h-20 w-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 className="h-12 w-12 text-green-500" />
+            <div className="h-24 w-24 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 className="h-14 w-14 text-green-500" />
             </div>
-            <h1 className="text-3xl font-black text-slate-900">Registration Successful!</h1>
-            <p className="text-slate-500 font-medium">Your registration for <strong>{tournament.title}</strong> has been submitted. Our team will review your application and contact you shortly.</p>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">Registration Successful!</h1>
+            <p className="text-slate-500 font-bold leading-relaxed">Your registration for <span className="text-orange-600">{tournament.title}</span> has been submitted. Our team will review your application and contact you shortly.</p>
 
-            <div className="bg-slate-50 border border-slate-100 p-6 rounded-2xl space-y-2 relative group">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Reference ID</p>
+            <div className="bg-slate-50 border border-slate-100 p-8 rounded-[2rem] space-y-2 relative group">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Reference ID</p>
               <div className="flex items-center justify-center gap-2">
-                <p className="text-2xl font-black text-orange-600">{refId}</p>
+                <p className="text-3xl font-black text-orange-600 tracking-tighter">{refId}</p>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -146,15 +146,15 @@ export default function TournamentDetails() {
                     navigator.clipboard.writeText(refId);
                     toast({ title: "Copied!", description: "Reference ID copied to clipboard." });
                   }}
-                  className="h-8 w-8 text-slate-400 hover:text-orange-600"
+                  className="h-10 w-10 text-slate-400 hover:text-orange-600 rounded-xl"
                 >
-                  <Copy className="h-4 w-4" />
+                  <Copy className="h-5 w-5" />
                 </Button>
               </div>
             </div>
 
-            <Button onClick={() => navigate("/tournaments")} className="w-full h-14 bg-slate-900 hover:bg-orange-600 rounded-xl font-bold transition-all text-white">
-              Return to Arenas
+            <Button onClick={() => navigate("/tournaments")} className="w-full h-16 bg-slate-900 hover:bg-orange-600 rounded-2xl font-black transition-all text-white text-lg shadow-xl shadow-slate-900/10">
+              RETURN TO ARENAS
             </Button>
           </motion.div>
         </div>
@@ -168,10 +168,10 @@ export default function TournamentDetails() {
       <Navbar />
 
       <main className="container mx-auto px-6 pt-32 pb-20">
-        <div className="mb-10">
-          <Link to="/tournaments" className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-orange-600 transition-colors group">
+        <div className="mb-12">
+          <Link to="/tournaments" className="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-orange-600 transition-colors group uppercase tracking-[0.2em]">
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            <span className="uppercase tracking-widest">Back to Arenas</span>
+            <span>Back to Arenas</span>
           </Link>
         </div>
 
@@ -179,7 +179,7 @@ export default function TournamentDetails() {
           orientation={tournament.posterOrientation}
           poster={
             <motion.div initial="hidden" animate="visible" variants={fadeUp} className={cn(
-              "relative rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white",
+              "relative rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white",
               tournament.posterOrientation === 'PORTRAIT' ? "aspect-[3/4]" : "aspect-video"
             )}>
               <img
@@ -187,92 +187,74 @@ export default function TournamentDetails() {
                 alt={tournament.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute top-4 left-4">
-                <span className="px-4 py-1.5 bg-orange-600 text-white rounded-lg text-[10px] font-black uppercase tracking-wider shadow-lg">
+              <div className="absolute top-6 left-6">
+                <span className="px-4 py-2 bg-orange-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.15em] shadow-xl">
                   {tournament.category || "Professional"}
                 </span>
               </div>
             </motion.div>
           }
           details={
-            <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-8">
+            <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-10">
               <motion.div variants={fadeUp} className="space-y-6">
                 <div className="space-y-2">
                   <span className="px-4 py-1.5 bg-orange-100 text-orange-600 rounded-full text-[10px] font-black uppercase tracking-widest">
                     Tournament Information
                   </span>
-                  <h1 className="text-4xl font-black text-slate-900 leading-tight tracking-tighter">
+                  <h1 className="text-5xl font-black text-slate-900 leading-[0.9] tracking-tighter">
                     {tournament.title}
                   </h1>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-start gap-3 group hover:border-orange-200 transition-colors">
-                    <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <Calendar className="h-5 w-5 text-orange-600" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-6 bg-white border border-slate-100 rounded-[1.5rem] flex items-start gap-4 shadow-sm">
+                    <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
+                      <Calendar className="h-6 w-6 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Schedule</p>
-                      <p className="text-sm font-bold text-slate-900">
-                        {new Date(tournament.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
-                        {tournament.endDate && ` - ${new Date(tournament.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}`}
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule</p>
+                      <p className="text-sm font-black text-slate-900">
+                        {new Date(tournament.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                        {tournament.endDate && ` - ${new Date(tournament.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`}
                       </p>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-start gap-3 group hover:border-orange-200 transition-colors">
-                    <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <MapPin className="h-5 w-5 text-orange-600" />
+                  <div className="p-6 bg-white border border-slate-100 rounded-[1.5rem] flex items-start gap-4 shadow-sm">
+                    <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
+                      <MapPin className="h-6 w-6 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Venue</p>
-                      <p className="text-sm font-bold text-slate-900">{tournament.location || "Main Academy Hall"}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Venue</p>
+                      <p className="text-sm font-black text-slate-900 line-clamp-1">{tournament.location || "Main Hall"}</p>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-start gap-3 group hover:border-orange-200 transition-colors">
-                    <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <Trophy className="h-5 w-5 text-orange-600" />
+                  <div className="p-6 bg-white border border-slate-100 rounded-[1.5rem] flex items-start gap-4 shadow-sm">
+                    <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
+                      <Trophy className="h-6 w-6 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Prize Pool</p>
-                      <p className="text-sm font-bold text-slate-900">{tournament.totalPrizePool || 'TBD'}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Prize Pool</p>
+                      <p className="text-sm font-black text-slate-900">{tournament.totalPrizePool || 'TBD'}</p>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-start gap-3 group hover:border-orange-200 transition-colors">
-                    <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <Award className="h-5 w-5 text-orange-600" />
+                  <div className="p-6 bg-white border border-slate-100 rounded-[1.5rem] flex items-start gap-4 shadow-sm">
+                    <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
+                      <Award className="h-6 w-6 text-orange-600" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Category</p>
-                      <p className="text-sm font-bold text-slate-900">{tournament.category || "Professional Arena"}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Category</p>
+                      <p className="text-sm font-black text-slate-900">{tournament.category || "Professional"}</p>
                     </div>
                   </div>
-                </div>
-
-                <div className="p-6 bg-slate-900 rounded-[2rem] text-white shadow-xl">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Entry Fee</p>
-                      <p className="text-3xl font-black">₹{tournament.entryFee.toLocaleString()}</p>
-                    </div>
-                    <div className="h-12 w-12 bg-white/10 rounded-xl flex items-center justify-center">
-                      <CreditCard className="h-6 w-6 text-orange-500" />
-                    </div>
-                  </div>
-                  {tournament.discountDetails && (
-                    <div className="flex items-start gap-2 p-3 bg-white/5 rounded-xl border border-white/10">
-                      <Info className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
-                      <p className="text-xs font-medium text-slate-300 italic">{tournament.discountDetails}</p>
-                    </div>
-                  )}
                 </div>
 
                 {tournament.otherDetails && (
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Additional Details</p>
-                    <div className="p-5 bg-white border border-slate-100 rounded-2xl text-sm text-slate-600 font-medium leading-relaxed whitespace-pre-wrap">
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Additional Details</p>
+                    <div className="p-6 bg-white border border-slate-100 rounded-[2rem] text-base text-slate-600 font-bold leading-relaxed whitespace-pre-wrap">
                       {tournament.otherDetails}
                     </div>
                   </div>
@@ -284,66 +266,85 @@ export default function TournamentDetails() {
                       href={tournament.brochureUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl group hover:border-orange-500 transition-all shadow-sm"
+                      className="flex items-center justify-between p-6 bg-white border-2 border-slate-50 rounded-[2rem] group hover:border-orange-500 transition-all shadow-sm"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <FileText className="h-5 w-5 text-orange-600" />
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <FileText className="h-6 w-6 text-orange-600" />
                         </div>
                         <div>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Brochure</p>
-                          <p className="text-sm font-bold text-slate-900">Download PDF</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Brochure</p>
+                          <p className="text-base font-black text-slate-900">Download PDF</p>
                         </div>
                       </div>
-                      <ArrowLeft className="h-4 w-4 text-slate-300 group-hover:text-orange-500 rotate-180 transition-all" />
                     </a>
                   )}
 
-                  <div className="p-4 bg-white border border-slate-100 rounded-2xl flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                      <Phone className="h-5 w-5 text-blue-600" />
+                  <div className="p-6 bg-blue-600 rounded-[2rem] flex items-center gap-4 text-white shadow-xl shadow-blue-600/20">
+                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0 backdrop-blur-sm">
+                      <Phone className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Contact</p>
-                      <p className="text-sm font-bold text-slate-900">{tournament.contactDetails || "+91 XXXXXXXXXX"}</p>
+                      <p className="text-[10px] font-black text-blue-100 uppercase tracking-widest mb-0.5">Contact</p>
+                      <p className="text-base font-black tracking-tight">{tournament.contactDetails || "+91 XXXXXXXXXX"}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100">
-                   <PaymentDisplay />
-                </div>
+                {/* Payment Section (Sleek Card) */}
+                <motion.div variants={fadeUp} className="p-8 bg-white border-2 border-slate-100 rounded-[2.5rem] shadow-sm space-y-8">
+                  <div className="flex items-center justify-between pb-6 border-b border-slate-50">
+                    <div>
+                      <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Registration Fee</p>
+                      <p className="text-4xl font-black text-slate-900 tracking-tighter">₹{tournament.entryFee.toLocaleString()}</p>
+                    </div>
+                    <div className="h-16 w-16 bg-orange-50 rounded-[1.5rem] flex items-center justify-center shadow-inner">
+                      <CreditCard className="h-8 w-8 text-orange-600" />
+                    </div>
+                  </div>
+
+                  {tournament.discountDetails && (
+                    <div className="flex items-start gap-3 p-5 bg-orange-50/50 rounded-2xl border border-orange-100">
+                      <Info className="h-5 w-5 text-orange-600 shrink-0 mt-0.5" />
+                      <p className="text-sm font-bold text-orange-700 leading-relaxed italic">{tournament.discountDetails}</p>
+                    </div>
+                  )}
+
+                  <div className="pt-2">
+                     <PaymentDisplay />
+                  </div>
+                </motion.div>
               </motion.div>
             </motion.div>
           }
           form={
-            <Card className="border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.08)] rounded-[2.5rem] overflow-hidden bg-white border border-slate-100">
-              <div className="h-2 bg-orange-600" />
-              <CardContent className="p-8 md:p-10">
-                <form onSubmit={handleSubmit} className="space-y-8">
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                      <User className="h-5 w-5 text-orange-600" />
-                      <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Enrollment Form</h2>
+            <Card className="border-none shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)] rounded-[3rem] overflow-hidden bg-white">
+              <div className="h-3 bg-orange-600" />
+              <CardContent className="p-10 md:p-14">
+                <form onSubmit={handleSubmit} className="space-y-10">
+                  <div className="space-y-8">
+                    <div className="flex items-center gap-3 pb-4 border-b-2 border-slate-50">
+                      <User className="h-6 w-6 text-orange-600" />
+                      <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Enrollment Form</h2>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Player Name *</Label>
+                    <div className="space-y-6">
+                      <div className="space-y-3">
+                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Player Name *</Label>
                         <Input
                           value={form.studentName}
                           onChange={(e) => set("studentName", e.target.value)}
                           required
                           placeholder="Enter your full name"
-                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
+                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6 focus:ring-orange-600 transition-all placeholder:text-slate-300"
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Gender *</Label>
-                        <div className="flex gap-6 pt-1">
+                      <div className="space-y-3">
+                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Gender *</Label>
+                        <div className="flex gap-10 pt-2 px-1">
                           {["Male", "Female", "Other"].map((g) => (
-                            <label key={g} className="flex items-center gap-2 cursor-pointer group">
+                            <label key={g} className="flex items-center gap-3 cursor-pointer group">
                               <div className="relative flex items-center justify-center">
                                 <input
                                   type="radio"
@@ -353,10 +354,10 @@ export default function TournamentDetails() {
                                   onChange={(e) => set("gender", e.target.value)}
                                   className="peer sr-only"
                                 />
-                                <div className="h-5 w-5 rounded-full border-2 border-slate-300 peer-checked:border-orange-600 transition-all" />
-                                <div className="absolute h-2.5 w-2.5 rounded-full bg-orange-600 scale-0 peer-checked:scale-100 transition-transform" />
+                                <div className="h-6 w-6 rounded-full border-2 border-slate-200 peer-checked:border-orange-600 transition-all" />
+                                <div className="absolute h-3 w-3 rounded-full bg-orange-600 scale-0 peer-checked:scale-100 transition-transform" />
                               </div>
-                              <span className={cn("text-sm font-bold transition-colors", form.gender === g ? "text-orange-600" : "text-slate-500 group-hover:text-slate-700")}>
+                              <span className={cn("text-base font-black tracking-tight transition-colors", form.gender === g ? "text-orange-600" : "text-slate-400 group-hover:text-slate-600")}>
                                 {g}
                               </span>
                             </label>
@@ -364,12 +365,12 @@ export default function TournamentDetails() {
                         </div>
                       </div>
 
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Category *</Label>
+                      <div className="grid md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Category *</Label>
                           <div className="relative">
                             <select
-                              className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50/50 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-orange-600 transition-all appearance-none cursor-pointer pr-10"
+                              className="w-full h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 px-6 text-base font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-600 transition-all appearance-none cursor-pointer pr-12"
                               value={form.category}
                               onChange={(e) => set("category", e.target.value)}
                               required
@@ -384,82 +385,82 @@ export default function TournamentDetails() {
                               <option value="Under-19">Under-19</option>
                               <option value="Open">Open</option>
                             </select>
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                            <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
                           </div>
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Date of Birth *</Label>
+                        <div className="space-y-3">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Date of Birth *</Label>
                           <Input
                             type="date"
                             value={form.dob}
                             onChange={(e) => set("dob", e.target.value)}
                             required
-                            className="h-14 rounded-xl border-slate-200 bg-slate-50/50 font-bold"
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6"
                           />
                         </div>
                       </div>
 
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Phone Number *</Label>
+                      <div className="grid md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Phone Number *</Label>
                           <Input
                             type="tel"
                             value={form.phone}
                             onChange={(e) => set("phone", e.target.value)}
                             required
-                            placeholder="+91 98765 43210"
-                            className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
+                            placeholder="+91 XXXXX XXXXX"
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Email (Optional)</Label>
+                        <div className="space-y-3">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Email (Optional)</Label>
                           <Input
                             type="email"
                             value={form.email}
                             onChange={(e) => set("email", e.target.value)}
                             placeholder="john@example.com"
-                            className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6"
                           />
                         </div>
                       </div>
 
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">FIDE ID</Label>
+                      <div className="grid md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">FIDE ID</Label>
                           <Input
                             value={form.fideId}
                             onChange={(e) => set("fideId", e.target.value)}
                             placeholder="0"
-                            className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">FIDE Rating</Label>
+                        <div className="space-y-3">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">FIDE Rating</Label>
                           <Input
                             type="number"
                             value={form.fideRating}
                             onChange={(e) => set("fideRating", e.target.value)}
                             placeholder="0"
-                            className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 font-black text-slate-900 px-6"
                           />
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Address *</Label>
+                      <div className="space-y-3">
+                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Full Address *</Label>
                         <Textarea
                           value={form.address}
                           onChange={(e) => set("address", e.target.value)}
                           required
                           placeholder="Enter your complete residential address"
-                          className="rounded-xl border-slate-200 bg-slate-50/50 min-h-[100px] resize-none"
+                          className="rounded-2xl border-2 border-slate-100 bg-slate-50/50 min-h-[120px] p-6 font-bold text-slate-900 resize-none focus:ring-orange-600 transition-all"
                         />
                       </div>
 
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Payment Proof *</Label>
-                          <div className="relative h-14">
+                      <div className="grid md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 1 *</Label>
+                          <div className="relative h-20">
                             <input
                               type="file"
                               onChange={(e) => handleFileChange(e, 'payment1')}
@@ -467,17 +468,17 @@ export default function TournamentDetails() {
                               required
                             />
                             <div className={cn(
-                              "h-full w-full border-2 border-dashed rounded-xl flex items-center justify-center gap-2 px-4 transition-all",
-                              files.payment1 ? "border-emerald-500 bg-emerald-50 text-emerald-600" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-orange-300"
+                              "h-full w-full border-2 border-dashed rounded-2xl flex items-center justify-center gap-3 px-6 transition-all",
+                              files.payment1 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-orange-400"
                             )}>
-                              {files.payment1 ? <CheckCircle2 className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
-                              <span className="text-xs font-bold truncate">{files.payment1 ? files.payment1.name : "Upload Proof 1"}</span>
+                              {files.payment1 ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
+                              <span className="text-sm font-black truncate">{files.payment1 ? files.payment1.name : "Upload Proof"}</span>
                             </div>
                           </div>
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Payment Proof *</Label>
-                          <div className="relative h-14">
+                        <div className="space-y-3">
+                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 2 *</Label>
+                          <div className="relative h-20">
                             <input
                               type="file"
                               onChange={(e) => handleFileChange(e, 'payment2')}
@@ -485,33 +486,31 @@ export default function TournamentDetails() {
                               required
                             />
                             <div className={cn(
-                              "h-full w-full border-2 border-dashed rounded-xl flex items-center justify-center gap-2 px-4 transition-all",
-                              files.payment2 ? "border-emerald-500 bg-emerald-50 text-emerald-600" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-orange-300"
+                              "h-full w-full border-2 border-dashed rounded-2xl flex items-center justify-center gap-3 px-6 transition-all",
+                              files.payment2 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-orange-400"
                             )}>
-                              {files.payment2 ? <CheckCircle2 className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
-                              <span className="text-xs font-bold truncate">{files.payment2 ? files.payment2.name : "Upload Proof 2"}</span>
+                              {files.payment2 ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
+                              <span className="text-sm font-black truncate">{files.payment2 ? files.payment2.name : "Upload Proof"}</span>
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">How did you find us?</Label>
-                          <div className="relative">
-                            <select
-                              className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50/50 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-orange-600 transition-all appearance-none cursor-pointer pr-10"
-                              value={form.discoverySource}
-                              onChange={(e) => set("discoverySource", e.target.value)}
-                            >
-                              <option>Social Media</option>
-                              <option>Through Coach</option>
-                              <option>Academy Event</option>
-                              <option>Google Search</option>
-                              <option>Friend/Word of Mouth</option>
-                            </select>
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
-                          </div>
+                      <div className="space-y-3">
+                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">How did you find us?</Label>
+                        <div className="relative">
+                          <select
+                            className="w-full h-16 rounded-2xl border-2 border-slate-100 bg-slate-50/50 px-6 text-base font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-600 transition-all appearance-none cursor-pointer pr-12"
+                            value={form.discoverySource}
+                            onChange={(e) => set("discoverySource", e.target.value)}
+                          >
+                            <option>Social Media</option>
+                            <option>Through Coach</option>
+                            <option>Academy Event</option>
+                            <option>Google Search</option>
+                            <option>Friend/Word of Mouth</option>
+                          </select>
+                          <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
                         </div>
                       </div>
                     </div>
@@ -520,14 +519,14 @@ export default function TournamentDetails() {
                   <Button
                     type="submit"
                     disabled={isPending}
-                    className="w-full h-16 bg-orange-600 hover:bg-slate-900 text-white text-lg font-black rounded-2xl transition-all shadow-xl shadow-orange-600/20 active:scale-[0.98]"
+                    className="w-full h-20 bg-orange-600 hover:bg-slate-900 text-white text-xl font-black rounded-3xl transition-all shadow-2xl shadow-orange-600/30 active:scale-[0.98] uppercase tracking-wider"
                   >
                     {isPending ? (
-                      <span className="flex items-center gap-2">
-                        <Loader2 className="h-5 w-5 animate-spin" /> PROCESSING...
+                      <span className="flex items-center gap-3">
+                        <Loader2 className="h-6 w-6 animate-spin" /> Submitting...
                       </span>
                     ) : (
-                      "SUBMIT REGISTRATION"
+                      "Complete Registration"
                     )}
                   </Button>
                 </form>
