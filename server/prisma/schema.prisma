@@ -169,6 +169,7 @@ model Course {
   contactDetails String
   mode           ClassMode          @default(ONLINE)
   custom_banner_url String?            // URL from storage bucket
+  brochureUrl     String?            // New: For the course brochure upload
   posterOrientation PosterOrientation @default(LANDSCAPE)
   
   enrollments    CourseEnrollment[] 

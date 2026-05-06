@@ -38,10 +38,10 @@ export default function TournamentsPage() {
           <motion.div initial="hidden" animate="visible" variants={stagger}>
             <motion.div variants={fadeLeft} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 mb-8">
               <Trophy className="h-3.5 w-3.5" />
-              <span className="text-[11px] font-black uppercase tracking-[0.2em]">Championship Hub</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Championship Hub</span>
             </motion.div>
             
-            <motion.h1 variants={fadeLeft} className="text-4xl sm:text-7xl md:text-8xl font-bold text-white mb-6 tracking-tighter leading-tight">
+            <motion.h1 variants={fadeLeft} className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
               Prove Your <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-200">Strategic Might</span>
             </motion.h1>
@@ -74,7 +74,7 @@ export default function TournamentsPage() {
                   <stat.icon className={cn("h-7 w-7", stat.color)} />
                 </div>
                 <div className="text-center md:text-left">
-                  <p className="text-[13px] font-black text-white uppercase tracking-[0.2em] mb-1">{stat.label}</p>
+                  <p className="text-[13px] font-bold text-white uppercase tracking-[0.2em] mb-1">{stat.label}</p>
                   <p className="text-xs font-medium text-slate-400">{stat.desc}</p>
                 </div>
                 <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-transparent via-orange-500 to-transparent group-hover:w-full transition-all duration-500" />
@@ -89,8 +89,8 @@ export default function TournamentsPage() {
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between mb-16">
             <div>
-              <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Active Arenas</h2>
-              <div className="h-1.5 w-16 bg-orange-500 mt-3 rounded-full" />
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Active Arenas</h2>
+              <div className="h-1 w-12 bg-orange-500 mt-3 rounded-full" />
             </div>
           </div>
 
@@ -118,19 +118,19 @@ export default function TournamentsPage() {
                   <div className="p-6 md:p-9 flex flex-col h-full">
                     <div className="flex justify-between items-start mb-8">
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Start Date</span>
-                        <div className="flex items-center gap-2 text-slate-900 font-bold">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Start Date</span>
+                        <div className="flex items-center gap-2 text-slate-900 font-semibold">
                           <Calendar className="h-4 w-4 text-orange-500" />
                           {/* LOGIC CHANGE: Uses startDate from new schema */}
                           {new Date(t.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </div>
                       </div>
-                      <span className="px-3 py-1 bg-orange-50 text-orange-600 text-[10px] font-black uppercase rounded-lg border border-orange-100 shadow-sm">
+                      <span className="px-3 py-1 bg-orange-50 text-orange-600 text-[10px] font-bold uppercase rounded-lg border border-orange-100 shadow-sm">
                         {t.category || 'Open'}
                       </span>
                     </div>
 
-                    <h3 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-orange-600 transition-colors">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-orange-600 transition-colors">
                       {t.title}
                     </h3>
                     <div className="flex items-center gap-2 text-slate-500 text-sm mb-10 font-medium">
@@ -140,8 +140,8 @@ export default function TournamentsPage() {
 
                     <div className="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between">
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Prize Fund</span>
-                        <span className="text-2xl font-black text-slate-900">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Prize Fund</span>
+                        <span className="text-2xl font-bold text-slate-900">
                           {/* LOGIC CHANGE: Uses totalPrizePool from new schema */}
                           ₹{t.totalPrizePool?.toLocaleString() || 'TBD'}
                         </span>

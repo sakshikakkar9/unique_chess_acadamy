@@ -38,10 +38,12 @@ const AdminCourses = () => {
     classTime: "",
     duration: "",
     contactDetails: "",
-    posterOrientation: "LANDSCAPE"
+    posterOrientation: "LANDSCAPE",
+    brochureUrl: ""
   });
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedBrochure, setSelectedBrochure] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -81,6 +83,7 @@ const AdminCourses = () => {
       data.append("posterOrientation", formData.posterOrientation);
 
       if (selectedFile) data.append("image", selectedFile);
+      if (selectedBrochure) data.append("brochure", selectedBrochure);
 
       if (selectedCourse) {
         await updateCourse(selectedCourse.id, data);
@@ -99,6 +102,7 @@ const AdminCourses = () => {
     setIsModalOpen(false);
     setSelectedCourse(null);
     setSelectedFile(null);
+    setSelectedBrochure(null);
     setPreviewUrl("");
     setFormData({ 
       title: "",
@@ -111,7 +115,8 @@ const AdminCourses = () => {
       classTime: "",
       duration: "",
       contactDetails: "",
-      posterOrientation: "LANDSCAPE"
+      posterOrientation: "LANDSCAPE",
+      brochureUrl: ""
     });
   };
 
@@ -299,6 +304,27 @@ const AdminCourses = () => {
             <div className="space-y-2">
                 <Label>Contact Details</Label>
                 <Input value={formData.contactDetails || ""} onChange={(e) => setFormData({...formData, contactDetails: e.target.value})} />
+            </div>
+          </div>
+
+          <div className="grid gap-2">
+            <Label className="text-xs font-black uppercase text-slate-400 tracking-widest">Course Brochure (PDF)</Label>
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1">
+                <input
+                  type="file"
+                  accept=".pdf"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  onChange={(e) => setSelectedBrochure(e.target.files?.[0] || null)}
+                />
+                <div className={`h-12 px-4 border-2 border-dashed rounded-xl flex items-center gap-2 transition-all ${selectedBrochure ? 'border-emerald-500 bg-emerald-50 text-emerald-600' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
+                  <Upload className="h-4 w-4" />
+                  <span className="text-xs font-bold truncate">{selectedBrochure ? selectedBrochure.name : (formData.brochureUrl ? "Change Brochure" : "Upload Brochure")}</span>
+                </div>
+              </div>
+              {formData.brochureUrl && !selectedBrochure && (
+                 <a href={formData.brochureUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs font-bold">View Current</a>
+              )}
             </div>
           </div>
 

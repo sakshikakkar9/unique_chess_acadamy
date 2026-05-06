@@ -27,12 +27,12 @@ export default function PaymentDisplay() {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Scan to Pay Securely</p>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Scan to Pay Securely</p>
       </div>
 
       <div className="relative group">
         {/* Sleek Border Container */}
-        <div className="relative bg-white p-10 rounded-[3.5rem] border-2 border-slate-100 shadow-2xl transition-all duration-700 group-hover:shadow-blue-600/10 group-hover:border-blue-600/20 overflow-hidden">
+        <div className="relative bg-white p-10 rounded-[3.5rem] border border-slate-100 shadow-xl transition-all duration-700 group-hover:shadow-blue-600/10 group-hover:border-blue-600/20 overflow-hidden">
           {/* Subtle background decoration */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl opacity-50 transition-opacity group-hover:opacity-100" />
           <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-slate-50 rounded-full blur-3xl opacity-50 transition-opacity group-hover:opacity-100" />
@@ -54,10 +54,10 @@ export default function PaymentDisplay() {
             <div className="text-center space-y-3">
               <div className="flex items-center justify-center gap-2 mb-1">
                 <div className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-bounce" />
-                <p className="text-xl font-black text-slate-900 tracking-tight">Secured UPI Gateway</p>
+                <p className="text-xl font-bold text-slate-900 tracking-tight">Secured UPI Gateway</p>
               </div>
               <div className="flex flex-col items-center">
-                <span className="px-6 py-2 bg-slate-900 rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.25em] shadow-lg shadow-slate-900/20">
+                <span className="px-6 py-2 bg-slate-900 rounded-2xl text-[10px] font-bold text-white uppercase tracking-[0.25em] shadow-md shadow-slate-900/20">
                   Universal Chess Academy
                 </span>
               </div>
