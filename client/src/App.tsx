@@ -29,6 +29,7 @@ const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const AdminLogin = lazy(() => import("./pages/admin/Login.tsx"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard.tsx"));
 const AdminCourses = lazy(() => import("./pages/admin/Courses.tsx"));
+const AdminCourseStudents = lazy(() => import("./pages/admin/CourseStudents.tsx"));
 const AdminTournaments = lazy(() => import("./pages/admin/Tournaments.tsx"));
 const AdminTournamentStudents = lazy(() => import("./pages/admin/TournamentStudents.tsx"));
 // ✅ New admin route to see registered students
@@ -81,6 +82,7 @@ const App = () => (
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="courses" element={<AdminCourses />} />
+                <Route path="courses/:id/students" element={<AdminCourseStudents />} />
                 <Route path="tournaments" element={<AdminTournaments />} />
                 <Route path="tournaments/:id/students" element={<AdminTournamentStudents />} />
                 {/* ✅ Added route for tracking tournament signups */}

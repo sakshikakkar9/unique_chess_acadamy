@@ -59,6 +59,7 @@ export const createCourse = async (data) => {
       classTime: data.classTime || "TBD", 
       // Force Uppercase to match Prisma ClassMode Enum
       mode: (data.mode || "ONLINE").toUpperCase(),
+      posterOrientation: data.posterOrientation || "LANDSCAPE",
       contactDetails: data.contactDetails || "Contact Academy Admin",
     },
   });
@@ -95,6 +96,7 @@ export const updateCourse = async (id, data) => {
   if (parsedDays) updatePayload.days = parsedDays;
   if (data.classTime) updatePayload.classTime = data.classTime;
   if (data.mode) updatePayload.mode = data.mode.toUpperCase();
+  if (data.posterOrientation) updatePayload.posterOrientation = data.posterOrientation;
   if (data.contactDetails) updatePayload.contactDetails = data.contactDetails;
 
   return await prisma.course.update({
@@ -158,8 +160,12 @@ export const createEnrollment = async (courseId, data, proofs) => {
 /**
  * Fetches all enrollments including basic course details.
  */
-export const getAllEnrollments = async () => {
+export const getAllEnrollments = async (courseId) => {
+  const where = {};
+  if (courseId) where.courseId = courseId;
+
   return await prisma.courseEnrollment.findMany({
+    where,
     include: {
       course: {
         select: {

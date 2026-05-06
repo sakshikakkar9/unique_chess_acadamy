@@ -48,8 +48,7 @@ export default function TournamentDetails() {
     fideRating: "0",
     address: "",
     discoverySource: "Social Media",
-    category: "",
-    transactionId: ""
+    category: ""
   });
 
   const tournament = useMemo(() => tournaments.find((t) => t.id.toString() === id), [tournaments, id]);
@@ -89,7 +88,6 @@ export default function TournamentDetails() {
     formData.append("address", form.address);
     formData.append("discoverySource", form.discoverySource);
     formData.append("category", form.category);
-    formData.append("transactionId", form.transactionId);
     formData.append("ageProof", files.payment1); // mapping to ageProofUrl in DB for first image
     formData.append("paymentProof", files.payment2); // mapping to paymentProofUrl in DB
 
@@ -498,16 +496,6 @@ export default function TournamentDetails() {
                       </div>
 
                       <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Transaction ID *</Label>
-                          <Input
-                            value={form.transactionId}
-                            onChange={(e) => set("transactionId", e.target.value)}
-                            required
-                            placeholder="UPI Ref / Order ID"
-                            className="h-14 rounded-xl border-slate-200 bg-slate-50/50"
-                          />
-                        </div>
                         <div className="space-y-2">
                           <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">How did you find us?</Label>
                           <div className="relative">

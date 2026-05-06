@@ -29,6 +29,7 @@ interface DataTableProps<T> {
   data: T[];
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
+  onRowClick?: (item: T) => void;
   isLoading?: boolean;
 }
 
@@ -37,6 +38,7 @@ const DataTable = <T extends { id: string | number }>({
   data,
   onEdit,
   onDelete,
+  onRowClick,
   isLoading,
 }: DataTableProps<T>) => {
   if (isLoading) {
@@ -93,7 +95,11 @@ const DataTable = <T extends { id: string | number }>({
             </TableRow>
           ) : (
             data.map((item) => (
-              <TableRow key={item.id} className="group hover:bg-muted/50 transition-colors">
+              <TableRow
+                key={item.id}
+                className={`group hover:bg-muted/50 transition-colors ${onRowClick ? "cursor-pointer" : ""}`}
+                onClick={() => onRowClick?.(item)}
+              >
                 {columns.map((col, i) => (
                   <TableCell key={i}>
                     {col.cell ? col.cell(item) : (item[col.accessorKey as keyof T] as React.ReactNode)}
@@ -103,7 +109,12 @@ const DataTable = <T extends { id: string | number }>({
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -111,14 +122,14 @@ const DataTable = <T extends { id: string | number }>({
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         {onEdit && (
-                          <DropdownMenuItem onClick={() => onEdit(item)}>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(item); }}>
                             <Edit className="mr-2 h-4 w-4" />
                             Edit
                           </DropdownMenuItem>
                         )}
                         {onDelete && (
                           <DropdownMenuItem
-                            onClick={() => onDelete(item)}
+                            onClick={(e) => { e.stopPropagation(); onDelete(item); }}
                             className="text-destructive focus:text-destructive"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />

@@ -47,7 +47,6 @@ export default function CourseEnrollmentPage() {
     phone: "",
     address: "",
     discoverySource: "Social Media",
-    transactionId: "",
     category: ""
   });
 
@@ -161,7 +160,10 @@ export default function CourseEnrollmentPage() {
           <div className="lg:col-span-5 space-y-8">
             <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-8">
               {/* Banner */}
-              <motion.div variants={fadeUp} className="relative aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
+              <motion.div variants={fadeUp} className={cn(
+                "relative rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white",
+                course.posterOrientation === 'PORTRAIT' ? "aspect-[3/4]" : "aspect-video"
+              )}>
                 <img
                   src={course.custom_banner_url || DEFAULT_BANNER}
                   alt={course.title}
@@ -426,17 +428,6 @@ export default function CourseEnrollmentPage() {
                     </div>
 
                     <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Transaction ID *</Label>
-                        <Input
-                          value={form.transactionId}
-                          onChange={(e) => set("transactionId", e.target.value)}
-                          required
-                          placeholder="UPI Reference No. / ID"
-                          className="h-14 rounded-xl border-slate-200 bg-slate-50/50 font-bold"
-                        />
-                      </div>
-
                       <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">Age Proof *</Label>
