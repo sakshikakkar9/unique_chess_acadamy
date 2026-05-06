@@ -22,7 +22,7 @@ export default function CoursesPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredCourses = useMemo(() => {
-    if (!courses) return [];
+    if (!courses || !Array.isArray(courses)) return [];
     if (activeCategory === "ALL") return courses;
     return courses.filter((c) => c.ageGroup === activeCategory);
   }, [courses, activeCategory]);

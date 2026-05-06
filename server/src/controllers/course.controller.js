@@ -10,7 +10,7 @@ export const getAllCourses = async (req, res) => {
     const courses = await courseService.getAllCourses();
     res.json(courses);
   } catch (error) {
-    console.error('GET_COURSES_ERROR:', error);
+    console.error('GET_COURSES_ERROR_FULL:', error.stack || error);
     res.status(500).json({ error: 'Failed to fetch courses' });
   }
 };
