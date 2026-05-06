@@ -1,4 +1,5 @@
 import React, { useRef, useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
 import DataTable from "@/components/shared/admin/DataTable";
 import AdminFormModal from "@/components/shared/admin/AdminFormModal";
@@ -8,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Upload, Search, Calendar, BookOpen, Layers } from "lucide-react";
+import { Plus, Upload, Search, Calendar, BookOpen, Layers, X } from "lucide-react";
 import { AGE_GROUP_LABELS } from "@/types";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +19,7 @@ const ITEMS_PER_PAGE = 5;
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 const AdminCourses = () => {
+  const navigate = useNavigate();
   const { courses, isLoading, addCourse, updateCourse, deleteCourse } = useAdminCourses();
   const { toast } = useToast();
   
@@ -34,7 +37,8 @@ const AdminCourses = () => {
     fee: 0,
     classTime: "",
     duration: "",
-    contactDetails: ""
+    contactDetails: "",
+    posterOrientation: "LANDSCAPE"
   });
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -74,6 +78,7 @@ const AdminCourses = () => {
       data.append("mode", formData.mode);
       data.append("contactDetails", formData.contactDetails);
       data.append("days", JSON.stringify(formData.days));
+      data.append("posterOrientation", formData.posterOrientation);
 
       if (selectedFile) data.append("image", selectedFile);
 
@@ -105,7 +110,8 @@ const AdminCourses = () => {
       fee: 0,
       classTime: "",
       duration: "",
-      contactDetails: ""
+      contactDetails: "",
+      posterOrientation: "LANDSCAPE"
     });
   };
 
@@ -182,11 +188,15 @@ const AdminCourses = () => {
               isLoading={isLoading}
               onEdit={(c) => { 
                 setSelectedCourse(c); 
-                setFormData(c); 
+                setFormData({
+                  ...c,
+                  posterOrientation: c.posterOrientation || "LANDSCAPE"
+                });
                 setPreviewUrl(c.custom_banner_url); 
                 setIsModalOpen(true); 
               }}
               onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
+              onRowClick={(c) => navigate(`/admin/courses/${c.id}/students`)}
             />
           </div>
         </div>
@@ -293,15 +303,50 @@ const AdminCourses = () => {
           </div>
 
           <div className="space-y-4 pt-4 border-t">
-            <Label className="block font-bold">Course Banner</Label>
+            <Label className="text-xs font-black uppercase text-slate-400 tracking-widest">Poster & Orientation</Label>
+
+            <RadioGroup
+              value={formData.posterOrientation}
+              onValueChange={(val) => setFormData({...formData, posterOrientation: val})}
+              className="flex gap-4"
+            >
+              <div className="flex items-center space-x-2 bg-slate-50 px-4 py-3 rounded-xl border border-slate-100 cursor-pointer flex-1">
+                <RadioGroupItem value="LANDSCAPE" id="landscape" />
+                <Label htmlFor="landscape" className="font-bold text-sm cursor-pointer">Landscape</Label>
+              </div>
+              <div className="flex items-center space-x-2 bg-slate-50 px-4 py-3 rounded-xl border border-slate-100 cursor-pointer flex-1">
+                <RadioGroupItem value="PORTRAIT" id="portrait" />
+                <Label htmlFor="portrait" className="font-bold text-sm cursor-pointer">Portrait</Label>
+              </div>
+            </RadioGroup>
+
             <div
-              className="relative aspect-video rounded-xl border-2 border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-muted/50 cursor-pointer transition-all border-slate-200"
+              className={cn(
+                "relative rounded-xl border-2 border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-muted/50 cursor-pointer transition-all border-slate-200",
+                formData.posterOrientation === 'PORTRAIT' ? "aspect-[3/4] max-w-[300px] mx-auto" : "aspect-video"
+              )}
               onClick={() => fileInputRef.current?.click()}
             >
-              {previewUrl ? <img src={previewUrl} className="w-full h-full object-cover" /> : (
+              {previewUrl ? (
+                <>
+                  <img src={previewUrl} className="w-full h-full object-cover" />
+                  <Button
+                    size="icon"
+                    variant="destructive"
+                    className="absolute top-2 right-2 h-7 w-7 rounded-lg"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPreviewUrl("");
+                      setSelectedFile(null);
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </>
+              ) : (
                 <div className="text-center">
                   <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                  <span className="text-xs mt-2 block font-medium">Upload Banner</span>
+                  <span className="text-xs mt-2 block font-medium">Upload Banner ({formData.posterOrientation})</span>
                 </div>
               )}
               <input

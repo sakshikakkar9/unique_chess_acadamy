@@ -44,7 +44,7 @@ export const createCourse = async (req, res) => {
   try {
     const { 
       title, description, ageGroup, skillLevel, classTime,
-      duration, fee, days, contactDetails, mode 
+      duration, fee, days, contactDetails, mode, posterOrientation
     } = req.body;
 
     const courseData = {
@@ -61,6 +61,7 @@ export const createCourse = async (req, res) => {
       // 3. Match Schema Enums (Upper Case)
       skillLevel: skillLevel ? skillLevel.toUpperCase() : "BEGINNER",
       mode: mode ? mode.toUpperCase() : "ONLINE",
+      posterOrientation: posterOrientation || "LANDSCAPE",
       // 4. Image handling (checks both 'image' and 'banner' fields)
       custom_banner_url: (req.files?.image || req.files?.banner)
         ? await uploadToCloudinary((req.files.image || req.files.banner)[0].buffer)
@@ -152,7 +153,8 @@ export const enrollInCourse = async (req, res) => {
 
 export const getAllEnrollments = async (req, res) => {
   try {
-    const enrollments = await courseService.getAllEnrollments();
+    const courseId = req.query.courseId;
+    const enrollments = await courseService.getAllEnrollments(courseId);
     res.json(enrollments);
   } catch (error) {
     console.error('GET_ENROLLMENTS_ERROR:', error);

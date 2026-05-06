@@ -84,7 +84,10 @@ export default function CoursesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {paginatedCourses.map((course) => (
                 <motion.div key={course.id} variants={fadeUp} initial="hidden" animate="visible" className="group bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all flex flex-col h-full">
-                  <div className="relative h-52 w-full bg-slate-100 overflow-hidden">
+                  <div className={cn(
+                    "relative w-full bg-slate-100 overflow-hidden",
+                    course.posterOrientation === 'PORTRAIT' ? "aspect-[3/4]" : "h-52"
+                  )}>
                     <img src={course.custom_banner_url || HERO_IMAGE} alt={course.title} className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-110" />
                     <div className="absolute top-4 left-4 flex gap-2">
                       <span className="px-3 py-1 bg-white/95 backdrop-blur-sm rounded-lg text-[10px] font-black text-blue-600 shadow-sm uppercase">
