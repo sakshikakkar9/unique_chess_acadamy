@@ -24,6 +24,23 @@ export const getTournamentById = async (req, res) => {
 export const registerForTournament = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Check enrollment window
+    const tournament = await tournamentService.getTournamentById(id);
+    if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
+
+    const now = new Date();
+    if (tournament.regStartDate && now < new Date(tournament.regStartDate)) {
+      return res.status(400).json({ error: "Registration has not started yet for this tournament." });
+    }
+    if (tournament.regEndDate) {
+      const regEndDate = new Date(tournament.regEndDate);
+      // Set to end of the day (23:59:59.999) to allow registration on the last day
+      regEndDate.setHours(23, 59, 59, 999);
+      if (now > regEndDate) {
+        return res.status(400).json({ error: "Registration has been closed for this tournament." });
+      }
+    }
     
     const ageProofFile = req.files?.['ageProof']?.[0];
     const paymentProofFile = req.files?.['paymentProof']?.[0];
