@@ -40,6 +40,8 @@ const AdminTournaments: React.FC = () => {
     description: "",
     startDate: new Date().toISOString().split('T')[0],
     endDate: "",
+    regStartDate: "",
+    regEndDate: "",
     location: "",
     category: "",
     totalPrizePool: "",
@@ -75,6 +77,8 @@ const AdminTournaments: React.FC = () => {
       description: "",
       startDate: new Date().toISOString().split('T')[0],
       endDate: "",
+      regStartDate: "",
+      regEndDate: "",
       location: "", 
       category: "",
       totalPrizePool: "",
@@ -113,6 +117,8 @@ const AdminTournaments: React.FC = () => {
       ...t, 
       startDate: t.startDate ? new Date(t.startDate).toISOString().split('T')[0] : "",
       endDate: t.endDate ? new Date(t.endDate).toISOString().split('T')[0] : "",
+      regStartDate: t.regStartDate ? new Date(t.regStartDate).toISOString().split('T')[0] : "",
+      regEndDate: t.regEndDate ? new Date(t.regEndDate).toISOString().split('T')[0] : "",
       posterOrientation: t.posterOrientation || "LANDSCAPE",
       entryFee: t.entryFee || 0
     });
@@ -123,7 +129,7 @@ const AdminTournaments: React.FC = () => {
     const data = new FormData();
     Object.keys(formData).forEach(key => {
       if (formData[key] !== null && formData[key] !== undefined) {
-        if (key === 'startDate' || key === 'endDate') {
+        if (['startDate', 'endDate', 'regStartDate', 'regEndDate'].includes(key)) {
           if (formData[key]) data.append(key, new Date(formData[key]).toISOString());
         } else if (key !== 'imageUrl' && key !== 'brochureUrl') {
           data.append(key, String(formData[key]));
@@ -230,6 +236,17 @@ const AdminTournaments: React.FC = () => {
               <div className="grid gap-2">
                 <Label htmlFor="endDate" className="text-xs font-black uppercase text-slate-400 tracking-widest">Ends On</Label>
                 <Input id="endDate" type="date" value={formData.endDate} onChange={(e) => setFormData({...formData, endDate: e.target.value})} className="h-12 rounded-xl border-orange-100" />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="regStartDate" className="text-xs font-black uppercase text-slate-400 tracking-widest">Enrollment Starts</Label>
+                <Input id="regStartDate" type="date" value={formData.regStartDate} onChange={(e) => setFormData({...formData, regStartDate: e.target.value})} className="h-12 rounded-xl border-blue-100" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="regEndDate" className="text-xs font-black uppercase text-slate-400 tracking-widest">Enrollment Ends</Label>
+                <Input id="regEndDate" type="date" value={formData.regEndDate} onChange={(e) => setFormData({...formData, regEndDate: e.target.value})} className="h-12 rounded-xl border-blue-100" />
               </div>
             </div>
 

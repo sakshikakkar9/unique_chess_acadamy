@@ -83,40 +83,69 @@ export default function CoursesPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {paginatedCourses.map((course) => (
-                <motion.div key={course.id} variants={fadeUp} initial="hidden" animate="visible" className="group bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-2xl transition-all flex flex-col h-full">
-                  <div className={cn(
-                    "relative w-full bg-slate-100 overflow-hidden",
-                    course.posterOrientation === 'PORTRAIT' ? "aspect-[3/4]" : "h-52"
-                  )}>
-                    <img src={course.custom_banner_url || HERO_IMAGE} alt={course.title} className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-110" />
-                    <div className="absolute top-4 left-4 flex gap-2">
-                      <span className="px-3 py-1 bg-white/95 backdrop-blur-sm rounded-lg text-[10px] font-bold text-blue-600 shadow-sm uppercase">
+                <motion.div
+                  key={course.id}
+                  variants={fadeUp}
+                  initial="hidden"
+                  animate="visible"
+                  className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)] transition-all duration-500 flex flex-col h-full"
+                >
+                  {/* Image Container with Fixed Aspect Ratio for Uniformity */}
+                  <div className="relative w-full aspect-[16/10] bg-slate-100 overflow-hidden">
+                    <img
+                      src={course.custom_banner_url || HERO_IMAGE}
+                      alt={course.title}
+                      className={cn(
+                        "absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110",
+                        course.posterOrientation === 'PORTRAIT' ? "object-top" : "object-center"
+                      )}
+                    />
+                    <div className="absolute top-5 left-5 flex gap-2">
+                      <span className="px-4 py-1.5 bg-white/95 backdrop-blur-md rounded-xl text-[10px] font-black text-blue-600 shadow-xl shadow-blue-900/5 uppercase tracking-widest border border-blue-50">
                         {course.mode}
                       </span>
                     </div>
+                    {/* Soft gradient overlay for professional feel */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </div>
 
-                  <div className="p-7 flex flex-col flex-grow">
-                    <div className="flex items-center gap-4 mb-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                      <span className="flex items-center gap-1.5"><BarChart3 className="h-3.5 w-3.5 text-blue-500" /> {course.skillLevel}</span>
-                      <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-blue-500" /> {course.duration}</span>
+                  <div className="p-8 flex flex-col flex-grow">
+                    {/* Meta Info with consistent height */}
+                    <div className="flex items-center gap-4 mb-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">
+                      <span className="flex items-center gap-2 py-1 px-3 bg-slate-50 rounded-lg border border-slate-100"><BarChart3 className="h-3.5 w-3.5 text-blue-500" /> {course.skillLevel}</span>
+                      <span className="flex items-center gap-2 py-1 px-3 bg-slate-50 rounded-lg border border-slate-100"><Clock className="h-3.5 w-3.5 text-blue-500" /> {course.duration}</span>
                     </div>
 
-                    <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">{course.title}</h3>
+                    {/* Title with fixed line height and clamp to ensure alignment */}
+                    <div className="h-16 mb-2">
+                      <h3 className="text-xl font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+                        {course.title}
+                      </h3>
+                    </div>
                     
-                    <div className="space-y-2 mb-8">
-                      <p className="text-slate-500 text-sm italic line-clamp-2">{course.contactDetails}</p>
-                      <div className="flex items-center gap-2 text-[11px] font-medium text-slate-600 bg-slate-50 p-2 rounded-lg">
-                        <Calendar className="h-3.5 w-3.5 text-blue-500" /> {course.days?.join(", ")} | {course.classTime}
+                    <div className="space-y-4 mb-8 flex-grow">
+                      <div className="h-10">
+                        <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-2 italic">
+                          {course.contactDetails}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3 text-[11px] font-bold text-slate-700 bg-blue-50/50 p-3 rounded-2xl border border-blue-100/50">
+                        <Calendar className="h-4 w-4 text-blue-500 shrink-0" />
+                        <span className="truncate">{course.days?.join(", ")} | {course.classTime}</span>
                       </div>
                     </div>
 
-                    <div className="mt-auto pt-6 border-t flex items-center justify-between">
+                    {/* Footer alignment ensured by mt-auto */}
+                    <div className="mt-auto pt-8 border-t border-slate-100 flex items-center justify-between">
                       <div>
-                        <span className="text-[9px] font-bold text-slate-400 uppercase">Enrollment Fee</span>
-                        <div className="text-xl font-bold text-slate-900">₹{course.fee.toLocaleString()}</div>
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Investment</span>
+                        <div className="text-2xl font-black text-slate-900 tracking-tighter">₹{course.fee.toLocaleString()}</div>
                       </div>
-                      <Button onClick={() => navigate(`/courses/${course.id}/enroll`)} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 font-bold shadow-lg shadow-blue-600/10">
+                      <Button
+                        onClick={() => navigate(`/courses/${course.id}/enroll`)}
+                        className="bg-blue-600 hover:bg-slate-900 text-white rounded-2xl h-14 px-8 font-black shadow-xl shadow-blue-600/20 transition-all active:scale-[0.98] uppercase tracking-wider text-xs"
+                      >
                         Enroll Now
                       </Button>
                     </div>
