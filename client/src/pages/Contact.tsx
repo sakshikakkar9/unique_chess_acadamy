@@ -33,28 +33,28 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white selection:bg-orange-100 selection:text-orange-900 overflow-x-hidden">
+    <div className="min-h-screen bg-white selection:bg-sky-100 selection:text-sky-900 overflow-x-hidden">
       <Navbar />
 
       {/* HERO SECTION - Deep Pro Theme */}
-      <header className="relative h-[50vh] min-h-[450px] flex items-center bg-[#020617] overflow-hidden pt-20">
+      <header className="relative h-[60vh] min-h-[450px] flex items-center bg-[#020617] overflow-hidden pt-20">
         <SparkleCanvas density="subtle" />
         <div className="absolute inset-0 z-0 opacity-40">
-           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,_var(--tw-gradient-stops))] from-orange-900/20 via-transparent to-transparent" />
+           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,_var(--tw-gradient-stops))] from-sky-900/20 via-transparent to-transparent" />
         </div>
         
-        <div className="container relative z-10 mx-auto px-6 text-center">
-          <motion.div initial="hidden" animate="visible" variants={stagger}>
-            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 mb-8">
+        <div className="container relative z-10 mx-auto px-6">
+          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left">
+            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-8">
               <Headphones className="h-3.5 w-3.5" />
-              <span className="text-[11px] font-black uppercase tracking-[0.2em]">Support Center</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Support Center</span>
             </motion.div>
 
-            <motion.h1 variants={fadeUp} className="text-4xl sm:text-7xl md:text-8xl font-bold text-white mb-6 tracking-tighter">
-              Get in <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-200">Touch</span>
+            <motion.h1 variants={fadeUp} className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
+              Get in <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">Touch</span>
             </motion.h1>
 
-            <motion.p variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.42, 0, 0.58, 1] } } }} className="max-w-2xl mx-auto text-slate-400 text-lg leading-relaxed italic">
+            <motion.p variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.42, 0, 0.58, 1] } } }} className="max-w-xl text-slate-400 text-lg leading-relaxed">
               Have questions? We'd love to hear from you. Our team is ready to help you start your chess journey.
             </motion.p>
           </motion.div>
@@ -82,7 +82,7 @@ export default function ContactPage() {
                         name="name"
                         placeholder="Sakshi ..."
                         required
-                        className="bg-slate-50 border-slate-100 h-14 rounded-2xl focus:bg-white focus:ring-4 focus:ring-orange-500/5 focus:border-orange-500/20 transition-all text-slate-900 font-medium"
+                        className="bg-slate-50 border-slate-100 h-14 rounded-2xl focus:bg-white focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-900 font-medium"
                       />
                     </div>
                     <div className="space-y-2">
@@ -90,7 +90,7 @@ export default function ContactPage() {
                       <Input
                         name="phone"
                         placeholder="+91 XXXXX XXXXX"
-                        className="bg-slate-50 border-slate-100 h-14 rounded-2xl focus:bg-white focus:ring-4 focus:ring-orange-500/5 focus:border-orange-500/20 transition-all text-slate-900 font-medium"
+                        className="bg-slate-50 border-slate-100 h-14 rounded-2xl focus:bg-white focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-900 font-medium"
                       />
                     </div>
                   </div>
@@ -101,7 +101,7 @@ export default function ContactPage() {
                       type="email"
                       placeholder="you@example.com"
                       required
-                      className="bg-slate-50 border-slate-100 h-14 rounded-2xl focus:bg-white focus:ring-4 focus:ring-orange-500/5 focus:border-orange-500/20 transition-all text-slate-900 font-medium"
+                      className="bg-slate-50 border-slate-100 h-14 rounded-2xl focus:bg-white focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-900 font-medium"
                     />
                   </div>
                   <div className="space-y-2">
@@ -111,12 +111,12 @@ export default function ContactPage() {
                       placeholder="How can we help you master the board?"
                       rows={5}
                       required
-                      className="bg-slate-50 border-slate-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-orange-500/5 focus:border-orange-500/20 transition-all text-slate-900 font-medium p-4"
+                      className="bg-slate-50 border-slate-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-900 font-medium p-4"
                     />
                   </div>
                   <Button
                     type="submit"
-                    className="w-full h-16 bg-[#020617] hover:bg-orange-600 text-white font-black rounded-2xl transition-all duration-300 shadow-xl hover:shadow-orange-600/20 flex items-center justify-center gap-3 active:scale-95 disabled:opacity-70"
+                    className="w-full h-16 bg-[#020617] hover:bg-sky-600 text-white font-black rounded-2xl transition-all duration-300 shadow-xl hover:shadow-sky-600/20 flex items-center justify-center gap-3 active:scale-95 disabled:opacity-70"
                     disabled={loading}
                   >
                     {loading ? (
@@ -137,10 +137,10 @@ export default function ContactPage() {
               <ScrollReveal variants={fadeRight}>
                 <div className="space-y-12">
                   <div className="relative">
-                    <div className="h-1.5 w-16 bg-orange-500 rounded-full mb-8" />
+                    <div className="h-1.5 w-16 bg-sky-500 rounded-full mb-8" />
                     <h3 className="text-4xl font-black text-slate-900 mb-10 tracking-tight leading-tight">
                       Let's Start Your <br />
-                      <span className="text-orange-500">Chess Journey</span>
+                      <span className="text-sky-500">Chess Journey</span>
                     </h3>
                     
                     <div className="space-y-10">
@@ -191,7 +191,7 @@ function ContactInfoItem({
 }) {
   return (
     <div className="flex items-start gap-6 group">
-      <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 group-hover:bg-orange-500 group-hover:border-orange-500 transition-all duration-500">
+      <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 group-hover:bg-sky-500 group-hover:border-sky-500 transition-all duration-500">
         <Icon className="h-6 w-6 text-slate-400 group-hover:text-white transition-colors" />
       </div>
       <div>

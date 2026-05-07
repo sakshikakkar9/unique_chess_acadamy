@@ -12,24 +12,24 @@ export default function EventsPage() {
   const { events, filter, setFilter, categories } = useEvents();
 
   return (
-    <div className="min-h-screen bg-white selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden">
+    <div className="min-h-screen bg-white selection:bg-sky-100 selection:text-sky-900 overflow-x-hidden">
       <Navbar />
 
       {/* HERO SECTION (Dark Hero Mini) */}
-      <header className="relative h-[45vh] min-h-[400px] flex items-center bg-[#0f172a] overflow-hidden">
+      <header className="relative h-[50vh] min-h-[400px] flex items-center bg-[#020617] overflow-hidden pt-20">
         <SparkleCanvas density="subtle" />
-        <div className="container mx-auto px-6 z-10 text-center">
-          <ScrollReveal variants={scaleIn}>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f0f9ff] text-[#0ea5e9] border border-[#0ea5e9]/20 mb-8">
+        <div className="container mx-auto px-6 z-10">
+          <ScrollReveal variants={scaleIn} className="text-left">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-8">
               <Sparkles className="h-3.5 w-3.5 animate-pulse" />
-              <span className="text-[11px] font-bold uppercase tracking-wider">Calendar</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Calendar</span>
             </div>
 
-            <h1 className="text-h1 text-white mb-6">
-              Upcoming <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#d97706] to-[#fbbf24]">Events</span>
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
+              Upcoming <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-blue-600">Events</span>
             </h1>
 
-            <p className="text-[#94a3b8] max-w-2xl mx-auto text-body-lg">
+            <p className="text-slate-400 max-w-xl text-lg leading-relaxed">
               Join us for workshops, tournaments, and special masterclasses designed to elevate your game.
             </p>
           </ScrollReveal>

@@ -18,24 +18,24 @@ export default function GalleryPage() {
       <Navbar />
 
       {/* HERO SECTION - Sophisticated Dark Header */}
-      <header className="relative h-[55vh] min-h-[450px] flex items-center bg-[#020617] overflow-hidden pt-20">
+      <header className="relative h-[60vh] min-h-[450px] flex items-center bg-[#020617] overflow-hidden pt-20">
         <SparkleCanvas density="subtle" />
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent opacity-50" />
         </div>
         
-        <div className="container relative z-10 mx-auto px-6 text-center">
-          <motion.div initial="hidden" animate="visible" variants={stagger}>
+        <div className="container relative z-10 mx-auto px-6">
+          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left">
             <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-8">
               <Camera className="h-3.5 w-3.5" />
-              <span className="text-[11px] font-black uppercase tracking-[0.2em]">Visual Chronicle</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Visual Chronicle</span>
             </motion.div>
             
-            <motion.h1 variants={fadeUp} className="text-4xl sm:text-7xl md:text-8xl font-bold text-white mb-6 tracking-tighter">
-              Moments of <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Excellence</span>
+            <motion.h1 variants={fadeUp} className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
+              Moments of <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">Excellence</span>
             </motion.h1>
             
-            <motion.p variants={fadeUp} className="max-w-2xl mx-auto text-slate-400 text-lg leading-relaxed italic">
+            <motion.p variants={fadeUp} className="max-w-xl text-slate-400 text-lg leading-relaxed">
               A visual journey through strategy, victory, and the pursuit of mastery at Unique Chess Academy.
             </motion.p>
           </motion.div>

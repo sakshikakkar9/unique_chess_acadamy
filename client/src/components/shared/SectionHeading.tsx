@@ -16,17 +16,17 @@ const SectionHeading = ({
   label,
   title,
   description,
-  centered = true,
+  centered = false,
   className,
   dark = false,
 }: SectionHeadingProps) => {
   return (
-    <div className={cn("mb-16", centered && "text-center", className)}>
+    <div className={cn("mb-16", centered ? "text-center" : "text-left", className)}>
       {label && (
         <ScrollReveal variants={scaleIn}>
           <div className={cn(
             "inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6 border",
-            "bg-[#fffbeb] text-[#92400e] border-[rgba(217,119,6,0.2)]",
+            "bg-sky-50 text-sky-600 border-sky-100",
             centered && "mx-auto"
           )}>
             <span className="text-[11px] font-medium uppercase tracking-[0.1em]">
@@ -43,7 +43,7 @@ const SectionHeading = ({
         )}>
           {typeof title === 'string' ? (
             title.split(' ').map((word, i) => (
-              <span key={i} className={i === 1 ? "bg-clip-text text-transparent bg-gradient-to-br from-[#2563eb] to-[#0ea5e9]" : ""}>
+              <span key={i} className={i === 1 ? "bg-clip-text text-transparent bg-gradient-to-br from-sky-400 to-blue-600" : ""}>
                 {word}{' '}
               </span>
             ))

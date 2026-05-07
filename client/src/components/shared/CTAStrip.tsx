@@ -27,7 +27,7 @@ const CTAStrip = ({
             <div className="text-center md:text-left max-w-2xl">
               <h2 className="font-black text-4xl md:text-5xl text-white mb-6 leading-tight">
                 {title.split(' ').map((word, i) => (
-                  <span key={i} className={i === 4 ? "glow-text-gold text-[#f59e0b]" : ""}>
+                  <span key={i} className={i === 4 ? "glow-text-sky text-sky-400" : ""}>
                     {word}{' '}
                   </span>
                 ))}
@@ -37,7 +37,7 @@ const CTAStrip = ({
 
             <Button
               size="lg"
-              className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-black font-black rounded-full px-12 py-8 text-xl hover:scale-105 transition-transform duration-300 shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:shadow-[0_0_35px_rgba(245,158,11,0.6)] border-none shrink-0 group"
+              className="bg-gradient-to-r from-sky-400 to-blue-600 text-white font-black rounded-full px-12 py-8 text-xl hover:scale-105 transition-transform duration-300 shadow-[0_0_25px_rgba(56,189,248,0.4)] hover:shadow-[0_0_35px_rgba(37,99,235,0.6)] border-none shrink-0 group"
             >
               {buttonText}
               <ArrowRight className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-2" />

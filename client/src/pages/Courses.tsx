@@ -37,14 +37,18 @@ export default function CoursesPage() {
     <div className="min-h-screen bg-white selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden">
       <Navbar />
 
-      <header className="relative min-h-[60vh] w-full flex items-center justify-center bg-[#020617] overflow-hidden pt-32 pb-20">
+      <header className="relative min-h-[60vh] w-full flex items-center bg-[#020617] overflow-hidden pt-32 pb-20">
         <SparkleCanvas density="full" />
-        <div className="container relative z-10 mx-auto px-6 text-center">
-          <motion.div initial="hidden" animate="visible" variants={stagger}>
-            <motion.h1 variants={fadeUp} className="text-4xl sm:text-6xl font-bold text-white mb-6 tracking-tight">
-              The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Grandmaster</span> Path
+        <div className="container relative z-10 mx-auto px-6">
+          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left">
+            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-8">
+              <GraduationCap className="h-3.5 w-3.5" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Curriculum Excellence</span>
+            </motion.div>
+            <motion.h1 variants={fadeUp} className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
+              The <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">Grandmaster</span> Path
             </motion.h1>
-            <motion.p variants={fadeUp} className="max-w-2xl mx-auto text-slate-400 text-lg italic mb-10">
+            <motion.p variants={fadeUp} className="max-w-xl text-slate-400 text-lg leading-relaxed">
               "Mastery is a journey, not a destination." Find the program that fits your ambition.
             </motion.p>
           </motion.div>

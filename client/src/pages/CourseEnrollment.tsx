@@ -333,7 +333,7 @@ export default function CourseEnrollmentPage() {
                     <div className="space-y-6">
                       {/* Player Name */}
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Player Name *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Player Name <span className="text-[#FF0000]">*</span></Label>
                         <div className="relative">
                           <User className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                           <Input
@@ -348,7 +348,7 @@ export default function CourseEnrollmentPage() {
 
                       {/* Gender */}
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Gender *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Gender <span className="text-[#FF0000]">*</span></Label>
                         <div className="flex gap-10 pt-2 px-1">
                           {["Male", "Female", "Other"].map((g) => (
                             <label key={g} className="flex items-center gap-3 cursor-pointer group">
@@ -375,7 +375,7 @@ export default function CourseEnrollmentPage() {
                       <div className="grid md:grid-cols-2 gap-8">
                         {/* Category */}
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Category *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Category <span className="text-[#FF0000]">*</span></Label>
                           <div className="relative">
                             <select
                               className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-5 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer pr-12"
@@ -401,7 +401,7 @@ export default function CourseEnrollmentPage() {
 
                         {/* Date of Birth */}
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Date of Birth *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Date of Birth <span className="text-[#FF0000]">*</span></Label>
                           <Input
                             type="date"
                             value={form.dob}
@@ -414,7 +414,7 @@ export default function CourseEnrollmentPage() {
 
                       {/* Phone Number */}
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Phone Number *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Phone Number <span className="text-[#FF0000]">*</span></Label>
                         <Input
                           type="tel"
                           value={form.phone}
@@ -427,7 +427,7 @@ export default function CourseEnrollmentPage() {
 
                       {/* Address */}
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Full Residential Address *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Full Residential Address <span className="text-[#FF0000]">*</span></Label>
                         <Textarea
                           value={form.address}
                           onChange={(e) => set("address", e.target.value)}
@@ -439,7 +439,7 @@ export default function CourseEnrollmentPage() {
 
                       {/* Discovery Source */}
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">How did you find us? *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">How did you find us? <span className="text-[#FF0000]">*</span></Label>
                         <div className="relative">
                           <select
                             className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-5 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer pr-12"
@@ -470,7 +470,7 @@ export default function CourseEnrollmentPage() {
 
                     <div className="grid md:grid-cols-2 gap-8">
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Age Proof *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Age Proof <span className="text-[#FF0000]">*</span></Label>
                         <div className="relative h-20">
                           <input
                             type="file"
@@ -488,7 +488,7 @@ export default function CourseEnrollmentPage() {
                         </div>
                       </div>
                       <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Screenshot *</Label>
+                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Screenshot <span className="text-[#FF0000]">*</span></Label>
                         <div className="relative h-20">
                           <input
                             type="file"

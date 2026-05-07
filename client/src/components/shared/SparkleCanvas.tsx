@@ -58,10 +58,8 @@ const SparkleCanvas: React.FC<SparkleCanvasProps> = ({ density = "full" }) => {
         this.sparkle = Math.random() > 0.75; // 25% sparkle
 
         const r = Math.random();
-        if (r < 0.55) {
+        if (r < 0.85) {
           this.colorBase = '14, 165, 233'; // sky blue
-        } else if (r < 0.85) {
-          this.colorBase = '217, 119, 6'; // golden
         } else {
           this.colorBase = '255, 255, 255'; // white
         }
