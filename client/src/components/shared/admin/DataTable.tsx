@@ -73,12 +73,14 @@ const DataTable = <T extends { id: string | number }>({
   }
 
   return (
-    <div className="rounded-md border border-border bg-card overflow-hidden">
+    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="bg-slate-50/50 hover:bg-slate-50/50">
             {columns.map((col, i) => (
-              <TableHead key={i}>{col.header}</TableHead>
+              <TableHead key={i} className="text-[10px] font-black uppercase tracking-widest text-slate-500 h-12">
+                {col.header}
+              </TableHead>
             ))}
             {(onEdit || onDelete) && <TableHead className="w-12"></TableHead>}
           </TableRow>
@@ -88,25 +90,28 @@ const DataTable = <T extends { id: string | number }>({
             <TableRow>
               <TableCell
                 colSpan={columns.length + (onEdit || onDelete ? 1 : 0)}
-                className="h-24 text-center text-muted-foreground"
+                className="h-32 text-center"
               >
-                No results found.
+                <div className="flex flex-col items-center gap-2 text-slate-300">
+                  <MoreHorizontal className="h-8 w-8" />
+                  <p className="text-[10px] font-black uppercase tracking-widest">No records found</p>
+                </div>
               </TableCell>
             </TableRow>
           ) : (
             data.map((item) => (
               <TableRow
                 key={item.id}
-                className={`group hover:bg-muted/50 transition-colors ${onRowClick ? "cursor-pointer" : ""}`}
+                className={`group hover:bg-sky-50/50 transition-colors border-b border-slate-100 last:border-0 ${onRowClick ? "cursor-pointer" : ""}`}
                 onClick={() => onRowClick?.(item)}
               >
                 {columns.map((col, i) => (
-                  <TableCell key={i}>
+                  <TableCell key={i} className="py-4 px-4 text-sm text-slate-600">
                     {col.cell ? col.cell(item) : (item[col.accessorKey as keyof T] as React.ReactNode)}
                   </TableCell>
                 ))}
                 {(onEdit || onDelete) && (
-                  <TableCell>
+                  <TableCell className="text-right pr-4">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button

@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Upload, X } from "lucide-react";
+import { Plus, Upload, X, ImageIcon } from "lucide-react";
 import { GalleryImage } from "@/types";
+import AdminPageHeader from "@/components/shared/admin/AdminPageHeader";
+import StatusBadge from "@/components/shared/admin/StatusBadge";
 
 const AdminGallery: React.FC = () => {
   const { images, isLoading, uploadImage, deleteImage } = useGallery();
@@ -33,7 +35,7 @@ const AdminGallery: React.FC = () => {
       header: "Preview",
       accessorKey: "imageUrl",
       cell: (item) => (
-        <div className="w-12 h-12 rounded overflow-hidden border border-border bg-muted">
+        <div className="w-16 h-12 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-sm">
           <img 
             src={item.imageUrl} 
             alt={item.caption || "Gallery Image"} 
@@ -43,14 +45,20 @@ const AdminGallery: React.FC = () => {
         </div>
       )
     },
-    { header: "Caption", accessorKey: "caption" },
+    {
+      header: "Caption",
+      accessorKey: "caption",
+      cell: (item) => (
+        <span className={cn("text-sm", !item.caption && "text-slate-400 italic")}>
+          {item.caption || "No caption provided"}
+        </span>
+      )
+    },
     {
       header: "Category",
       accessorKey: "category",
       cell: (item) => (
-        <span className="text-xs bg-primary/10 text-primary font-bold px-2 py-0.5 rounded uppercase">
-          {item.category}
-        </span>
+        <StatusBadge status={item.category} className="bg-sky-50 text-sky-600 border-sky-100" />
       )
     },
   ];
@@ -120,25 +128,22 @@ const AdminGallery: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gallery</h1>
-          <p className="text-muted-foreground">Manage and upload photos from your computer.</p>
-        </div>
-        <Button onClick={handleAdd} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
-          <Plus className="h-4 w-4" />
-          Add Image
-        </Button>
-      </div>
+    <div className="p-8 space-y-8 max-w-[1600px] mx-auto animate-in fade-in duration-500">
+      <AdminPageHeader
+        title="Gallery Management"
+        subtitle="Manage and upload photos for the academy gallery."
+        action={
+          <Button onClick={handleAdd} className="shadow-lg bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-full px-6">
+            <Plus className="mr-2 h-4 w-4" /> Add Image
+          </Button>
+        }
+      />
 
       <DataTable
         columns={columns}
         data={images}
         isLoading={isLoading}
         onDelete={handleDeleteClick}
-        // Note: For file uploads, 'Edit' is usually complex because you'd have to 
-        // handle replacing a physical file. Keeping it simple with Add/Delete for now.
       />
 
       <AdminFormModal

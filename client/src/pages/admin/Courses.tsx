@@ -15,6 +15,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import RichTextEditor from "@/components/shared/admin/RichTextEditor";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import AdminPageHeader from "@/components/shared/admin/AdminPageHeader";
+import StatusBadge from "@/components/shared/admin/StatusBadge";
 
 const ITEMS_PER_PAGE = 5;
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -130,26 +132,26 @@ const AdminCourses = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Course Management</h1>
-          <p className="text-muted-foreground">Manage your academy programs and schedules.</p>
-        </div>
-        <Button onClick={() => { closeModal(); setIsModalOpen(true); }} className="shadow-lg">
-          <Plus className="mr-2 h-4 w-4" /> Add New Course
-        </Button>
-      </div>
+    <div className="p-8 space-y-8 max-w-[1600px] mx-auto animate-in fade-in duration-500">
+      <AdminPageHeader
+        title="Course Management"
+        subtitle="Manage your academy programs and schedules."
+        action={
+          <Button onClick={() => { closeModal(); setIsModalOpen(true); }} className="shadow-lg bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-full px-6">
+            <Plus className="mr-2 h-4 w-4" /> Add New Course
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Sidebar Filters */}
         <div className="lg:col-span-3 space-y-6">
-          <div className="bg-card border rounded-xl p-4 shadow-sm">
-            <Label className="mb-2 block">Search Programs</Label>
+          <div className="bg-white border border-slate-200 rounded-[12px] p-6 shadow-sm">
+            <Label className="text-xs font-black uppercase tracking-widest text-slate-500 mb-4 block">Search Programs</Label>
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input 
-                className="pl-9" 
+                className="pl-10 h-11 rounded-xl border-slate-200 focus:ring-sky-500"
                 placeholder="Search by title..." 
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)} 
@@ -157,39 +159,46 @@ const AdminCourses = () => {
             </div>
           </div>
           
-          <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-            <h4 className="text-sm font-semibold mb-2">Quick Info</h4>
-            <p className="text-xs text-muted-foreground">Total Courses: {filteredCourses.length}</p>
+          <div className="p-6 bg-sky-50/50 rounded-[12px] border border-sky-100/50 border-l-4 border-l-sky-500">
+            <h4 className="text-[10px] font-black uppercase tracking-widest text-sky-600 mb-1">Quick Info</h4>
+            <p className="text-sm font-bold text-slate-700">Total Courses: {filteredCourses.length}</p>
           </div>
         </div>
 
         {/* Table Area */}
         <div className="lg:col-span-9">
-          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-            <DataTable
-              columns={[
-                { header: "Course Info", accessorKey: "title", cell: (c: any) => (
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-muted overflow-hidden flex-shrink-0">
-                      <img 
-                        src={c.custom_banner_url || "/placeholder.jpg"} 
-                        alt=""
-                        className="h-full w-full object-cover" 
-                      />
-                    </div>
-                    <div>
-                      <div className="font-medium text-foreground">{c.title}</div>
-                      <div className="text-[10px] text-muted-foreground uppercase">{c.skillLevel} • {c.mode}</div>
+          <DataTable
+            columns={[
+              { header: "Course Info", accessorKey: "title", cell: (c: any) => (
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
+                    <img
+                      src={c.custom_banner_url || "/placeholder.jpg"}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="font-bold text-slate-900 leading-tight">{c.title}</div>
+                    <div className="flex gap-2">
+                      <StatusBadge status={c.skillLevel} className="scale-90 origin-left" />
+                      <StatusBadge status={c.mode} className="scale-90 origin-left" />
                     </div>
                   </div>
-                )},
-                { header: "Schedule", accessorKey: "days", cell: (c: any) => (
-                    <span className="text-xs">{c.days?.join(", ") || "No days set"}</span>
-                )},
-                { header: "Fee", accessorKey: "fee", cell: (c: any) => (
-                    <span className="font-bold text-primary">₹{c.fee}</span>
-                )}
-              ]}
+                </div>
+              )},
+              { header: "Schedule", accessorKey: "days", cell: (c: any) => (
+                  <div className="flex flex-wrap gap-1">
+                    {c.days?.slice(0, 3).map((day: string) => (
+                      <span key={day} className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{day.substring(0, 3)}</span>
+                    ))}
+                    {c.days?.length > 3 && <span className="text-[10px] font-bold text-slate-400">+{c.days.length - 3}</span>}
+                  </div>
+              )},
+              { header: "Fee", accessorKey: "fee", cell: (c: any) => (
+                  <div className="text-right font-black text-sky-600 pr-4">₹{c.fee.toLocaleString()}</div>
+              )}
+            ]}
               data={paginatedCourses}
               isLoading={isLoading}
               onEdit={(c) => { 
@@ -204,7 +213,6 @@ const AdminCourses = () => {
               onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
               onRowClick={(c) => navigate(`/admin/courses/${c.id}/students`)}
             />
-          </div>
         </div>
       </div>
 
