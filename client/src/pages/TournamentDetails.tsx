@@ -69,7 +69,15 @@ export default function TournamentDetails() {
     return "OPEN";
   }, [tournament]);
 
-  const isRegistrationDisabled = registrationStatus !== "OPEN";
+  const isExpired = useMemo(() => {
+    if (!tournament || !tournament.endDate) return false;
+    const now = new Date();
+    const tournamentEnd = new Date(tournament.endDate);
+    tournamentEnd.setHours(23, 59, 59, 999);
+    return now > tournamentEnd;
+  }, [tournament]);
+
+  const isRegistrationDisabled = registrationStatus !== "OPEN" || isExpired;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'payment1' | 'payment2') => {
     const file = e.target.files?.[0];
@@ -80,6 +88,16 @@ export default function TournamentDetails() {
 
   const set = (key: string, value: string) =>
     setForm(prev => ({ ...prev, [key]: value }));
+
+  const handleDisabledClick = () => {
+    if (isExpired) {
+      toast({
+        variant: "destructive",
+        title: "Registration Expired",
+        description: "Registration for this tournament has expired."
+      });
+    }
+  };
 
   const handleBrochureDownload = (e: React.MouseEvent, url: string) => {
     e.preventDefault();
@@ -600,19 +618,28 @@ export default function TournamentDetails() {
                     </div>
                   </div>
 
-                  <Button
-                    type="submit"
-                    disabled={isPending || isRegistrationDisabled}
-                    className="w-full h-20 bg-orange-600 hover:bg-slate-900 text-white text-xl font-bold rounded-3xl transition-all shadow-lg shadow-orange-600/30 active:scale-[0.98] uppercase tracking-wider disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
-                  >
-                    {isPending ? (
-                      <span className="flex items-center gap-3">
-                        <Loader2 className="h-6 w-6 animate-spin" /> Submitting...
-                      </span>
-                    ) : (
-                      "Complete Registration"
-                    )}
-                  </Button>
+                  <div onClick={handleDisabledClick} className="w-full">
+                    <Button
+                      type="submit"
+                      disabled={isPending || isRegistrationDisabled}
+                      className={cn(
+                        "w-full h-20 text-white text-xl font-bold rounded-3xl transition-all uppercase tracking-wider",
+                        isExpired
+                          ? "bg-slate-400 opacity-70 cursor-not-allowed shadow-none"
+                          : "bg-orange-600 hover:bg-slate-900 shadow-lg shadow-orange-600/30 active:scale-[0.98] disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+                      )}
+                    >
+                      {isPending ? (
+                        <span className="flex items-center gap-3">
+                          <Loader2 className="h-6 w-6 animate-spin" /> Submitting...
+                        </span>
+                      ) : isExpired ? (
+                        "Registration Closed"
+                      ) : (
+                        "Complete Registration"
+                      )}
+                    </Button>
+                  </div>
                 </form>
               </CardContent>
             </Card>
