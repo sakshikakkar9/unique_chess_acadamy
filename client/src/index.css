@@ -27,8 +27,8 @@
     --popover-foreground:222 47% 11%;
 
     /* ── Primary = Gold ── */
-    --primary:           45 92% 47%;     /* Gold       */
-    --primary-foreground: 222 47% 11%;   /* Navy text  */
+    --primary:           199 89% 48%;     /* Sky Blue   */
+    --primary-foreground: 0 0% 100%;      /* White text */
 
     /* ── Secondary = Deep Navy ── */
     --secondary:         221 83% 16%;    /* Deep navy  */
@@ -147,9 +147,9 @@
   .text-gradient-gold {
     background: linear-gradient(
       135deg,
-      hsl(45 92% 55%) 0%,
-      hsl(45 92% 45%) 50%,
-      hsl(45 92% 35%) 100%
+      hsl(199 89% 55%) 0%,
+      hsl(199 89% 48%) 50%,
+      hsl(217 91% 40%) 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

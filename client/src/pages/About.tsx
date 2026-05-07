@@ -12,10 +12,10 @@ import { cn } from "@/lib/utils";
 const values = [
   { icon: Target, title: "Algorithmic Precision", text: "We teach verifiable logical systems, eliminating tactical blind spots through grandmaster-verified drills.", color: "blue" },
   { icon: Shield, title: "Competitive Integrity", text: "Cultivating the 'Grandmaster Mindset'—absolute discipline, psychological resilience, and sportsmanship.", color: "sky" },
-  { icon: Award, title: "Elite Pedigree", text: "With 50+ National titles, our methodology is proven at the highest levels of competitive play.", color: "gold" },
+  { icon: Award, title: "Elite Pedigree", text: "With 50+ National titles, our methodology is proven at the highest levels of competitive play.", color: "sky-blue" },
   { icon: Users, title: "The Syndicate", text: "An exclusive global network of elite players for high-stakes sparring and collaborative growth.", color: "blue" },
   { icon: BrainCircuit, title: "Neural Agility", text: "Blending human intuition with cutting-edge engine analysis to sharpen split-second decision making.", color: "sky" },
-  { icon: Trophy, title: "Absolute Dominance", text: "We prepare students to command the board and lead the leaderboards, not just participate.", color: "gold" },
+  { icon: Trophy, title: "Absolute Dominance", text: "We prepare students to command the board and lead the leaderboards, not just participate.", color: "sky-blue" },
 ];
 
 const coaches = [
@@ -48,17 +48,17 @@ export default function AboutPage() {
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl">
-            <motion.div initial="hidden" animate="visible" variants={stagger}>
-              <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-8">
+            <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left">
+              <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-8">
                 <Trophy className="h-3.5 w-3.5" /> The Grandmaster Standard
               </motion.div>
               
-              <motion.h1 variants={fadeLeft} className="text-4xl sm:text-7xl md:text-9xl font-extrabold text-white mb-10 leading-[0.85] tracking-tighter">
+              <motion.h1 variants={fadeLeft} className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
                 Architecting <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-200 to-blue-600">Pure Intellect.</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">Pure Intellect.</span>
               </motion.h1>
 
-              <motion.p variants={fadeLeft} className="text-slate-300 text-xl md:text-2xl leading-relaxed mb-14 max-w-3xl font-medium italic">
+              <motion.p variants={fadeLeft} className="text-slate-300 text-lg leading-relaxed max-w-xl mb-10">
                 Unique Chess Academy is India's most elite strategic laboratory, where grandmaster theory meets modern computational logic.
               </motion.p>
               
@@ -122,7 +122,7 @@ export default function AboutPage() {
           
           <ScrollReveal variants={fadeRight}>
             <div className="bg-white/70 backdrop-blur-xl border border-white p-6 md:p-10 lg:p-12 rounded-2xl md:rounded-[3rem] group hover:bg-white transition-all duration-500 shadow-xl shadow-blue-900/5 h-full text-left">
-              <div className="w-14 h-14 bg-cyan-500 text-white rounded-2xl flex items-center justify-center mb-10 shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+              <div className="w-14 h-14 bg-sky-500 text-white rounded-2xl flex items-center justify-center mb-10 shadow-lg shadow-sky-500/20 group-hover:scale-105 transition-transform">
                 <TrendingUp className="h-7 w-7" />
               </div>
               <h3 className="text-3xl lg:text-4xl font-black text-slate-900 mb-5 tracking-tight">The Vision</h3>
@@ -137,7 +137,7 @@ export default function AboutPage() {
       {/* VALUES GRID */}
       <section className="py-32 bg-[#f8fafc]">
         <div className="container mx-auto px-6">
-          <div className="mb-24 text-center">
+          <div className="mb-24">
              <SectionHeading label="The UCA Edge" title="Defining the Method" />
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
@@ -146,7 +146,7 @@ export default function AboutPage() {
                 <div className="group p-6 md:p-12 rounded-3xl md:rounded-[3.5rem] bg-white border border-blue-50 hover:border-blue-200 hover:shadow-[0_30px_80px_rgba(0,0,0,0.06)] transition-all duration-500 h-full flex flex-col items-start text-left">
                   <div className={cn("w-16 h-16 rounded-[2rem] flex items-center justify-center mb-12 transition-all group-hover:rotate-6 group-hover:scale-110", 
                     v.color === 'blue' ? 'bg-blue-50 text-blue-600' : 
-                    v.color === 'sky' ? 'bg-cyan-50 text-cyan-600' : 'bg-orange-50 text-orange-600')}>
+                    v.color === 'sky' ? 'bg-cyan-50 text-cyan-600' : 'bg-sky-100 text-sky-600')}>
                     <v.icon className="h-8 w-8" />
                   </div>
                   <h3 className="text-2xl font-black mb-6 text-slate-900 tracking-tight leading-snug">{v.title}</h3>

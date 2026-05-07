@@ -19,11 +19,11 @@ export default function TournamentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white selection:bg-orange-100 selection:text-orange-900 overflow-x-hidden">
+    <div className="min-h-screen bg-white selection:bg-sky-100 selection:text-sky-900 overflow-x-hidden">
       <Navbar />
 
       {/* HERO SECTION */}
-      <header className="relative min-h-[70vh] w-full flex items-center bg-[#020617] overflow-hidden pt-32 pb-20">
+      <header className="relative min-h-[60vh] w-full flex items-center bg-[#020617] overflow-hidden pt-32 pb-20">
         <SparkleCanvas density="full" />
         <div className="absolute inset-0 z-0">
           <img 
@@ -35,18 +35,18 @@ export default function TournamentsPage() {
         </div>
         
         <div className="container relative z-10 mx-auto px-6">
-          <motion.div initial="hidden" animate="visible" variants={stagger}>
-            <motion.div variants={fadeLeft} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 mb-8">
+          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left">
+            <motion.div variants={fadeLeft} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-8">
               <Trophy className="h-3.5 w-3.5" />
               <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Championship Hub</span>
             </motion.div>
             
             <motion.h1 variants={fadeLeft} className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
               Prove Your <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-200">Strategic Might</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">Strategic Might</span>
             </motion.h1>
             
-            <motion.p variants={fadeLeft} className="max-w-xl text-slate-400 text-lg leading-relaxed italic">
+            <motion.p variants={fadeLeft} className="max-w-xl text-slate-400 text-lg leading-relaxed">
               "In chess, as in life, strategy is the art of making use of time and space."
             </motion.p>
           </motion.div>
@@ -60,7 +60,7 @@ export default function TournamentsPage() {
             {[
               { icon: Timer, label: "Blitz", desc: "3-5 Mins", color: "text-blue-400", bg: "group-hover:bg-blue-500/10" },
               { icon: Swords, label: "Rapid", desc: "15-30 Mins", color: "text-emerald-400", bg: "group-hover:bg-emerald-500/10" },
-              { icon: Calendar, label: "Classical", desc: "90+ Mins", color: "text-orange-400", bg: "group-hover:bg-orange-500/10" },
+              { icon: Calendar, label: "Classical", desc: "90+ Mins", color: "text-sky-400", bg: "group-hover:bg-sky-500/10" },
               { icon: Medal, label: "Rated", desc: "Official ELO", color: "text-purple-400", bg: "group-hover:bg-purple-500/10" },
             ].map((stat, i) => (
               <div 
@@ -77,7 +77,7 @@ export default function TournamentsPage() {
                   <p className="text-[13px] font-bold text-white uppercase tracking-[0.2em] mb-1">{stat.label}</p>
                   <p className="text-xs font-medium text-slate-400">{stat.desc}</p>
                 </div>
-                <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-transparent via-orange-500 to-transparent group-hover:w-full transition-all duration-500" />
+                <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent group-hover:w-full transition-all duration-500" />
               </div>
             ))}
           </div>
@@ -90,13 +90,13 @@ export default function TournamentsPage() {
           <div className="flex items-center justify-between mb-16">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Active Arenas</h2>
-              <div className="h-1 w-12 bg-orange-500 mt-3 rounded-full" />
+              <div className="h-1 w-12 bg-sky-500 mt-3 rounded-full" />
             </div>
           </div>
 
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-40">
-              <div className="h-12 w-12 border-4 border-orange-500/10 border-t-orange-500 rounded-full animate-spin mb-4" />
+              <div className="h-12 w-12 border-4 border-sky-500/10 border-t-sky-500 rounded-full animate-spin mb-4" />
               <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Synchronizing Arenas...</p>
             </div>
           ) : (
@@ -109,10 +109,10 @@ export default function TournamentsPage() {
                   viewport={{ once: true }}
                   variants={fadeUp}
                   custom={index}
-                  className="group relative bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-orange-900/10 hover:border-orange-200 transition-all duration-500 flex flex-col h-full"
+                  className="group relative bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-sky-900/10 hover:border-sky-200 transition-all duration-500 flex flex-col h-full"
                 >
                   <div className="h-2 w-full bg-slate-50 overflow-hidden">
-                    <div className="h-full bg-orange-500 w-0 group-hover:w-full transition-all duration-1000" />
+                    <div className="h-full bg-sky-500 w-0 group-hover:w-full transition-all duration-1000" />
                   </div>
 
                   <div className="p-6 md:p-9 flex flex-col h-full">
@@ -120,39 +120,45 @@ export default function TournamentsPage() {
                       <div className="flex flex-col">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Start Date</span>
                         <div className="flex items-center gap-2 text-slate-900 font-semibold">
-                          <Calendar className="h-4 w-4 text-orange-500" />
+                          <Calendar className="h-4 w-4 text-sky-500" />
                           {/* LOGIC CHANGE: Uses startDate from new schema */}
                           {new Date(t.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </div>
                       </div>
-                      <span className="px-3 py-1 bg-orange-50 text-orange-600 text-[10px] font-bold uppercase rounded-lg border border-orange-100 shadow-sm">
+                      <span className="px-3 py-1 bg-sky-50 text-sky-600 text-[10px] font-bold uppercase rounded-lg border border-sky-100 shadow-sm">
                         {t.category || 'Open'}
                       </span>
                     </div>
 
-                    <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-orange-600 transition-colors">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-sky-600 transition-colors">
                       {t.title}
                     </h3>
-                    <div className="flex items-center gap-2 text-slate-500 text-sm mb-10 font-medium">
+                    <div className="flex items-center gap-2 text-slate-500 text-sm mb-6 font-medium">
                       <MapPin className="h-4 w-4 text-slate-400" />
                       {t.location || 'Unique Chess Academy'}
                     </div>
 
-                    <div className="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between">
+                    <div className="flex flex-col mb-10">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Prize Fund</span>
+                      <span className="text-2xl font-bold text-slate-900">
+                        {/* LOGIC CHANGE: Uses totalPrizePool from new schema */}
+                        ₹{t.totalPrizePool?.toLocaleString() || 'TBD'}
+                      </span>
+                    </div>
+
+                    <div
+                      onClick={() => handleViewDetails(t.id.toString())}
+                      className="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between cursor-pointer group/btn"
+                    >
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Prize Fund</span>
-                        <span className="text-2xl font-bold text-slate-900">
-                          {/* LOGIC CHANGE: Uses totalPrizePool from new schema */}
-                          ₹{t.totalPrizePool?.toLocaleString() || 'TBD'}
+                        <span className="text-[10px] font-bold text-sky-600 uppercase tracking-widest mb-1">Entry Fee</span>
+                        <span className="text-2xl font-bold text-slate-900 group-hover:text-sky-600 transition-colors">
+                          ₹{t.entryFee?.toLocaleString() || '0'}
                         </span>
                       </div>
-                      <Button 
-                        onClick={() => handleViewDetails(t.id.toString())}
-                        className="bg-[#020617] hover:bg-orange-600 text-white rounded-2xl px-7 h-12 font-bold transition-all duration-300 flex items-center gap-2 group/btn shadow-lg hover:shadow-orange-600/20 active:scale-95"
-                      >
-                        Details
-                        <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                      </Button>
+                      <div className="h-12 w-12 bg-slate-900 group-hover:bg-sky-600 text-white rounded-xl flex items-center justify-center transition-all shadow-lg active:scale-95">
+                        <ChevronRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+                      </div>
                     </div>
                   </div>
                 </motion.div>

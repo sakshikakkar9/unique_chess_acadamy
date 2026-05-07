@@ -149,7 +149,7 @@ export default function TournamentDetails() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-orange-600" />
+        <Loader2 className="h-10 w-10 animate-spin text-sky-600" />
       </div>
     );
   }
@@ -173,12 +173,12 @@ export default function TournamentDetails() {
               <CheckCircle2 className="h-14 w-14 text-green-500" />
             </div>
             <h1 className="text-4xl font-bold text-slate-900 tracking-tight">Registration Successful!</h1>
-            <p className="text-slate-500 font-medium leading-relaxed">Your registration for <span className="text-orange-600 font-semibold">{tournament.title}</span> has been submitted. Our team will review your application and contact you shortly.</p>
+            <p className="text-slate-500 font-medium leading-relaxed">Your registration for <span className="text-sky-600 font-semibold">{tournament.title}</span> has been submitted. Our team will review your application and contact you shortly.</p>
 
             <div className="bg-slate-50 border border-slate-100 p-8 rounded-[2rem] space-y-2 relative group">
               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em]">Reference ID</p>
               <div className="flex items-center justify-center gap-2">
-                <p className="text-3xl font-bold text-orange-600 tracking-tight">{refId}</p>
+                <p className="text-3xl font-bold text-sky-600 tracking-tight">{refId}</p>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -186,14 +186,14 @@ export default function TournamentDetails() {
                     navigator.clipboard.writeText(refId);
                     toast({ title: "Copied!", description: "Reference ID copied to clipboard." });
                   }}
-                  className="h-10 w-10 text-slate-400 hover:text-orange-600 rounded-xl"
+                  className="h-10 w-10 text-slate-400 hover:text-sky-600 rounded-xl"
                 >
                   <Copy className="h-5 w-5" />
                 </Button>
               </div>
             </div>
 
-            <Button onClick={() => navigate("/tournaments")} className="w-full h-16 bg-slate-900 hover:bg-orange-600 rounded-2xl font-bold transition-all text-white text-lg shadow-lg shadow-slate-900/10">
+            <Button onClick={() => navigate("/tournaments")} className="w-full h-16 bg-slate-900 hover:bg-sky-600 rounded-2xl font-bold transition-all text-white text-lg shadow-lg shadow-slate-900/10">
               RETURN TO ARENAS
             </Button>
           </motion.div>
@@ -209,7 +209,7 @@ export default function TournamentDetails() {
 
       <main className="container mx-auto px-6 pt-32 pb-20">
         <div className="mb-12">
-          <Link to="/tournaments" className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-orange-600 transition-colors group uppercase tracking-[0.2em]">
+          <Link to="/tournaments" className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-sky-600 transition-colors group uppercase tracking-[0.2em]">
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             <span>Back to Arenas</span>
           </Link>
@@ -228,7 +228,7 @@ export default function TournamentDetails() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute top-6 left-6">
-                <span className="px-4 py-2 bg-orange-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] shadow-lg">
+                <span className="px-4 py-2 bg-sky-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] shadow-lg">
                   {tournament.category || "Professional"}
                 </span>
               </div>
@@ -238,7 +238,7 @@ export default function TournamentDetails() {
             <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-12">
               <motion.div variants={fadeUp} className="space-y-6">
                 <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-orange-600 uppercase tracking-[0.2em]">
+                  <span className="text-[10px] font-bold text-sky-600 uppercase tracking-[0.2em]">
                     Arena Details
                   </span>
                   <h1 className="text-3xl font-bold text-slate-900 leading-tight tracking-tight">
@@ -256,8 +256,8 @@ export default function TournamentDetails() {
                 {/* Info Grid - Clean & Minimal */}
                 <div className="grid grid-cols-2 gap-y-8 gap-x-12 py-4 border-t border-b border-slate-100">
                   <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-                      <Calendar className="h-5 w-5 text-orange-600" />
+                    <div className="h-10 w-10 rounded-xl bg-sky-50 flex items-center justify-center shrink-0">
+                      <Calendar className="h-5 w-5 text-sky-600" />
                     </div>
                     <div>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Schedule</p>
@@ -269,8 +269,8 @@ export default function TournamentDetails() {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-                      <MapPin className="h-5 w-5 text-orange-600" />
+                    <div className="h-10 w-10 rounded-xl bg-sky-50 flex items-center justify-center shrink-0">
+                      <MapPin className="h-5 w-5 text-sky-600" />
                     </div>
                     <div>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Venue</p>
@@ -279,8 +279,8 @@ export default function TournamentDetails() {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-                      <Trophy className="h-5 w-5 text-orange-600" />
+                    <div className="h-10 w-10 rounded-xl bg-sky-50 flex items-center justify-center shrink-0">
+                      <Trophy className="h-5 w-5 text-sky-600" />
                     </div>
                     <div>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Prize Pool</p>
@@ -289,8 +289,8 @@ export default function TournamentDetails() {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-                      <Award className="h-5 w-5 text-orange-600" />
+                    <div className="h-10 w-10 rounded-xl bg-sky-50 flex items-center justify-center shrink-0">
+                      <Award className="h-5 w-5 text-sky-600" />
                     </div>
                     <div>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Category</p>
@@ -326,12 +326,12 @@ export default function TournamentDetails() {
                       onClick={(e) => handleBrochureDownload(e, tournament.brochureUrl!)}
                       className="flex items-center gap-4 group"
                     >
-                      <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:bg-orange-100 transition-colors">
-                        <FileText className="h-5 w-5 text-orange-600" />
+                      <div className="h-10 w-10 rounded-xl bg-sky-50 flex items-center justify-center shrink-0 group-hover:bg-sky-100 transition-colors">
+                        <FileText className="h-5 w-5 text-sky-600" />
                       </div>
                       <div className="text-left">
-                        <p className="text-[10px] font-bold text-orange-600 uppercase tracking-widest">Resources</p>
-                        <p className="text-base font-bold text-slate-900 group-hover:text-orange-600 transition-colors underline decoration-orange-600/20 underline-offset-4">Brochure PDF</p>
+                        <p className="text-[10px] font-bold text-sky-600 uppercase tracking-widest">Resources</p>
+                        <p className="text-base font-bold text-slate-900 group-hover:text-sky-600 transition-colors underline decoration-sky-600/20 underline-offset-4">Brochure PDF</p>
                       </div>
                     </button>
                   )}
@@ -342,7 +342,7 @@ export default function TournamentDetails() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Registration Fee</p>
-                      <p className="text-4xl font-bold text-orange-600 tracking-tighter">₹{tournament.entryFee.toLocaleString()}</p>
+                      <p className="text-4xl font-bold text-sky-600 tracking-tighter">₹{tournament.entryFee.toLocaleString()}</p>
                     </div>
                     <div className="h-12 w-12 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg">
                       <CreditCard className="h-6 w-6 text-white" />
@@ -351,8 +351,8 @@ export default function TournamentDetails() {
 
                   {tournament.discountDetails && (
                     <div className="flex items-center gap-3 px-1">
-                      <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
-                      <p className="text-xs font-bold text-orange-600 uppercase tracking-wider italic">
+                      <div className="h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
+                      <p className="text-xs font-bold text-sky-600 uppercase tracking-wider italic">
                         Special Note: {tournament.discountDetails}
                       </p>
                     </div>
@@ -365,12 +365,12 @@ export default function TournamentDetails() {
           }
           form={
             <Card className="border-none shadow-xl rounded-[3rem] overflow-hidden bg-white">
-              <div className="h-3 bg-orange-600" />
+              <div className="h-3 bg-sky-600" />
               <CardContent className="p-10 md:p-14">
                 <form onSubmit={handleSubmit} className="space-y-10">
                   <div className="space-y-8">
                     <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                      <User className="h-6 w-6 text-orange-600" />
+                      <User className="h-6 w-6 text-sky-600" />
                       <h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Enrollment Form</h2>
                     </div>
 
@@ -401,19 +401,19 @@ export default function TournamentDetails() {
 
                       <div className={cn("space-y-6 transition-all duration-500", isRegistrationDisabled && "opacity-40 grayscale pointer-events-none")}>
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Player Name *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Player Name <span className="text-[#FF0000]">*</span></Label>
                           <Input
                             value={form.studentName}
                             onChange={(e) => set("studentName", e.target.value)}
                             required
                             disabled={isRegistrationDisabled}
                             placeholder="Enter your full name"
-                            className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6 focus:ring-orange-600 transition-all placeholder:text-slate-300"
+                            className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6 focus:ring-sky-600 transition-all placeholder:text-slate-300"
                           />
                         </div>
 
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Gender *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Gender <span className="text-[#FF0000]">*</span></Label>
                           <div className="flex gap-10 pt-2 px-1">
                             {["Male", "Female", "Other"].map((g) => (
                               <label key={g} className={cn("flex items-center gap-3 cursor-pointer group", isRegistrationDisabled && "cursor-not-allowed")}>
@@ -427,10 +427,10 @@ export default function TournamentDetails() {
                                     className="peer sr-only"
                                     disabled={isRegistrationDisabled}
                                   />
-                                  <div className="h-6 w-6 rounded-full border border-slate-200 peer-checked:border-orange-600 transition-all" />
-                                  <div className="absolute h-3 w-3 rounded-full bg-orange-600 scale-0 peer-checked:scale-100 transition-transform" />
+                                  <div className="h-6 w-6 rounded-full border border-slate-200 peer-checked:border-sky-600 transition-all" />
+                                  <div className="absolute h-3 w-3 rounded-full bg-sky-600 scale-0 peer-checked:scale-100 transition-transform" />
                                 </div>
-                                <span className={cn("text-base font-semibold tracking-tight transition-colors", form.gender === g ? "text-orange-600" : "text-slate-400 group-hover:text-slate-600")}>
+                                <span className={cn("text-base font-semibold tracking-tight transition-colors", form.gender === g ? "text-sky-600" : "text-slate-400 group-hover:text-slate-600")}>
                                   {g}
                                 </span>
                               </label>
@@ -440,10 +440,10 @@ export default function TournamentDetails() {
 
                         <div className="grid md:grid-cols-2 gap-8">
                           <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Category *</Label>
+                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Category <span className="text-[#FF0000]">*</span></Label>
                             <div className="relative">
                               <select
-                                className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-6 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-600 transition-all appearance-none cursor-pointer pr-12"
+                                className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-6 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-600 transition-all appearance-none cursor-pointer pr-12"
                                 value={form.category}
                                 onChange={(e) => set("category", e.target.value)}
                                 required
@@ -463,7 +463,7 @@ export default function TournamentDetails() {
                             </div>
                           </div>
                           <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Date of Birth *</Label>
+                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Date of Birth <span className="text-[#FF0000]">*</span></Label>
                             <Input
                               type="date"
                               value={form.dob}
@@ -477,7 +477,7 @@ export default function TournamentDetails() {
 
                         <div className="grid md:grid-cols-2 gap-8">
                           <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Phone Number *</Label>
+                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Phone Number <span className="text-[#FF0000]">*</span></Label>
                             <Input
                               type="tel"
                               value={form.phone}
@@ -526,20 +526,20 @@ export default function TournamentDetails() {
                         </div>
 
                         <div className="space-y-3">
-                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Full Address *</Label>
+                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Full Address <span className="text-[#FF0000]">*</span></Label>
                           <Textarea
                             value={form.address}
                             onChange={(e) => set("address", e.target.value)}
                             required
                             disabled={isRegistrationDisabled}
                             placeholder="Enter your complete residential address"
-                            className="rounded-2xl border border-slate-100 bg-slate-50/50 min-h-[120px] p-6 font-medium text-slate-900 resize-none focus:ring-orange-600 transition-all"
+                            className="rounded-2xl border border-slate-100 bg-slate-50/50 min-h-[120px] p-6 font-medium text-slate-900 resize-none focus:ring-sky-600 transition-all"
                           />
                         </div>
 
                         <div className="grid md:grid-cols-2 gap-8">
                           <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 1 *</Label>
+                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 1 <span className="text-[#FF0000]">*</span></Label>
                             <div className="relative h-20">
                               <input
                                 type="file"
@@ -550,7 +550,7 @@ export default function TournamentDetails() {
                               />
                               <div className={cn(
                                 "h-full w-full border border-dashed rounded-2xl flex items-center justify-center gap-3 px-6 transition-all",
-                                files.payment1 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-orange-400"
+                                files.payment1 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-sky-400"
                               )}>
                                 {files.payment1 ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
                                 <span className="text-sm font-semibold truncate">{files.payment1 ? files.payment1.name : "Upload Proof"}</span>
@@ -558,7 +558,7 @@ export default function TournamentDetails() {
                             </div>
                           </div>
                           <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 2 *</Label>
+                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 2 <span className="text-[#FF0000]">*</span></Label>
                             <div className="relative h-20">
                               <input
                                 type="file"
@@ -569,7 +569,7 @@ export default function TournamentDetails() {
                               />
                               <div className={cn(
                                 "h-full w-full border border-dashed rounded-2xl flex items-center justify-center gap-3 px-6 transition-all",
-                                files.payment2 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-orange-400"
+                                files.payment2 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-sky-400"
                               )}>
                                 {files.payment2 ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
                                 <span className="text-sm font-semibold truncate">{files.payment2 ? files.payment2.name : "Upload Proof"}</span>
@@ -582,7 +582,7 @@ export default function TournamentDetails() {
                           <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">How did you find us?</Label>
                           <div className="relative">
                             <select
-                              className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-6 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-600 transition-all appearance-none cursor-pointer pr-12"
+                              className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-6 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-600 transition-all appearance-none cursor-pointer pr-12"
                               value={form.discoverySource}
                               onChange={(e) => set("discoverySource", e.target.value)}
                               disabled={isRegistrationDisabled}
@@ -603,7 +603,7 @@ export default function TournamentDetails() {
                   <Button
                     type="submit"
                     disabled={isPending || isRegistrationDisabled}
-                    className="w-full h-20 bg-orange-600 hover:bg-slate-900 text-white text-xl font-bold rounded-3xl transition-all shadow-lg shadow-orange-600/30 active:scale-[0.98] uppercase tracking-wider disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+                    className="w-full h-20 bg-sky-600 hover:bg-slate-900 text-white text-xl font-bold rounded-3xl transition-all shadow-lg shadow-sky-600/30 active:scale-[0.98] uppercase tracking-wider disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
                   >
                     {isPending ? (
                       <span className="flex items-center gap-3">
