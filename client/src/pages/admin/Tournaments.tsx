@@ -13,6 +13,7 @@ import { Plus, Trophy, Upload, X, Search, Eye, Calendar, MapPin, FileText, Phone
 import { Tournament } from "@/types";
 import TournamentTable from "@/features/tournaments/components/admin/TournamentTable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import AdminPageHeader from "@/components/shared/admin/AdminPageHeader";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import RichTextEditor from "@/components/shared/admin/RichTextEditor";
 import { cn } from "@/lib/utils";
@@ -154,43 +155,45 @@ const AdminTournaments: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 p-2 md:p-8">
-      {/* Header Section */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-black tracking-tight flex items-center gap-2 text-slate-900">
-            <Trophy className="h-8 w-8 text-amber-500" /> Tournament Console
-          </h1>
-          <p className="text-sm text-slate-500 font-medium italic">Manage competitive events and registrations window.</p>
-        </div>
-        <div className="flex gap-3">
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search tournaments..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-11 rounded-xl"
-            />
-          </div>
-          <Button onClick={handleAdd} className="w-full sm:w-auto font-bold h-11 gap-2 bg-slate-900 hover:bg-orange-600 rounded-xl transition-all">
-            <Plus className="h-5 w-5" /> Add Tournament
+    <div className="space-y-8 p-8 max-w-[1600px] mx-auto animate-in fade-in duration-500">
+      <AdminPageHeader
+        title="Tournament Console"
+        subtitle="Manage competitive events and registrations window."
+        action={
+          <Button onClick={handleAdd} className="shadow-lg bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-full px-6 h-11">
+            <Plus className="mr-2 h-4 w-4" /> Add Tournament
           </Button>
-        </div>
-      </div>
+        }
+      />
 
-      {/* Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-        {(["ALL", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"] as TournamentStatus[]).map((tab) => (
-          <Button
-            key={tab}
-            variant={activeTab === tab ? "default" : "ghost"}
-            onClick={() => setActiveTab(tab)}
-            className={`rounded-full px-6 font-bold h-10 ${activeTab === tab ? "bg-orange-600 hover:bg-orange-700 shadow-lg shadow-orange-600/20" : "text-slate-500 hover:text-orange-600"}`}
-          >
-            {tab}
-          </Button>
-        ))}
+      <div className="flex flex-col md:flex-row gap-6 items-center justify-between bg-white border border-slate-200 p-4 rounded-[12px] shadow-sm">
+        {/* Tabs */}
+        <div className="flex gap-1 overflow-x-auto scrollbar-hide bg-slate-100 p-1 rounded-full">
+          {(["ALL", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"] as TournamentStatus[]).map((tab) => (
+            <Button
+              key={tab}
+              variant="ghost"
+              onClick={() => setActiveTab(tab)}
+              className={`rounded-full px-6 font-bold h-9 text-[10px] uppercase tracking-widest transition-all ${
+                activeTab === tab
+                  ? "bg-white text-sky-600 shadow-sm"
+                  : "text-slate-500 hover:text-sky-600"
+              }`}
+            >
+              {tab}
+            </Button>
+          ))}
+        </div>
+
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Input
+            placeholder="Search tournaments..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 h-11 rounded-xl border-slate-200 focus:ring-sky-500"
+          />
+        </div>
       </div>
 
       {/* Table Section */}

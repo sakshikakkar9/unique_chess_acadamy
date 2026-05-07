@@ -13,6 +13,8 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { CourseEnrollment } from "@/types";
 import { AGE_GROUP_LABELS } from "@/types";
+import AdminPageHeader from "@/components/shared/admin/AdminPageHeader";
+import StatusBadge from "@/components/shared/admin/StatusBadge";
 
 const AdminDashboard: React.FC = () => {
   const { courses }       = useAdminCourses();
@@ -63,36 +65,30 @@ const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex justify-between items-end">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard Overview</h1>
-          <p className="text-muted-foreground">Monitoring growth at Unique Chess Academy.</p>
-        </div>
-      </div>
+    <div className="space-y-8 animate-in fade-in duration-500 max-w-[1600px] mx-auto">
+      <AdminPageHeader
+        title="Dashboard Overview"
+        subtitle="Monitoring growth at Unique Chess Academy."
+      />
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, i) => (
-          <Card key={i} className="border-border bg-card/50 backdrop-blur shadow-sm">
+          <Card key={i} className="border-slate-200 bg-white shadow-sm overflow-hidden relative group border-l-4 border-l-sky-500">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
-              <div className={`${stat.bg} p-2 rounded-md`}>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              </div>
+              <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-500">{stat.title}</CardTitle>
+              <stat.icon className="h-4 w-4 text-slate-400 group-hover:text-sky-500 transition-colors" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+              <div className="text-3xl font-black text-slate-900">{stat.value}</div>
+              <div className="mt-2">
                 {stat.sub ? (
-                  <span className="text-amber-500 font-medium">{stat.sub}</span>
+                  <StatusBadge status="PENDING" className="bg-amber-50 text-amber-600 border-amber-200/50" />
                 ) : (
-                  <>
-                    <span className="text-green-500 font-medium flex items-center">
-                      <TrendingUp className="h-3 w-3 mr-1" /> Live
-                    </span>
-                    Syncing with Database
-                  </>
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status="LIVE" />
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Syncing</span>
+                  </div>
                 )}
               </div>
             </CardContent>
@@ -103,12 +99,12 @@ const AdminDashboard: React.FC = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
 
         {/* Recent Course Enrollments */}
-        <Card className="col-span-4 border-border bg-card/50">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Recent Course Enrollments</CardTitle>
+        <Card className="col-span-4 border-slate-200 bg-white shadow-sm rounded-[12px]">
+          <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-slate-50">
+            <CardTitle className="text-[18px] font-semibold text-slate-900">Recent Course Enrollments</CardTitle>
             <Link
               to="/admin/registrations"
-              className="text-xs text-gold hover:underline flex items-center gap-1"
+              className="text-xs font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1"
             >
               View All <ArrowUpRight className="h-3 w-3" />
             </Link>
@@ -136,7 +132,7 @@ const AdminDashboard: React.FC = () => {
                         {enr.createdAt ? new Date(enr.createdAt).toLocaleDateString() : ""}
                       </p>
                     </div>
-                    <EnrollBadge status={enr.status} />
+                    <StatusBadge status={enr.status} />
                   </div>
                 ))
               ) : (
@@ -153,66 +149,74 @@ const AdminDashboard: React.FC = () => {
         <div className="col-span-3 flex flex-col gap-4">
 
           {/* Upcoming Tournaments */}
-          <Card className="border-border bg-card/50 flex-1">
-            <CardHeader>
-              <CardTitle>Upcoming Events</CardTitle>
+          <Card className="border-slate-200 bg-white shadow-sm flex-1 rounded-[12px]">
+            <CardHeader className="pb-4 border-b border-slate-50">
+              <CardTitle className="text-[18px] font-semibold text-slate-900">Upcoming Events</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-4">
               <div className="space-y-4">
                 {tournaments.length > 0 ? (
                   tournaments.slice(0, 3).map((t) => (
-                    <div key={t.id} className="flex items-center justify-between border-b border-border/50 pb-3 last:border-0 last:pb-0">
+                    <div key={t.id} className="flex items-center justify-between border-b border-slate-50 pb-3 last:border-0 last:pb-0">
                       <div className="space-y-1">
-                        <p className="text-sm font-medium">{t.title}</p>
-                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider">
-                          <Calendar className="h-3 w-3 text-gold" />
-                          {new Date(t.date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                        <p className="text-sm font-semibold text-slate-800">{t.title}</p>
+                        <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                          <Calendar className="h-3 w-3 text-sky-500" />
+                          {t.date && !isNaN(new Date(t.date).getTime())
+                            ? new Date(t.date).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+                            : <span className="italic font-normal lowercase text-slate-300">Date TBD</span>
+                          }
                         </div>
                       </div>
-                      <TournamentBadge status={t.status} />
+                      <StatusBadge status={t.status} />
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground text-center py-4">No events scheduled.</p>
+                  <div className="text-center py-8">
+                    <Calendar className="h-8 w-8 text-slate-200 mx-auto mb-2" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">No events scheduled</p>
+                  </div>
                 )}
               </div>
             </CardContent>
           </Card>
 
           {/* Recent Demo Leads */}
-          <Card className="border-border bg-card/50 flex-1">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Recent Demo Leads</CardTitle>
+          <Card className="border-slate-200 bg-white shadow-sm flex-1 rounded-[12px]">
+            <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-slate-50">
+              <CardTitle className="text-[18px] font-semibold text-slate-900">Recent Demo Leads</CardTitle>
               <Link
                 to="/admin/registrations"
-                className="text-xs text-gold hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1"
               >
                 View All <ArrowUpRight className="h-3 w-3" />
               </Link>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-4">
               <div className="space-y-3">
                 {demosLoading ? (
                   <div className="text-center py-4 text-muted-foreground">Loading…</div>
                 ) : demos.length > 0 ? (
                   demos.slice(0, 3).map((demo: any) => (
-                    <div key={demo.id} className="flex items-center gap-3 group">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 flex-shrink-0">
-                        <UserCheck className="h-4 w-4 text-primary" />
+                    <div key={demo.id} className="flex items-center justify-between group">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-sky-50 flex items-center justify-center border border-sky-100 flex-shrink-0">
+                          <UserCheck className="h-4 w-4 text-sky-600" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-slate-800 truncate">{demo.studentName}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold truncate">{demo.studentName}</p>
-                        <p className="text-xs text-muted-foreground">{demo.phone}</p>
+                      <div className="text-right">
+                        <p className="text-[10px] font-bold text-slate-600">{demo.phone}</p>
+                        <p className="text-[9px] text-slate-400 font-medium">{new Date(demo.createdAt).toLocaleDateString()}</p>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(demo.createdAt).toLocaleDateString()}
-                      </p>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-6">
-                    <Users className="h-8 w-8 text-muted-foreground/20 mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">No demo requests yet.</p>
+                  <div className="text-center py-8">
+                    <Users className="h-8 w-8 text-slate-200 mx-auto mb-2" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">No demo requests yet</p>
                   </div>
                 )}
               </div>
@@ -223,36 +227,5 @@ const AdminDashboard: React.FC = () => {
     </div>
   );
 };
-
-// ── Small helper badges ───────────────────────────────────────────────────────
-
-const ENROLL_COLORS: Record<string, string> = {
-  PENDING:   "bg-amber-500/10 text-amber-500 border-amber-500/20",
-  CONFIRMED: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  COMPLETED: "bg-green-500/10 text-green-500 border-green-500/20",
-  REJECTED:  "bg-red-500/10 text-red-400 border-red-500/20",
-};
-
-function EnrollBadge({ status }: { status: string }) {
-  const cls = ENROLL_COLORS[status] ?? "bg-muted text-muted-foreground border-border";
-  return (
-    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${cls} flex-shrink-0`}>
-      {status}
-    </span>
-  );
-}
-
-function TournamentBadge({ status }: { status: string }) {
-  const isOngoing = status === "ONGOING";
-  return (
-    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
-      isOngoing
-        ? "bg-green-500/10 text-green-500 border-green-500/20"
-        : "bg-amber-500/10 text-amber-500 border-amber-500/20"
-    }`}>
-      {status}
-    </span>
-  );
-}
 
 export default AdminDashboard;

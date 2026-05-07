@@ -83,17 +83,14 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, setOpen }) => {
                 to={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
+                  "flex items-center gap-3 px-4 py-2.5 rounded-full text-sm transition-all duration-200",
                   isActive
-                    ? "bg-primary/15 text-primary border border-primary/20 gold-glow"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                    ? "bg-sky-500 text-white font-bold shadow-lg shadow-sky-500/20"
+                    : "text-slate-500 font-normal hover:bg-sky-50 hover:text-sky-600"
                 )}
               >
-                <item.icon className={cn("h-4 w-4 flex-shrink-0", isActive && "text-primary")} />
+                <item.icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-white" : "text-slate-400")} />
                 {item.label}
-                {isActive && (
-                  <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
-                )}
               </Link>
             );
           })}

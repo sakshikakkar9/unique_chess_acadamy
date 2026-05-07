@@ -7,6 +7,8 @@ import {
   CheckCircle, XCircle, Trash2, Mail, Phone, Eye, Calendar, User, UserCheck, BookOpen, Copy,
   Search, Filter, ExternalLink, ShieldCheck, CreditCard, Info, Image as ImageIcon
 } from "lucide-react";
+import AdminPageHeader from "@/components/shared/admin/AdminPageHeader";
+import StatusBadge from "@/components/shared/admin/StatusBadge";
 import {
   Select,
   SelectContent,
@@ -25,25 +27,6 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-
-// ── 1. REFINED STATUS STYLES ──────────────────────────────────────────────────
-const statusStyles: Record<string, string> = {
-  PENDING:   "bg-amber-50 text-amber-700 border-amber-200/50",
-  APPROVED:  "bg-emerald-50 text-emerald-700 border-emerald-200/50",
-  VERIFIED:  "bg-emerald-50 text-emerald-700 border-emerald-200/50",
-  CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200/50",
-  CANCELLED: "bg-rose-50 text-rose-700 border-rose-200/50",
-  REJECTED:  "bg-rose-50 text-rose-700 border-rose-200/50",
-  COMPLETED: "bg-purple-50 text-purple-700 border-purple-200/50",
-};
-
-function StatusBadge({ status }: { status: string }) {
-  return (
-    <span className={`px-3 py-1 rounded-full border text-[9px] font-bold uppercase tracking-[0.15em] ${statusStyles[status] || "bg-slate-50 text-slate-500"}`}>
-      {status}
-    </span>
-  );
-}
 
 export default function RegistrationsPage() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -147,34 +130,44 @@ export default function RegistrationsPage() {
       </tr>
     ) : items.map((item) => (
       <tr key={item.id} className="hover:bg-slate-50/80 transition-colors border-b border-slate-100 group">
-        <td className="p-4">
+        <td className="p-4 px-6">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs border border-slate-200">
+            <div className="w-10 h-10 rounded-full bg-sky-50 flex items-center justify-center text-sky-600 font-black text-[10px] border border-sky-100 shadow-sm shrink-0">
               {item.studentName?.substring(0, 2).toUpperCase() || "ST"}
             </div>
-            <div>
-              <p className="font-bold text-slate-900 text-sm">{item.studentName}</p>
-              <p className="text-[10px] text-slate-400 font-black uppercase tracking-tight">{item.gender || 'Not Specified'}</p>
+            <div className="min-w-0">
+              <p className="font-bold text-slate-900 text-sm truncate">{item.studentName}</p>
+              <span className="inline-block mt-1 text-[9px] font-black uppercase tracking-tight text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md">
+                {item.gender || 'Not Specified'}
+              </span>
             </div>
           </div>
         </td>
-        <td className="p-4">
+        <td className="p-4 px-6">
           <div className="flex items-center gap-2">
-            {type === 'tournament' ? <Trophy className="h-3.5 w-3.5 text-amber-500" /> : <BookOpen className="h-3.5 w-3.5 text-blue-500" />}
-            <span className="text-sm font-bold text-slate-700 truncate max-w-[150px]">{item.tournament?.title || item.course?.title || 'Demo Class'}</span>
+            {type === 'tournament' ? <Trophy className="h-3.5 w-3.5 text-amber-500" /> : <BookOpen className="h-3.5 w-3.5 text-sky-500" />}
+            <span className="text-sm font-bold text-slate-700 truncate max-w-[180px]">{item.tournament?.title || item.course?.title || 'Demo Class'}</span>
           </div>
         </td>
-        <td className="p-4 text-[11px] font-bold text-slate-500 uppercase">
+        <td className="p-4 px-6 text-[10px] font-bold text-slate-500 uppercase tracking-tight">
            {format(new Date(item.createdAt), "MMM d, h:mm a")}
         </td>
-        <td className="p-4">
-          <div className="flex flex-col text-[10px] font-black text-slate-400 tracking-tight">
-            <span className="flex items-center gap-1"><Phone className="h-2.5 w-2.5 text-slate-300" /> {item.phone}</span>
-            {item.email && <span className="flex items-center gap-1 mt-0.5"><Mail className="h-2.5 w-2.5 text-slate-300" /> {item.email}</span>}
+        <td className="p-4 px-6">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600">
+              <Phone className="h-3 w-3 text-sky-400" /> {item.phone}
+            </div>
+            {item.email && (
+              <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
+                <Mail className="h-3 w-3 text-slate-300" /> {item.email}
+              </div>
+            )}
           </div>
         </td>
-        <td className="p-4"><StatusBadge status={item.status} /></td>
-        <td className="p-4 text-right">
+        <td className="p-4 px-6 text-center">
+          <StatusBadge status={item.status} />
+        </td>
+        <td className="p-4 px-6 text-right">
           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             {item.status === "PENDING" && (
               <Button size="sm" className="h-8 bg-emerald-600 hover:bg-emerald-700 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-600/20"
@@ -204,28 +197,26 @@ export default function RegistrationsPage() {
   );
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-10 bg-white min-h-screen">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-        <div>
-          <h1 className="text-6xl font-black tracking-tighter text-slate-900">Registrations</h1>
-          <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] mt-3 flex items-center gap-2">
-            <div className="h-1 w-8 bg-blue-600 rounded-full" /> Admin Intelligence Portal
-          </p>
-        </div>
+    <div className="p-8 max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500">
+      <AdminPageHeader
+        title="Registrations"
+        subtitle="Review and manage student enrollments across all programs."
+      />
 
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white border border-slate-200 p-4 rounded-[12px] shadow-sm">
+        <div className="flex items-center gap-4 w-full md:w-auto">
           <div className="relative flex-1 md:flex-none">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               placeholder="Search students, phones, IDs..."
-              className="pl-11 h-12 w-full md:w-72 rounded-[1.25rem] border-slate-200 focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all font-medium text-sm"
+              className="pl-10 h-11 w-full md:w-80 rounded-xl border-slate-200 focus:ring-sky-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="h-12 w-40 rounded-[1.25rem] border-slate-200 font-bold text-[10px] uppercase tracking-widest">
+            <SelectTrigger className="h-11 w-44 rounded-xl border-slate-200 font-bold text-[10px] uppercase tracking-widest">
               <div className="flex items-center gap-2">
                 <Filter className="h-3.5 w-3.5 text-slate-400" />
                 <SelectValue placeholder="Status" />
@@ -235,56 +226,63 @@ export default function RegistrationsPage() {
               <SelectItem value="ALL" className="font-bold text-[10px] uppercase tracking-widest py-3">All Status</SelectItem>
               <SelectItem value="PENDING" className="font-bold text-[10px] uppercase tracking-widest py-3">Pending</SelectItem>
               <SelectItem value="APPROVED" className="font-bold text-[10px] uppercase tracking-widest py-3 text-emerald-600">Approved</SelectItem>
-              <SelectItem value="CONFIRMED" className="font-bold text-[10px] uppercase tracking-widest py-3 text-blue-600">Confirmed</SelectItem>
+              <SelectItem value="CONFIRMED" className="font-bold text-[10px] uppercase tracking-widest py-3 text-sky-600">Confirmed</SelectItem>
               <SelectItem value="REJECTED" className="font-bold text-[10px] uppercase tracking-widest py-3 text-rose-600">Rejected</SelectItem>
               <SelectItem value="CANCELLED" className="font-bold text-[10px] uppercase tracking-widest py-3 text-slate-500">Cancelled</SelectItem>
             </SelectContent>
           </Select>
         </div>
-      </div>
 
-      <Tabs defaultValue="course" className="w-full">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6 p-2 bg-slate-50 rounded-[2rem] border border-slate-100">
-          <TabsList className="bg-transparent gap-2">
-            <TabsTrigger value="tournament" className="rounded-2xl px-8 py-3 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-xl data-[state=active]:text-blue-600 transition-all">
+        <Tabs defaultValue="course" className="w-full md:w-auto">
+          <TabsList className="bg-slate-100 p-1 rounded-full h-11 w-full md:w-auto">
+            <TabsTrigger value="tournament" className="rounded-full px-6 py-2 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-sky-600 data-[state=active]:shadow-sm transition-all h-9">
               Tournaments
             </TabsTrigger>
-            <TabsTrigger value="course" className="rounded-2xl px-8 py-3 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-xl data-[state=active]:text-blue-600 transition-all">
+            <TabsTrigger value="course" className="rounded-full px-6 py-2 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-sky-600 data-[state=active]:shadow-sm transition-all h-9">
               Courses
             </TabsTrigger>
-            <TabsTrigger value="demo" className="rounded-2xl px-8 py-3 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-xl data-[state=active]:text-blue-600 transition-all">
+            <TabsTrigger value="demo" className="rounded-full px-6 py-2 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-sky-600 data-[state=active]:shadow-sm transition-all h-9">
               Demo Classes
             </TabsTrigger>
           </TabsList>
+        </Tabs>
+      </div>
 
-          <TabsContent value="course" className="m-0">
-             <Select value={courseFilter} onValueChange={setCourseFilter}>
-                <SelectTrigger className="h-11 w-56 rounded-2xl border-none bg-white shadow-sm font-bold text-[10px] uppercase tracking-widest px-6">
-                  <div className="flex items-center gap-3">
-                    <BookOpen className="h-4 w-4 text-blue-500" />
-                    <SelectValue placeholder="Filter by Course" />
-                  </div>
-                </SelectTrigger>
-                <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
-                  <SelectItem value="ALL" className="font-bold text-[10px] uppercase tracking-widest py-3">All Programs</SelectItem>
-                  {courses.map((c: any) => (
-                    <SelectItem key={c.id} value={c.title} className="font-bold text-[10px] uppercase tracking-widest py-3">{c.title}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-          </TabsContent>
-        </div>
+      <div className="bg-white border border-slate-200 rounded-[12px] shadow-sm overflow-hidden">
+        <Tabs defaultValue="course" className="w-full">
+          <div className="p-4 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Real-time Registration Feed</span>
+            </div>
 
-        <div className="border border-slate-100 rounded-[2.5rem] overflow-hidden bg-white shadow-2xl shadow-slate-200/50">
+            <TabsContent value="course" className="m-0">
+               <Select value={courseFilter} onValueChange={setCourseFilter}>
+                  <SelectTrigger className="h-9 w-52 rounded-lg border-slate-200 bg-white font-bold text-[9px] uppercase tracking-widest px-4">
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="h-3.5 w-3.5 text-sky-500" />
+                      <SelectValue placeholder="Filter by Course" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-slate-100 shadow-xl">
+                    <SelectItem value="ALL" className="font-bold text-[9px] uppercase tracking-widest py-2.5">All Programs</SelectItem>
+                    {courses.map((c: any) => (
+                      <SelectItem key={c.id} value={c.title} className="font-bold text-[9px] uppercase tracking-widest py-2.5">{c.title}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+            </TabsContent>
+          </div>
+
           <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50/50 border-b border-slate-100">
               <tr className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">
-                <th className="p-6">Student Profile</th>
-                <th className="p-6">Program / Event</th>
-                <th className="p-6">Submission Date</th>
-                <th className="p-6">Contact Info</th>
-                <th className="p-6">Status</th>
-                <th className="p-6 text-right pr-10">Actions</th>
+                <th className="p-4 px-6">Student Profile</th>
+                <th className="p-4 px-6">Program / Event</th>
+                <th className="p-4 px-6">Submission Date</th>
+                <th className="p-4 px-6">Contact Info</th>
+                <th className="p-4 px-6 text-center">Status</th>
+                <th className="p-4 px-6 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="text-sm">
@@ -317,8 +315,8 @@ export default function RegistrationsPage() {
               </TabsContent>
             </tbody>
           </table>
-        </div>
       </Tabs>
+    </div>
 
       {/* ── 2. REFINED DETAILS SHEET ────────────────────────────────────────── */}
       <Sheet open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
