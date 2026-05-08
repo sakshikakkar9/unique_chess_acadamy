@@ -223,7 +223,7 @@ export default function TournamentDetails() {
           orientation={tournament.posterOrientation}
           poster={
             <motion.div initial="hidden" animate="visible" variants={fadeUp} className={cn(
-              "relative rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white",
+              "relative rounded-[2.5rem] overflow-hidden shadow-xl border-4 border-white",
               tournament.posterOrientation === 'PORTRAIT' ? "aspect-[3/4]" : "aspect-video"
             )}>
               <img
@@ -240,22 +240,25 @@ export default function TournamentDetails() {
           }
           details={
             <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-12">
-              <motion.div variants={fadeUp} className="space-y-6">
-                <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-sky-600 uppercase tracking-[0.2em]">
-                    Arena Details
-                  </span>
-                  <h1 className="text-3xl font-bold text-slate-900 leading-tight tracking-tight">
-                    {tournament.title}
-                  </h1>
-                </div>
+              <motion.div variants={fadeUp} className="space-y-10">
+                {/* Title & Description */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-bold text-sky-600 uppercase tracking-[0.2em]">
+                      Arena Details
+                    </span>
+                    <h1 className="text-3xl font-bold text-slate-900 leading-tight tracking-tight">
+                      {tournament.title}
+                    </h1>
+                  </div>
 
-                {tournament.description && (
-                  <div
-                    className="text-slate-600 font-medium leading-relaxed text-base ql-editor ql-viewer p-0"
-                    dangerouslySetInnerHTML={{ __html: tournament.description }}
-                  />
-                )}
+                  {tournament.description && (
+                    <div
+                      className="text-slate-600 font-medium leading-relaxed text-base ql-editor ql-viewer p-0"
+                      dangerouslySetInnerHTML={{ __html: tournament.description }}
+                    />
+                  )}
+                </div>
 
                 {/* Info Grid - Clean & Minimal */}
                 <div className="grid grid-cols-2 gap-y-8 gap-x-12 py-4 border-t border-b border-slate-100">
@@ -303,6 +306,7 @@ export default function TournamentDetails() {
                   </div>
                 </div>
 
+                {/* Training Days - Simplified Alignment (Placeholder for Rules) */}
                 {tournament.otherDetails && (
                   <div className="space-y-4">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Rules & Regulations</p>
@@ -342,7 +346,7 @@ export default function TournamentDetails() {
                 </div>
 
                 {/* Payment Section - Refined */}
-                <motion.div variants={fadeUp} className="space-y-6 pt-6 border-t border-slate-100">
+                <div className="space-y-6 pt-6 border-t border-slate-100">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Registration Fee</p>
@@ -363,7 +367,7 @@ export default function TournamentDetails() {
                   )}
 
                   <PaymentDisplay />
-                </motion.div>
+                </div>
               </motion.div>
             </motion.div>
           }
@@ -374,8 +378,8 @@ export default function TournamentDetails() {
                 <form onSubmit={handleSubmit} className="space-y-10">
                   <div className="space-y-8">
                     <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                      <User className="h-6 w-6 text-sky-600" />
-                      <h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Enrollment Form</h2>
+                      <ShieldCheck className="h-6 w-6 text-sky-600" />
+                      <h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Registration</h2>
                     </div>
 
                     <div className="space-y-8">

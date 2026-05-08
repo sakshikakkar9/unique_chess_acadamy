@@ -111,8 +111,23 @@ export default function TournamentsPage() {
                   custom={index}
                   className="group relative bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-sky-900/10 hover:border-sky-200 transition-all duration-500 flex flex-col h-full"
                 >
-                  <div className="h-2 w-full bg-slate-50 overflow-hidden">
-                    <div className="h-full bg-sky-500 w-0 group-hover:w-full transition-all duration-1000" />
+                  {/* Image Container with Fixed Aspect Ratio for Uniformity */}
+                  <div className="relative w-full aspect-[16/10] bg-slate-100 overflow-hidden">
+                    <img
+                      src={t.imageUrl || "https://images.unsplash.com/photo-1528819622765-d6bcf132f793?q=80&w=2000"}
+                      alt={t.title}
+                      className={cn(
+                        "absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110",
+                        t.posterOrientation === 'PORTRAIT' ? "object-top" : "object-center"
+                      )}
+                    />
+                    <div className="absolute top-5 left-5 flex gap-2">
+                      <span className="px-4 py-1.5 bg-white/95 backdrop-blur-md rounded-xl text-[10px] font-black text-sky-600 shadow-xl shadow-sky-900/5 uppercase tracking-widest border border-sky-50">
+                        {t.category || 'Open'}
+                      </span>
+                    </div>
+                    {/* Soft gradient overlay for professional feel */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </div>
 
                   <div className="p-6 md:p-9 flex flex-col h-full">
@@ -125,9 +140,6 @@ export default function TournamentsPage() {
                           {new Date(t.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </div>
                       </div>
-                      <span className="px-3 py-1 bg-sky-50 text-sky-600 text-[10px] font-bold uppercase rounded-lg border border-sky-100 shadow-sm">
-                        {t.category || 'Open'}
-                      </span>
                     </div>
 
                     <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-sky-600 transition-colors">
