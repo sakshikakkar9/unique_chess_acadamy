@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BookOpen, Trophy, Image as ImageIcon, Users,
@@ -309,8 +309,18 @@ const AdminDashboard: React.FC = () => {
                   letterSpacing: '.02em'
                 }}
               >
-                Upcoming Events
+                Upcoming Tournaments
               </h3>
+              <Link
+                to="/admin/tournaments"
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  color: '#0284c7'
+                }}
+              >
+                View All →
+              </Link>
             </div>
             <div>
               {tournaments.length > 0 ? (

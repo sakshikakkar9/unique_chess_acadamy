@@ -109,7 +109,8 @@ export default function TournamentsPage() {
                   viewport={{ once: true }}
                   variants={fadeUp}
                   custom={index}
-                  className="group relative bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-sky-900/10 hover:border-sky-200 transition-all duration-500 flex flex-col h-full"
+                  onClick={() => handleViewDetails(t.id.toString())}
+                  className="group relative bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-sky-900/10 hover:border-sky-200 transition-all duration-500 flex flex-col h-full cursor-pointer"
                 >
                   {/* Image Container with Fixed Aspect Ratio for Uniformity */}
                   <div className="relative w-full aspect-[16/10] bg-slate-100 overflow-hidden">
