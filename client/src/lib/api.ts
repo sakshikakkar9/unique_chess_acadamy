@@ -3,7 +3,9 @@ import axios from 'axios';
 // The baseURL will prioritize the Vercel Environment Variable we just added.
 // In production, this will be: https://unique-chess-acadamy.onrender.com/api
 const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api` || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : 'http://localhost:5000/api',
   headers: {
     'Content-Type': 'application/json',
   },

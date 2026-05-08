@@ -25,7 +25,8 @@ const menuItems = [
   { icon: Trophy,          label: "Tournaments",   href: "/admin/tournaments"  },
   { icon: Calendar,        label: "Events",        href: "/admin/events"       },
   { icon: Users,           label: "Students",      href: "/admin/students"     },
-  { icon: Users,           label: "Registrations", href: "/admin/registrations"},
+  { icon: BookOpen,        label: "Registrations", href: "/admin/registrations"},
+  { icon: MessageSquare,   label: "Messages",      href: "/admin/messages"     },
   { icon: ImageIcon,       label: "Gallery",       href: "/admin/gallery"      },
   { icon: Settings,        label: "Settings",      href: "/admin/settings"     },
 ];

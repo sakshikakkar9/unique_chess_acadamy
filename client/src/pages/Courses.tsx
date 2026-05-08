@@ -92,7 +92,8 @@ export default function CoursesPage() {
                   variants={fadeUp}
                   initial="hidden"
                   animate="visible"
-                  className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)] transition-all duration-500 flex flex-col h-full"
+                  onClick={() => navigate(`/courses/${course.id}/enroll`)}
+                  className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)] transition-all duration-500 flex flex-col h-full cursor-pointer"
                 >
                   {/* Image Container with Fixed Aspect Ratio for Uniformity */}
                   <div className="relative w-full aspect-[16/10] bg-slate-100 overflow-hidden">

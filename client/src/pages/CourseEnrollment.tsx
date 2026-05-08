@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
 import { courseService } from "@/services/courseService";
@@ -28,6 +29,7 @@ const DEFAULT_BANNER = "https://images.unsplash.com/photo-1586165368502-1bad197a
 export default function CourseEnrollmentPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const { courses, isLoading } = useAdminCourses();
 
@@ -115,6 +117,7 @@ export default function CourseEnrollmentPage() {
 
       setRefId(result.referenceId);
       setSuccess(true);
+      queryClient.invalidateQueries({ queryKey: ["course-enrollments"] });
       toast({ title: "Enrollment Successful!", description: "Your application has been received." });
     } catch (err: any) {
       toast({
