@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PaymentDisplay from "@/components/shared/PaymentDisplay";
-import OrientationWrapper from "@/features/tournaments/components/OrientationWrapper";
+import OrientationWrapper from "@/components/shared/layout/OrientationWrapper";
 
 interface CoursePreviewProps {
   course: Course;

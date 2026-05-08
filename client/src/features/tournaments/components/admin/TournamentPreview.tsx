@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { Calendar, MapPin, Trophy, FileText, Phone, CreditCard, Info, User, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import OrientationWrapper from "@/features/tournaments/components/OrientationWrapper";
+import OrientationWrapper from "@/components/shared/layout/OrientationWrapper";
 import PaymentDisplay from "@/components/shared/PaymentDisplay";
 
 interface TournamentPreviewProps {

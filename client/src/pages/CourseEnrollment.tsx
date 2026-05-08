@@ -20,7 +20,7 @@ import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 import { fadeUp, stagger } from "@/components/shared/motion";
 import PaymentDisplay from "@/components/shared/PaymentDisplay";
-import OrientationWrapper from "@/features/tournaments/components/OrientationWrapper";
+import OrientationWrapper from "@/components/shared/layout/OrientationWrapper";
 import 'react-quill/dist/quill.snow.css';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2000&auto=format&fit=crop";
