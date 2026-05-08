@@ -78,6 +78,43 @@
     --sidebar-border:         221 83% 12%;
     --sidebar-ring:           45 92% 47%;
   }
+
+  .dark {
+    --background: 222 47% 4%;
+    --foreground: 214 100% 98%;
+
+    --muted: 222 47% 11%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --popover: 222 47% 4%;
+    --popover-foreground: 214 100% 98%;
+
+    --border: 222 47% 11%;
+    --input: 222 47% 11%;
+
+    --card: 222 47% 6%;
+    --card-foreground: 214 100% 98%;
+
+    --primary: 199 89% 48%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 214 100% 98%;
+    --secondary-foreground: 222 47% 11%;
+
+    --accent: 217.2 91.2% 59.8%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 222 47% 11%;
+
+    --surface-elevated: 222 47% 8%;
+
+    --sidebar-background: 222 47% 4%;
+    --sidebar-foreground: 214 100% 98%;
+    --sidebar-border: 222 47% 11%;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -89,7 +126,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-body antialiased;
+    @apply bg-background text-foreground font-body antialiased transition-colors duration-300;
   }
 
   h1, h2, h3, h4, h5, h6 {

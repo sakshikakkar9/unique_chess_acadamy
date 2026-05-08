@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
@@ -31,6 +31,10 @@ export default function CourseEnrollmentPage() {
   const { courses, isLoading } = useAdminCourses();
 
   const course = useMemo(() => courses.find((c) => c.id === id), [courses, id]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);

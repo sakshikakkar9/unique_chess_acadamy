@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
@@ -33,6 +33,10 @@ export default function TournamentDetails() {
   
   const [success, setSuccess] = useState(false);
   const [refId, setRefId] = useState("");
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const [files, setFiles] = useState<{ payment1?: File | null; payment2?: File | null }>({
     payment1: null,

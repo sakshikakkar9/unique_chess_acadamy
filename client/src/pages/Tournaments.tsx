@@ -156,8 +156,9 @@ export default function TournamentsPage() {
                           ₹{t.entryFee?.toLocaleString() || '0'}
                         </span>
                       </div>
-                      <div className="h-12 w-12 bg-slate-900 group-hover:bg-sky-600 text-white rounded-xl flex items-center justify-center transition-all shadow-lg active:scale-95">
-                        <ChevronRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+                      <div className="h-12 px-6 bg-slate-900 group-hover:bg-sky-600 text-white rounded-xl flex items-center justify-center transition-all shadow-lg active:scale-95">
+                        <span className="text-xs font-bold uppercase tracking-widest">Enroll Now</span>
+                        <ChevronRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </div>

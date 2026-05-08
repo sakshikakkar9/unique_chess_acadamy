@@ -1,5 +1,6 @@
 import React from "react";
 import { Menu, Bell, User, LogOut } from "lucide-react";
+import { ThemeToggle } from "@/components/shared/admin/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -38,6 +39,8 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({ setSidebarOpen }) => {
       </div>
 
       <div className="flex items-center gap-2 md:gap-4">
+        <ThemeToggle />
+
         <Button variant="ghost" size="icon" className="text-muted-foreground">
           <Bell className="h-5 w-5" />
         </Button>

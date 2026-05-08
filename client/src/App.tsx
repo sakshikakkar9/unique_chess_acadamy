@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import PageLoader from "@/components/shared/PageLoader";
 import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
+import { ThemeProvider } from "@/components/theme-provider";
 
 // Layouts
 import UserLayout from "@/components/layout/UserLayout";
@@ -48,6 +49,7 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ThemeProvider defaultTheme="light" storageKey="uca-admin-theme">
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
@@ -98,6 +100,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
