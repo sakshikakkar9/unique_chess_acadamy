@@ -9,7 +9,7 @@ const AdminLayout: React.FC = () => {
   // 👇 Removed useAuth and <Navigate> here because <ProtectedRoute> handles it!
 
   return (
-    <div className="min-h-screen bg-[#f0f6ff] flex">
+    <div className="min-h-screen bg-background flex text-foreground">
       <AdminSidebar open={sidebarOpen} setOpen={setSidebarOpen} />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <AdminNavbar setSidebarOpen={setSidebarOpen} />

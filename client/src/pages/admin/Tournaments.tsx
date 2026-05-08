@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
@@ -35,6 +35,7 @@ const AdminTournaments: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedBrochure, setSelectedBrochure] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<any>({
     title: "",
@@ -365,7 +366,7 @@ const AdminTournaments: React.FC = () => {
             </div>
 
             <div className="space-y-4 pt-4 border-t">
-              <Label className="text-xs font-black uppercase text-slate-400 tracking-widest">Poster & Orientation</Label>
+              <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Poster & Orientation</Label>
 
               <RadioGroup
                 value={formData.posterOrientation}
@@ -382,15 +383,22 @@ const AdminTournaments: React.FC = () => {
                 </div>
               </RadioGroup>
 
-              <div className="border-2 border-dashed border-slate-200 rounded-[1.5rem] p-4 text-center hover:bg-slate-50 transition-colors min-h-[160px] flex items-center justify-center bg-slate-50/50">
+              <div
+                className={cn(
+                  "relative rounded-[1.5rem] border-2 border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-slate-50 cursor-pointer transition-all border-slate-200 bg-slate-50/50",
+                  formData.posterOrientation === 'PORTRAIT' ? "aspect-[3/4] max-w-[240px] mx-auto" : "aspect-video"
+                )}
+                onClick={() => fileInputRef.current?.click()}
+              >
                 {previewUrl ? (
-                  <div className={`relative w-full rounded-xl overflow-hidden shadow-md ${formData.posterOrientation === 'PORTRAIT' ? 'aspect-[3/4] max-w-[200px]' : 'aspect-video'}`}>
-                    <img src={previewUrl} alt="Banner" className="w-full h-full object-cover" />
+                  <>
+                    <img src={previewUrl} className="w-full h-full object-cover" />
                     <Button
                       size="icon"
                       variant="destructive"
                       className="absolute top-2 right-2 h-7 w-7 rounded-lg"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setPreviewUrl("");
                         setSelectedFile(null);
                         setFormData({...formData, imageUrl: ""});
@@ -398,27 +406,28 @@ const AdminTournaments: React.FC = () => {
                     >
                       <X className="h-4 w-4" />
                     </Button>
-                  </div>
+                  </>
                 ) : (
-                  <label className="cursor-pointer flex flex-col items-center py-6 w-full group">
-                    <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <Upload className="h-6 w-6 text-[#0284c7]" />
+                  <div className="text-center group">
+                    <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform mx-auto">
+                      <Upload className="h-6 w-6 text-sky-500" />
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Upload Poster ({formData.posterOrientation})</span>
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setSelectedFile(file);
-                          setPreviewUrl(URL.createObjectURL(file));
-                        }
-                      }}
-                    />
-                  </label>
+                  </div>
                 )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setSelectedFile(file);
+                      setPreviewUrl(URL.createObjectURL(file));
+                    }
+                  }}
+                />
               </div>
             </div>
           </div>
