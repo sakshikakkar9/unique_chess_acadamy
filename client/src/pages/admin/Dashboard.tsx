@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BookOpen, Trophy, Image as ImageIcon, Users,
-  TrendingUp, Calendar, UserCheck, ArrowUpRight, GraduationCap,
+  TrendingUp, Calendar, UserCheck, ArrowUpRight, GraduationCap, Mail,
+  MessageSquare
 } from "lucide-react";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
@@ -18,10 +19,21 @@ import StatusBadge from "@/components/shared/admin/StatusBadge";
 import { cn } from "@/lib/utils";
 
 const AdminDashboard: React.FC = () => {
+  const navigate          = useNavigate();
   const { courses }       = useAdminCourses();
   const { tournaments }   = useAdminTournaments();
   const { images }        = useAdminGallery();
   const { demos, isLoading: demosLoading } = useDemoAdmin();
+
+  const { data: messages = [], isLoading: messagesLoading } = useQuery<any[]>({
+    queryKey: ["admin-messages"],
+    queryFn: async () => (await api.get("/contact")).data
+  });
+
+  const { data: registrations = [], isLoading: tournamentLoading } = useQuery<any[]>({
+    queryKey: ["registrations"],
+    queryFn: async () => (await api.get("/tournaments/admin/registrations/all")).data
+  });
 
   const { data: enrollments = [], isLoading: enrollLoading } = useQuery<CourseEnrollment[]>({
     queryKey: ["course-enrollments"],
@@ -41,7 +53,8 @@ const AdminDashboard: React.FC = () => {
       accent: "#0284c7",
       bg: "#e0f2fe",
       numColor: "#0284c7",
-      status: "LIVE"
+      status: "LIVE",
+      path: "/admin/courses"
     },
     {
       title: "Enrollments",
@@ -50,16 +63,28 @@ const AdminDashboard: React.FC = () => {
       accent: "#f59e0b",
       bg: "#fef3c7",
       numColor: "#d97706",
-      status: pendingEnrollments.length > 0 ? "PENDING" : "LIVE"
+      status: pendingEnrollments.length > 0 ? "PENDING" : "LIVE",
+      path: "/admin/registrations"
     },
     {
-      title: "Tournaments",
-      value: tournaments.length.toString(),
+      title: "Registrations",
+      value: tournamentLoading ? "…" : registrations.length.toString(),
       icon: Trophy,
       accent: "#8b5cf6",
       bg: "#ede9fe",
       numColor: "#7c3aed",
-      status: "LIVE"
+      status: registrations.some(r => r.status === 'PENDING') ? "PENDING" : "LIVE",
+      path: "/admin/registrations"
+    },
+    {
+      title: "Messages",
+      value: messagesLoading ? "…" : messages.length.toString(),
+      icon: MessageSquare,
+      accent: "#6366f1",
+      bg: "#eef2ff",
+      numColor: "#4f46e5",
+      status: messages.some(m => !m.isRead) ? "PENDING" : "LIVE",
+      path: "/admin/messages"
     },
     {
       title: "Demo Leads",
@@ -68,7 +93,8 @@ const AdminDashboard: React.FC = () => {
       accent: "#10b981",
       bg: "#d1fae5",
       numColor: "#059669",
-      status: "LIVE"
+      status: "LIVE",
+      path: "/admin/registrations"
     },
   ];
 
@@ -91,11 +117,12 @@ const AdminDashboard: React.FC = () => {
       />
 
       {/* Stats Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
         {stats.map((stat, i) => (
           <div
             key={i}
-            className="bg-white transition-all duration-150 group cursor-default"
+            className="bg-white transition-all duration-150 group cursor-pointer"
+            onClick={() => stat.path && navigate(stat.path)}
             style={{
               borderLeft: `4px solid ${stat.accent}`,
               borderRadius: '14px',
@@ -214,6 +241,7 @@ const AdminDashboard: React.FC = () => {
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    onClick={() => navigate("/admin/registrations")}
                   >
                     <div
                       style={{
@@ -296,6 +324,7 @@ const AdminDashboard: React.FC = () => {
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    onClick={() => navigate(`/admin/tournaments/${t.id}/portal`)}
                   >
                     <div className="min-w-0">
                       <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">
@@ -348,10 +377,10 @@ const AdminDashboard: React.FC = () => {
                   letterSpacing: '.02em'
                 }}
               >
-                Recent Demo Leads
+              Recent Messages
               </h3>
               <Link
-                to="/admin/registrations"
+              to="/admin/messages"
                 style={{
                   fontSize: '11px',
                   fontWeight: 700,
@@ -362,14 +391,14 @@ const AdminDashboard: React.FC = () => {
               </Link>
             </div>
             <div>
-              {demosLoading ? (
+            {messagesLoading ? (
                 <div className="text-center py-10 text-slate-400 text-sm">Loading…</div>
-              ) : demos.length > 0 ? (
-                demos.slice(0, 3).map((demo: any) => {
-                  const avatarStyles = getAvatarStyles(demo.studentName);
+            ) : messages.length > 0 ? (
+              messages.slice(0, 3).map((m: any) => {
+                const avatarStyles = getAvatarStyles(m.name);
                   return (
                     <div
-                      key={demo.id}
+                    key={m.id}
                       className="flex items-center gap-3 transition-all duration-120 cursor-pointer"
                       style={{
                         padding: '11px 18px',
@@ -377,6 +406,7 @@ const AdminDashboard: React.FC = () => {
                       }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    onClick={() => navigate("/admin/messages")}
                     >
                       <div
                         style={{
@@ -393,22 +423,22 @@ const AdminDashboard: React.FC = () => {
                           flexShrink: 0
                         }}
                       >
-                        {demo.studentName.charAt(0).toUpperCase()}
+                      {m.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{demo.studentName}</p>
-                        <p style={{ fontSize: '11px', color: '#94a3b8' }}>{demo.phone}</p>
+                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{m.name}</p>
+                      <p style={{ fontSize: '11px', color: '#94a3b8' }} className="truncate">{m.message}</p>
                       </div>
                       <div className="text-right">
-                        <p style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(demo.createdAt).toLocaleDateString()}</p>
+                      <p style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(m.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                   );
                 })
               ) : (
                 <div className="text-center py-10">
-                  <Users className="h-8 w-8 text-slate-200 mx-auto mb-2" />
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">No demo requests yet</p>
+                <Mail className="h-8 w-8 text-slate-200 mx-auto mb-2" />
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">No messages yet</p>
                 </div>
               )}
             </div>
