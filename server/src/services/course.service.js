@@ -133,23 +133,42 @@ export const createEnrollment = async (courseId, data, proofs) => {
   }
 
   try {
-    return await prisma.courseEnrollment.create({
-      data: {
-        courseId,
-        studentName: data.studentName || "Unknown Student",
+    // Smart Sync: Create or Update Student
+    const student = await prisma.student.upsert({
+      where: { phone: data.phone || "" },
+      update: {
+        fullName: data.studentName,
         email: data.email || "",
-        phone: data.phone || "",
         gender: data.gender || "Other",
         dob: formattedDob || new Date(),
         fideId: data.fideId || "NA",
         fideRating: parseInt(data.fideRating) || 0,
         address: data.address || "NA",
         discoverySource: data.discoverySource || "NA",
+        experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
+      },
+      create: {
+        fullName: data.studentName || "Unknown Student",
+        phone: data.phone || "",
+        email: data.email || "",
+        gender: data.gender || "Other",
+        dob: formattedDob || new Date(),
+        fideId: data.fideId || "NA",
+        fideRating: parseInt(data.fideRating) || 0,
+        address: data.address || "NA",
+        discoverySource: data.discoverySource || "NA",
+        experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
+      }
+    });
+
+    return await prisma.courseEnrollment.create({
+      data: {
+        courseId,
+        studentId: student.id,
         category: data.category || "General",
         ageProofUrl: ageProofUrl,
         paymentProofUrl: paymentProofUrl,
         transactionId: data.transactionId || "",
-        experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
         status: 'PENDING',
       },
     });
@@ -174,7 +193,8 @@ export const getAllEnrollments = async (courseId) => {
           title: true,
           ageGroup: true,
         }
-      }
+      },
+      student: true
     },
     orderBy: { createdAt: 'desc' },
   });

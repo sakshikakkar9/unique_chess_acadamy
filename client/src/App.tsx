@@ -35,6 +35,8 @@ const AdminCourseStudents = lazy(() => import("./pages/admin/CourseStudents.tsx"
 const AdminTournaments = lazy(() => import("./pages/admin/Tournaments.tsx"));
 const AdminTournamentPortal = lazy(() => import("./pages/admin/TournamentPortal.tsx"));
 const AdminTournamentStudents = lazy(() => import("./pages/admin/TournamentStudents.tsx"));
+const AdminStudents = lazy(() => import("./pages/admin/Students.tsx"));
+const AdminStudentDetail = lazy(() => import("./pages/admin/StudentDetail.tsx"));
 // ✅ New admin route to see registered students
 const AdminRegistrations = lazy(() => import("./pages/admin/Registrations.tsx")); 
 const AdminGallery = lazy(() => import("./pages/admin/Gallery.tsx"));
@@ -91,6 +93,8 @@ const App = () => (
                 <Route path="tournaments" element={<AdminTournaments />} />
                 <Route path="tournaments/:id/portal" element={<AdminTournamentPortal />} />
                 <Route path="tournaments/:id/students" element={<AdminTournamentStudents />} />
+                <Route path="students" element={<AdminStudents />} />
+                <Route path="students/:id" element={<AdminStudentDetail />} />
                 {/* ✅ Added route for tracking tournament signups */}
                 <Route path="registrations" element={<AdminRegistrations />} />
                 <Route path="gallery" element={<AdminGallery />} />

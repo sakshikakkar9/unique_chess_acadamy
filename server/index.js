@@ -16,6 +16,7 @@ import galleryRoutes from './src/routes/gallery.routes.js';
 import contactRoutes from './src/routes/contact.routes.js';
 import demoRoutes from './src/routes/demo.routes.js';
 import courseRoutes from './src/routes/course.routes.js';
+import studentRoutes from './src/routes/student.routes.js';
 import settingsRoutes from './src/routes/settings.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -84,6 +85,7 @@ app.use('/api/gallery', galleryRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/demo', demoRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/students', studentRoutes);
 app.use('/api/settings', settingsRoutes);
 
 // ------------------------------------------------------
