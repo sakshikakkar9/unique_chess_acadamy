@@ -115,28 +115,46 @@ model Contact {
   createdAt DateTime @default(now())
 }
 
+model Student {
+  id              String   @id @default(uuid())
+  fullName        String
+  email           String?
+  phone           String   @unique
+  gender          String
+  dob             DateTime
+  address         String   @db.Text
+
+  // Chess Profile
+  fideId          String?  @default("NA")
+  fideRating      Int?     @default(0)
+  clubAffiliation String?
+
+  // Course specific
+  experienceLevel String?
+  preferredBatch  String?
+
+  discoverySource String?
+  accountStatus   String   @default("ACTIVE")
+
+  registrations   Registration[]
+  enrollments     CourseEnrollment[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
 model Registration {
   id              String     @id @default(uuid())
-  referenceId     String     @unique @default(cuid()) // ✅ NEW: Unique Reference for the user
-  studentName     String
-  gender          String     // ✅ NEW: Male, Female, Other
-  category        String?    // ✅ NEW: Tournament category selected by player
-  dob             DateTime   // ✅ NEW: Date of Birth
-  email           String?    // ✅ Mandatory check handled in frontend logic
-  phone           String
+  referenceId     String     @unique @default(cuid())
   
-  // FIDE Details
-  fideId          String     @default("0") // ✅ Updated default
-  fideRating      Int        @default(0)    // ✅ Default set to 0
+  studentId       String
+  student         Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   
-  address         String     @db.Text       // ✅ NEW
+  category        String?    // Tournament category selected by player
   
   // Proofs (Storage URLs)
-  ageProofUrl     String     // ✅ NEW: Document upload link
-  paymentProofUrl String     // ✅ NEW: Screenshot of payment link
-  
-  // Discovery
-  discoverySource String     // ✅ NEW: Social media, WhatsApp, etc.
+  ageProofUrl     String
+  paymentProofUrl String
   
   transactionId   String?
   tournamentId    Int
@@ -183,28 +201,17 @@ model Course {
 model CourseEnrollment {
   id              String   @id @default(uuid())
   referenceId     String   @unique @default(cuid())
-  studentName     String
-  gender          String   // Male, Female, Other
-  category        String?  
-  dob             DateTime
-  email           String?  // Not mandatory
-  phone           String
+
+  studentId       String
+  student         Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   
-  // FIDE Details
-  fideId          String   @default("NA")
-  fideRating      Int      @default(0)
-  
-  address         String   @db.Text
+  category        String?
   
   // Proofs (Storage URLs)
   ageProofUrl      String   
   paymentProofUrl  String   
   
-  // Discovery
-  discoverySource  String   
-  
   transactionId   String?
-  experienceLevel String?
 
   status          String   @default("PENDING")
   paymentStatus   PaymentStatus @default(PENDING)

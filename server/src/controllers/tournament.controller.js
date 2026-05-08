@@ -131,7 +131,10 @@ export const deleteTournament = async (req, res) => {
 export const getAllRegistrations = async (req, res) => {
   try {
     const registrations = await prisma.registration.findMany({
-      include: { tournament: { select: { title: true } } },
+      include: {
+        tournament: { select: { title: true } },
+        student: true
+      },
       orderBy: { createdAt: 'desc' }
     });
     res.json(registrations);
@@ -176,6 +179,7 @@ export const getRegistrationsByTournamentId = async (req, res) => {
 
     const registrations = await prisma.registration.findMany({
       where: { tournamentId: parseInt(tournamentId) },
+      include: { student: true },
       orderBy: { createdAt: 'desc' }
     });
     res.json(registrations);

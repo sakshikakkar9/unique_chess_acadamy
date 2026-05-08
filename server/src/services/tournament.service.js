@@ -105,30 +105,44 @@ export const deleteTournament = async (id) => {
   return await prisma.tournament.delete({ where: { id: numericId } });
 };
 
-// --- HANDLE REGISTRATION (No changes needed) ---
+// --- HANDLE REGISTRATION ---
 export const registerForTournament = async (tournamentId, registrationData) => {
   const id = parseInt(tournamentId);
   if (isNaN(id)) throw new Error("Invalid Tournament ID");
 
-  return await prisma.registration.create({
-    data: {
-      studentName: registrationData.studentName,
+  // Smart Sync: Create or Update Student
+  const student = await prisma.student.upsert({
+    where: { phone: registrationData.phone },
+    update: {
+      fullName: registrationData.studentName,
       gender: registrationData.gender,
       dob: parseDate(registrationData.dob) || new Date(),
-      phone: registrationData.phone,
       email: registrationData.email || null,
       address: registrationData.address,
       fideId: registrationData.fideId || "NA",
-      // Convert to Number to satisfy Prisma's Int requirement
       fideRating: parseIntSafe(registrationData.fideRating),
       discoverySource: registrationData.discoverySource,
+    },
+    create: {
+      fullName: registrationData.studentName,
+      phone: registrationData.phone,
+      gender: registrationData.gender,
+      dob: parseDate(registrationData.dob) || new Date(),
+      email: registrationData.email || null,
+      address: registrationData.address,
+      fideId: registrationData.fideId || "NA",
+      fideRating: parseIntSafe(registrationData.fideRating),
+      discoverySource: registrationData.discoverySource,
+    }
+  });
+
+  return await prisma.registration.create({
+    data: {
+      studentId: student.id,
       category: registrationData.category || null,
       transactionId: registrationData.transactionId || null,
-      
-      // ✅ MATCHING YOUR SCHEMA VERBATIM
       ageProofUrl: registrationData.ageProofUrl || "", 
       paymentProofUrl: registrationData.paymentProofUrl || "",
-      
       status: "PENDING",
       tournament: {
         connect: { id: id }

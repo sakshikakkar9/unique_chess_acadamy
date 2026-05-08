@@ -283,12 +283,12 @@ export default function RegistrationsPage() {
                                   flexShrink: 0
                                 }}
                               >
-                                {item.studentName?.charAt(0).toUpperCase() || "S"}
+                                {item.student?.fullName?.charAt(0).toUpperCase() || item.studentName?.charAt(0).toUpperCase() || "S"}
                               </div>
                               <div className="min-w-0">
-                                <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{item.studentName}</p>
+                                <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{item.student?.fullName || item.studentName}</p>
                                 <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-                                  {item.gender || 'Not Specified'}
+                                  {item.student?.gender || item.gender || 'Not Specified'}
                                 </span>
                               </div>
                             </div>
@@ -364,7 +364,7 @@ export default function RegistrationsPage() {
                     <StatusBadge status={selectedItem.status} />
                   </div>
                   <SheetTitle className="text-4xl font-black text-white leading-tight tracking-tighter">
-                    {selectedItem.studentName}
+                    {selectedItem.student?.fullName || selectedItem.studentName}
                   </SheetTitle>
                   <p className="text-slate-400 font-bold text-sm mt-2 flex items-center gap-2">
                     {selectedItem.type === 'tournament' ? <Trophy className="h-4 w-4 text-amber-500" /> : <BookOpen className="h-4 w-4 text-blue-500" />}
@@ -414,27 +414,27 @@ export default function RegistrationsPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 group hover:border-blue-200 transition-all">
                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Gender</p>
-                      <p className="font-bold text-slate-900">{selectedItem.gender || 'Not Specified'}</p>
+                      <p className="font-bold text-slate-900">{selectedItem.student?.gender || selectedItem.gender || 'Not Specified'}</p>
                     </div>
                     <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 group hover:border-blue-200 transition-all">
                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Birth Date</p>
-                      <p className="font-bold text-slate-900">{selectedItem.dob ? format(new Date(selectedItem.dob), "PPP") : 'N/A'}</p>
+                      <p className="font-bold text-slate-900">{(selectedItem.student?.dob || selectedItem.dob) ? format(new Date(selectedItem.student?.dob || selectedItem.dob), "PPP") : 'N/A'}</p>
                     </div>
                     <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 group hover:border-blue-200 transition-all">
                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                         <Phone className="h-3 w-3 text-blue-500" /> Contact Number
                       </p>
-                      <p className="font-bold text-slate-900 text-sm tracking-tight">{selectedItem.phone || 'N/A'}</p>
+                      <p className="font-bold text-slate-900 text-sm tracking-tight">{selectedItem.student?.phone || selectedItem.phone || 'N/A'}</p>
                     </div>
                     <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 group hover:border-blue-200 transition-all">
                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                         <Mail className="h-3 w-3 text-blue-500" /> Email Address
                       </p>
-                      <p className="font-bold text-slate-900 text-xs truncate tracking-tight">{selectedItem.email || 'N/A'}</p>
+                      <p className="font-bold text-slate-900 text-xs truncate tracking-tight">{selectedItem.student?.email || selectedItem.email || 'N/A'}</p>
                     </div>
                     <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 col-span-2 group hover:border-blue-200 transition-all">
                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Residential Address</p>
-                      <p className="font-bold text-slate-900 text-xs leading-relaxed tracking-tight">{selectedItem.address || 'N/A'}</p>
+                      <p className="font-bold text-slate-900 text-xs leading-relaxed tracking-tight">{selectedItem.student?.address || selectedItem.address || 'N/A'}</p>
                     </div>
                   </div>
                 </section>
@@ -451,11 +451,11 @@ export default function RegistrationsPage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-amber-50/50 p-5 rounded-2xl border border-amber-100 flex flex-col justify-center">
                         <p className="text-[9px] font-black text-amber-600/60 uppercase tracking-widest mb-2">FIDE ID</p>
-                        <p className="text-2xl font-black text-amber-700 leading-none tracking-tighter">{selectedItem.fideId || 'NA'}</p>
+                      <p className="text-2xl font-black text-amber-700 leading-none tracking-tighter">{selectedItem.student?.fideId || selectedItem.fideId || 'NA'}</p>
                       </div>
                       <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 flex flex-col justify-center">
                         <p className="text-[9px] font-black text-blue-600/60 uppercase tracking-widest mb-2">Rating</p>
-                        <p className="text-2xl font-black text-blue-700 leading-none tracking-tighter">{selectedItem.fideRating || '0'}</p>
+                      <p className="text-2xl font-black text-blue-700 leading-none tracking-tighter">{selectedItem.student?.fideRating || selectedItem.fideRating || '0'}</p>
                       </div>
                       <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:border-blue-200 transition-all">
                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Skill Category</p>
@@ -469,7 +469,7 @@ export default function RegistrationsPage() {
                       )}
                       <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 col-span-2 hover:border-blue-200 transition-all">
                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Discovery Attribution</p>
-                        <p className="font-bold text-slate-900">{selectedItem.discoverySource || 'Direct Search'}</p>
+                        <p className="font-bold text-slate-900">{selectedItem.student?.discoverySource || selectedItem.discoverySource || 'Direct Search'}</p>
                       </div>
                       <div className="bg-slate-900 p-6 rounded-[2rem] col-span-2 shadow-2xl shadow-slate-900/20 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full blur-2xl -mr-16 -mt-16" />

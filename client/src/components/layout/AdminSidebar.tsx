@@ -22,6 +22,7 @@ const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard",    href: "/admin/dashboard"    },
   { icon: BookOpen,        label: "Courses",       href: "/admin/courses"      },
   { icon: Trophy,          label: "Tournaments",   href: "/admin/tournaments"  },
+  { icon: Users,           label: "Students",      href: "/admin/students"     },
   { icon: Users,           label: "Registrations", href: "/admin/registrations"},
   { icon: ImageIcon,       label: "Gallery",       href: "/admin/gallery"      },
   { icon: Settings,        label: "Settings",      href: "/admin/settings"     },
