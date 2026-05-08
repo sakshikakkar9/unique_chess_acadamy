@@ -143,7 +143,7 @@ export default function CoursesPage() {
                     {/* Footer alignment ensured by mt-auto */}
                     <div className="mt-auto pt-8 border-t border-slate-100 flex items-center justify-between">
                       <div>
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Investment</span>
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Course Fee</span>
                         <div className="text-2xl font-black text-slate-900 tracking-tighter">₹{course.fee.toLocaleString()}</div>
                       </div>
                       <Button
