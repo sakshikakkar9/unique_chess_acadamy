@@ -7,7 +7,6 @@ import {
   Image as ImageIcon,
   Users,
   Settings,
-  Crown,
   ChevronLeft,
   X,
 } from "lucide-react";
@@ -46,27 +45,43 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, setOpen }) => {
       <aside
         className={cn(
           "fixed md:sticky top-0 left-0 z-50 h-screen w-64 flex flex-col",
-          "bg-sidebar border-r border-sidebar-border",
+          "bg-[#0f172a] border-r border-[#1e293b]",
           "transition-transform duration-300 ease-in-out md:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Logo */}
-        <div className="p-6 flex items-center justify-between border-b border-sidebar-border">
-          <Link to="/admin/dashboard" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center gold-glow">
-              <Crown className="h-4 w-4 text-primary-foreground" />
+        {/* Logo block */}
+        <div className="p-6 flex items-center justify-between border-b border-[#1e293b]">
+          <Link to="/admin/dashboard" className="flex items-center gap-3 group">
+            <div
+              style={{
+                width: '34px',
+                height: '34px',
+                background: 'linear-gradient(135deg, #38bdf8, #0284c7)',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: 900,
+                fontSize: '13px'
+              }}
+            >
+              UCA
             </div>
-            <div>
-              <span className="font-heading font-bold text-sm tracking-tight text-sidebar-foreground">
+            <div className="flex flex-col">
+              <span style={{ color: '#f8fafc', fontSize: '14px', fontWeight: 700 }}>
                 UCA Admin
+              </span>
+              <span style={{ color: '#475569', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Command Center
               </span>
             </div>
           </Link>
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-sidebar-foreground hover:bg-sidebar-accent"
+            className="md:hidden text-[#64748b] hover:bg-[#1e293b] hover:text-white"
             onClick={() => setOpen(false)}
           >
             <X className="h-4 w-4" />
@@ -83,26 +98,39 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, setOpen }) => {
                 to={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-2.5 rounded-full text-sm transition-all duration-200",
+                  "flex items-center gap-[10px] px-3 py-[9px] rounded-lg transition-all duration-200",
                   isActive
-                    ? "bg-sky-500 text-white font-bold shadow-lg shadow-sky-500/20"
-                    : "text-slate-500 font-normal hover:bg-sky-50 hover:text-sky-600"
+                    ? "text-white font-bold"
+                    : "text-[#64748b] font-medium hover:bg-[#1e293b] hover:text-white group"
                 )}
+                style={isActive ? {
+                  background: 'linear-gradient(90deg, #0284c7, #38bdf8)',
+                  boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)',
+                  fontSize: '13px',
+                  fontWeight: 700
+                } : {
+                  fontSize: '13px'
+                }}
               >
-                <item.icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-white" : "text-slate-400")} />
+                <item.icon
+                  className={cn(
+                    "h-5 w-5 flex-shrink-0 transition-colors",
+                    isActive ? "text-white" : "text-[#475569] group-hover:text-white"
+                  )}
+                />
                 {item.label}
               </Link>
             );
           })}
         </nav>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-sidebar-border">
+        {/* Footer: Bottom "Back to Website" */}
+        <div className="p-4 border-t border-[#1e293b]">
           <Link
             to="/"
-            className="flex items-center gap-2 text-xs text-sidebar-foreground/50 hover:text-primary transition-colors"
+            className="flex items-center gap-2 text-[12px] text-[#64748b] hover:text-[#0284c7] transition-colors"
           >
-            <ChevronLeft className="h-3 w-3" />
+            <ChevronLeft className="h-4 w-4" />
             Back to Website
           </Link>
         </div>

@@ -155,38 +155,63 @@ const AdminTournaments: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 p-8 max-w-[1600px] mx-auto animate-in fade-in duration-500">
+    <div className="space-y-8 p-8 max-w-[1600px] mx-auto">
       <AdminPageHeader
         title="Tournament Console"
         subtitle="Manage competitive events and registrations window."
         action={
-          <Button onClick={handleAdd} className="shadow-lg bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-full px-6 h-11">
+          <Button onClick={handleAdd} className="shadow-lg bg-[#0284c7] hover:bg-[#0284c7]/90 text-white font-bold rounded-full px-6 h-11">
             <Plus className="mr-2 h-4 w-4" /> Add Tournament
           </Button>
         }
       />
 
-      <div className="flex flex-col md:flex-row gap-6 items-center justify-between bg-white border border-slate-200 p-4 rounded-[12px] shadow-sm">
+      <div
+        className="flex flex-col md:flex-row gap-6 items-center justify-between bg-white"
+        style={{
+          border: '1px solid #e0eeff',
+          padding: '14px 18px',
+          borderRadius: '14px'
+        }}
+      >
         {/* Tabs */}
-        <div className="flex gap-1 overflow-x-auto scrollbar-hide bg-slate-100 p-1 rounded-full">
-          {(["ALL", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"] as TournamentStatus[]).map((tab) => (
-            <Button
-              key={tab}
-              variant="ghost"
-              onClick={() => setActiveTab(tab)}
-              className={`rounded-full px-6 font-bold h-9 text-[10px] uppercase tracking-widest transition-all ${
-                activeTab === tab
-                  ? "bg-white text-sky-600 shadow-sm"
-                  : "text-slate-500 hover:text-sky-600"
-              }`}
-            >
-              {tab}
-            </Button>
-          ))}
+        <div className="flex gap-2">
+          {(["ALL", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"] as TournamentStatus[]).map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                style={{
+                  backgroundColor: isActive ? '#0284c7' : 'transparent',
+                  color: isActive ? 'white' : '#64748b',
+                  borderRadius: '20px',
+                  padding: '6px 16px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  transition: 'all 150ms'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = '#e0f2fe';
+                    e.currentTarget.style.color = '#0284c7';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#64748b';
+                  }
+                }}
+              >
+                {tab}
+              </button>
+            );
+          })}
         </div>
 
         <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8]" />
           <Input
             placeholder="Search tournaments..."
             value={searchQuery}
@@ -377,7 +402,7 @@ const AdminTournaments: React.FC = () => {
                 ) : (
                   <label className="cursor-pointer flex flex-col items-center py-6 w-full group">
                     <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <Upload className="h-6 w-6 text-orange-500" />
+                      <Upload className="h-6 w-6 text-[#0284c7]" />
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Upload Poster ({formData.posterOrientation})</span>
                     <input
@@ -405,7 +430,7 @@ const AdminTournaments: React.FC = () => {
         <DialogContent className="max-w-[95vw] lg:max-w-7xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
           <div className="bg-slate-900 text-white p-6 md:p-8 flex items-center justify-between">
             <div className="space-y-1">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500">Arena Preview Mode</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0284c7]">Arena Preview Mode</p>
               <DialogTitle className="text-xl md:text-3xl font-black">User Experience View</DialogTitle>
             </div>
             <Button variant="ghost" onClick={() => setIsPreviewOpen(false)} className="text-white hover:bg-white/10 rounded-xl">
@@ -428,7 +453,7 @@ const AdminTournaments: React.FC = () => {
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute top-6 left-6">
-                      <span className="px-4 py-2 bg-orange-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] shadow-lg">
+                      <span className="px-4 py-2 bg-[#0284c7] text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] shadow-lg">
                         {selectedTournament.category || "Professional"}
                       </span>
                     </div>
@@ -438,7 +463,7 @@ const AdminTournaments: React.FC = () => {
                   <div className="space-y-12">
                     <div className="space-y-8">
                       <div className="space-y-3">
-                        <span className="px-4 py-1.5 bg-orange-100 text-orange-600 rounded-full text-[10px] font-bold uppercase tracking-[0.15em]">
+                        <span className="px-4 py-1.5 bg-sky-100 text-[#0284c7] rounded-full text-[10px] font-bold uppercase tracking-[0.15em]">
                           Arena Details
                         </span>
                         <h1 className="text-4xl font-bold text-slate-900 leading-tight tracking-tight">
@@ -448,15 +473,15 @@ const AdminTournaments: React.FC = () => {
 
                       {selectedTournament.description && (
                         <div
-                          className="text-slate-600 font-medium leading-relaxed text-lg border-l-4 border-orange-600/20 pl-6 ql-editor ql-viewer p-0"
+                          className="text-slate-600 font-medium leading-relaxed text-lg border-l-4 border-[#0284c7]/20 pl-6 ql-editor ql-viewer p-0"
                           dangerouslySetInnerHTML={{ __html: selectedTournament.description }}
                         />
                       )}
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md">
-                          <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
-                            <Calendar className="h-7 w-7 text-orange-600" />
+                          <div className="h-14 w-14 rounded-2xl bg-sky-50 flex items-center justify-center shrink-0">
+                            <Calendar className="h-7 w-7 text-[#0284c7]" />
                           </div>
                           <div>
                             <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Schedule</p>
@@ -468,8 +493,8 @@ const AdminTournaments: React.FC = () => {
                         </div>
 
                         <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md">
-                          <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
-                            <MapPin className="h-7 w-7 text-orange-600" />
+                          <div className="h-14 w-14 rounded-2xl bg-sky-50 flex items-center justify-center shrink-0">
+                            <MapPin className="h-7 w-7 text-[#0284c7]" />
                           </div>
                           <div>
                             <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Venue</p>
@@ -478,8 +503,8 @@ const AdminTournaments: React.FC = () => {
                         </div>
 
                         <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md">
-                          <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
-                            <Trophy className="h-7 w-7 text-orange-600" />
+                          <div className="h-14 w-14 rounded-2xl bg-sky-50 flex items-center justify-center shrink-0">
+                            <Trophy className="h-7 w-7 text-[#0284c7]" />
                           </div>
                           <div>
                             <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Prize Pool</p>
@@ -488,8 +513,8 @@ const AdminTournaments: React.FC = () => {
                         </div>
 
                         <div className="p-6 bg-white border border-slate-100 rounded-[2rem] flex items-start gap-4 shadow-md">
-                          <div className="h-14 w-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
-                            <Trophy className="h-7 w-7 text-orange-600" />
+                          <div className="h-14 w-14 rounded-2xl bg-sky-50 flex items-center justify-center shrink-0">
+                            <Trophy className="h-7 w-7 text-[#0284c7]" />
                           </div>
                           <div>
                             <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-1">Category</p>
@@ -502,7 +527,7 @@ const AdminTournaments: React.FC = () => {
                         <div className="space-y-4">
                           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] ml-1">Tournament Rules & Info</p>
                           <div
-                            className="p-8 bg-white border border-slate-100 rounded-[2.5rem] text-base text-slate-600 font-medium leading-relaxed shadow-md border-l-4 border-l-orange-600 ql-editor ql-viewer"
+                            className="p-8 bg-white border border-slate-100 rounded-[2.5rem] text-base text-slate-600 font-medium leading-relaxed shadow-md border-l-4 border-l-[#0284c7] ql-editor ql-viewer"
                             dangerouslySetInnerHTML={{ __html: selectedTournament.otherDetails }}
                           />
                         </div>
@@ -512,8 +537,8 @@ const AdminTournaments: React.FC = () => {
                         {selectedTournament.brochureUrl && (
                           <div className="flex items-center justify-between p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-lg">
                             <div className="flex items-center gap-5">
-                              <div className="h-16 w-16 rounded-2xl bg-orange-50 flex items-center justify-center">
-                                <FileText className="h-8 w-8 text-orange-600" />
+                              <div className="h-16 w-16 rounded-2xl bg-sky-50 flex items-center justify-center">
+                                <FileText className="h-8 w-8 text-[#0284c7]" />
                               </div>
                               <div>
                                 <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em] mb-0.5">Brochure</p>
@@ -525,7 +550,7 @@ const AdminTournaments: React.FC = () => {
 
                         <div className="p-8 bg-slate-900 rounded-[2.5rem] flex items-center gap-6 text-white shadow-xl overflow-hidden relative">
                           <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
-                            <Phone className="h-8 w-8 text-orange-400" />
+                            <Phone className="h-8 w-8 text-sky-400" />
                           </div>
                           <div>
                             <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-1">Direct Help</p>
@@ -538,19 +563,19 @@ const AdminTournaments: React.FC = () => {
                         <div className="px-10 py-8 bg-white border border-slate-100 rounded-[3rem] shadow-lg flex items-center justify-between relative overflow-hidden group">
                           <div className="relative">
                             <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-[0.2em] mb-2">Registration Entry Fee</p>
-                            <p className="text-5xl font-bold text-orange-600 tracking-tighter">₹{selectedTournament.entryFee.toLocaleString()}</p>
+                            <p className="text-5xl font-bold text-[#0284c7] tracking-tighter">₹{selectedTournament.entryFee.toLocaleString()}</p>
                           </div>
-                          <div className="relative h-16 w-16 bg-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+                          <div className="relative h-16 w-16 bg-[#0284c7] rounded-2xl flex items-center justify-center shadow-lg">
                             <CreditCard className="h-8 w-8 text-white" />
                           </div>
                         </div>
 
                         {selectedTournament.discountDetails && (
-                          <div className="flex items-start gap-4 p-6 bg-orange-50/50 rounded-[2rem] border border-orange-100/50">
-                            <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
-                              <Info className="h-6 w-6 text-orange-600" />
+                          <div className="flex items-start gap-4 p-6 bg-sky-50/50 rounded-[2rem] border border-sky-100/50">
+                            <div className="h-10 w-10 rounded-xl bg-sky-100 flex items-center justify-center shrink-0">
+                              <Info className="h-6 w-6 text-[#0284c7]" />
                             </div>
-                            <p className="text-sm font-semibold text-orange-700 leading-relaxed italic uppercase tracking-tight">{selectedTournament.discountDetails}</p>
+                            <p className="text-sm font-semibold text-sky-700 leading-relaxed italic uppercase tracking-tight">{selectedTournament.discountDetails}</p>
                           </div>
                         )}
 
@@ -561,16 +586,16 @@ const AdminTournaments: React.FC = () => {
                 }
                 form={
                   <div className="border-none shadow-xl rounded-[3rem] overflow-hidden bg-white">
-                    <div className="h-3 bg-orange-600" />
+                    <div className="h-3 bg-[#0284c7]" />
                     <div className="p-10 md:p-14">
                       <div className="space-y-10">
                         <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                          <User className="h-6 w-6 text-orange-600" />
+                          <User className="h-6 w-6 text-[#0284c7]" />
                           <h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Static Registration Form</h2>
                         </div>
                         <div className="p-12 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200 text-center space-y-4">
                            <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
-                             <Trophy className="h-8 w-8 text-orange-600" />
+                             <Trophy className="h-8 w-8 text-[#0284c7]" />
                            </div>
                            <p className="text-slate-500 font-medium">This is a preview of how users will see the registration form. In the live version, this will be a fully interactive enrollment experience.</p>
                         </div>
