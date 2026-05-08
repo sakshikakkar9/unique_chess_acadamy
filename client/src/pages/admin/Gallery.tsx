@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Upload, X, ImageIcon } from "lucide-react";
 import { GalleryImage } from "@/types";
+import { cn } from "@/lib/utils";
 import AdminPageHeader from "@/components/shared/admin/AdminPageHeader";
 import StatusBadge from "@/components/shared/admin/StatusBadge";
 
