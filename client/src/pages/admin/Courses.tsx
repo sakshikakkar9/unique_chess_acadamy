@@ -134,8 +134,26 @@ const AdminCourses = () => {
     setFormData({ ...formData, days: newDays });
   };
 
+  const getLevelPillStyles = (level: string) => {
+    switch(level) {
+      case "BEGINNER": return { bg: "#f0fdf4", color: "#15803d" };
+      case "INTERMEDIATE": return { bg: "#eff6ff", color: "#1d4ed8" };
+      case "ADVANCED": return { bg: "#fdf4ff", color: "#7e22ce" };
+      default: return { bg: "#f1f5f9", color: "#475569" };
+    }
+  };
+
+  const getModePillStyles = (mode: string) => {
+    switch(mode) {
+      case "ONLINE": return { bg: "#ecfeff", color: "#0e7490" };
+      case "OFFLINE": return { bg: "#f8fafc", color: "#475569" };
+      case "HYBRID": return { bg: "#fdf2f8", color: "#9d174d" };
+      default: return { bg: "#f1f5f9", color: "#475569" };
+    }
+  };
+
   return (
-    <div className="p-8 space-y-8 max-w-[1600px] mx-auto animate-in fade-in duration-500">
+    <div className="p-8 space-y-8 max-w-[1600px] mx-auto">
       <AdminPageHeader
         title="Course Management"
         subtitle="Manage your academy programs and schedules."
@@ -147,10 +165,17 @@ const AdminCourses = () => {
       />
 
       {/* Standardized Filter Bar */}
-      <div className="flex flex-col md:flex-row gap-6 items-center justify-between bg-white border border-slate-200 p-4 rounded-[12px] shadow-sm">
+      <div
+        className="flex flex-col md:flex-row gap-6 items-center justify-between bg-white"
+        style={{
+          border: '1px solid #e0eeff',
+          padding: '14px 18px',
+          borderRadius: '14px'
+        }}
+      >
         <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="relative flex-1 md:flex-none">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8]" />
                 <Input
                     className="pl-10 h-11 w-full md:w-80 rounded-xl border-slate-200 focus:ring-sky-500"
                     placeholder="Search courses..."
@@ -181,57 +206,135 @@ const AdminCourses = () => {
         </div>
       </div>
 
-      <div className="space-y-6">
-          <DataTable
-            columns={[
-              { header: "Course Info", accessorKey: "title", cell: (c: any) => (
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
-                    <img
-                      src={c.custom_banner_url || "/placeholder.jpg"}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <div className="font-bold text-slate-900 leading-tight">{c.title}</div>
-                    <div className="flex gap-2">
-                      <StatusBadge status={c.skillLevel} className="scale-90 origin-left" />
-                      <StatusBadge status={c.mode} className="scale-90 origin-left" />
-                    </div>
-                  </div>
-                </div>
-              )},
-              { header: "Schedule", accessorKey: "days", cell: (c: any) => (
-                  <div className="flex flex-wrap gap-1">
-                    {c.days?.slice(0, 3).map((day: string) => (
-                      <span key={day} className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{day.substring(0, 3)}</span>
-                    ))}
-                    {c.days?.length > 3 && <span className="text-[10px] font-bold text-slate-400">+{c.days.length - 3}</span>}
-                  </div>
-              )},
-              { header: "Fee", accessorKey: "fee", cell: (c: any) => (
-                  <div className="text-right font-black text-sky-600 pr-4">₹{c.fee.toLocaleString()}</div>
+      <div
+        className="bg-white overflow-hidden"
+        style={{
+          border: '1px solid #e0eeff',
+          borderRadius: '14px'
+        }}
+      >
+          <table className="w-full border-collapse">
+            <thead>
+              <tr style={{ backgroundColor: '#f0f6ff', borderBottom: '2px solid #bae6fd' }}>
+                <th className="text-left px-6 py-[10px]" style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Course Info</th>
+                <th className="text-left px-6 py-[10px]" style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Schedule</th>
+                <th className="text-right px-6 py-[10px]" style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Fee</th>
+                <th className="text-right px-6 py-[10px]" style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="py-20 text-center">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0284c7] border-t-transparent mx-auto"></div>
+                  </td>
+                </tr>
+              ) : paginatedCourses.length > 0 ? (
+                paginatedCourses.map((c: any) => (
+                  <tr
+                    key={c.id}
+                    className="group transition-all duration-120 cursor-pointer"
+                    style={{ borderBottom: '1px solid #f1f5f9' }}
+                    onClick={() => navigate(`/admin/courses/${c.id}/students`)}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <td className="px-6 py-3">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
+                          <img
+                            src={c.custom_banner_url || "/placeholder.jpg"}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <div className="font-bold text-slate-900 leading-tight" style={{ fontSize: '13px' }}>{c.title}</div>
+                          <div className="flex gap-2">
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                fontWeight: 700,
+                                padding: '3px 9px',
+                                borderRadius: '20px',
+                                textTransform: 'uppercase',
+                                ...getLevelPillStyles(c.skillLevel)
+                              }}
+                            >
+                              {c.skillLevel}
+                            </span>
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                fontWeight: 700,
+                                padding: '3px 9px',
+                                borderRadius: '20px',
+                                textTransform: 'uppercase',
+                                ...getModePillStyles(c.mode)
+                              }}
+                            >
+                              {c.mode}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex flex-wrap gap-1">
+                        {c.days?.slice(0, 3).map((day: string) => (
+                          <span key={day} className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{day.substring(0, 3)}</span>
+                        ))}
+                        {c.days?.length > 3 && <span className="text-[10px] font-bold text-slate-400">+{c.days.length - 3}</span>}
+                      </div>
+                    </td>
+                    <td className="px-6 py-3 text-right">
+                      <div style={{ fontWeight: 700, color: '#0284c7', fontVariantNumeric: 'tabular-nums' }}>
+                        ₹{c.fee.toLocaleString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-[#0284c7]"
+                          onClick={() => {
+                            setSelectedCourse(c);
+                            setFormData({
+                              ...c,
+                              posterOrientation: c.posterOrientation || "LANDSCAPE"
+                            });
+                            setPreviewUrl(c.custom_banner_url);
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          <X className="h-4 w-4" style={{ transform: 'rotate(45deg)' }} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-rose-500"
+                          onClick={() => { setSelectedCourse(c); setIsConfirmOpen(true); }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="py-20 text-center text-slate-400 text-sm">
+                    No courses found.
+                  </td>
+                </tr>
               )}
-            ]}
-              data={paginatedCourses}
-              isLoading={isLoading}
-              onEdit={(c) => { 
-                setSelectedCourse(c); 
-                setFormData({
-                  ...c,
-                  posterOrientation: c.posterOrientation || "LANDSCAPE"
-                });
-                setPreviewUrl(c.custom_banner_url); 
-                setIsModalOpen(true); 
-              }}
-              onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
-              onRowClick={(c) => navigate(`/admin/courses/${c.id}/students`)}
-            />
+            </tbody>
+          </table>
 
             {/* Manual Pagination Controls */}
             {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                <div className="flex items-center justify-between px-6 py-4 bg-[#f8fafc] border-t border-slate-100">
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                         Showing page <span className="text-sky-600">{currentPage}</span> of <span className="text-slate-900">{totalPages}</span>
                     </p>

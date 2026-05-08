@@ -130,17 +130,33 @@ export default function RegistrationsPage() {
 
   const { data: currentData, loading: currentLoading, type: currentType } = getActiveData();
 
+  const getAvatarStyles = (name: string) => {
+    const firstLetter = name.charAt(0).toUpperCase();
+    if ("ABCDE".includes(firstLetter)) return { bg: "#e0f2fe", color: "#0284c7" };
+    if ("FGHIJ".includes(firstLetter)) return { bg: "#ede9fe", color: "#6d28d9" };
+    if ("KLMNO".includes(firstLetter)) return { bg: "#d1fae5", color: "#065f46" };
+    if ("PQRST".includes(firstLetter)) return { bg: "#fef3c7", color: "#b45309" };
+    return { bg: "#fce7f3", color: "#be185d" };
+  };
+
   return (
-    <div className="p-8 max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500">
+    <div className="p-8 max-w-[1600px] mx-auto space-y-8">
       <AdminPageHeader
         title="Registrations"
         subtitle="Review and manage student enrollments across all programs."
       />
 
-      <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white border border-slate-200 p-4 rounded-[12px] shadow-sm">
+      <div
+        className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white"
+        style={{
+          border: '1px solid #e0eeff',
+          padding: '14px 18px',
+          borderRadius: '14px'
+        }}
+      >
         <div className="flex items-center gap-4 w-full md:w-auto">
           <div className="relative flex-1 md:flex-none">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8]" />
             <Input
               placeholder="Search students, phones, IDs..."
               className="pl-10 h-11 w-full md:w-80 rounded-xl border-slate-200 focus:ring-sky-500"
@@ -182,7 +198,13 @@ export default function RegistrationsPage() {
         </Tabs>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-[12px] shadow-sm overflow-hidden">
+      <div
+        className="bg-white overflow-hidden"
+        style={{
+          border: '1px solid #e0eeff',
+          borderRadius: '14px'
+        }}
+      >
           <div className="p-4 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
@@ -209,7 +231,7 @@ export default function RegistrationsPage() {
 
           <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50/50 border-b border-slate-100">
-              <tr className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">
+              <tr className="text-[10px] font-black uppercase text-[#64748b] tracking-[0.08em]">
                 <th className="p-4 px-6">Student Profile</th>
                 <th className="p-4 px-6">Program / Event</th>
                 <th className="p-4 px-6">Submission Date</th>
@@ -236,16 +258,36 @@ export default function RegistrationsPage() {
                         </td>
                     </tr>
                 ) : (
-                    currentData.map((item: any) => (
-                        <tr key={item.id} className="hover:bg-sky-50/50 transition-colors border-b border-slate-100 group">
+                    currentData.map((item: any) => {
+                      const avatarStyles = getAvatarStyles(item.studentName);
+                      return (
+                        <tr
+                          key={item.id}
+                          className="hover:bg-[#f0f9ff] transition-all duration-120 border-b border-[#f1f5f9] group cursor-pointer"
+                          onClick={() => setSelectedItem({ ...item, type: currentType })}
+                        >
                           <td className="p-4 px-6">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-sky-50 flex items-center justify-center text-sky-600 font-black text-[10px] border border-sky-100 shadow-sm shrink-0">
-                                {item.studentName?.substring(0, 2).toUpperCase() || "ST"}
+                              <div
+                                style={{
+                                  width: '34px',
+                                  height: '34px',
+                                  borderRadius: '50%',
+                                  backgroundColor: avatarStyles.bg,
+                                  color: avatarStyles.color,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '12px',
+                                  fontWeight: 700,
+                                  flexShrink: 0
+                                }}
+                              >
+                                {item.studentName?.charAt(0).toUpperCase() || "S"}
                               </div>
                               <div className="min-w-0">
-                                <p className="font-bold text-slate-900 text-sm truncate">{item.studentName}</p>
-                                <span className="inline-block mt-1 text-[9px] font-black uppercase tracking-tight text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md">
+                                <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{item.studentName}</p>
+                                <span style={{ fontSize: '11px', color: '#94a3b8' }}>
                                   {item.gender || 'Not Specified'}
                                 </span>
                               </div>
@@ -253,29 +295,26 @@ export default function RegistrationsPage() {
                           </td>
                           <td className="p-4 px-6">
                             <div className="flex items-center gap-2">
-                              {currentType === 'tournament' ? <Trophy className="h-3.5 w-3.5 text-amber-500" /> : <BookOpen className="h-3.5 w-3.5 text-sky-500" />}
-                              <span className="text-sm font-bold text-slate-700 truncate max-w-[180px]">{item.tournament?.title || item.course?.title || 'Demo Class'}</span>
+                              {currentType === 'tournament' ? <Trophy className="h-3.5 w-3.5 text-amber-500" /> : <BookOpen className="h-3.5 w-3.5 text-[#0284c7]" />}
+                              <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate max-w-[180px]">
+                                {item.tournament?.title || item.course?.title || 'Demo Class'}
+                              </span>
                             </div>
                           </td>
-                          <td className="p-4 px-6 text-[10px] font-bold text-slate-500 uppercase tracking-tight">
+                          <td className="p-4 px-6" style={{ fontSize: '11px', color: '#94a3b8' }}>
                              {item.createdAt ? format(new Date(item.createdAt), "MMM d, h:mm a") : 'N/A'}
                           </td>
                           <td className="p-4 px-6">
                             <div className="space-y-1">
-                              <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600">
-                                <Phone className="h-3 w-3 text-sky-400" /> {item.phone}
+                              <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#94a3b8' }}>
+                                <Phone className="h-3 w-3" /> {item.phone}
                               </div>
-                              {item.email && (
-                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
-                                  <Mail className="h-3 w-3 text-slate-300" /> {item.email}
-                                </div>
-                              )}
                             </div>
                           </td>
                           <td className="p-4 px-6 text-center">
                             <StatusBadge status={item.status} />
                           </td>
-                          <td className="p-4 px-6 text-right">
+                          <td className="p-4 px-6 text-right" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                               {item.status === "PENDING" && (
                                 <Button size="sm" className="h-8 bg-emerald-600 hover:bg-emerald-700 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-600/20"
@@ -301,8 +340,9 @@ export default function RegistrationsPage() {
                             </div>
                           </td>
                         </tr>
-                    )
-                ))}
+                      );
+                    })
+                )}
             </tbody>
           </table>
     </div>

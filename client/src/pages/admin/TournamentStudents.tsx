@@ -10,21 +10,15 @@ import {
   Download,
   Calendar,
   Filter,
-  FileText
+  FileText,
+  Phone,
+  Mail
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
+import StatusBadge from "@/components/shared/admin/StatusBadge";
 
 const TournamentStudents: React.FC = () => {
   const { id } = useParams();
@@ -78,6 +72,15 @@ const TournamentStudents: React.FC = () => {
     document.body.removeChild(link);
   };
 
+  const getAvatarStyles = (name: string) => {
+    const firstLetter = name.charAt(0).toUpperCase();
+    if ("ABCDE".includes(firstLetter)) return { bg: "#e0f2fe", color: "#0284c7" };
+    if ("FGHIJ".includes(firstLetter)) return { bg: "#ede9fe", color: "#6d28d9" };
+    if ("KLMNO".includes(firstLetter)) return { bg: "#d1fae5", color: "#065f46" };
+    if ("PQRST".includes(firstLetter)) return { bg: "#fef3c7", color: "#b45309" };
+    return { bg: "#fce7f3", color: "#be185d" };
+  };
+
   if (isTournamentLoading) {
     return (
       <div className="p-8 space-y-6">
@@ -102,17 +105,40 @@ const TournamentStudents: React.FC = () => {
           </Button>
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-               <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-100 uppercase tracking-widest text-[9px] font-black">Tournament Roster</Badge>
+               <span
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  padding: '3px 9px',
+                  borderRadius: '20px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.3px',
+                  backgroundColor: '#fef3c7',
+                  color: '#b45309',
+                  border: '1px solid #fde68a'
+                }}
+               >
+                Tournament Roster
+               </span>
                <span className="text-slate-300">/</span>
                <span className="text-xs font-medium text-slate-500 italic">{tournament?.title}</span>
             </div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Registered Students</h1>
+            <h1
+              style={{
+                fontSize: '26px',
+                fontWeight: 800,
+                color: '#0c1a3a',
+                letterSpacing: '-0.6px'
+              }}
+            >
+              Registered Students
+            </h1>
           </div>
         </div>
 
         <div className="grid md:grid-cols-4 gap-4">
           <div className="md:col-span-2 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8]" />
             <Input
               placeholder="Search by name, ID or phone..."
               value={searchQuery}
@@ -128,7 +154,7 @@ const TournamentStudents: React.FC = () => {
             <Filter className="h-4 w-4" /> Filters
           </Button>
           <Button
-            className="h-12 rounded-xl font-bold gap-2 bg-slate-900 hover:bg-blue-600 transition-all"
+            className="h-12 rounded-xl font-bold gap-2 bg-[#0c1a3a] hover:bg-[#0284c7] transition-all"
             onClick={handleExport}
           >
             <Download className="h-4 w-4" /> Export CSV
@@ -137,28 +163,34 @@ const TournamentStudents: React.FC = () => {
       </div>
 
       {/* Main Table */}
-      <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
-        <Table>
-          <TableHeader className="bg-slate-50">
-            <TableRow>
-              <TableHead className="font-black text-[10px] uppercase tracking-widest text-slate-400 py-4">Reference ID</TableHead>
-              <TableHead className="font-black text-[10px] uppercase tracking-widest text-slate-400">Student Name</TableHead>
-              <TableHead className="font-black text-[10px] uppercase tracking-widest text-slate-400">Category & Rating</TableHead>
-              <TableHead className="font-black text-[10px] uppercase tracking-widest text-slate-400">Contact</TableHead>
-              <TableHead className="font-black text-[10px] uppercase tracking-widest text-slate-400">Status</TableHead>
-              <TableHead className="font-black text-[10px] uppercase tracking-widest text-slate-400">Enrolled On</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      <div
+        className="bg-white overflow-hidden"
+        style={{
+          border: '1px solid #e0eeff',
+          borderRadius: '14px'
+        }}
+      >
+        <table className="w-full border-collapse">
+          <thead style={{ backgroundColor: '#f0f6ff', borderBottom: '2px solid #bae6fd' }}>
+            <tr className="text-[10px] font-black uppercase text-[#64748b] tracking-[0.08em]">
+              <th className="p-4 px-6 text-left">Reference ID</th>
+              <th className="p-4 px-6 text-left">Student Name</th>
+              <th className="p-4 px-6 text-left">Category & Rating</th>
+              <th className="p-4 px-6 text-left">Contact</th>
+              <th className="p-4 px-6 text-center">Status</th>
+              <th className="p-4 px-6 text-left">Enrolled On</th>
+            </tr>
+          </thead>
+          <tbody className="text-sm">
             {isRegLoading ? (
               [...Array(5)].map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={6}><Skeleton className="h-12 w-full" /></TableCell>
-                </TableRow>
+                <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td colSpan={6} className="p-4 px-6"><Skeleton className="h-12 w-full" /></td>
+                </tr>
               ))
             ) : filteredRegistrations.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-64 text-center">
+              <tr>
+                <td colSpan={6} className="h-64 text-center">
                   <div className="flex flex-col items-center justify-center gap-4 py-12">
                     <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center">
                       <FileText className="h-10 w-10 text-slate-300" />
@@ -168,46 +200,88 @@ const TournamentStudents: React.FC = () => {
                       <p className="text-sm text-slate-500">Wait for students to discover this arena.</p>
                     </div>
                   </div>
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ) : (
-              filteredRegistrations.map((reg) => (
-                <TableRow key={reg.id} className="hover:bg-slate-50/50 transition-colors">
-                  <TableCell className="font-mono text-xs font-bold text-blue-600">{reg.referenceId}</TableCell>
-                  <TableCell>
-                    <div className="font-bold text-slate-900">{reg.studentName}</div>
-                    <div className="text-[10px] text-slate-400 font-medium">{reg.gender} • {format(new Date(reg.dob), "dd MMM yyyy")}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                       <Badge variant="secondary" className="text-[9px] font-black uppercase bg-slate-100 text-slate-600 border-none">{reg.category || 'Open'}</Badge>
-                       <div className="text-[10px] font-bold text-slate-500">FIDE: {reg.fideId} ({reg.fideRating})</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm font-medium text-slate-700">{reg.phone}</div>
-                    <div className="text-xs text-slate-400">{reg.email || 'No email provided'}</div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={`rounded-full px-3 py-0.5 text-[10px] font-black uppercase tracking-tight ${
-                      reg.status === 'CONFIRMED' ? 'bg-emerald-500 text-white' :
-                      reg.status === 'PENDING' ? 'bg-amber-500 text-white' :
-                      'bg-slate-500 text-white'
-                    }`}>
-                      {reg.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-                      <Calendar className="h-3.5 w-3.5" />
-                      {format(new Date(reg.createdAt), "MMM dd, yyyy")}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+              filteredRegistrations.map((reg) => {
+                const avatarStyles = getAvatarStyles(reg.studentName);
+                return (
+                  <tr
+                    key={reg.id}
+                    className="group transition-all duration-120 cursor-pointer"
+                    style={{ borderBottom: '1px solid #f8fafc' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <td className="p-4 px-6 font-mono text-[10px] font-bold text-[#0284c7]">{reg.referenceId}</td>
+                    <td className="p-4 px-6">
+                      <div className="flex items-center gap-3">
+                        <div
+                          style={{
+                            width: '34px',
+                            height: '34px',
+                            borderRadius: '50%',
+                            backgroundColor: avatarStyles.bg,
+                            color: avatarStyles.color,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            flexShrink: 0
+                          }}
+                        >
+                          {reg.studentName.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg.studentName}</p>
+                          <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg.gender} • {format(new Date(reg.dob), "dd MMM yyyy")}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 px-6">
+                      <div className="space-y-1">
+                         <span
+                          style={{
+                            fontSize: '9px',
+                            fontWeight: 700,
+                            padding: '2px 8px',
+                            borderRadius: '20px',
+                            textTransform: 'uppercase',
+                            backgroundColor: '#f1f5f9',
+                            color: '#64748b'
+                          }}
+                         >
+                          {reg.category || 'Open'}
+                         </span>
+                         <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>FIDE: {reg.fideId} ({reg.fideRating})</div>
+                      </div>
+                    </td>
+                    <td className="p-4 px-6">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
+                          <Phone className="h-3 w-3" /> {reg.phone}
+                        </div>
+                        <div className="flex items-center gap-2" style={{ fontSize: '10px', color: '#94a3b8' }}>
+                          <Mail className="h-3 w-3" /> {reg.email || 'No email provided'}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 px-6 text-center">
+                      <StatusBadge status={reg.status} />
+                    </td>
+                    <td className="p-4 px-6">
+                      <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}>
+                        <Calendar className="h-3.5 w-3.5" />
+                        {format(new Date(reg.createdAt), "MMM dd, yyyy")}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
     </div>
   );
