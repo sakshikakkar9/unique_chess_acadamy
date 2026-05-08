@@ -235,7 +235,7 @@ const AdminCourses = () => {
                     key={c.id}
                     className="group transition-all duration-120 cursor-pointer"
                     style={{ borderBottom: '1px solid #f1f5f9' }}
-                    onClick={() => navigate(`/admin/courses/${c.id}/students`)}
+                    onClick={() => navigate(`/admin/courses/${c.id}/portal`)}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
