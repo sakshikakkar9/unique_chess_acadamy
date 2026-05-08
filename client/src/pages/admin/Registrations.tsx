@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
-  MessageCircle, Trophy, RefreshCw, MoreVertical,
-  CheckCircle, XCircle, Trash2, Mail, Phone, Eye, Calendar, User, UserCheck, BookOpen, Copy,
-  Search, Filter, ExternalLink, ShieldCheck, CreditCard, Info, Image as ImageIcon
+  Trophy, RefreshCw, MoreVertical,
+  Trash2, Mail, Phone, Eye, BookOpen, Copy,
+  Search, Filter, ExternalLink, ShieldCheck, CreditCard, Image as ImageIcon,
+  User, UserCheck
 } from "lucide-react";
 import AdminPageHeader from "@/components/shared/admin/AdminPageHeader";
 import StatusBadge from "@/components/shared/admin/StatusBadge";
@@ -24,11 +25,14 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, 
   DropdownMenuTrigger, DropdownMenuSeparator 
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+type RegistrationTab = 'course' | 'tournament' | 'demo';
+
 export default function RegistrationsPage() {
+  const [activeTab, setActiveTab] = useState<RegistrationTab>("course");
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -118,83 +122,13 @@ export default function RegistrationsPage() {
     }
   };
 
-  const renderRows = (items: any[], type: 'demo' | 'course' | 'tournament') => (
-    items.length === 0 ? (
-      <tr>
-        <td colSpan={6} className="p-20 text-center">
-          <div className="flex flex-col items-center gap-2 text-slate-300">
-            <Search className="h-10 w-10" />
-            <p className="font-bold uppercase tracking-widest text-xs">No records found</p>
-          </div>
-        </td>
-      </tr>
-    ) : items.map((item) => (
-      <tr key={item.id} className="hover:bg-slate-50/80 transition-colors border-b border-slate-100 group">
-        <td className="p-4 px-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-sky-50 flex items-center justify-center text-sky-600 font-black text-[10px] border border-sky-100 shadow-sm shrink-0">
-              {item.studentName?.substring(0, 2).toUpperCase() || "ST"}
-            </div>
-            <div className="min-w-0">
-              <p className="font-bold text-slate-900 text-sm truncate">{item.studentName}</p>
-              <span className="inline-block mt-1 text-[9px] font-black uppercase tracking-tight text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md">
-                {item.gender || 'Not Specified'}
-              </span>
-            </div>
-          </div>
-        </td>
-        <td className="p-4 px-6">
-          <div className="flex items-center gap-2">
-            {type === 'tournament' ? <Trophy className="h-3.5 w-3.5 text-amber-500" /> : <BookOpen className="h-3.5 w-3.5 text-sky-500" />}
-            <span className="text-sm font-bold text-slate-700 truncate max-w-[180px]">{item.tournament?.title || item.course?.title || 'Demo Class'}</span>
-          </div>
-        </td>
-        <td className="p-4 px-6 text-[10px] font-bold text-slate-500 uppercase tracking-tight">
-           {format(new Date(item.createdAt), "MMM d, h:mm a")}
-        </td>
-        <td className="p-4 px-6">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600">
-              <Phone className="h-3 w-3 text-sky-400" /> {item.phone}
-            </div>
-            {item.email && (
-              <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
-                <Mail className="h-3 w-3 text-slate-300" /> {item.email}
-              </div>
-            )}
-          </div>
-        </td>
-        <td className="p-4 px-6 text-center">
-          <StatusBadge status={item.status} />
-        </td>
-        <td className="p-4 px-6 text-right">
-          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            {item.status === "PENDING" && (
-              <Button size="sm" className="h-8 bg-emerald-600 hover:bg-emerald-700 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-600/20"
-                onClick={() => handleAction(item.id, type, 'status', type === 'course' ? 'CONFIRMED' : 'APPROVED')}>
-                Approve
-              </Button>
-            )}
+  const getActiveData = () => {
+    if (activeTab === 'tournament') return { data: filteredRegistrations, loading: tournamentLoading, type: 'tournament' as const };
+    if (activeTab === 'demo') return { data: filteredDemos, loading: false, type: 'demo' as const };
+    return { data: filteredEnrollments, loading: enrollLoading, type: 'course' as const };
+  };
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-100 rounded-full"><MoreVertical className="h-4 w-4 text-slate-400" /></Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 rounded-2xl border-slate-100 shadow-xl p-2">
-                <DropdownMenuItem className="font-bold text-[11px] uppercase tracking-widest py-3 rounded-xl cursor-pointer" onClick={() => setSelectedItem({ ...item, type })}>
-                  <Eye className="mr-2 h-4 w-4 text-blue-500" /> View Details
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="font-bold text-[11px] uppercase tracking-widest py-3 rounded-xl cursor-pointer text-rose-600 focus:text-rose-600" onClick={() => handleAction(item.id, type, 'delete')}>
-                  <Trash2 className="mr-2 h-4 w-4" /> Delete Record
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </td>
-      </tr>
-    ))
-  );
+  const { data: currentData, loading: currentLoading, type: currentType } = getActiveData();
 
   return (
     <div className="p-8 max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500">
@@ -233,7 +167,7 @@ export default function RegistrationsPage() {
           </Select>
         </div>
 
-        <Tabs defaultValue="course" className="w-full md:w-auto">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as RegistrationTab)} className="w-full md:w-auto">
           <TabsList className="bg-slate-100 p-1 rounded-full h-11 w-full md:w-auto">
             <TabsTrigger value="tournament" className="rounded-full px-6 py-2 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-sky-600 data-[state=active]:shadow-sm transition-all h-9">
               Tournaments
@@ -249,14 +183,13 @@ export default function RegistrationsPage() {
       </div>
 
       <div className="bg-white border border-slate-200 rounded-[12px] shadow-sm overflow-hidden">
-        <Tabs defaultValue="course" className="w-full">
           <div className="p-4 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Real-time Registration Feed</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Real-time Registration Feed ({activeTab})</span>
             </div>
 
-            <TabsContent value="course" className="m-0">
+            {activeTab === 'course' && (
                <Select value={courseFilter} onValueChange={setCourseFilter}>
                   <SelectTrigger className="h-9 w-52 rounded-lg border-slate-200 bg-white font-bold text-[9px] uppercase tracking-widest px-4">
                     <div className="flex items-center gap-2">
@@ -271,7 +204,7 @@ export default function RegistrationsPage() {
                     ))}
                   </SelectContent>
                 </Select>
-            </TabsContent>
+            )}
           </div>
 
           <table className="w-full text-left border-collapse">
@@ -286,44 +219,100 @@ export default function RegistrationsPage() {
               </tr>
             </thead>
             <tbody className="text-sm">
-              <TabsContent value="tournament" asChild>
-                <>
-                  {tournamentLoading ? (
+                {currentLoading ? (
                     <tr>
                       <td colSpan={6} className="p-10 text-center">
                         <RefreshCw className="h-6 w-6 animate-spin mx-auto text-blue-600" />
                         <p className="text-[10px] font-black uppercase tracking-widest mt-2 text-slate-400">Loading Entries...</p>
                       </td>
                     </tr>
-                  ) : renderRows(filteredRegistrations, 'tournament')}
-                </>
-              </TabsContent>
-              <TabsContent value="course" asChild>
-                <>
-                  {enrollLoading ? (
+                ) : currentData.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="p-10 text-center">
-                        <RefreshCw className="h-6 w-6 animate-spin mx-auto text-blue-600" />
-                        <p className="text-[10px] font-black uppercase tracking-widest mt-2 text-slate-400">Loading Enrollments...</p>
-                      </td>
+                        <td colSpan={6} className="p-20 text-center">
+                        <div className="flex flex-col items-center gap-2 text-slate-300">
+                            <Search className="h-10 w-10" />
+                            <p className="font-bold uppercase tracking-widest text-xs">No records found</p>
+                        </div>
+                        </td>
                     </tr>
-                  ) : renderRows(filteredEnrollments, 'course')}
-                </>
-              </TabsContent>
-              <TabsContent value="demo" asChild>
-                <>{renderRows(filteredDemos, 'demo')}</>
-              </TabsContent>
+                ) : (
+                    currentData.map((item: any) => (
+                        <tr key={item.id} className="hover:bg-sky-50/50 transition-colors border-b border-slate-100 group">
+                          <td className="p-4 px-6">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-sky-50 flex items-center justify-center text-sky-600 font-black text-[10px] border border-sky-100 shadow-sm shrink-0">
+                                {item.studentName?.substring(0, 2).toUpperCase() || "ST"}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-bold text-slate-900 text-sm truncate">{item.studentName}</p>
+                                <span className="inline-block mt-1 text-[9px] font-black uppercase tracking-tight text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md">
+                                  {item.gender || 'Not Specified'}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-4 px-6">
+                            <div className="flex items-center gap-2">
+                              {currentType === 'tournament' ? <Trophy className="h-3.5 w-3.5 text-amber-500" /> : <BookOpen className="h-3.5 w-3.5 text-sky-500" />}
+                              <span className="text-sm font-bold text-slate-700 truncate max-w-[180px]">{item.tournament?.title || item.course?.title || 'Demo Class'}</span>
+                            </div>
+                          </td>
+                          <td className="p-4 px-6 text-[10px] font-bold text-slate-500 uppercase tracking-tight">
+                             {item.createdAt ? format(new Date(item.createdAt), "MMM d, h:mm a") : 'N/A'}
+                          </td>
+                          <td className="p-4 px-6">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600">
+                                <Phone className="h-3 w-3 text-sky-400" /> {item.phone}
+                              </div>
+                              {item.email && (
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
+                                  <Mail className="h-3 w-3 text-slate-300" /> {item.email}
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="p-4 px-6 text-center">
+                            <StatusBadge status={item.status} />
+                          </td>
+                          <td className="p-4 px-6 text-right">
+                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              {item.status === "PENDING" && (
+                                <Button size="sm" className="h-8 bg-emerald-600 hover:bg-emerald-700 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-600/20"
+                                  onClick={() => handleAction(item.id, currentType, 'status', currentType === 'course' ? 'CONFIRMED' : 'APPROVED')}>
+                                  Approve
+                                </Button>
+                              )}
+
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-100 rounded-full"><MoreVertical className="h-4 w-4 text-slate-400" /></Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48 rounded-2xl border-slate-100 shadow-xl p-2">
+                                  <DropdownMenuItem className="font-bold text-[11px] uppercase tracking-widest py-3 rounded-xl cursor-pointer" onClick={() => setSelectedItem({ ...item, type: currentType })}>
+                                    <Eye className="mr-2 h-4 w-4 text-blue-500" /> View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem className="font-bold text-[11px] uppercase tracking-widest py-3 rounded-xl cursor-pointer text-rose-600 focus:text-rose-600" onClick={() => handleAction(item.id, currentType, 'delete')}>
+                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Record
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </td>
+                        </tr>
+                    )
+                ))}
             </tbody>
           </table>
-      </Tabs>
     </div>
 
       {/* ── 2. REFINED DETAILS SHEET ────────────────────────────────────────── */}
       <Sheet open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
-        <SheetContent className="sm:max-w-xl rounded-l-[3.5rem] p-0 border-none shadow-2xl">
+        <SheetContent className="sm:max-w-xl rounded-l-[3.5rem] p-0 border-none shadow-2xl overflow-y-auto">
           {selectedItem && (
             <div className="h-full flex flex-col bg-slate-50/50">
-              <div className="bg-slate-900 p-10 text-white relative overflow-hidden">
+              <div className="bg-slate-900 p-10 text-white relative overflow-hidden shrink-0">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full blur-[100px] -mr-32 -mt-32" />
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-500/10 rounded-full blur-[60px] -ml-16 -mb-16" />
 
@@ -360,7 +349,7 @@ export default function RegistrationsPage() {
                   </div>
                   <div className="bg-white/5 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/10 flex flex-col gap-1">
                     <p className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">Registration Date</p>
-                    <p className="text-xs font-bold">{format(new Date(selectedItem.createdAt), "PPP")}</p>
+                    <p className="text-xs font-bold">{selectedItem.createdAt ? format(new Date(selectedItem.createdAt), "PPP") : 'N/A'}</p>
                   </div>
                   {selectedItem.type !== 'demo' && (
                     <div className="bg-white/5 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/10 flex flex-col gap-1">
@@ -371,7 +360,7 @@ export default function RegistrationsPage() {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-10 space-y-12 bg-white rounded-tl-[3.5rem] -mt-8 relative z-20 shadow-[-20px_0_40px_rgba(0,0,0,0.05)]">
+              <div className="flex-1 p-10 space-y-12 bg-white rounded-tl-[3.5rem] -mt-8 relative z-20 shadow-[-20px_0_40px_rgba(0,0,0,0.05)]">
                 {/* Section: Personal Intelligence */}
                 <section>
                   <div className="flex items-center justify-between mb-6">
@@ -524,7 +513,7 @@ export default function RegistrationsPage() {
               </div>
 
               {/* Sheet Footer Actions */}
-              <div className="p-8 bg-white border-t border-slate-100 flex items-center gap-4 relative z-30">
+              <div className="p-8 bg-white border-t border-slate-100 flex items-center gap-4 relative z-30 shrink-0">
                 {selectedItem.status === "PENDING" && (
                   <Button
                     className="flex-1 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-600/20"

@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus, Upload, Search, Calendar, BookOpen, Layers, X } from "lucide-react";
+import { Plus, Upload, Search, Calendar, BookOpen, X, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { AGE_GROUP_LABELS } from "@/types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import RichTextEditor from "@/components/shared/admin/RichTextEditor";
@@ -18,7 +17,7 @@ import { cn } from "@/lib/utils";
 import AdminPageHeader from "@/components/shared/admin/AdminPageHeader";
 import StatusBadge from "@/components/shared/admin/StatusBadge";
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 8;
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 const AdminCourses = () => {
@@ -52,19 +51,23 @@ const AdminCourses = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [levelFilter, setLevelFilter] = useState("ALL");
 
-  // Reset page when searching
+  // Reset page when searching or filtering
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, levelFilter]);
 
   const filteredCourses = useMemo(() => {
     if (!courses || !Array.isArray(courses)) return [];
-    return courses.filter((course: any) => 
-      course.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [courses, searchTerm]);
+    return courses.filter((course: any) => {
+        const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesLevel = levelFilter === "ALL" || course.skillLevel === levelFilter;
+        return matchesSearch && matchesLevel;
+    });
+  }, [courses, searchTerm, levelFilter]);
 
+  const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
   const paginatedCourses = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredCourses.slice(start, start + ITEMS_PER_PAGE);
@@ -143,30 +146,42 @@ const AdminCourses = () => {
         }
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Sidebar Filters */}
-        <div className="lg:col-span-3 space-y-6">
-          <div className="bg-white border border-slate-200 rounded-[12px] p-6 shadow-sm">
-            <Label className="text-xs font-black uppercase tracking-widest text-slate-500 mb-4 block">Search Programs</Label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input 
-                className="pl-10 h-11 rounded-xl border-slate-200 focus:ring-sky-500"
-                placeholder="Search by title..." 
-                value={searchTerm} 
-                onChange={(e) => setSearchTerm(e.target.value)} 
-              />
+      {/* Standardized Filter Bar */}
+      <div className="flex flex-col md:flex-row gap-6 items-center justify-between bg-white border border-slate-200 p-4 rounded-[12px] shadow-sm">
+        <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="relative flex-1 md:flex-none">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                    className="pl-10 h-11 w-full md:w-80 rounded-xl border-slate-200 focus:ring-sky-500"
+                    placeholder="Search courses..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
-          </div>
-          
-          <div className="p-6 bg-sky-50/50 rounded-[12px] border border-sky-100/50 border-l-4 border-l-sky-500">
-            <h4 className="text-[10px] font-black uppercase tracking-widest text-sky-600 mb-1">Quick Info</h4>
-            <p className="text-sm font-bold text-slate-700">Total Courses: {filteredCourses.length}</p>
-          </div>
+
+            <Select value={levelFilter} onValueChange={setLevelFilter}>
+                <SelectTrigger className="h-11 w-44 rounded-xl border-slate-200 font-bold text-[10px] uppercase tracking-widest bg-white">
+                    <div className="flex items-center gap-2">
+                        <Filter className="h-3.5 w-3.5 text-slate-400" />
+                        <SelectValue placeholder="Skill Level" />
+                    </div>
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
+                    <SelectItem value="ALL" className="font-bold text-[10px] uppercase tracking-widest py-3">All Levels</SelectItem>
+                    {["BEGINNER", "INTERMEDIATE", "ADVANCED", "GRANDMASTER"].map(l => (
+                        <SelectItem key={l} value={l} className="font-bold text-[10px] uppercase tracking-widest py-3">{l}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
         </div>
 
-        {/* Table Area */}
-        <div className="lg:col-span-9">
+        <div className="flex items-center gap-2 px-4 py-2 bg-sky-50/50 rounded-full border border-sky-100/50">
+            <BookOpen className="h-4 w-4 text-sky-500" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-sky-600">Total Courses: {filteredCourses.length}</span>
+        </div>
+      </div>
+
+      <div className="space-y-6">
           <DataTable
             columns={[
               { header: "Course Info", accessorKey: "title", cell: (c: any) => (
@@ -213,7 +228,35 @@ const AdminCourses = () => {
               onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
               onRowClick={(c) => navigate(`/admin/courses/${c.id}/students`)}
             />
-        </div>
+
+            {/* Manual Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between px-6 py-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        Showing page <span className="text-sky-600">{currentPage}</span> of <span className="text-slate-900">{totalPages}</span>
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="h-9 rounded-lg px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
+                        >
+                            <ChevronLeft className="mr-1 h-3.5 w-3.5" /> Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                            className="h-9 rounded-lg px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
+                        >
+                            Next <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                        </Button>
+                    </div>
+                </div>
+            )}
       </div>
 
       <AdminFormModal 
@@ -222,20 +265,20 @@ const AdminCourses = () => {
         title={selectedCourse ? "Update Program" : "Create Program"} 
         onSave={handleSave}
       >
-        <div className="max-h-[70vh] overflow-y-auto pr-2 space-y-6 py-2">
+        <div className="max-h-[70vh] overflow-y-auto pr-2 space-y-6 py-2 scrollbar-thin">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-                <Label>Course Title</Label>
-                <Input value={formData.title || ""} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Course Title</Label>
+                <Input className="h-11 rounded-xl" value={formData.title || ""} onChange={(e) => setFormData({...formData, title: e.target.value})} />
             </div>
             <div className="space-y-2">
-                <Label>Fee (₹)</Label>
-                <Input type="number" value={formData.fee || ""} onChange={(e) => setFormData({...formData, fee: Number(e.target.value)})} />
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Fee (₹)</Label>
+                <Input className="h-11 rounded-xl" type="number" value={formData.fee || ""} onChange={(e) => setFormData({...formData, fee: Number(e.target.value)})} />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Course Description</Label>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Course Description</Label>
             <RichTextEditor
               value={formData.description || ""}
               onChange={(content) => setFormData({...formData, description: content})}
@@ -245,9 +288,9 @@ const AdminCourses = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Skill Level</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Skill Level</Label>
               <Select value={formData.skillLevel} onValueChange={(v) => setFormData({...formData, skillLevel: v})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-11 rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {["BEGINNER", "INTERMEDIATE", "ADVANCED", "GRANDMASTER"].map(l => (
                     <SelectItem key={l} value={l}>{l}</SelectItem>
@@ -256,9 +299,9 @@ const AdminCourses = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Class Mode</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Class Mode</Label>
               <Select value={formData.mode} onValueChange={(v) => setFormData({...formData, mode: v})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-11 rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {["ONLINE", "OFFLINE", "HYBRID"].map(m => (
                     <SelectItem key={m} value={m}>{m}</SelectItem>
@@ -269,7 +312,7 @@ const AdminCourses = () => {
           </div>
 
           <div className="space-y-2">
-            <Label className="flex items-center gap-2"><Calendar className="h-4 w-4" /> Training Days</Label>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Calendar className="h-4 w-4" /> Training Days</Label>
             <div className="flex flex-wrap gap-2">
               {WEEKDAYS.map(day => (
                 <Button 
@@ -278,7 +321,7 @@ const AdminCourses = () => {
                     variant={formData.days?.includes(day) ? "default" : "outline"} 
                     size="sm" 
                     onClick={() => toggleDay(day)} 
-                    className="rounded-full"
+                    className={cn("rounded-full h-8 px-4 text-[10px] font-bold uppercase tracking-widest transition-all", formData.days?.includes(day) ? "bg-sky-500 text-white shadow-md shadow-sky-500/20" : "text-slate-500 hover:bg-sky-50")}
                 >
                   {day}
                 </Button>
@@ -288,9 +331,9 @@ const AdminCourses = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-                <Label>Age Group Tag</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Age Group Tag</Label>
                 <Select value={formData.ageGroup} onValueChange={(v) => setFormData({...formData, ageGroup: v})}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="h-11 rounded-xl"><SelectValue /></SelectTrigger>
                     <SelectContent>
                         {Object.entries(AGE_GROUP_LABELS).map(([k, v]) => (
                             <SelectItem key={k} value={k}>{v as string}</SelectItem>
@@ -299,24 +342,24 @@ const AdminCourses = () => {
                 </Select>
             </div>
             <div className="space-y-2">
-                <Label>Class Time (e.g. 18:00)</Label>
-                <Input value={formData.classTime || ""} onChange={(e) => setFormData({...formData, classTime: e.target.value})} />
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Class Time (e.g. 18:00)</Label>
+                <Input className="h-11 rounded-xl" value={formData.classTime || ""} onChange={(e) => setFormData({...formData, classTime: e.target.value})} />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-                <Label>Duration (e.g. 4 Months)</Label>
-                <Input value={formData.duration || ""} onChange={(e) => setFormData({...formData, duration: e.target.value})} />
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Duration (e.g. 4 Months)</Label>
+                <Input className="h-11 rounded-xl" value={formData.duration || ""} onChange={(e) => setFormData({...formData, duration: e.target.value})} />
             </div>
             <div className="space-y-2">
-                <Label>Contact Details</Label>
-                <Input value={formData.contactDetails || ""} onChange={(e) => setFormData({...formData, contactDetails: e.target.value})} />
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Contact Details</Label>
+                <Input className="h-11 rounded-xl" value={formData.contactDetails || ""} onChange={(e) => setFormData({...formData, contactDetails: e.target.value})} />
             </div>
           </div>
 
           <div className="grid gap-2">
-            <Label className="text-xs font-black uppercase text-slate-400 tracking-widest">Course Brochure (PDF)</Label>
+            <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Course Brochure (PDF)</Label>
             <div className="flex items-center gap-4">
               <div className="relative flex-1">
                 <input
@@ -325,19 +368,19 @@ const AdminCourses = () => {
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   onChange={(e) => setSelectedBrochure(e.target.files?.[0] || null)}
                 />
-                <div className={`h-12 px-4 border-2 border-dashed rounded-xl flex items-center gap-2 transition-all ${selectedBrochure ? 'border-emerald-500 bg-emerald-50 text-emerald-600' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
+                <div className={`h-11 px-4 border-2 border-dashed rounded-xl flex items-center gap-2 transition-all ${selectedBrochure ? 'border-emerald-500 bg-emerald-50 text-emerald-600' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
                   <Upload className="h-4 w-4" />
-                  <span className="text-xs font-bold truncate">{selectedBrochure ? selectedBrochure.name : (formData.brochureUrl ? "Change Brochure" : "Upload Brochure")}</span>
+                  <span className="text-[10px] font-bold uppercase truncate">{selectedBrochure ? selectedBrochure.name : (formData.brochureUrl ? "Change Brochure" : "Upload Brochure")}</span>
                 </div>
               </div>
               {formData.brochureUrl && !selectedBrochure && (
-                 <a href={formData.brochureUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs font-bold">View Current</a>
+                 <a href={formData.brochureUrl} target="_blank" rel="noopener noreferrer" className="text-sky-600 hover:underline text-[10px] font-black uppercase tracking-widest">View Current</a>
               )}
             </div>
           </div>
 
           <div className="space-y-4 pt-4 border-t">
-            <Label className="text-xs font-black uppercase text-slate-400 tracking-widest">Poster & Orientation</Label>
+            <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Poster & Orientation</Label>
 
             <RadioGroup
               value={formData.posterOrientation}
@@ -356,8 +399,8 @@ const AdminCourses = () => {
 
             <div
               className={cn(
-                "relative rounded-xl border-2 border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-muted/50 cursor-pointer transition-all border-slate-200",
-                formData.posterOrientation === 'PORTRAIT' ? "aspect-[3/4] max-w-[300px] mx-auto" : "aspect-video"
+                "relative rounded-[1.5rem] border-2 border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-slate-50 cursor-pointer transition-all border-slate-200 bg-slate-50/50",
+                formData.posterOrientation === 'PORTRAIT' ? "aspect-[3/4] max-w-[240px] mx-auto" : "aspect-video"
               )}
               onClick={() => fileInputRef.current?.click()}
             >
@@ -378,9 +421,11 @@ const AdminCourses = () => {
                   </Button>
                 </>
               ) : (
-                <div className="text-center">
-                  <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                  <span className="text-xs mt-2 block font-medium">Upload Banner ({formData.posterOrientation})</span>
+                <div className="text-center group">
+                  <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform mx-auto">
+                    <Upload className="h-6 w-6 text-sky-500" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Upload Banner ({formData.posterOrientation})</span>
                 </div>
               )}
               <input

@@ -14,7 +14,7 @@ import ActionMenu from "./ActionMenu";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "@/components/shared/motion";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, Users, MapPin } from "lucide-react";
+import { Calendar, Users, MapPin, Trophy } from "lucide-react";
 import { format } from "date-fns";
 
 interface TournamentTableProps {
