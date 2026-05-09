@@ -34,6 +34,7 @@ import {
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { getAvatarStyles } from "@/lib/utils";
 
 export default function StudentsPage() {
   const navigate = useNavigate();
@@ -83,14 +84,6 @@ export default function StudentsPage() {
     }
   };
 
-  const getAvatarStyles = (name: string) => {
-    const firstLetter = (name || "?").charAt(0).toUpperCase();
-    if ("ABCDE".includes(firstLetter)) return { bg: "#e0f2fe", color: "#0284c7" };
-    if ("FGHIJ".includes(firstLetter)) return { bg: "#ede9fe", color: "#6d28d9" };
-    if ("KLMNO".includes(firstLetter)) return { bg: "#d1fae5", color: "#065f46" };
-    if ("PQRST".includes(firstLetter)) return { bg: "#fef3c7", color: "#b45309" };
-    return { bg: "#fce7f3", color: "#be185d" };
-  };
 
   return (
     <div className="p-8 max-w-[1600px] mx-auto space-y-8">
