@@ -318,7 +318,8 @@ const AdminDashboard: React.FC = () => {
                     <tr><td colSpan={4} className="py-20 text-center text-slate-400 text-sm">Loading enrollments...</td></tr>
                   ) : paginatedCourses.length > 0 ? (
                     paginatedCourses.map((enr: CourseEnrollment) => {
-                      const avatarStyles = getAvatarStyles(enr?.studentName || "");
+                      const fullName = enr?.student?.fullName || "N/A";
+                      const avatarStyles = getAvatarStyles(fullName);
                       return (
                         <tr
                           key={enr?.id}
@@ -331,9 +332,9 @@ const AdminDashboard: React.FC = () => {
                                 className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
                                 style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
                               >
-                                {(enr?.studentName || "?").charAt(0).toUpperCase()}
+                                {(fullName || "?").charAt(0).toUpperCase()}
                               </div>
-                              <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{enr?.studentName || "N/A"}</span>
+                              <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{fullName}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4">

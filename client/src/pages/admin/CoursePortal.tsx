@@ -181,10 +181,10 @@ const CoursePortal: React.FC = () => {
                     const headers = ["Reference ID", "Student Name", "Category", "Skill Level", "Phone", "Status"];
                     const rows = enrollments.map(r => [
                       r?.id || "N/A",
-                      r?.studentName || "N/A",
+                      r?.student?.fullName || "N/A",
                       r?.category || "N/A",
-                      r?.experienceLevel || "N/A",
-                      r?.phone || "N/A",
+                      r?.student?.experienceLevel || "N/A",
+                      r?.student?.phone || "N/A",
                       r?.status || "PENDING"
                     ]);
                     const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].map(e => e.join(",")).join("\n");
@@ -238,9 +238,9 @@ const CoursePortal: React.FC = () => {
                   ) : (
                     (() => {
                       const filtered = enrollments.filter((reg) => {
-                        const name = (reg?.studentName || "").toLowerCase();
+                        const name = (reg?.student?.fullName || "").toLowerCase();
                         const id = (reg?.id || "").toLowerCase();
-                        const phone = reg?.phone || "";
+                        const phone = reg?.student?.phone || "";
                         const search = searchQuery.toLowerCase();
 
                         return name.includes(search) || id.includes(search) || phone.includes(search);
@@ -251,7 +251,8 @@ const CoursePortal: React.FC = () => {
                       return (
                         <>
                           {paginated.map((reg) => {
-                            const fullName = reg?.studentName || "N/A";
+                            const student = reg?.student;
+                            const fullName = student?.fullName || "N/A";
                             const firstLetter = (fullName || "?").charAt(0).toUpperCase();
                             let avatarStyles = { bg: "#fce7f3", color: "#be185d" };
                             if ("ABCDE".includes(firstLetter)) avatarStyles = { bg: "#e0f2fe", color: "#0284c7" };
@@ -286,8 +287,8 @@ const CoursePortal: React.FC = () => {
                                       {firstLetter}
                                     </div>
                                     <div className="min-w-0">
-                                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg?.studentName || "N/A"}</p>
-                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg?.gender || "N/A"} • {reg?.dob ? format(new Date(reg.dob), "dd MMM yyyy") : 'N/A'}</span>
+                                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{fullName}</p>
+                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{student?.gender || "N/A"} • {student?.dob ? format(new Date(student.dob), "dd MMM yyyy") : 'N/A'}</span>
                                     </div>
                                   </div>
                                 </td>
@@ -296,16 +297,16 @@ const CoursePortal: React.FC = () => {
                                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase">
                                       {reg?.category || 'General'}
                                      </span>
-                                     <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>Level: {reg?.experienceLevel || "N/A"}</div>
+                                     <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>Level: {student?.experienceLevel || "N/A"}</div>
                                   </div>
                                 </td>
                                 <td className="p-4 px-6">
                                   <div className="space-y-1">
                                     <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
-                                      <Phone className="h-3 w-3" /> {reg?.phone || "N/A"}
+                                      <Phone className="h-3 w-3" /> {student?.phone || "N/A"}
                                     </div>
                                     <div className="flex items-center gap-2" style={{ fontSize: '10px', color: '#94a3b8' }}>
-                                      <Mail className="h-3 w-3" /> {reg?.email || 'No email provided'}
+                                      <Mail className="h-3 w-3" /> {student?.email || 'No email provided'}
                                     </div>
                                   </div>
                                 </td>
