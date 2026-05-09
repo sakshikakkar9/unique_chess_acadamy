@@ -6,12 +6,15 @@ import { PrismaPg } from '@prisma/adapter-pg';
 const { Pool } = pg;
 
 // 1. Connection Pool
-const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL 
-});
+const pool = (process.env.DATABASE_URL) ? new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+}) : null;
 
 // 2. Initialize Adapter
-const adapter = new PrismaPg(pool);
+const adapter = pool ? new PrismaPg(pool) : undefined;
 
 // 3. Global instance logic
 const globalForPrisma = globalThis;
