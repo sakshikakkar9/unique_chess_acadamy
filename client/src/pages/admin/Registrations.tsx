@@ -233,7 +233,7 @@ export default function RegistrationsPage() {
             <thead className="bg-slate-50/50 border-b border-slate-100">
               <tr className="text-[10px] font-black uppercase text-[#64748b] tracking-[0.08em]">
                 <th className="p-4 px-6">Student Profile</th>
-                <th className="p-4 px-6">Program / Event</th>
+                <th className="p-4 px-6">Program</th>
                 <th className="p-4 px-6">Submission Date</th>
                 <th className="p-4 px-6">Contact Info</th>
                 <th className="p-4 px-6 text-center">Status</th>

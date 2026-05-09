@@ -39,7 +39,6 @@ const Footer = () => {
                 { name: "About Us", path: "/about" },
                 { name: "Our Courses", path: "/courses" },
                 { name: "Tournaments", path: "/tournaments" },
-                { name: "Events", path: "/events" },
                 { name: "Gallery", path: "/gallery" },
                 { name: "Contact", path: "/contact" },
               ].map((link) => (

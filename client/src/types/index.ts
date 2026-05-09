@@ -136,16 +136,6 @@ export interface DemoRegistration {
   createdAt?: string;
 }
 
-export interface Event {
-  id: number;
-  title: string;
-  description?: string;
-  date: string;
-  location?: string;
-  category: "CLASS" | "WORKSHOP";
-  createdAt?: string;
-}
-
 export interface GalleryImage {
   id: string;
   imageUrl: string;
