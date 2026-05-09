@@ -114,6 +114,15 @@ export const registerForTournament = async (tournamentId, registrationData) => {
   if (isNaN(id)) throw new Error("Invalid Tournament ID");
 
   return await prisma.$transaction(async (tx) => {
+    // Verify Tournament exists
+    const tournament = await tx.tournament.findUnique({
+      where: { id: id }
+    });
+
+    if (!tournament) {
+      throw new Error("Tournament not found. It may have been removed or the database was reset.");
+    }
+
     // Smart Sync: Create or Update Student
     const student = await tx.student.upsert({
       where: { phone: registrationData.phone },

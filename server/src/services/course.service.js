@@ -134,6 +134,15 @@ export const createEnrollment = async (courseId, data, proofs) => {
 
   try {
     return await prisma.$transaction(async (tx) => {
+      // Verify Course exists
+      const course = await tx.course.findUnique({
+        where: { id: courseId }
+      });
+
+      if (!course) {
+        throw new Error("Course not found. It may have been removed or the database was reset.");
+      }
+
       // Smart Sync: Create or Update Student
       const student = await tx.student.upsert({
         where: { phone: data.phone || "" },

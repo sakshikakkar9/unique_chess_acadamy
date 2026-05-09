@@ -27,7 +27,11 @@ export const registerForTournament = async (req, res) => {
 
     // Check enrollment window
     const tournament = await tournamentService.getTournamentById(id);
-    if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
+    if (!tournament) {
+      return res.status(404).json({
+        error: 'Tournament not found. It may have been removed or the database was reset recently. Please refresh the page.'
+      });
+    }
 
     const now = new Date();
     if (tournament.regStartDate && now < new Date(tournament.regStartDate)) {
