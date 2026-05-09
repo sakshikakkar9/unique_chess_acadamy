@@ -108,7 +108,7 @@ const CoursePortal: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Collections</p>
-                  <p className="text-3xl font-black text-slate-900">₹{totalCollections.toLocaleString()}</p>
+                  <p className="text-3xl font-black text-slate-900">₹{(totalCollections || 0).toLocaleString()}</p>
                 </div>
                 <div className="pt-4 border-t border-slate-50">
                    <p className="text-xs font-bold text-slate-500">Based on {enrollments.length} enrollments</p>
@@ -121,7 +121,7 @@ const CoursePortal: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Course Fee</p>
-                  <p className="text-3xl font-black text-slate-900">₹{course.fee.toLocaleString()}</p>
+                  <p className="text-3xl font-black text-slate-900">₹{(course?.fee || 0).toLocaleString()}</p>
                 </div>
                 <div className="pt-4 border-t border-slate-50">
                    <p className="text-xs font-bold text-slate-500">Standard rate per student</p>
@@ -134,10 +134,10 @@ const CoursePortal: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Class Mode</p>
-                  <p className="text-3xl font-black text-slate-900">{course.mode}</p>
+                  <p className="text-3xl font-black text-slate-900">{course?.mode || "N/A"}</p>
                 </div>
                 <div className="pt-4 border-t border-slate-50">
-                   <p className="text-xs font-bold text-slate-500">{course.duration} duration</p>
+                   <p className="text-xs font-bold text-slate-500">{course?.duration || "N/A"} duration</p>
                 </div>
              </div>
            </div>
@@ -180,12 +180,12 @@ const CoursePortal: React.FC = () => {
                   onClick={() => {
                     const headers = ["Reference ID", "Student Name", "Category", "Skill Level", "Phone", "Status"];
                     const rows = enrollments.map(r => [
-                      r.id,
-                      r.studentName,
-                      r.category || "N/A",
-                      r.experienceLevel || "N/A",
-                      r.phone,
-                      r.status
+                      r?.id || "N/A",
+                      r?.studentName || "N/A",
+                      r?.category || "N/A",
+                      r?.experienceLevel || "N/A",
+                      r?.phone || "N/A",
+                      r?.status || "PENDING"
                     ]);
                     const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].map(e => e.join(",")).join("\n");
                     const encodedUri = encodeURI(csvContent);
@@ -237,18 +237,22 @@ const CoursePortal: React.FC = () => {
                     </tr>
                   ) : (
                     (() => {
-                      const filtered = enrollments.filter((reg) =>
-                        reg.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        reg.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        reg.phone.includes(searchQuery)
-                      );
+                      const filtered = enrollments.filter((reg) => {
+                        const name = (reg?.studentName || "").toLowerCase();
+                        const id = (reg?.id || "").toLowerCase();
+                        const phone = reg?.phone || "";
+                        const search = searchQuery.toLowerCase();
+
+                        return name.includes(search) || id.includes(search) || phone.includes(search);
+                      });
                       const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
                       const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
                       return (
                         <>
                           {paginated.map((reg) => {
-                            const firstLetter = (reg.studentName || "?").charAt(0).toUpperCase();
+                            const fullName = reg?.studentName || "N/A";
+                            const firstLetter = (fullName || "?").charAt(0).toUpperCase();
                             let avatarStyles = { bg: "#fce7f3", color: "#be185d" };
                             if ("ABCDE".includes(firstLetter)) avatarStyles = { bg: "#e0f2fe", color: "#0284c7" };
                             else if ("FGHIJ".includes(firstLetter)) avatarStyles = { bg: "#ede9fe", color: "#6d28d9" };
@@ -257,11 +261,11 @@ const CoursePortal: React.FC = () => {
 
                             return (
                               <tr
-                                key={reg.id}
+                                key={reg?.id}
                                 className="group transition-all duration-120 cursor-pointer hover:bg-sky-50/50"
                                 style={{ borderBottom: '1px solid #f8fafc' }}
                               >
-                                <td className="p-4 px-6 font-mono text-[10px] font-bold text-[#0284c7]">{reg.id.substring(0, 8)}...</td>
+                                <td className="p-4 px-6 font-mono text-[10px] font-bold text-[#0284c7]">{(reg?.id || "").substring(0, 8)}...</td>
                                 <td className="p-4 px-6">
                                   <div className="flex items-center gap-3">
                                     <div
@@ -282,36 +286,36 @@ const CoursePortal: React.FC = () => {
                                       {firstLetter}
                                     </div>
                                     <div className="min-w-0">
-                                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg.studentName}</p>
-                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg.gender} • {reg.dob ? format(new Date(reg.dob), "dd MMM yyyy") : 'N/A'}</span>
+                                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg?.studentName || "N/A"}</p>
+                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg?.gender || "N/A"} • {reg?.dob ? format(new Date(reg.dob), "dd MMM yyyy") : 'N/A'}</span>
                                     </div>
                                   </div>
                                 </td>
                                 <td className="p-4 px-6">
                                   <div className="space-y-1">
                                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase">
-                                      {reg.category || 'General'}
+                                      {reg?.category || 'General'}
                                      </span>
-                                     <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>Level: {reg.experienceLevel}</div>
+                                     <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>Level: {reg?.experienceLevel || "N/A"}</div>
                                   </div>
                                 </td>
                                 <td className="p-4 px-6">
                                   <div className="space-y-1">
                                     <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
-                                      <Phone className="h-3 w-3" /> {reg.phone}
+                                      <Phone className="h-3 w-3" /> {reg?.phone || "N/A"}
                                     </div>
                                     <div className="flex items-center gap-2" style={{ fontSize: '10px', color: '#94a3b8' }}>
-                                      <Mail className="h-3 w-3" /> {reg.email || 'No email provided'}
+                                      <Mail className="h-3 w-3" /> {reg?.email || 'No email provided'}
                                     </div>
                                   </div>
                                 </td>
                                 <td className="p-4 px-6 text-center">
-                                  <StatusBadge status={reg.status} />
+                                  <StatusBadge status={reg?.status} />
                                 </td>
                                 <td className="p-4 px-6">
                                   <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}>
                                     <CalendarIcon className="h-3.5 w-3.5" />
-                                    {reg.createdAt ? format(new Date(reg.createdAt), "MMM dd, yyyy") : 'N/A'}
+                                    {reg?.createdAt ? format(new Date(reg.createdAt), "MMM dd, yyyy") : 'N/A'}
                                   </div>
                                 </td>
                               </tr>

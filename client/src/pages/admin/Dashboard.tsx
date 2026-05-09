@@ -258,10 +258,11 @@ const AdminDashboard: React.FC = () => {
                     <tr><td colSpan={4} className="py-20 text-center text-slate-400 text-sm">Loading registrations...</td></tr>
                   ) : paginatedTournaments.length > 0 ? (
                     paginatedTournaments.map((reg: any) => {
-                      const avatarStyles = getAvatarStyles(reg.student?.fullName);
+                      const fullName = reg?.student?.fullName || "N/A";
+                      const avatarStyles = getAvatarStyles(fullName);
                       return (
                         <tr
-                          key={reg.id}
+                          key={reg?.id}
                           className="hover:bg-sky-50/30 transition-colors cursor-pointer group"
                           onClick={() => navigate("/admin/registrations")}
                         >
@@ -271,19 +272,19 @@ const AdminDashboard: React.FC = () => {
                                 className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
                                 style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
                               >
-                                {(reg.student?.fullName || "?").charAt(0).toUpperCase()}
+                                {(fullName || "?").charAt(0).toUpperCase()}
                               </div>
-                              <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{reg.student?.fullName}</span>
+                              <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{fullName}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-xs font-medium text-slate-500">{reg.tournament?.title}</span>
+                            <span className="text-xs font-medium text-slate-500">{reg?.tournament?.title || "N/A"}</span>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-xs text-slate-400">{new Date(reg.createdAt).toLocaleDateString()}</span>
+                            <span className="text-xs text-slate-400">{reg?.createdAt ? new Date(reg.createdAt).toLocaleDateString() : "TBD"}</span>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <StatusBadge status={reg.status} />
+                            <StatusBadge status={reg?.status} />
                           </td>
                         </tr>
                       );
@@ -317,10 +318,10 @@ const AdminDashboard: React.FC = () => {
                     <tr><td colSpan={4} className="py-20 text-center text-slate-400 text-sm">Loading enrollments...</td></tr>
                   ) : paginatedCourses.length > 0 ? (
                     paginatedCourses.map((enr: CourseEnrollment) => {
-                      const avatarStyles = getAvatarStyles(enr.studentName);
+                      const avatarStyles = getAvatarStyles(enr?.studentName || "");
                       return (
                         <tr
-                          key={enr.id}
+                          key={enr?.id}
                           className="hover:bg-sky-50/30 transition-colors cursor-pointer group"
                           onClick={() => navigate("/admin/registrations")}
                         >
@@ -330,13 +331,13 @@ const AdminDashboard: React.FC = () => {
                                 className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
                                 style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
                               >
-                                {(enr.studentName || "?").charAt(0).toUpperCase()}
+                                {(enr?.studentName || "?").charAt(0).toUpperCase()}
                               </div>
-                              <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{enr.studentName}</span>
+                              <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{enr?.studentName || "N/A"}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-xs font-medium text-slate-500">{enr.course?.title}</span>
+                            <span className="text-xs font-medium text-slate-500">{enr?.course?.title || "N/A"}</span>
                           </td>
                           <td className="px-6 py-4">
                             <span className="text-xs text-slate-400">{enr.createdAt ? new Date(enr.createdAt).toLocaleDateString() : "TBD"}</span>
