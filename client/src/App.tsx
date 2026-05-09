@@ -22,7 +22,6 @@ const Tournaments = lazy(() => import("./pages/Tournaments.tsx"));
 // ✅ New dynamic route for registration/details
 const TournamentDetails = lazy(() => import("./pages/TournamentDetails.tsx")); 
 const Gallery = lazy(() => import("./pages/Gallery.tsx"));
-const Events = lazy(() => import("./pages/Events.tsx"));
 const Contact = lazy(() => import("./pages/Contact.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
@@ -30,7 +29,6 @@ const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const AdminLogin = lazy(() => import("./pages/admin/Login.tsx"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard.tsx"));
 const AdminCourses = lazy(() => import("./pages/admin/Courses.tsx"));
-const AdminEvents = lazy(() => import("./pages/admin/Events.tsx"));
 const AdminCoursePortal = lazy(() => import("./pages/admin/CoursePortal.tsx"));
 const AdminCourseStudents = lazy(() => import("./pages/admin/CourseStudents.tsx"));
 const AdminTournaments = lazy(() => import("./pages/admin/Tournaments.tsx"));
@@ -72,7 +70,6 @@ const App = () => (
                 {/* ✅ Added the dynamic ID route here */}
                 <Route path="/tournaments/:id" element={<TournamentDetails />} />
                 <Route path="/gallery" element={<Gallery />} />
-                <Route path="/events" element={<Events />} />
                 <Route path="/contact" element={<Contact />} />
               </Route>
 
@@ -92,7 +89,6 @@ const App = () => (
                 <Route path="courses/:id/portal" element={<AdminCoursePortal />} />
                 <Route path="courses/:id/students" element={<AdminCourseStudents />} />
                 <Route path="tournaments" element={<AdminTournaments />} />
-                <Route path="events" element={<AdminEvents />} />
                 <Route path="tournaments/:id/portal" element={<AdminTournamentPortal />} />
                 <Route path="tournaments/:id/students" element={<AdminTournamentStudents />} />
                 <Route path="students" element={<AdminStudents />} />

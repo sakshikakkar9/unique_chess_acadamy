@@ -110,7 +110,7 @@ export default function DataTable<T>({
       <div className="flex items-center justify-between px-4 py-4 border-t bg-muted/10">
         <p className="text-sm text-muted-foreground font-medium">
           Showing <span className="text-foreground">{table.getRowModel().rows.length}</span> of{" "}
-          <span className="text-foreground">{data.length}</span> events
+          <span className="text-foreground">{data.length}</span> records
         </p>
         <div className="flex items-center space-x-2">
           <Button

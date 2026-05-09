@@ -158,7 +158,7 @@ const AdminTournaments: React.FC = () => {
     <div className="space-y-8 p-8 max-w-[1600px] mx-auto">
       <AdminPageHeader
         title="Tournament Console"
-        subtitle="Manage competitive events and registrations window."
+        subtitle="Manage competitive tournaments and registrations window."
         action={
           <Button onClick={handleAdd} className="shadow-lg bg-[#0284c7] hover:bg-[#0284c7]/90 text-white font-bold rounded-full px-6 h-11">
             <Plus className="mr-2 h-4 w-4" /> Add Tournament

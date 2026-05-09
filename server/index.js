@@ -11,7 +11,6 @@ import prisma from './lib/prisma.js';
 // 👉 ROUTES IMPORT
 import adminRoutes from './src/routes/admin.routes.js';
 import tournamentRoutes from './src/routes/tournament.routes.js';
-import eventRoutes from './src/routes/event.routes.js';
 import galleryRoutes from './src/routes/gallery.routes.js';
 import contactRoutes from './src/routes/contact.routes.js';
 import demoRoutes from './src/routes/demo.routes.js';
@@ -80,7 +79,6 @@ app.get('/', async (req, res) => {
 
 app.use('/api/admin', adminRoutes);
 app.use('/api/tournaments', tournamentRoutes);
-app.use('/api/events', eventRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/demo', demoRoutes);
