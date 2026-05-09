@@ -41,21 +41,23 @@ const CourseStudents: React.FC = () => {
     },
   });
 
-  const filteredEnrollments = enrollments.filter((reg) =>
-    reg.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (reg.id && reg.id.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    reg.phone.includes(searchQuery)
-  );
+  const filteredEnrollments = enrollments.filter((reg) => {
+    const name = (reg?.studentName || "").toLowerCase();
+    const id = (reg?.id || "").toLowerCase();
+    const phone = reg?.phone || "";
+    const search = searchQuery.toLowerCase();
+    return name.includes(search) || id.includes(search) || phone.includes(search);
+  });
 
   const handleExport = () => {
     const headers = ["Reference ID", "Student Name", "Category", "Skill Level", "Phone", "Status"];
     const rows = filteredEnrollments.map(r => [
-      r.id,
-      r.studentName,
-      r.category || "N/A",
-      r.experienceLevel || "N/A",
-      r.phone,
-      r.status
+      r?.id || "N/A",
+      r?.studentName || "N/A",
+      r?.category || "N/A",
+      r?.experienceLevel || "N/A",
+      r?.phone || "N/A",
+      r?.status || "PENDING"
     ]);
 
     const csvContent = "data:text/csv;charset=utf-8,"
@@ -202,16 +204,16 @@ const CourseStudents: React.FC = () => {
               </tr>
             ) : (
               filteredEnrollments.map((reg) => {
-                const avatarStyles = getAvatarStyles(reg.studentName);
+                const avatarStyles = getAvatarStyles(reg?.studentName || "");
                 return (
                   <tr
-                    key={reg.id}
+                    key={reg?.id}
                     className="group transition-all duration-120 cursor-pointer"
                     style={{ borderBottom: '1px solid #f8fafc' }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
-                    <td className="p-4 px-6 font-mono text-[10px] font-bold text-[#0284c7]">{reg.id.substring(0, 8)}...</td>
+                    <td className="p-4 px-6 font-mono text-[10px] font-bold text-[#0284c7]">{(reg?.id || "").substring(0, 8)}...</td>
                     <td className="p-4 px-6">
                       <div className="flex items-center gap-3">
                         <div
@@ -229,11 +231,11 @@ const CourseStudents: React.FC = () => {
                             flexShrink: 0
                           }}
                         >
-                          {(reg.studentName || "?").charAt(0).toUpperCase()}
+                          {(reg?.studentName || "?").charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                          <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg.studentName}</p>
-                          <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg.gender} • {reg.dob ? format(new Date(reg.dob), "dd MMM yyyy") : 'N/A'}</span>
+                          <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg?.studentName || "N/A"}</p>
+                          <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg?.gender || "N/A"} • {reg?.dob ? format(new Date(reg.dob), "dd MMM yyyy") : 'N/A'}</span>
                         </div>
                       </div>
                     </td>
@@ -250,15 +252,15 @@ const CourseStudents: React.FC = () => {
                             color: '#64748b'
                           }}
                          >
-                          {reg.category || 'General'}
+                          {reg?.category || 'General'}
                          </span>
-                         <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>Level: {reg.experienceLevel}</div>
+                         <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>Level: {reg?.experienceLevel || "N/A"}</div>
                       </div>
                     </td>
                     <td className="p-4 px-6">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
-                          <Phone className="h-3 w-3" /> {reg.phone}
+                          <Phone className="h-3 w-3" /> {reg?.phone || "N/A"}
                         </div>
                         <div className="flex items-center gap-2" style={{ fontSize: '10px', color: '#94a3b8' }}>
                           <Mail className="h-3 w-3" /> {reg.email || 'No email provided'}
