@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Link,useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BookOpen, Trophy, Image as ImageIcon, Users,
-  TrendingUp, Calendar, UserCheck, ArrowUpRight, GraduationCap, Mail,
-  MessageSquare
+  TrendingUp, Calendar, UserCheck, ArrowUpRight, GraduationCap
 } from "lucide-react";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
@@ -17,6 +16,10 @@ import { AGE_GROUP_LABELS } from "@/types";
 import AdminPageHeader from "@/components/shared/admin/AdminPageHeader";
 import StatusBadge from "@/components/shared/admin/StatusBadge";
 import { cn } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Pagination from "@/components/shared/admin/Pagination";
+
+const ITEMS_PER_PAGE = 6;
 
 const AdminDashboard: React.FC = () => {
   const navigate          = useNavigate();
@@ -42,6 +45,29 @@ const AdminDashboard: React.FC = () => {
       return res.data;
     },
   });
+
+  const [tournamentPage, setTournamentPage] = useState(1);
+  const [coursePage, setCoursePage] = useState(1);
+  const [demoPage, setDemoPage] = useState(1);
+
+  const paginatedTournaments = useMemo(() => {
+    const start = (tournamentPage - 1) * ITEMS_PER_PAGE;
+    return registrations.slice(start, start + ITEMS_PER_PAGE);
+  }, [registrations, tournamentPage]);
+
+  const paginatedCourses = useMemo(() => {
+    const start = (coursePage - 1) * ITEMS_PER_PAGE;
+    return enrollments.slice(start, start + ITEMS_PER_PAGE);
+  }, [enrollments, coursePage]);
+
+  const paginatedDemos = useMemo(() => {
+    const start = (demoPage - 1) * ITEMS_PER_PAGE;
+    return demos.slice(start, start + ITEMS_PER_PAGE);
+  }, [demos, demoPage]);
+
+  const tournamentTotalPages = Math.ceil(registrations.length / ITEMS_PER_PAGE);
+  const courseTotalPages = Math.ceil(enrollments.length / ITEMS_PER_PAGE);
+  const demoTotalPages = Math.ceil(demos.length / ITEMS_PER_PAGE);
 
   const pendingEnrollments = enrollments.filter((e) => e.status === "PENDING");
 
@@ -77,16 +103,6 @@ const AdminDashboard: React.FC = () => {
       path: "/admin/registrations"
     },
     {
-      title: "Messages",
-      value: messagesLoading ? "…" : messages.length.toString(),
-      icon: MessageSquare,
-      accent: "#6366f1",
-      bg: "#eef2ff",
-      numColor: "#4f46e5",
-      status: messages.some(m => !m.isRead) ? "PENDING" : "LIVE",
-      path: "/admin/messages"
-    },
-    {
       title: "Demo Leads",
       value: demosLoading ? "…" : demos.length.toString(),
       icon: Users,
@@ -117,7 +133,7 @@ const AdminDashboard: React.FC = () => {
       />
 
       {/* Stats Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, i) => (
           <div
             key={i}
@@ -185,198 +201,229 @@ const AdminDashboard: React.FC = () => {
         ))}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-
-        {/* Recent Course Enrollments */}
-        <div
-          className="col-span-4 bg-white"
-          style={{
-            border: '1px solid #e0eeff',
-            borderRadius: '14px',
-            overflow: 'hidden'
-          }}
-        >
+      {/* Enhanced Enrollment Tabs */}
+      <div
+        className="bg-white overflow-hidden"
+        style={{
+          border: '1px solid #e0eeff',
+          borderRadius: '14px'
+        }}
+      >
+        <Tabs defaultValue="tournaments" className="w-full">
           <div
-            className="flex justify-between items-center"
-            style={{
-              padding: '14px 18px',
-              borderBottom: '1px solid #f1f5f9'
-            }}
+            className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/30"
           >
-            <h3
-              style={{
-                fontSize: '13px',
-                fontWeight: 700,
-                color: '#0c1a3a',
-                textTransform: 'uppercase',
-                letterSpacing: '.02em'
-              }}
-            >
-              Recent Course Enrollments
-            </h3>
+            <TabsList className="bg-slate-100/50 p-1 rounded-xl border border-slate-200">
+              <TabsTrigger
+                value="tournaments"
+                className="rounded-lg px-6 py-2 text-[11px] font-black uppercase tracking-widest transition-all data-[state=active]:bg-sky-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-sky-500/30"
+              >
+                Tournament Enrollments
+              </TabsTrigger>
+              <TabsTrigger
+                value="courses"
+                className="rounded-lg px-6 py-2 text-[11px] font-black uppercase tracking-widest transition-all data-[state=active]:bg-sky-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-sky-500/30"
+              >
+                Course Enrollments
+              </TabsTrigger>
+              <TabsTrigger
+                value="demos"
+                className="rounded-lg px-6 py-2 text-[11px] font-black uppercase tracking-widest transition-all data-[state=active]:bg-sky-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-sky-500/30"
+              >
+                Demo Enrollments
+              </TabsTrigger>
+            </TabsList>
+
             <Link
               to="/admin/registrations"
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                color: '#0284c7'
-              }}
+              className="text-[10px] font-black uppercase tracking-widest text-sky-600 hover:text-sky-700 flex items-center gap-1"
             >
-              View All →
+              View Full Register <ArrowUpRight className="h-3 w-3" />
             </Link>
           </div>
-          <div>
-            {enrollLoading ? (
-              <div className="text-center py-10 text-slate-400 text-sm">Loading enrollments…</div>
-            ) : enrollments.length > 0 ? (
-              enrollments.slice(0, 5).map((enr) => {
-                const avatarStyles = getAvatarStyles(enr.studentName);
-                return (
-                  <div
-                    key={enr.id}
-                    className="flex items-center gap-3 transition-all duration-120 cursor-pointer"
-                    style={{
-                      padding: '11px 18px',
-                      borderBottom: '1px solid #f8fafc'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                    onClick={() => navigate("/admin/registrations")}
-                  >
-                    <div
-                      style={{
-                        width: '34px',
-                        height: '34px',
-                        borderRadius: '50%',
-                        backgroundColor: avatarStyles.bg,
-                        color: avatarStyles.color,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '12px',
-                        fontWeight: 700,
-                        flexShrink: 0
-                      }}
-                    >
-                      {(enr.studentName || "?").charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">
-                        {enr.studentName}
-                      </p>
-                      <p style={{ fontSize: '11px', color: '#94a3b8' }}>
-                        enrolled in <span style={{ color: '#0284c7' }}>{enr.course?.title ?? "a course"}</span>
-                      </p>
-                    </div>
-                    <StatusBadge status={enr.status} />
-                  </div>
-                );
-              })
-            ) : (
-              <div className="text-center py-10">
-                <GraduationCap className="h-10 w-10 text-slate-200 mx-auto mb-2" />
-                <p className="text-xs text-slate-400">No course enrollments yet.</p>
-              </div>
-            )}
-          </div>
-        </div>
 
-        {/* Right column: Recent Messages */}
-        <div className="col-span-3 flex flex-col gap-6">
+          <TabsContent value="tournaments" className="m-0">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/50 border-b border-slate-100">
+                    <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Student Name</th>
+                    <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Selection</th>
+                    <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Date</th>
+                    <th className="text-right px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {tournamentLoading ? (
+                    <tr><td colSpan={4} className="py-20 text-center text-slate-400 text-sm">Loading registrations...</td></tr>
+                  ) : paginatedTournaments.length > 0 ? (
+                    paginatedTournaments.map((reg: any) => {
+                      const avatarStyles = getAvatarStyles(reg.student?.fullName);
+                      return (
+                        <tr
+                          key={reg.id}
+                          className="hover:bg-sky-50/30 transition-colors cursor-pointer group"
+                          onClick={() => navigate("/admin/registrations")}
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
+                                style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
+                              >
+                                {(reg.student?.fullName || "?").charAt(0).toUpperCase()}
+                              </div>
+                              <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{reg.student?.fullName}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-xs font-medium text-slate-500">{reg.tournament?.title}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-xs text-slate-400">{new Date(reg.createdAt).toLocaleDateString()}</span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <StatusBadge status={reg.status} />
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr><td colSpan={4} className="py-20 text-center text-slate-400 text-sm">No tournament registrations found.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <Pagination
+              currentPage={tournamentPage}
+              totalPages={tournamentTotalPages}
+              onPageChange={setTournamentPage}
+            />
+          </TabsContent>
 
-          {/* Recent Messages */}
-          <div
-            className="bg-white flex-1"
-            style={{
-              border: '1px solid #e0eeff',
-              borderRadius: '14px',
-              overflow: 'hidden'
-            }}
-          >
-            <div
-              className="flex justify-between items-center"
-              style={{
-                padding: '14px 18px',
-                borderBottom: '1px solid #f1f5f9'
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  color: '#0c1a3a',
-                  textTransform: 'uppercase',
-                  letterSpacing: '.02em'
-                }}
-              >
-              Recent Messages
-              </h3>
-              <Link
-              to="/admin/messages"
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  color: '#0284c7'
-                }}
-              >
-                View All →
-              </Link>
+          <TabsContent value="courses" className="m-0">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/50 border-b border-slate-100">
+                    <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Student Name</th>
+                    <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Selection</th>
+                    <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Date</th>
+                    <th className="text-right px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {enrollLoading ? (
+                    <tr><td colSpan={4} className="py-20 text-center text-slate-400 text-sm">Loading enrollments...</td></tr>
+                  ) : paginatedCourses.length > 0 ? (
+                    paginatedCourses.map((enr: CourseEnrollment) => {
+                      const avatarStyles = getAvatarStyles(enr.studentName);
+                      return (
+                        <tr
+                          key={enr.id}
+                          className="hover:bg-sky-50/30 transition-colors cursor-pointer group"
+                          onClick={() => navigate("/admin/registrations")}
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
+                                style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
+                              >
+                                {(enr.studentName || "?").charAt(0).toUpperCase()}
+                              </div>
+                              <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{enr.studentName}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-xs font-medium text-slate-500">{enr.course?.title}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-xs text-slate-400">{enr.createdAt ? new Date(enr.createdAt).toLocaleDateString() : "TBD"}</span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <StatusBadge status={enr.status} />
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr><td colSpan={4} className="py-20 text-center text-slate-400 text-sm">No course enrollments found.</td></tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-            <div>
-            {messagesLoading ? (
-                <div className="text-center py-10 text-slate-400 text-sm">Loading…</div>
-            ) : messages.length > 0 ? (
-              messages.slice(0, 3).map((m: any) => {
-                const avatarStyles = getAvatarStyles(m.name);
-                  return (
-                    <div
-                    key={m.id}
-                      className="flex items-center gap-3 transition-all duration-120 cursor-pointer"
-                      style={{
-                        padding: '11px 18px',
-                        borderBottom: '1px solid #f8fafc'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                    onClick={() => navigate("/admin/messages")}
-                    >
-                      <div
-                        style={{
-                          width: '34px',
-                          height: '34px',
-                          borderRadius: '50%',
-                          backgroundColor: avatarStyles.bg,
-                          color: avatarStyles.color,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '12px',
-                          fontWeight: 700,
-                          flexShrink: 0
-                        }}
-                      >
-                      {(m.name || "?").charAt(0).toUpperCase()}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{m.name}</p>
-                      <p style={{ fontSize: '11px', color: '#94a3b8' }} className="truncate">{m.message}</p>
-                      </div>
-                      <div className="text-right">
-                      <p style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(m.createdAt).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="text-center py-10">
-                <Mail className="h-8 w-8 text-slate-200 mx-auto mb-2" />
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">No messages yet</p>
-                </div>
-              )}
+            <Pagination
+              currentPage={coursePage}
+              totalPages={courseTotalPages}
+              onPageChange={setCoursePage}
+            />
+          </TabsContent>
+
+          <TabsContent value="demos" className="m-0">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/50 border-b border-slate-100">
+                    <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Student Name</th>
+                    <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Scheduled Date</th>
+                    <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Submitted</th>
+                    <th className="text-right px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {demosLoading ? (
+                    <tr><td colSpan={4} className="py-20 text-center text-slate-400 text-sm">Loading demos...</td></tr>
+                  ) : paginatedDemos.length > 0 ? (
+                    paginatedDemos.map((demo: any) => {
+                      const avatarStyles = getAvatarStyles(demo.studentName);
+                      return (
+                        <tr
+                          key={demo.id}
+                          className="hover:bg-sky-50/30 transition-colors cursor-pointer group"
+                          onClick={() => navigate("/admin/registrations")}
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
+                                style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
+                              >
+                                {(demo.studentName || "?").charAt(0).toUpperCase()}
+                              </div>
+                              <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{demo.studentName}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-3 w-3 text-sky-500" />
+                              <span className="text-xs font-medium text-slate-500">{new Date(demo.scheduledAt).toLocaleDateString()}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-xs text-slate-400">{demo.createdAt ? new Date(demo.createdAt).toLocaleDateString() : "TBD"}</span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <StatusBadge status={demo.status} />
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr><td colSpan={4} className="py-20 text-center text-slate-400 text-sm">No demo leads found.</td></tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-          </div>
-        </div>
+            <Pagination
+              currentPage={demoPage}
+              totalPages={demoTotalPages}
+              onPageChange={setDemoPage}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
+
     </div>
   );
 };
