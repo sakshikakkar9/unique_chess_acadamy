@@ -71,7 +71,7 @@ const CourseStudents: React.FC = () => {
   };
 
   const getAvatarStyles = (name: string) => {
-    const firstLetter = name.charAt(0).toUpperCase();
+    const firstLetter = (name || "?").charAt(0).toUpperCase();
     if ("ABCDE".includes(firstLetter)) return { bg: "#e0f2fe", color: "#0284c7" };
     if ("FGHIJ".includes(firstLetter)) return { bg: "#ede9fe", color: "#6d28d9" };
     if ("KLMNO".includes(firstLetter)) return { bg: "#d1fae5", color: "#065f46" };
@@ -229,7 +229,7 @@ const CourseStudents: React.FC = () => {
                             flexShrink: 0
                           }}
                         >
-                          {reg.studentName.charAt(0).toUpperCase()}
+                          {(reg.studentName || "?").charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
                           <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg.studentName}</p>

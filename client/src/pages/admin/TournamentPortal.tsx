@@ -265,7 +265,7 @@ const TournamentPortal: React.FC = () => {
                             const fideRating = student?.fideRating || 0;
                             const status = reg?.status;
 
-                            const firstLetter = fullName.charAt(0).toUpperCase() || '?';
+                            const firstLetter = (fullName || "?").charAt(0).toUpperCase();
                             let avatarStyles = { bg: "#fce7f3", color: "#be185d" };
                             if ("ABCDE".includes(firstLetter)) avatarStyles = { bg: "#e0f2fe", color: "#0284c7" };
                             else if ("FGHIJ".includes(firstLetter)) avatarStyles = { bg: "#ede9fe", color: "#6d28d9" };
