@@ -30,6 +30,7 @@ const AdminTournaments: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewData, setPreviewData] = useState<Tournament | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedBrochure, setSelectedBrochure] = useState<File | null>(null);
@@ -95,16 +96,16 @@ const AdminTournaments: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleViewPreview = (t: Tournament) => {
-    // If we are currently editing this tournament, use formData for preview
-    if (selectedTournament?.id === t.id && isModalOpen) {
-      setSelectedTournament({
+  const handleViewPreview = (t: any) => {
+    // If we are currently in the modal, use formData for preview
+    if (isModalOpen) {
+      setPreviewData({
         ...t,
         ...formData,
         imageUrl: previewUrl || t.imageUrl // Use preview URL if file selected
       });
     } else {
-      setSelectedTournament(t);
+      setPreviewData(t);
     }
     setIsPreviewOpen(true);
   };
@@ -146,7 +147,7 @@ const AdminTournaments: React.FC = () => {
     }
 
     try {
-      if (selectedTournament) await updateTournament(selectedTournament.id, data);
+      if (selectedTournament?.id) await updateTournament(selectedTournament.id, data);
       else await addTournament(data);
       setIsModalOpen(false);
     } catch (error: any) {
@@ -447,8 +448,8 @@ const AdminTournaments: React.FC = () => {
           </div>
 
           <div className="p-4 md:p-12 bg-slate-50/50 max-h-[85vh] overflow-y-auto">
-            {selectedTournament && (
-              <TournamentPreview tournament={selectedTournament} />
+            {previewData && (
+              <TournamentPreview tournament={previewData} />
             )}
           </div>
         </DialogContent>

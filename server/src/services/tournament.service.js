@@ -74,6 +74,8 @@ export const createTournament = async (data) => {
 // ✅ UPDATED: UPDATE TOURNAMENT WITH NEW FIELDS
 export const updateTournament = async (id, data) => {
   const numericId = parseInt(id);
+  if (isNaN(numericId)) throw new Error("Invalid Tournament ID");
+
   return await prisma.tournament.update({
     where: { id: numericId },
     data: {
@@ -90,10 +92,10 @@ export const updateTournament = async (id, data) => {
       contactDetails: data.contactDetails,
       entryFee: data.entryFee !== undefined ? parseFloatSafe(data.entryFee) : undefined,
       // Fixed field names for update logic
-      startDate: data.startDate !== undefined ? parseDate(data.startDate) : undefined,
-      endDate: data.endDate !== undefined ? parseDate(data.endDate) : undefined,
-      regStartDate: data.regStartDate !== undefined ? parseDate(data.regStartDate) : undefined,
-      regEndDate: data.regEndDate !== undefined ? parseDate(data.regEndDate) : undefined,
+      startDate: (data.startDate !== undefined && data.startDate !== "") ? parseDate(data.startDate) : undefined,
+      endDate: (data.endDate !== undefined && data.endDate !== "") ? parseDate(data.endDate) : undefined,
+      regStartDate: (data.regStartDate !== undefined && data.regStartDate !== "") ? parseDate(data.regStartDate) : undefined,
+      regEndDate: (data.regEndDate !== undefined && data.regEndDate !== "") ? parseDate(data.regEndDate) : undefined,
       posterOrientation: data.posterOrientation || undefined,
     }
   });
@@ -102,6 +104,7 @@ export const updateTournament = async (id, data) => {
 // --- DELETE TOURNAMENT (No changes needed) ---
 export const deleteTournament = async (id) => {
   const numericId = parseInt(id);
+  if (isNaN(numericId)) throw new Error("Invalid Tournament ID");
   return await prisma.tournament.delete({ where: { id: numericId } });
 };
 
