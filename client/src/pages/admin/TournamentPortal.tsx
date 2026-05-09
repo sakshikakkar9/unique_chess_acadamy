@@ -239,11 +239,15 @@ const TournamentPortal: React.FC = () => {
                     </tr>
                   ) : (
                     (() => {
-                      const filtered = registrations.filter((reg) =>
-                        reg.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        reg.referenceId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        reg.phone.includes(searchQuery)
-                      );
+                      const filtered = registrations.filter((reg) => {
+                        // Use optional chaining and default to empty strings to prevent crashes
+                        const name = reg?.studentName?.toLowerCase() || "";
+                        const refId = reg?.referenceId?.toLowerCase() || "";
+                        const phone = reg?.phone || "";
+                        const search = searchQuery.toLowerCase();
+                      
+                        return name.includes(search) || refId.includes(search) || phone.includes(search);
+                      });
                       const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
                       const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
