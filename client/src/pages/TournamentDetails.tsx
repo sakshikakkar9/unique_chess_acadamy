@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { 
   Calendar, MapPin, ArrowLeft, Trophy,
   Upload, CheckCircle2, Loader2,
-  CreditCard, Info, Copy, FileText, Phone, Award, User, ChevronDown, AlertCircle, Clock
+  CreditCard, Info, Copy, FileText, Phone, Award, User, ChevronDown, AlertCircle, Clock, ShieldCheck
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
