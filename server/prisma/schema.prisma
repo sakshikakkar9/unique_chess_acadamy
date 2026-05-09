@@ -31,24 +31,6 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
-enum SkillLevel {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-  GRANDMASTER
-}
-
-enum ClassMode {
-  ONLINE
-  OFFLINE
-  HYBRID
-}
-
-enum PaymentStatus {
-  PENDING
-  VERIFIED
-}
-
 model Event {
   id          Int           @id @default(autoincrement())
   title       String
@@ -61,30 +43,28 @@ model Event {
 }
 
 model Tournament {
-  id              Int               @id @default(autoincrement())
-  title           String
-  description     String?           @db.Text
-  startDate       DateTime          // Updated from 'date'
-  endDate         DateTime?         // New
-  location        String?
-  category        String?           // New: Text box requirement
-  totalPrizePool  String?           // New
-  entryFee        Float             @default(0.0)
-  discountDetails String?           // New: The "text box right below entry fee"
-  brochureUrl     String?           // New: For the brochure upload
-  otherDetails    String?           @db.Text // New
-  contactDetails  String?           // New
-  regStartDate    DateTime?         // New
-  regEndDate      DateTime?         // New
-  posterOrientation PosterOrientation @default(LANDSCAPE) // New
-  status          TournamentStatus  @default(UPCOMING)
-  imageUrl        String?           
-  
-  results         TournamentResult[] 
-  registrations   Registration[]     
-  
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  id                Int                @id @default(autoincrement())
+  title             String
+  description       String?
+  startDate         DateTime
+  endDate           DateTime?
+  location          String?
+  category          String?
+  totalPrizePool    String?
+  entryFee          Float              @default(0.0)
+  discountDetails   String?
+  brochureUrl       String?
+  otherDetails      String?
+  contactDetails    String?
+  regStartDate      DateTime?
+  regEndDate        DateTime?
+  posterOrientation PosterOrientation  @default(LANDSCAPE)
+  status            TournamentStatus   @default(UPCOMING)
+  imageUrl          String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  registrations     Registration[]
+  results           TournamentResult[]
 }
 
 model TournamentResult {
@@ -116,52 +96,40 @@ model Contact {
 }
 
 model Student {
-  id              String   @id @default(uuid())
+  id              String             @id @default(uuid())
   fullName        String
   email           String?
-  phone           String   @unique
+  phone           String             @unique
   gender          String
   dob             DateTime
-  address         String   @db.Text
-
-  // Chess Profile
-  fideId          String?  @default("NA")
-  fideRating      Int?     @default(0)
+  address         String
+  fideId          String?            @default("NA")
+  fideRating      Int?               @default(0)
   clubAffiliation String?
-
-  // Course specific
   experienceLevel String?
   preferredBatch  String?
-
   discoverySource String?
-  accountStatus   String   @default("ACTIVE")
-
-  registrations   Registration[]
+  accountStatus   String             @default("ACTIVE")
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
   enrollments     CourseEnrollment[]
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  registrations   Registration[]
 }
 
 model Registration {
-  id              String     @id @default(uuid())
-  referenceId     String     @unique @default(cuid())
-  
+  id              String        @id @default(uuid())
+  referenceId     String        @unique @default(cuid())
   studentId       String
-  student         Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  
-  category        String?    // Tournament category selected by player
-  
-  // Proofs (Storage URLs)
+  category        String?
   ageProofUrl     String
   paymentProofUrl String
-  
   transactionId   String?
   tournamentId    Int
-  status          String     @default("PENDING")
+  status          String        @default("PENDING")
   paymentStatus   PaymentStatus @default(PENDING)
-  createdAt       DateTime   @default(now())
-  tournament      Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  student         Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  tournament      Tournament    @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
 }
 
 model DemoRegistration {
@@ -175,51 +143,60 @@ model DemoRegistration {
 }
 
 model Course {
-  id             String             @id @default(cuid())
-  title          String
-  description    String?            @db.Text
-  ageGroup       String             // e.g., "Kids (5-10)", "Adults"
-  skillLevel     SkillLevel         @default(BEGINNER)
-  classTime      String             // e.g., "17:00"
-  duration       String             // e.g., "60 mins"
-  fee            Float
-  days           String[]           // e.g., ["Monday", "Wednesday"]
-  contactDetails String
-  mode           ClassMode          @default(ONLINE)
-  custom_banner_url String?            // URL from storage bucket
-  brochureUrl     String?            // New: For the course brochure upload
-  posterOrientation PosterOrientation @default(LANDSCAPE)
-  
-  enrollments    CourseEnrollment[] 
-
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  id                String             @id @default(cuid())
+  title             String
+  description       String?
+  ageGroup          String
+  skillLevel        SkillLevel         @default(BEGINNER)
+  classTime         String
+  duration          String
+  fee               Float
+  days              String[]
+  contactDetails    String
+  mode              ClassMode          @default(ONLINE)
+  custom_banner_url String?
+  brochureUrl       String?
+  posterOrientation PosterOrientation  @default(LANDSCAPE)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  enrollments       CourseEnrollment[]
 
   @@map("courses")
 }
 
 model CourseEnrollment {
-  id              String   @id @default(uuid())
-  referenceId     String   @unique @default(cuid())
-
+  id              String        @id @default(uuid())
+  referenceId     String        @unique @default(cuid())
   studentId       String
-  student         Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  
   category        String?
-  
-  // Proofs (Storage URLs)
-  ageProofUrl      String   
-  paymentProofUrl  String   
-  
+  ageProofUrl     String
+  paymentProofUrl String
   transactionId   String?
-
-  status          String   @default("PENDING")
+  status          String        @default("PENDING")
   paymentStatus   PaymentStatus @default(PENDING)
-  courseId        String   
-  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  courseId        String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  course          Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student         Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  GRANDMASTER
+}
+
+enum ClassMode {
+  ONLINE
+  OFFLINE
+  HYBRID
+}
+
+enum PaymentStatus {
+  PENDING
+  VERIFIED
 }
 
 enum TournamentStatus {
