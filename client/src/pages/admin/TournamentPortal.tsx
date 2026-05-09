@@ -142,7 +142,7 @@ const TournamentPortal: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Prize Pool</p>
-                  <p className="text-3xl font-black text-slate-900">{tournament.totalPrizePool || "₹0"}</p>
+                  <p className="text-3xl font-black text-slate-900">{tournament?.totalPrizePool || "₹0"}</p>
                 </div>
                 <div className="pt-4 border-t border-slate-50">
                    <p className="text-xs font-bold text-slate-500">Total tournament rewards</p>
@@ -159,7 +159,7 @@ const TournamentPortal: React.FC = () => {
               </div>
               <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 min-h-[100px]">
                  <p className="text-sm font-bold text-slate-600 leading-relaxed italic">
-                    {tournament.discountDetails || "No special discount details provided for this tournament."}
+                    {tournament?.discountDetails || "No special discount details provided for this tournament."}
                  </p>
               </div>
            </div>
@@ -257,7 +257,7 @@ const TournamentPortal: React.FC = () => {
                       return (
                         <>
                           {paginated.map((reg) => {
-                            const firstLetter = (reg.studentName || "?").charAt(0).toUpperCase();
+                            const firstLetter = (reg?.studentName || "?").charAt(0).toUpperCase();
                             let avatarStyles = { bg: "#fce7f3", color: "#be185d" };
                             if ("ABCDE".includes(firstLetter)) avatarStyles = { bg: "#e0f2fe", color: "#0284c7" };
                             else if ("FGHIJ".includes(firstLetter)) avatarStyles = { bg: "#ede9fe", color: "#6d28d9" };
@@ -270,7 +270,7 @@ const TournamentPortal: React.FC = () => {
                                 className="group transition-all duration-120 cursor-pointer hover:bg-sky-50/50"
                                 style={{ borderBottom: '1px solid #f8fafc' }}
                               >
-                                <td className="p-4 px-6 font-mono text-[10px] font-bold text-[#0284c7]">{reg.referenceId}</td>
+                                <td className="p-4 px-6 font-mono text-[10px] font-bold text-[#0284c7]">{reg?.referenceId || 'N/A'}</td>
                                 <td className="p-4 px-6">
                                   <div className="flex items-center gap-3">
                                     <div
@@ -299,23 +299,23 @@ const TournamentPortal: React.FC = () => {
                                 <td className="p-4 px-6">
                                   <div className="space-y-1">
                                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase">
-                                      {reg.category || 'Open'}
+                                      {reg?.category || 'Open'}
                                      </span>
-                                     <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>FIDE: {reg.fideId} ({reg.fideRating})</div>
+                                     <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>FIDE: {reg?.fideId || 'NA'} ({reg?.fideRating ?? 0})</div>
                                   </div>
                                 </td>
                                 <td className="p-4 px-6">
                                   <div className="space-y-1">
                                     <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
-                                      <Phone className="h-3 w-3" /> {reg.phone}
+                                      <Phone className="h-3 w-3" /> {reg?.phone || 'N/A'}
                                     </div>
                                     <div className="flex items-center gap-2" style={{ fontSize: '10px', color: '#94a3b8' }}>
-                                      <Mail className="h-3 w-3" /> {reg.email || 'No email provided'}
+                                      <Mail className="h-3 w-3" /> {reg?.email || 'No email provided'}
                                     </div>
                                   </div>
                                 </td>
                                 <td className="p-4 px-6 text-center">
-                                  <StatusBadge status={reg.status} />
+                                  <StatusBadge status={reg?.status || 'PENDING'} />
                                 </td>
                                 <td className="p-4 px-6">
                                   <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}>
