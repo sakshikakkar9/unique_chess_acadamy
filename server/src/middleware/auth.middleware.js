@@ -12,7 +12,7 @@ export const verifyAdmin = (req, res, next) => {
   try {
     // Verify the token using your secret key from the .env file
     // e.g., JWT_SECRET=your_super_secret_key_here
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
     
     // Attach the admin data (like admin id) to the request object
     req.admin = decoded; 
