@@ -33,7 +33,9 @@ const AdminFormModal: React.FC<AdminFormModalProps> = ({
 }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] sm:max-h-[85vh] flex flex-col p-0 overflow-hidden
+        fixed bottom-0 sm:bottom-auto left-0 sm:left-auto translate-x-0 sm:-translate-x-1/2 sm:translate-y-0
+        rounded-t-[2rem] sm:rounded-[1.5rem] border-x-0 sm:border-x border-b-0 sm:border-b shadow-2xl transition-all duration-300">
         <DialogHeader className="p-6 pb-2">
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
@@ -45,11 +47,11 @@ const AdminFormModal: React.FC<AdminFormModalProps> = ({
           </div>
         </ScrollArea>
 
-        <DialogFooter className="p-6 pt-2 border-t border-border mt-auto">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
+        <DialogFooter className="p-6 pt-2 border-t border-border mt-auto flex flex-col-reverse sm:flex-row gap-3">
+          <Button variant="outline" className="w-full sm:w-auto" onClick={() => onOpenChange(false)} disabled={isLoading}>
             Cancel
           </Button>
-          <Button onClick={onSave} disabled={isLoading}>
+          <Button className="w-full sm:w-auto" onClick={onSave} disabled={isLoading}>
             {isLoading ? "Saving..." : saveText}
           </Button>
         </DialogFooter>

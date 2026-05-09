@@ -72,7 +72,9 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess }: AddSt
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+      <DialogContent className="sm:max-w-[700px] p-0 overflow-hidden border-none shadow-2xl
+        fixed bottom-0 sm:bottom-auto left-0 sm:left-auto translate-x-0 sm:-translate-x-1/2 sm:translate-y-0
+        rounded-t-[2.5rem] sm:rounded-[2.5rem] transition-all duration-300">
         <div className="bg-slate-900 p-8 text-white">
           <DialogHeader>
             <div className="h-12 w-12 rounded-2xl bg-sky-500/20 flex items-center justify-center mb-4 border border-sky-500/20">
@@ -85,14 +87,14 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess }: AddSt
           </DialogHeader>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-10 max-h-[70vh] overflow-y-auto bg-white">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-8 space-y-10 max-h-[70vh] overflow-y-auto bg-white">
           {/* Personal Section */}
           <section className="space-y-6">
             <div className="flex items-center gap-3 pb-3 border-b border-slate-50">
               <Info className="h-5 w-5 text-sky-600" />
               <h3 className="text-xs font-black uppercase text-slate-900 tracking-widest">Personal Intelligence</h3>
             </div>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Full Name *</Label>
                 <Input
@@ -175,7 +177,7 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess }: AddSt
               <Shield className="h-5 w-5 text-sky-600" />
               <h3 className="text-xs font-black uppercase text-slate-900 tracking-widest">Chess & FIDE Profile</h3>
             </div>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">FIDE ID</Label>
                 <Input
@@ -210,7 +212,7 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess }: AddSt
               <Zap className="h-5 w-5 text-sky-600" />
               <h3 className="text-xs font-black uppercase text-slate-900 tracking-widest">Academy Intelligence</h3>
             </div>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Experience Level</Label>
                 <Select value={form.experienceLevel} onValueChange={v => update("experienceLevel", v)}>
@@ -237,19 +239,19 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess }: AddSt
             </div>
           </section>
 
-          <DialogFooter className="pt-8 border-t border-slate-50">
+          <DialogFooter className="pt-8 border-t border-slate-50 flex flex-col-reverse sm:flex-row gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="h-14 rounded-2xl px-8 font-black uppercase text-[10px] tracking-widest"
+              className="h-14 w-full sm:w-auto rounded-2xl px-8 font-black uppercase text-[10px] tracking-widest"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="h-14 rounded-2xl px-10 bg-sky-600 hover:bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-sky-600/20 transition-all"
+              className="h-14 w-full sm:w-auto rounded-2xl px-10 bg-sky-600 hover:bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-sky-600/20 transition-all"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <UserPlus className="h-4 w-4 mr-2" />}
               Create Student Record

@@ -29,8 +29,14 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({ setSidebarOpen }) => {
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-border bg-background/95 backdrop-blur px-4 md:px-8">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSidebarOpen(true)}>
-          <Menu className="h-5 w-5" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden h-10 w-10"
+          onClick={() => setSidebarOpen(true)}
+          aria-label="Open sidebar"
+        >
+          <Menu className="h-6 w-6" />
         </Button>
         <div className="hidden md:flex flex-col">
           <h2 className="text-sm font-semibold text-foreground">Overview</h2>

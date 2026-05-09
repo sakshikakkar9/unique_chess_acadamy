@@ -15,7 +15,7 @@ import { CourseEnrollment } from "@/types";
 import { AGE_GROUP_LABELS } from "@/types";
 import AdminPageHeader from "@/components/shared/admin/AdminPageHeader";
 import StatusBadge from "@/components/shared/admin/StatusBadge";
-import { cn } from "@/lib/utils";
+import { cn, getAvatarStyles } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Pagination from "@/components/shared/admin/Pagination";
 
@@ -114,14 +114,6 @@ const AdminDashboard: React.FC = () => {
     },
   ];
 
-  const getAvatarStyles = (name: string) => {
-    const firstLetter = (name || "?").charAt(0).toUpperCase();
-    if ("ABCDE".includes(firstLetter)) return { bg: "#e0f2fe", color: "#0284c7" };
-    if ("FGHIJ".includes(firstLetter)) return { bg: "#ede9fe", color: "#6d28d9" };
-    if ("KLMNO".includes(firstLetter)) return { bg: "#d1fae5", color: "#065f46" };
-    if ("PQRST".includes(firstLetter)) return { bg: "#fef3c7", color: "#b45309" };
-    return { bg: "#fce7f3", color: "#be185d" };
-  };
 
   const chessSymbols = ["♟", "♜", "♛"];
 
@@ -133,7 +125,7 @@ const AdminDashboard: React.FC = () => {
       />
 
       {/* Stats Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, i) => (
           <div
             key={i}
@@ -211,9 +203,10 @@ const AdminDashboard: React.FC = () => {
       >
         <Tabs defaultValue="tournaments" className="w-full">
           <div
-            className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/30"
+            className="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-4 sm:px-6 border-b border-slate-100 bg-slate-50/30 gap-4"
           >
-            <TabsList className="bg-slate-100/50 p-1 rounded-xl border border-slate-200">
+            <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
+              <TabsList className="bg-slate-100/50 p-1 rounded-xl border border-slate-200 w-max sm:w-auto">
               <TabsTrigger
                 value="tournaments"
                 className="rounded-lg px-6 py-2 text-[11px] font-black uppercase tracking-widest transition-all data-[state=active]:bg-sky-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-sky-500/30"
@@ -232,18 +225,64 @@ const AdminDashboard: React.FC = () => {
               >
                 Demo Enrollments
               </TabsTrigger>
-            </TabsList>
+
+              </TabsList>
+            </div>
 
             <Link
               to="/admin/registrations"
-              className="text-[10px] font-black uppercase tracking-widest text-sky-600 hover:text-sky-700 flex items-center gap-1"
+              className="text-[10px] font-black uppercase tracking-widest text-sky-600 hover:text-sky-700 flex items-center gap-1 self-end sm:self-center"
             >
               View Full Register <ArrowUpRight className="h-3 w-3" />
             </Link>
           </div>
 
           <TabsContent value="tournaments" className="m-0">
-            <div className="overflow-x-auto">
+            {/* Mobile View: Cards */}
+            <div className="grid grid-cols-1 gap-0 sm:hidden divide-y divide-slate-50">
+              {tournamentLoading ? (
+                <div className="py-20 text-center text-slate-400 text-sm">Loading registrations...</div>
+              ) : paginatedTournaments.length > 0 ? (
+                paginatedTournaments.map((reg: any) => {
+                  const fullName = reg?.student?.fullName || "N/A";
+                  const avatarStyles = getAvatarStyles(fullName);
+                  return (
+                    <div
+                      key={reg?.id}
+                      className="p-4 hover:bg-sky-50/30 transition-colors cursor-pointer group"
+                      onClick={() => navigate("/admin/registrations")}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
+                            style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
+                          >
+                            {(fullName || "?").charAt(0).toUpperCase()}
+                          </div>
+                          <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{fullName}</span>
+                        </div>
+                        <StatusBadge status={reg?.status} />
+                      </div>
+                      <div className="flex justify-between items-end">
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tournament</p>
+                          <p className="text-xs font-medium text-slate-600">{reg?.tournament?.title || "N/A"}</p>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {reg?.createdAt ? new Date(reg.createdAt).toLocaleDateString() : "TBD"}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="py-20 text-center text-slate-400 text-sm">No tournament registrations found.</div>
+              )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="overflow-x-auto hidden sm:block">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-slate-50/50 border-b border-slate-100">
@@ -303,7 +342,50 @@ const AdminDashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="courses" className="m-0">
-            <div className="overflow-x-auto">
+            {/* Mobile View: Cards */}
+            <div className="grid grid-cols-1 gap-0 sm:hidden divide-y divide-slate-50">
+              {enrollLoading ? (
+                <div className="py-20 text-center text-slate-400 text-sm">Loading enrollments...</div>
+              ) : paginatedCourses.length > 0 ? (
+                paginatedCourses.map((enr: CourseEnrollment) => {
+                  const avatarStyles = getAvatarStyles(enr?.studentName || "");
+                  return (
+                    <div
+                      key={enr?.id}
+                      className="p-4 hover:bg-sky-50/30 transition-colors cursor-pointer group"
+                      onClick={() => navigate("/admin/registrations")}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
+                            style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
+                          >
+                            {(enr?.studentName || "?").charAt(0).toUpperCase()}
+                          </div>
+                          <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{enr?.studentName || "N/A"}</span>
+                        </div>
+                        <StatusBadge status={enr.status} />
+                      </div>
+                      <div className="flex justify-between items-end">
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Course</p>
+                          <p className="text-xs font-medium text-slate-600">{enr?.course?.title || "N/A"}</p>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {enr.createdAt ? new Date(enr.createdAt).toLocaleDateString() : "TBD"}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="py-20 text-center text-slate-400 text-sm">No course enrollments found.</div>
+              )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="overflow-x-auto hidden sm:block">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-slate-50/50 border-b border-slate-100">
@@ -362,7 +444,53 @@ const AdminDashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="demos" className="m-0">
-            <div className="overflow-x-auto">
+            {/* Mobile View: Cards */}
+            <div className="grid grid-cols-1 gap-0 sm:hidden divide-y divide-slate-50">
+              {demosLoading ? (
+                <div className="py-20 text-center text-slate-400 text-sm">Loading demos...</div>
+              ) : paginatedDemos.length > 0 ? (
+                paginatedDemos.map((demo: any) => {
+                  const avatarStyles = getAvatarStyles(demo.studentName);
+                  return (
+                    <div
+                      key={demo.id}
+                      className="p-4 hover:bg-sky-50/30 transition-colors cursor-pointer group"
+                      onClick={() => navigate("/admin/registrations")}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold"
+                            style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
+                          >
+                            {(demo.studentName || "?").charAt(0).toUpperCase()}
+                          </div>
+                          <span className="text-sm font-semibold text-slate-700 group-hover:text-sky-600 transition-colors">{demo.studentName}</span>
+                        </div>
+                        <StatusBadge status={demo.status} />
+                      </div>
+                      <div className="flex justify-between items-end">
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Scheduled At</p>
+                          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                            <Calendar className="h-3 w-3 text-sky-500" />
+                            {new Date(demo.scheduledAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {demo.createdAt ? new Date(demo.createdAt).toLocaleDateString() : "TBD"}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="py-20 text-center text-slate-400 text-sm">No demo leads found.</div>
+              )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="overflow-x-auto hidden sm:block">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-slate-50/50 border-b border-slate-100">

@@ -73,7 +73,8 @@ const CoursePortal: React.FC = () => {
       </div>
 
       <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="bg-white border border-slate-200 p-1.5 h-16 rounded-[20px] mb-8 shadow-sm inline-flex">
+        <div className="overflow-x-auto pb-4 scrollbar-none">
+          <TabsList className="bg-white border border-slate-200 p-1.5 h-16 rounded-[20px] mb-4 md:mb-8 shadow-sm inline-flex min-w-max">
           <TabsTrigger
             value="summary"
             className="rounded-[14px] px-8 h-full font-black text-[11px] uppercase tracking-[0.1em] data-[state=active]:bg-[#0284c7] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-sky-500/20 transition-all duration-300"
@@ -92,7 +93,8 @@ const CoursePortal: React.FC = () => {
           >
             <Users className="h-4 w-4 mr-2" /> Students
           </TabsTrigger>
-        </TabsList>
+          </TabsList>
+        </div>
 
         <TabsContent value="summary" className="mt-0 focus-visible:ring-0">
            <div className="bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-slate-200/50 p-8 md:p-12 overflow-hidden">
@@ -101,7 +103,7 @@ const CoursePortal: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="finance" className="mt-0 focus-visible:ring-0 space-y-8">
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
              <div className="bg-white p-8 rounded-[24px] border border-slate-100 shadow-sm space-y-4">
                 <div className="h-12 w-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
                   <TrendingUp className="h-6 w-6 text-emerald-600" />
@@ -202,7 +204,85 @@ const CoursePortal: React.FC = () => {
               </div>
            </div>
 
-           <div className="bg-white overflow-hidden border border-slate-100 rounded-[24px] shadow-sm">
+           {/* Mobile View: Cards */}
+           <div className="grid grid-cols-1 gap-4 md:hidden">
+             {isRegLoading ? (
+               [...Array(3)].map((_, i) => (
+                 <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                   <Skeleton className="h-20 w-full" />
+                 </div>
+               ))
+             ) : enrollments.length === 0 ? (
+               <div className="bg-white p-12 text-center rounded-2xl border border-slate-100 shadow-sm">
+                 <FileText className="h-10 w-10 text-slate-200 mx-auto mb-4" />
+                 <p className="text-sm font-bold text-slate-400">No signups yet</p>
+               </div>
+             ) : (
+               (() => {
+                 const filtered = enrollments.filter((reg) => {
+                   const name = (reg?.student?.fullName || "").toLowerCase();
+                   const id = (reg?.id || "").toLowerCase();
+                   const phone = reg?.student?.phone || "";
+                   const search = searchQuery.toLowerCase();
+                   return name.includes(search) || id.includes(search) || phone.includes(search);
+                 });
+                 const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+                 return paginated.map((reg) => {
+                   const fullName = reg?.student?.fullName || "N/A";
+                   const firstLetter = (fullName || "?").charAt(0).toUpperCase();
+                   let avatarStyles = { bg: "#fce7f3", color: "#be185d" };
+                   if ("ABCDE".includes(firstLetter)) avatarStyles = { bg: "#e0f2fe", color: "#0284c7" };
+                   else if ("FGHIJ".includes(firstLetter)) avatarStyles = { bg: "#ede9fe", color: "#6d28d9" };
+                   else if ("KLMNO".includes(firstLetter)) avatarStyles = { bg: "#d1fae5", color: "#065f46" };
+                   else if ("PQRST".includes(firstLetter)) avatarStyles = { bg: "#fef3c7", color: "#b45309" };
+
+                   return (
+                     <div key={reg?.id} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                       <div className="flex items-center justify-between">
+                         <div className="flex items-center gap-3">
+                           <div
+                             style={{
+                               width: '36px',
+                               height: '36px',
+                               borderRadius: '50%',
+                               backgroundColor: avatarStyles.bg,
+                               color: avatarStyles.color,
+                               display: 'flex',
+                               alignItems: 'center',
+                               justifyContent: 'center',
+                               fontSize: '12px',
+                               fontWeight: 700,
+                             }}
+                           >
+                             {firstLetter}
+                           </div>
+                           <div>
+                             <p className="text-sm font-bold text-slate-900">{fullName}</p>
+                             <p className="text-[10px] text-slate-400 font-medium">Enrolled on {reg?.createdAt ? format(new Date(reg.createdAt), "dd MMM yyyy") : 'N/A'}</p>
+                           </div>
+                         </div>
+                         <StatusBadge status={reg?.status} />
+                       </div>
+                       <div className="grid grid-cols-2 gap-4 pt-3 border-t border-slate-50">
+                         <div>
+                           <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Contact</p>
+                           <p className="text-[11px] font-bold text-slate-700">{reg?.student?.phone || "N/A"}</p>
+                         </div>
+                         <div>
+                           <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Level</p>
+                           <p className="text-[11px] font-bold text-slate-700">{reg?.student?.experienceLevel || "N/A"}</p>
+                         </div>
+                       </div>
+                     </div>
+                   );
+                 });
+               })()
+             )}
+           </div>
+
+           {/* Desktop View: Table */}
+           <div className="bg-white overflow-hidden border border-slate-100 rounded-[24px] shadow-sm hidden md:block">
               <table className="w-full border-collapse">
                 <thead style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                   <tr className="text-[10px] font-black uppercase text-[#64748b] tracking-[0.08em]">
@@ -335,18 +415,18 @@ const CoursePortal: React.FC = () => {
                                       size="sm"
                                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                       disabled={currentPage === 1}
-                                      className="h-9 rounded-lg px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
+                                      className="h-9 rounded-lg px-3 sm:px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
                                     >
-                                      <ChevronLeft className="mr-1 h-3.5 w-3.5" /> Previous
+                                      <ChevronLeft className="sm:mr-1 h-3.5 w-3.5" /> <span className="hidden sm:inline">Previous</span>
                                     </Button>
                                     <Button
                                       variant="outline"
                                       size="sm"
                                       onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                       disabled={currentPage === totalPages}
-                                      className="h-9 rounded-lg px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
+                                      className="h-9 rounded-lg px-3 sm:px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
                                     >
-                                      Next <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                                      <span className="hidden sm:inline">Next</span> <ChevronRight className="sm:ml-1 h-3.5 w-3.5" />
                                     </Button>
                                   </div>
                                 </div>

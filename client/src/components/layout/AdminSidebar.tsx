@@ -46,10 +46,10 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, setOpen }) => {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed md:sticky top-0 left-0 z-50 h-screen w-64 flex flex-col",
+          "fixed top-0 left-0 z-50 h-screen w-64 flex flex-col",
           "bg-[#0f172a] border-r border-[#1e293b]",
-          "transition-transform duration-300 ease-in-out md:translate-x-0",
-          open ? "translate-x-0" : "-translate-x-full"
+          "transition-transform duration-300 ease-in-out",
+          open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
         {/* Logo block */}

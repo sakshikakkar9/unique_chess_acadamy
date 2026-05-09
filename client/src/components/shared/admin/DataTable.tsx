@@ -73,8 +73,70 @@ const DataTable = <T extends { id: string | number }>({
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-      <Table>
+    <div className="space-y-4">
+      {/* Mobile Grid View */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {data.length === 0 ? (
+          <div className="bg-white p-20 text-center rounded-2xl border border-slate-100">
+            <div className="flex flex-col items-center gap-2 text-slate-300">
+              <MoreHorizontal className="h-8 w-8" />
+              <p className="text-[10px] font-black uppercase tracking-widest">No records found</p>
+            </div>
+          </div>
+        ) : (
+          data.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-4"
+              onClick={() => onRowClick?.(item)}
+            >
+              <div className="flex justify-between items-start">
+                <div className="space-y-3 flex-1">
+                  {columns.map((col, i) => (
+                    <div key={i}>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">{col.header}</p>
+                      <div className="text-sm text-slate-600">
+                        {col.cell ? col.cell(item) : (item[col.accessorKey as keyof T] as React.ReactNode)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {(onEdit || onDelete) && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50 rounded-full">
+                        <MoreHorizontal className="h-4 w-4 text-slate-400" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {onEdit && (
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(item); }}>
+                          <Edit className="mr-2 h-4 w-4" /> Edit
+                        </DropdownMenuItem>
+                      )}
+                      {onDelete && (
+                        <DropdownMenuItem
+                          onClick={(e) => { e.stopPropagation(); onDelete(item); }}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" /> Delete
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm hidden md:block">
+        <Table>
         <TableHeader>
           <TableRow className="bg-slate-50/50 hover:bg-slate-50/50">
             {columns.map((col, i) => (
@@ -150,6 +212,7 @@ const DataTable = <T extends { id: string | number }>({
           )}
         </TableBody>
       </Table>
+      </div>
     </div>
   );
 };
