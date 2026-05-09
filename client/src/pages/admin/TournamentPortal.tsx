@@ -182,11 +182,11 @@ const TournamentPortal: React.FC = () => {
                     const headers = ["Reference ID", "Student Name", "Category", "FIDE ID", "Rating", "Phone", "Status"];
                     const rows = registrations?.map(r => [
                       r?.referenceId,
-                      r?.studentName,
+                      r?.student?.fullName || 'N/A',
                         r?.category || "N/A",
-                        r?.fideId || "NA",
-                        r?.fideRating,
-                        r?.phone,
+                        r?.student?.fideId || "NA",
+                        r?.student?.fideRating,
+                        r?.student?.phone,
                         r?.status
                     ]);
                     const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].map(e => e.join(",")).join("\n");
@@ -241,9 +241,9 @@ const TournamentPortal: React.FC = () => {
                     (() => {
                       const filtered = (registrations || []).filter((reg) => {
                         // Use optional chaining and default to empty strings to prevent crashes
-                        const name = reg?.studentName?.toLowerCase() || "";
+                        const name = reg?.student?.fullName?.toLowerCase() || "";
                         const refId = reg?.referenceId?.toLowerCase() || "";
-                        const phone = reg?.phone || "";
+                        const phone = reg?.student?.phone || "";
                         const search = searchQuery.toLowerCase();
                       
                         return name.includes(search) || refId.includes(search) || phone.includes(search);
@@ -254,7 +254,7 @@ const TournamentPortal: React.FC = () => {
                       return (
                         <>
                           {paginated.map((reg) => {
-                            const firstLetter = reg?.studentName?.charAt(0).toUpperCase() || '?';
+                            const firstLetter = reg?.student?.fullName?.charAt(0).toUpperCase() || '?';
                             let avatarStyles = { bg: "#fce7f3", color: "#be185d" };
                             if ("ABCDE".includes(firstLetter)) avatarStyles = { bg: "#e0f2fe", color: "#0284c7" };
                             else if ("FGHIJ".includes(firstLetter)) avatarStyles = { bg: "#ede9fe", color: "#6d28d9" };
@@ -288,8 +288,8 @@ const TournamentPortal: React.FC = () => {
                                       {firstLetter}
                                     </div>
                                     <div className="min-w-0">
-                                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg?.studentName}</p>
-                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg?.gender} • {reg?.dob ? format(new Date(reg.dob), "dd MMM yyyy") : 'Date TBD'}</span>
+                                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg?.student?.fullName}</p>
+                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg?.student?.gender} • {reg?.student?.dob ? format(new Date(reg.student.dob), "dd MMM yyyy") : 'Date TBD'}</span>
                                     </div>
                                   </div>
                                 </td>
@@ -298,16 +298,16 @@ const TournamentPortal: React.FC = () => {
                                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase">
                                       {reg?.category || 'Open'}
                                      </span>
-                                     <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>FIDE: {reg?.fideId} ({reg?.fideRating})</div>
+                                     <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>FIDE: {reg?.student?.fideId} ({reg?.student?.fideRating})</div>
                                   </div>
                                 </td>
                                 <td className="p-4 px-6">
                                   <div className="space-y-1">
                                     <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
-                                      <Phone className="h-3 w-3" /> {reg?.phone}
+                                      <Phone className="h-3 w-3" /> {reg?.student?.phone}
                                     </div>
                                     <div className="flex items-center gap-2" style={{ fontSize: '10px', color: '#94a3b8' }}>
-                                      <Mail className="h-3 w-3" /> {reg?.email || 'No email provided'}
+                                      <Mail className="h-3 w-3" /> {reg?.student?.email || 'No email provided'}
                                     </div>
                                   </div>
                                 </td>
