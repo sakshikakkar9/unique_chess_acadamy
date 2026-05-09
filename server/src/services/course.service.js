@@ -133,44 +133,50 @@ export const createEnrollment = async (courseId, data, proofs) => {
   }
 
   try {
-    // Smart Sync: Create or Update Student
-    const student = await prisma.student.upsert({
-      where: { phone: data.phone || "" },
-      update: {
-        fullName: data.studentName,
-        email: data.email || "",
-        gender: data.gender || "Other",
-        dob: formattedDob || new Date(),
-        fideId: data.fideId || "NA",
-        fideRating: parseInt(data.fideRating) || 0,
-        address: data.address || "NA",
-        discoverySource: data.discoverySource || "NA",
-        experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
-      },
-      create: {
-        fullName: data.studentName || "Unknown Student",
-        phone: data.phone || "",
-        email: data.email || "",
-        gender: data.gender || "Other",
-        dob: formattedDob || new Date(),
-        fideId: data.fideId || "NA",
-        fideRating: parseInt(data.fideRating) || 0,
-        address: data.address || "NA",
-        discoverySource: data.discoverySource || "NA",
-        experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
-      }
-    });
+    return await prisma.$transaction(async (tx) => {
+      // Smart Sync: Create or Update Student
+      const student = await tx.student.upsert({
+        where: { phone: data.phone || "" },
+        update: {
+          fullName: data.studentName,
+          email: data.email || "",
+          gender: data.gender || "Other",
+          dob: formattedDob || new Date(),
+          fideId: data.fideId || "NA",
+          fideRating: parseInt(data.fideRating) || 0,
+          address: data.address || "NA",
+          discoverySource: data.discoverySource || "NA",
+          experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
+        },
+        create: {
+          fullName: data.studentName || "Unknown Student",
+          phone: data.phone || "",
+          email: data.email || "",
+          gender: data.gender || "Other",
+          dob: formattedDob || new Date(),
+          fideId: data.fideId || "NA",
+          fideRating: parseInt(data.fideRating) || 0,
+          address: data.address || "NA",
+          discoverySource: data.discoverySource || "NA",
+          experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
+        }
+      });
 
-    return await prisma.courseEnrollment.create({
-      data: {
-        courseId,
-        studentId: student.id,
-        category: data.category || "General",
-        ageProofUrl: ageProofUrl,
-        paymentProofUrl: paymentProofUrl,
-        transactionId: data.transactionId || "",
-        status: 'PENDING',
-      },
+      return await tx.courseEnrollment.create({
+        data: {
+          course: {
+            connect: { id: courseId }
+          },
+          student: {
+            connect: { id: student.id }
+          },
+          category: data.category || "General",
+          ageProofUrl: ageProofUrl,
+          paymentProofUrl: paymentProofUrl,
+          transactionId: data.transactionId || "",
+          status: 'PENDING',
+        },
+      });
     });
   } catch (error) {
     console.error("Prisma Enrollment Error:", error);
