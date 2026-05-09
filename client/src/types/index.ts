@@ -108,24 +108,27 @@ export type EnrollmentStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "REJECTED
 
 export interface CourseEnrollment {
   id: string;
-  studentName: string;
-  email: string;
-  phone: string;
-  gender: string;
-  dob: string | Date;
-  address: string;
-  fideId?: string;
-  fideRating?: number;
-  discoverySource: string;
+  studentId: string;
   category?: string;
   ageProofUrl: string;
   paymentProofUrl: string;
   transactionId?: string;
-  experienceLevel?: string;
+  status: EnrollmentStatus;
   courseId: string;
   course?: { id: string; title: string; ageGroup: AgeGroup };
-  status: EnrollmentStatus;
+  student?: {
+    fullName: string;
+    email?: string;
+    phone: string;
+    gender: string;
+    dob: string | Date;
+    address: string;
+    fideId?: string;
+    fideRating?: number;
+    experienceLevel?: string;
+  };
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface DemoRegistration {
