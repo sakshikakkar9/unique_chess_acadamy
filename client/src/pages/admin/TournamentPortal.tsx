@@ -37,7 +37,7 @@ const TournamentPortal: React.FC = () => {
     },
   });
 
-  const totalCollections = registrations.length * (tournament?.entryFee || 0);
+  const totalCollections = (registrations?.length || 0) * (tournament?.entryFee || 0);
 
   if (isTournamentLoading) {
     return (
@@ -122,7 +122,7 @@ const TournamentPortal: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Entry Fee</p>
-                  <p className="text-3xl font-black text-slate-900">₹{tournament.entryFee.toLocaleString()}</p>
+                  <p className="text-3xl font-black text-slate-900">₹{tournament?.entryFee?.toLocaleString() || "0"}</p>
                 </div>
                 <div className="pt-4 border-t border-slate-50">
                    <p className="text-xs font-bold text-slate-500">Standard rate per player</p>
@@ -180,14 +180,14 @@ const TournamentPortal: React.FC = () => {
                   className="h-12 rounded-xl font-bold gap-2 bg-[#0c1a3a] hover:bg-[#0284c7] transition-all flex-1 md:flex-none"
                   onClick={() => {
                     const headers = ["Reference ID", "Student Name", "Category", "FIDE ID", "Rating", "Phone", "Status"];
-                    const rows = registrations.map(r => [
-                      r.referenceId,
-                      r.studentName,
-                      r.category || "N/A",
-                      r.fideId || "NA",
-                      r.fideRating,
-                      r.phone,
-                      r.status
+                    const rows = registrations?.map(r => [
+                      r?.referenceId,
+                      r?.studentName,
+                        r?.category || "N/A",
+                        r?.fideId || "NA",
+                        r?.fideRating,
+                        r?.phone,
+                        r?.status
                     ]);
                     const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].map(e => e.join(",")).join("\n");
                     const encodedUri = encodeURI(csvContent);
@@ -223,7 +223,7 @@ const TournamentPortal: React.FC = () => {
                         <td colSpan={6} className="p-4 px-6"><Skeleton className="h-12 w-full" /></td>
                       </tr>
                     ))
-                  ) : registrations.length === 0 ? (
+                  ) : (registrations?.length || 0) === 0 ? (
                     <tr>
                       <td colSpan={6} className="h-64 text-center">
                         <div className="flex flex-col items-center justify-center gap-4 py-12">
@@ -239,7 +239,7 @@ const TournamentPortal: React.FC = () => {
                     </tr>
                   ) : (
                     (() => {
-                      const filtered = registrations.filter((reg) => {
+                      const filtered = (registrations || []).filter((reg) => {
                         // Use optional chaining and default to empty strings to prevent crashes
                         const name = reg?.studentName?.toLowerCase() || "";
                         const refId = reg?.referenceId?.toLowerCase() || "";
@@ -254,7 +254,7 @@ const TournamentPortal: React.FC = () => {
                       return (
                         <>
                           {paginated.map((reg) => {
-                            const firstLetter = reg.studentName.charAt(0).toUpperCase();
+                            const firstLetter = reg?.studentName?.charAt(0).toUpperCase() || '?';
                             let avatarStyles = { bg: "#fce7f3", color: "#be185d" };
                             if ("ABCDE".includes(firstLetter)) avatarStyles = { bg: "#e0f2fe", color: "#0284c7" };
                             else if ("FGHIJ".includes(firstLetter)) avatarStyles = { bg: "#ede9fe", color: "#6d28d9" };
@@ -263,11 +263,11 @@ const TournamentPortal: React.FC = () => {
 
                             return (
                               <tr
-                                key={reg.id}
+                                key={reg?.id}
                                 className="group transition-all duration-120 cursor-pointer hover:bg-sky-50/50"
                                 style={{ borderBottom: '1px solid #f8fafc' }}
                               >
-                                <td className="p-4 px-6 font-mono text-[10px] font-bold text-[#0284c7]">{reg.referenceId}</td>
+                                <td className="p-4 px-6 font-mono text-[10px] font-bold text-[#0284c7]">{reg?.referenceId}</td>
                                 <td className="p-4 px-6">
                                   <div className="flex items-center gap-3">
                                     <div
@@ -285,39 +285,39 @@ const TournamentPortal: React.FC = () => {
                                         flexShrink: 0
                                       }}
                                     >
-                                      {reg.studentName.charAt(0).toUpperCase()}
+                                      {firstLetter}
                                     </div>
                                     <div className="min-w-0">
-                                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg.studentName}</p>
-                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg.gender} • {format(new Date(reg.dob), "dd MMM yyyy")}</span>
+                                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg?.studentName}</p>
+                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg?.gender} • {reg?.dob ? format(new Date(reg.dob), "dd MMM yyyy") : 'Date TBD'}</span>
                                     </div>
                                   </div>
                                 </td>
                                 <td className="p-4 px-6">
                                   <div className="space-y-1">
                                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase">
-                                      {reg.category || 'Open'}
+                                      {reg?.category || 'Open'}
                                      </span>
-                                     <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>FIDE: {reg.fideId} ({reg.fideRating})</div>
+                                     <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>FIDE: {reg?.fideId} ({reg?.fideRating})</div>
                                   </div>
                                 </td>
                                 <td className="p-4 px-6">
                                   <div className="space-y-1">
                                     <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
-                                      <Phone className="h-3 w-3" /> {reg.phone}
+                                      <Phone className="h-3 w-3" /> {reg?.phone}
                                     </div>
                                     <div className="flex items-center gap-2" style={{ fontSize: '10px', color: '#94a3b8' }}>
-                                      <Mail className="h-3 w-3" /> {reg.email || 'No email provided'}
+                                      <Mail className="h-3 w-3" /> {reg?.email || 'No email provided'}
                                     </div>
                                   </div>
                                 </td>
                                 <td className="p-4 px-6 text-center">
-                                  <StatusBadge status={reg.status} />
+                                  <StatusBadge status={reg?.status} />
                                 </td>
                                 <td className="p-4 px-6">
                                   <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}>
                                     <CalendarIcon className="h-3.5 w-3.5" />
-                                    {format(new Date(reg.createdAt), "MMM dd, yyyy")}
+                                    {reg?.createdAt ? format(new Date(reg.createdAt), "MMM dd, yyyy") : 'Date TBD'}
                                   </div>
                                 </td>
                               </tr>
