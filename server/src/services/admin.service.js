@@ -23,17 +23,26 @@ export const loginAdmin = async (credentials) => {
   const { username, password } = credentials;
   const admin = await prisma.admin.findUnique({ where: { username } });
   
-  if (!admin || !admin.passwordHash) {
+  if (!admin) {
+    console.warn(`Login attempt failed: User "${username}" not found.`);
+    throw new Error('Invalid credentials');
+  }
+
+  if (!admin.passwordHash) {
+    console.error(`Critical error: Admin user "${username}" exists but has no passwordHash.`);
     throw new Error('Invalid credentials');
   }
 
   // ✅ Compare against passwordHash
   const isMatch = await bcrypt.compare(password, admin.passwordHash);
-  if (!isMatch) throw new Error('Invalid credentials');
+  if (!isMatch) {
+    console.warn(`Login attempt failed: Incorrect password for user "${username}".`);
+    throw new Error('Invalid credentials');
+  }
 
   const token = jwt.sign(
     { id: admin.id }, 
-    process.env.JWT_SECRET || 'secret_key', 
+    process.env.JWT_SECRET,
     { expiresIn: '1d' }
   );
   
