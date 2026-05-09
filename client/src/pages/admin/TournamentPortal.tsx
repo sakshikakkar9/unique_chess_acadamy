@@ -37,7 +37,14 @@ const TournamentPortal: React.FC = () => {
     },
   });
 
-  const totalCollections = registrations.length * (tournament?.entryFee || 0);
+  const totalCollections = (registrations?.length || 0) * (tournament?.entryFee || 0);
+
+  const formatDateSafe = (date: any, formatStr: string) => {
+    if (!date) return "N/A";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "Invalid Date";
+    return format(d, formatStr);
+  };
 
   if (isTournamentLoading) {
     return (
@@ -122,7 +129,7 @@ const TournamentPortal: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Entry Fee</p>
-                  <p className="text-3xl font-black text-slate-900">₹{tournament.entryFee.toLocaleString()}</p>
+                  <p className="text-3xl font-black text-slate-900">₹{tournament?.entryFee?.toLocaleString() ?? "0"}</p>
                 </div>
                 <div className="pt-4 border-t border-slate-50">
                    <p className="text-xs font-bold text-slate-500">Standard rate per player</p>
@@ -180,14 +187,14 @@ const TournamentPortal: React.FC = () => {
                   className="h-12 rounded-xl font-bold gap-2 bg-[#0c1a3a] hover:bg-[#0284c7] transition-all flex-1 md:flex-none"
                   onClick={() => {
                     const headers = ["Reference ID", "Student Name", "Category", "FIDE ID", "Rating", "Phone", "Status"];
-                    const rows = registrations.map(r => [
-                      r.referenceId,
-                      r.studentName,
+                    const rows = (registrations || []).map(r => [
+                      r.referenceId || "N/A",
+                      r.studentName || "N/A",
                       r.category || "N/A",
                       r.fideId || "NA",
-                      r.fideRating,
-                      r.phone,
-                      r.status
+                      r.fideRating || 0,
+                      r.phone || "N/A",
+                      r.status || "PENDING"
                     ]);
                     const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].map(e => e.join(",")).join("\n");
                     const encodedUri = encodeURI(csvContent);
@@ -223,7 +230,7 @@ const TournamentPortal: React.FC = () => {
                         <td colSpan={6} className="p-4 px-6"><Skeleton className="h-12 w-full" /></td>
                       </tr>
                     ))
-                  ) : registrations.length === 0 ? (
+                  ) : (!registrations || registrations.length === 0) ? (
                     <tr>
                       <td colSpan={6} className="h-64 text-center">
                         <div className="flex flex-col items-center justify-center gap-4 py-12">
@@ -239,10 +246,10 @@ const TournamentPortal: React.FC = () => {
                     </tr>
                   ) : (
                     (() => {
-                      const filtered = registrations.filter((reg) =>
-                        reg.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        reg.referenceId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        reg.phone.includes(searchQuery)
+                      const filtered = (registrations || []).filter((reg) =>
+                        (reg.studentName?.toLowerCase() ?? "").includes(searchQuery.toLowerCase()) ||
+                        (reg.referenceId?.toLowerCase() ?? "").includes(searchQuery.toLowerCase()) ||
+                        (reg.phone ?? "").includes(searchQuery)
                       );
                       const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
                       const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
@@ -250,7 +257,7 @@ const TournamentPortal: React.FC = () => {
                       return (
                         <>
                           {paginated.map((reg) => {
-                            const firstLetter = reg.studentName.charAt(0).toUpperCase();
+                            const firstLetter = (reg.studentName || "?").charAt(0).toUpperCase();
                             let avatarStyles = { bg: "#fce7f3", color: "#be185d" };
                             if ("ABCDE".includes(firstLetter)) avatarStyles = { bg: "#e0f2fe", color: "#0284c7" };
                             else if ("FGHIJ".includes(firstLetter)) avatarStyles = { bg: "#ede9fe", color: "#6d28d9" };
@@ -281,11 +288,11 @@ const TournamentPortal: React.FC = () => {
                                         flexShrink: 0
                                       }}
                                     >
-                                      {reg.studentName.charAt(0).toUpperCase()}
+                                      {firstLetter}
                                     </div>
                                     <div className="min-w-0">
-                                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg.studentName}</p>
-                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg.gender} • {format(new Date(reg.dob), "dd MMM yyyy")}</span>
+                                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{reg.studentName || 'N/A'}</p>
+                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg.gender || 'N/A'} • {formatDateSafe(reg.dob, "dd MMM yyyy")}</span>
                                     </div>
                                   </div>
                                 </td>
@@ -313,7 +320,7 @@ const TournamentPortal: React.FC = () => {
                                 <td className="p-4 px-6">
                                   <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}>
                                     <CalendarIcon className="h-3.5 w-3.5" />
-                                    {format(new Date(reg.createdAt), "MMM dd, yyyy")}
+                                    {formatDateSafe(reg.createdAt, "MMM dd, yyyy")}
                                   </div>
                                 </td>
                               </tr>
