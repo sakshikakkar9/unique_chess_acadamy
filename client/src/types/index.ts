@@ -78,22 +78,24 @@ export interface TournamentResult {
 export interface Registration {
   id: string;
   referenceId: string;
-  studentName: string;
-  gender: string;
   category?: string;
-  dob: string | Date;
-  email?: string;
-  phone: string;
-  fideId: string;
-  fideRating: number;
-  address: string;
   ageProofUrl: string;
   paymentProofUrl: string;
-  discoverySource: string;
   transactionId?: string;
   tournamentId: number;
   status: 'PENDING' | 'APPROVED' | 'CANCELLED' | 'COMPLETED' | 'CONFIRMED' | 'REJECTED';
   createdAt: string;
+
+  student?: {
+    fullName: string;
+    email?: string;
+    phone: string;
+    gender: string;
+    dob: string | Date;
+    address: string;
+    fideId?: string;
+    fideRating?: number;
+  };
 
   // ✅ Add this so the Admin Page can show the Tournament Title
   tournament?: {
