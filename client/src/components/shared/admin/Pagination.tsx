@@ -52,9 +52,9 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
           size="sm"
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
-          className="h-9 rounded-lg px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200 text-slate-600 hover:bg-sky-50"
+          className="h-10 sm:h-9 rounded-lg px-3 sm:px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200 text-slate-600 hover:bg-sky-50"
         >
-          <ChevronLeft className="mr-1 h-3.5 w-3.5" /> Previous
+          <ChevronLeft className="sm:mr-1 h-3.5 w-3.5" /> <span className="hidden sm:inline">Previous</span>
         </Button>
 
         <div className="hidden md:flex items-center gap-1 mx-2">
@@ -66,9 +66,9 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
           size="sm"
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
-          className="h-9 rounded-lg px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200 text-slate-600 hover:bg-sky-50"
+          className="h-10 sm:h-9 rounded-lg px-3 sm:px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200 text-slate-600 hover:bg-sky-50"
         >
-          Next <ChevronRight className="ml-1 h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Next</span> <ChevronRight className="sm:ml-1 h-3.5 w-3.5" />
         </Button>
       </div>
     </div>

@@ -94,14 +94,14 @@ export default function StudentsPage() {
 
   return (
     <div className="p-8 max-w-[1600px] mx-auto space-y-8">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
         <AdminPageHeader
           title="Student Management"
           subtitle="Centralized directory of all academy students and their progress."
         />
         <Button
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 px-6 font-bold flex items-center gap-2 shadow-lg shadow-sky-600/20"
+          className="bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 px-6 font-bold flex items-center gap-2 shadow-lg shadow-sky-600/20 w-full sm:w-auto justify-center"
         >
           <Plus className="h-4 w-4" /> Add New Student
         </Button>
@@ -114,15 +114,15 @@ export default function StudentsPage() {
       />
 
       <div
-        className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white"
+        className="flex flex-col lg:flex-row justify-between items-center gap-4 lg:gap-6 bg-white"
         style={{
           border: '1px solid #e0eeff',
           padding: '14px 18px',
           borderRadius: '14px'
         }}
       >
-        <div className="flex items-center gap-4 w-full md:w-auto flex-1">
-          <div className="relative flex-1">
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto flex-1">
+          <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8]" />
             <Input
               placeholder="Search by name, phone or email..."
@@ -133,7 +133,7 @@ export default function StudentsPage() {
           </div>
 
           <Select value={tournamentFilter} onValueChange={setTournamentFilter}>
-            <SelectTrigger className="h-11 w-56 rounded-xl border-slate-200 font-bold text-[10px] uppercase tracking-widest">
+            <SelectTrigger className="h-11 w-full sm:w-56 rounded-xl border-slate-200 font-bold text-[10px] uppercase tracking-widest">
               <div className="flex items-center gap-2">
                 <Trophy className="h-3.5 w-3.5 text-amber-500" />
                 <SelectValue placeholder="Tournament" />
@@ -148,7 +148,7 @@ export default function StudentsPage() {
           </Select>
 
           <Select value={courseFilter} onValueChange={setCourseFilter}>
-            <SelectTrigger className="h-11 w-56 rounded-xl border-slate-200 font-bold text-[10px] uppercase tracking-widest">
+            <SelectTrigger className="h-11 w-full sm:w-56 rounded-xl border-slate-200 font-bold text-[10px] uppercase tracking-widest">
               <div className="flex items-center gap-2">
                 <BookOpen className="h-3.5 w-3.5 text-sky-500" />
                 <SelectValue placeholder="Course" />
@@ -164,8 +164,107 @@ export default function StudentsPage() {
         </div>
       </div>
 
+      {/* Mobile View: Cards */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {isLoading ? (
+          <div className="bg-white p-10 text-center rounded-2xl border border-slate-100">
+            <RefreshCw className="h-6 w-6 animate-spin mx-auto text-blue-600" />
+            <p className="text-[10px] font-black uppercase tracking-widest mt-2 text-slate-400">Loading Students...</p>
+          </div>
+        ) : filteredStudents.length === 0 ? (
+          <div className="bg-white p-20 text-center rounded-2xl border border-slate-100">
+            <div className="flex flex-col items-center gap-2 text-slate-300">
+              <Users className="h-10 w-10" />
+              <p className="font-bold uppercase tracking-widest text-xs">No students found</p>
+            </div>
+          </div>
+        ) : (
+          filteredStudents.map((student: any) => {
+            const avatarStyles = getAvatarStyles(student.fullName);
+            return (
+              <div
+                key={student.id}
+                className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-4"
+                onClick={() => navigate(`/admin/students/${student.id}`)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        backgroundColor: avatarStyles.bg,
+                        color: avatarStyles.color,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '14px',
+                        fontWeight: 700,
+                      }}
+                    >
+                      {(student.fullName || "?").charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">{student.fullName}</p>
+                      <p className="text-[11px] text-slate-400 font-medium">
+                        {student.gender} • {new Date().getFullYear() - new Date(student.dob).getFullYear()} Years
+                      </p>
+                    </div>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50 rounded-full">
+                        <MoreVertical className="h-4 w-4 text-slate-400" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 rounded-2xl border-slate-100 shadow-xl p-2">
+                      <DropdownMenuItem
+                        className="font-bold text-[11px] uppercase tracking-widest py-3 rounded-xl cursor-pointer"
+                        onClick={() => navigate(`/admin/students/${student.id}`)}
+                      >
+                        <Eye className="mr-2 h-4 w-4 text-sky-500" /> View Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="font-bold text-[11px] uppercase tracking-widest py-3 rounded-xl cursor-pointer text-rose-600 focus:text-rose-600"
+                        onClick={() => handleDelete(student.id)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" /> Delete Student
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-50">
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Contact</p>
+                    <p className="text-[11px] font-bold text-slate-700 flex items-center gap-1">
+                      <Phone className="h-3 w-3 text-sky-500" /> {student.phone}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Status</p>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                        student.accountStatus === 'ACTIVE'
+                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                          : 'bg-rose-50 text-rose-600 border border-rose-100'
+                      }`}
+                    >
+                      {student.accountStatus}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Desktop View: Table */}
       <div
-        className="bg-white overflow-hidden"
+        className="bg-white overflow-hidden hidden md:block"
         style={{
           border: '1px solid #e0eeff',
           borderRadius: '14px'
