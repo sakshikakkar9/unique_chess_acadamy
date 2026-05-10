@@ -19,31 +19,37 @@ interface AddStudentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  editingRecord?: any;
 }
 
-export default function AddStudentModal({ open, onOpenChange, onSuccess }: AddStudentModalProps) {
+export default function AddStudentModal({ open, onOpenChange, onSuccess, editingRecord }: AddStudentModalProps) {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    gender: "Male",
-    dob: "",
-    address: "",
-    fideId: "NA",
-    fideRating: "0",
-    clubAffiliation: "",
-    experienceLevel: "BEGINNER",
-    preferredBatch: "",
-    discoverySource: "Social Media"
+    fullName: editingRecord?.fullName || "",
+    email: editingRecord?.email || "",
+    phone: editingRecord?.phone || "",
+    gender: editingRecord?.gender || "Male",
+    dob: editingRecord?.dob ? new Date(editingRecord.dob).toISOString().split('T')[0] : "",
+    address: editingRecord?.address || "",
+    fideId: editingRecord?.fideId || "NA",
+    fideRating: editingRecord?.fideRating?.toString() || "0",
+    clubAffiliation: editingRecord?.clubAffiliation || "",
+    experienceLevel: editingRecord?.experienceLevel || "BEGINNER",
+    preferredBatch: editingRecord?.preferredBatch || "",
+    discoverySource: editingRecord?.discoverySource || "Social Media"
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.post("/students", form);
-      toast.success("Student added successfully");
+      if (editingRecord) {
+        await api.patch(`/students/${editingRecord.id}`, form);
+        toast.success("Student updated successfully");
+      } else {
+        await api.post("/students", form);
+        toast.success("Student added successfully");
+      }
       onSuccess();
       onOpenChange(false);
       setForm({
@@ -80,14 +86,16 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess }: AddSt
             <div className="h-12 w-12 rounded-2xl bg-sky-500/20 flex items-center justify-center mb-4 border border-sky-500/20">
               <UserPlus className="h-6 w-6 text-sky-400" />
             </div>
-            <DialogTitle className="text-3xl font-black tracking-tight text-white uppercase">Initialize Student</DialogTitle>
+            <DialogTitle className="text-3xl font-black tracking-tight text-white uppercase">
+              {editingRecord ? "Update Student" : "Initialize Student"}
+            </DialogTitle>
             <DialogDescription className="text-slate-400 font-bold uppercase text-[10px] tracking-widest mt-2">
-              Create a centralized profile for manual academy onboarding.
+              {editingRecord ? "Update the student profile information." : "Create a centralized profile for manual academy onboarding."}
             </DialogDescription>
           </DialogHeader>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 sm:p-8 space-y-10 max-h-[70vh] overflow-y-auto bg-white">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-8 space-y-10 max-h-[70vh] overflow-y-auto bg-white" key={editingRecord?.id ?? 'new'}>
           {/* Personal Section */}
           <section className="space-y-6">
             <div className="flex items-center gap-3 pb-3 border-b border-slate-50">
@@ -254,7 +262,7 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess }: AddSt
               className="h-14 w-full sm:w-auto rounded-2xl px-10 bg-sky-600 hover:bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-sky-600/20 transition-all"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <UserPlus className="h-4 w-4 mr-2" />}
-              Create Student Record
+              {editingRecord ? "Update Student Record" : "Create Student Record"}
             </Button>
           </DialogFooter>
         </form>

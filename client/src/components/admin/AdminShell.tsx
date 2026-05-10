@@ -57,7 +57,7 @@ const AdminShell: React.FC<AdminShellProps> = ({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-screen flex flex-col transition-all duration-300 ease-in-out border-r border-uca-border bg-uca-bg-surface",
+          "fixed top-0 left-0 z-50 h-screen flex flex-col transition-all duration-300 ease-in-out border-r border-uca-border bg-uca-sidebar-bg",
           // Mobile
           isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-64",
           // Tablet
@@ -94,13 +94,13 @@ const AdminShell: React.FC<AdminShellProps> = ({
                 className={cn(
                   "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 group/item",
                   isActive
-                    ? "bg-uca-navy text-white shadow-lg shadow-black/20"
-                    : "text-uca-text-muted hover:bg-uca-bg-elevated hover:text-uca-text-primary"
+                    ? "bg-uca-sidebar-hover text-white shadow-lg shadow-black/20"
+                    : "text-uca-sidebar-text hover:bg-uca-sidebar-hover hover:text-white"
                 )}
               >
                 <item.icon className={cn(
                   "size-5 shrink-0 transition-colors",
-                  isActive ? "text-uca-accent-blue" : "group-hover/item:text-uca-text-primary"
+                  isActive ? "text-white" : "group-hover/item:text-white"
                 )} />
                 <span className={cn(
                   "text-sm font-medium transition-opacity duration-200 whitespace-nowrap",
@@ -133,11 +133,11 @@ const AdminShell: React.FC<AdminShellProps> = ({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 md:ml-16 lg:ml-64 transition-all duration-300">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 border-b border-uca-border bg-uca-bg-surface sticky top-0 z-30 shrink-0">
+        <header className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 border-b border-uca-border bg-uca-bg-surface shadow-sm sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-4 flex-1 min-w-0">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="md:hidden p-2 -ml-2 text-uca-text-muted hover:text-uca-text-primary transition-colors"
+              className="md:hidden p-2 -ml-2 text-uca-text-muted hover:text-uca-text-inverse transition-colors"
             >
               <Menu className="size-6" />
             </button>

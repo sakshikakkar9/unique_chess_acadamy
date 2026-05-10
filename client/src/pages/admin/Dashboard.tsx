@@ -173,7 +173,7 @@ const AdminDashboard: React.FC = () => {
 
               <Link
                 to="/admin/registrations"
-                className="text-[10px] font-black uppercase tracking-widest text-uca-accent-blue hover:text-white flex items-center gap-1 transition-colors"
+                className="text-[10px] font-black uppercase tracking-widest text-uca-accent-blue hover:text-uca-text-primary flex items-center gap-1 transition-colors"
               >
                 Full Register <ArrowUpRight className="size-3" />
               </Link>

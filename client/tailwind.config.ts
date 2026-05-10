@@ -24,16 +24,32 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         uca: {
-          'bg-base':     '#0A1628',
-          'bg-surface':  '#0F1C2E',
-          'bg-elevated': '#162236',
-          'border':      '#1E3A5F',
-          'navy':        '#1E3A5F',
-          'navy-hover':  '#16304F',
-          'text-primary':'#F1F5F9',
-          'text-muted':  '#94A3B8',
-          'accent-blue': '#3B82F6',
-          'accent-red':  '#EF4444',
+          // Backgrounds
+          'bg-base':      '#F0F4F8',   // outermost page bg (cool light grey)
+          'bg-surface':   '#FFFFFF',   // cards, tables, modals
+          'bg-elevated':  '#E8EEF4',   // hover states, dropdowns, sidebar
+
+          // Borders
+          'border':       '#CBD5E1',   // all dividers and outlines (slate-300)
+
+          // Primary brand (Navy — keep for buttons/accents only)
+          'navy':         '#1E3A5F',
+          'navy-hover':   '#16304F',
+
+          // Typography
+          'text-primary': '#0F172A',   // headings (slate-900)
+          'text-muted':   '#475569',   // subtitles, labels (slate-600)
+          'text-inverse': '#F1F5F9',   // text on navy buttons
+
+          // Accents
+          'accent-blue':  '#2563EB',   // edit icons, links
+          'accent-red':   '#DC2626',   // delete icons, danger
+
+          // Sidebar
+          'sidebar-bg':   '#1E3A5F',   // keep sidebar navy for contrast
+          'sidebar-text': '#CBD5E1',
+          'sidebar-active':'#FFFFFF',
+          'sidebar-hover':'#16304F',
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",

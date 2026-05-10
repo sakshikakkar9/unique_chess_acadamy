@@ -69,7 +69,7 @@ const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
               right: `${menuPosition.right}px`,
               minWidth: '160px'
             }}
-            className="z-[100] bg-uca-bg-surface border border-uca-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100"
+            className="z-[100] bg-uca-bg-surface border border-uca-border rounded-xl shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-100"
           >
             <button
               onClick={(e) => {
@@ -77,9 +77,9 @@ const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
                 setIsOpen(false);
                 onEdit();
               }}
-              className="w-full flex items-center gap-2 px-4 py-3 text-sm text-slate-200 hover:bg-uca-bg-elevated transition-colors text-left"
+              className="w-full flex items-center gap-2 px-4 py-3 text-sm text-uca-accent-blue hover:bg-uca-bg-elevated transition-colors text-left"
             >
-              <Pencil className="size-4 text-blue-400" />
+              <Pencil className="size-4 text-uca-accent-blue" />
               <span>Edit Record</span>
             </button>
             <button

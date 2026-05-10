@@ -33,6 +33,7 @@ export default function StudentsPage() {
   const [tournamentFilter, setTournamentFilter] = useState("ALL");
   const [courseFilter, setCourseFilter] = useState("ALL");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<any>(null);
 
   const { data: students = [], isLoading, refetch } = useQuery({
     queryKey: ["admin-students", tournamentFilter, courseFilter],
@@ -178,7 +179,7 @@ export default function StudentsPage() {
                   <SelectValue placeholder="Tournament" />
                 </div>
               </SelectTrigger>
-              <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
                 <SelectItem value="ALL">All Tournaments</SelectItem>
                 {tournaments.map((t: any) => (
                   <SelectItem key={t.id} value={t.id.toString()}>{t.title}</SelectItem>
@@ -193,7 +194,7 @@ export default function StudentsPage() {
                   <SelectValue placeholder="Course" />
                 </div>
               </SelectTrigger>
-              <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
                 <SelectItem value="ALL">All Courses</SelectItem>
                 {courses.map((c: any) => (
                   <SelectItem key={c.id} value={c.id}>{c.title}</SelectItem>
@@ -209,15 +210,16 @@ export default function StudentsPage() {
           rows={rows}
           isLoading={isLoading}
           onRowClick={(s) => navigate(`/admin/students/${s.id}`)}
-          onEdit={(s) => navigate(`/admin/students/${s.id}`)} // Student edit is typically the detail page
+          onEdit={(s) => { setEditingRecord(s); setIsAddModalOpen(true); }}
           onDelete={(s) => handleDelete(s.id)}
         />
       </div>
 
       <AddStudentModal
         open={isAddModalOpen}
-        onOpenChange={setIsAddModalOpen}
+        onOpenChange={(open) => { setIsAddModalOpen(open); if (!open) setEditingRecord(null); }}
         onSuccess={() => refetch()}
+        editingRecord={editingRecord}
       />
     </AdminShell>
   );

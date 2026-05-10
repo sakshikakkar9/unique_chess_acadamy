@@ -62,7 +62,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
         </div>
 
         {/* Header */}
-        <div className="flex justify-between items-center px-5 py-4 sm:px-6 sm:py-4 border-b border-uca-border bg-uca-bg-surface shrink-0">
+        <div className="flex justify-between items-center px-5 py-4 sm:px-6 sm:py-4 border-b border-uca-border bg-uca-bg-surface shadow-sm sticky top-0 z-10 shrink-0">
           <h3 className="text-lg font-bold text-uca-text-primary">{title}</h3>
           <Button
             variant="ghost"
