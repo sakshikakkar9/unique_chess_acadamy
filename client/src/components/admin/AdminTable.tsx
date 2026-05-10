@@ -1,7 +1,7 @@
 import React from "react";
 import RowActionMenu from "./RowActionMenu";
 import { cn } from "@/lib/utils";
-import { Inbox, ChevronUpDown } from "lucide-react";
+import { Inbox, ChevronsUpDown } from "lucide-react";
 
 export interface AdminTableColumn {
   key: string;
@@ -82,7 +82,7 @@ const AdminTable: React.FC<AdminTableProps> = ({
                 >
                   <div className={cn("flex items-center gap-1", col.align === 'right' && "justify-end")}>
                     {col.label}
-                    <ChevronUpDown className="size-3 opacity-30" />
+                    <ChevronsUpDown className="size-3 opacity-30" />
                   </div>
                 </th>
               ))}
