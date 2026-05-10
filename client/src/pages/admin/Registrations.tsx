@@ -20,6 +20,7 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { useDemoAdmin } from "@/features/demo/hooks/useDemoRegistration";
+import { Label } from "@/components/ui/label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { format } from "date-fns";
