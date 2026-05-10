@@ -27,6 +27,7 @@ const AdminCourses = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [editingRecord, setEditingRecord] = useState<any>(null);
   
   const [formData, setFormData] = useState<any>({ 
     title: "",
@@ -106,6 +107,7 @@ const AdminCourses = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedCourse(null);
+    setEditingRecord(null);
     setSelectedFile(null);
     setSelectedBrochure(null);
     setPreviewUrl("");
@@ -138,16 +140,16 @@ const AdminCourses = () => {
       case "BEGINNER": return "bg-green-500/10 text-green-500";
       case "INTERMEDIATE": return "bg-blue-500/10 text-blue-500";
       case "ADVANCED": return "bg-purple-500/10 text-purple-500";
-      default: return "bg-slate-500/10 text-slate-500";
+      default: return "bg-slate-500/10 text-uca-text-muted";
     }
   };
 
   const getModePillStyles = (mode: string) => {
     switch(mode) {
       case "ONLINE": return "bg-cyan-500/10 text-cyan-500";
-      case "OFFLINE": return "bg-slate-500/10 text-slate-400";
+      case "OFFLINE": return "bg-slate-500/10 text-uca-text-muted";
       case "HYBRID": return "bg-pink-500/10 text-pink-500";
-      default: return "bg-slate-500/10 text-slate-500";
+      default: return "bg-slate-500/10 text-uca-text-muted";
     }
   };
 
@@ -222,7 +224,7 @@ const AdminCourses = () => {
                   <SelectValue placeholder="Level" />
                 </div>
               </SelectTrigger>
-              <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
                 <SelectItem value="ALL">All Levels</SelectItem>
                 {["BEGINNER", "INTERMEDIATE", "ADVANCED", "GRANDMASTER"].map(l => (
                   <SelectItem key={l} value={l}>{l}</SelectItem>
@@ -245,6 +247,7 @@ const AdminCourses = () => {
           onRowClick={(c) => navigate(`/admin/courses/${c.id}/portal`)}
           onEdit={(c) => {
             setSelectedCourse(c);
+            setEditingRecord(c);
             setFormData({ ...c, posterOrientation: c.posterOrientation || "LANDSCAPE" });
             setPreviewUrl(c.custom_banner_url);
             setIsModalOpen(true);
@@ -286,17 +289,17 @@ const AdminCourses = () => {
       <AdminModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        title={selectedCourse ? "Update Program" : "Create Program"}
+        title={editingRecord ? "Update Program" : "Create Program"}
         footer={
           <>
-            <Button variant="ghost" onClick={closeModal} className="text-uca-text-muted hover:text-white">Cancel</Button>
-            <Button onClick={handleSave} className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10">
-              {selectedCourse ? "Save Changes" : "Create Course"}
+            <Button variant="ghost" onClick={closeModal} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
+            <Button onClick={handleSave} className="bg-uca-navy hover:bg-uca-navy-hover text-uca-text-primary font-bold px-8 h-10">
+              {editingRecord ? "Save Changes" : "Create Course"}
             </Button>
           </>
         }
       >
-        <div className="space-y-6 py-2">
+        <div className="space-y-6 py-2" key={editingRecord?.id ?? 'new'}>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Course Title</Label>
@@ -321,7 +324,7 @@ const AdminCourses = () => {
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Skill Level</Label>
               <Select value={formData.skillLevel} onValueChange={(v) => setFormData({...formData, skillLevel: v})}>
                 <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"><SelectValue /></SelectTrigger>
-                <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
+                <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
                   {["BEGINNER", "INTERMEDIATE", "ADVANCED", "GRANDMASTER"].map(l => (
                     <SelectItem key={l} value={l}>{l}</SelectItem>
                   ))}
@@ -332,7 +335,7 @@ const AdminCourses = () => {
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Class Mode</Label>
               <Select value={formData.mode} onValueChange={(v) => setFormData({...formData, mode: v})}>
                 <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"><SelectValue /></SelectTrigger>
-                <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
+                <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
                   {["ONLINE", "OFFLINE", "HYBRID"].map(m => (
                     <SelectItem key={m} value={m}>{m}</SelectItem>
                   ))}
@@ -354,8 +357,8 @@ const AdminCourses = () => {
                   className={cn(
                     "px-4 py-1.5 rounded-full text-[10px] font-bold uppercase transition-all border",
                     formData.days?.includes(day)
-                      ? "bg-uca-accent-blue border-uca-accent-blue text-white shadow-lg shadow-uca-accent-blue/20"
-                      : "bg-uca-bg-elevated border-uca-border text-uca-text-muted hover:text-white"
+                      ? "bg-uca-accent-blue border-uca-accent-blue text-uca-text-primary shadow-lg shadow-uca-accent-blue/20"
+                      : "bg-uca-bg-elevated border-uca-border text-uca-text-muted hover:text-uca-text-primary"
                   )}
                 >
                   {day}
@@ -369,7 +372,7 @@ const AdminCourses = () => {
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Age Group Tag</Label>
               <Select value={formData.ageGroup} onValueChange={(v) => setFormData({...formData, ageGroup: v})}>
                 <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"><SelectValue /></SelectTrigger>
-                <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
+                <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
                   {Object.entries(AGE_GROUP_LABELS).map(([k, v]) => (
                     <SelectItem key={k} value={k}>{v as string}</SelectItem>
                   ))}
@@ -433,7 +436,7 @@ const AdminCourses = () => {
                 <>
                   <img src={previewUrl} className="size-full object-cover" />
                   <button onClick={(e) => { e.stopPropagation(); setPreviewUrl(""); setSelectedFile(null); }} className="absolute top-2 right-2 size-8 bg-uca-accent-red rounded-lg flex items-center justify-center shadow-lg">
-                    <X className="size-4 text-white" />
+                    <X className="size-4 text-uca-text-primary" />
                   </button>
                 </>
               ) : (

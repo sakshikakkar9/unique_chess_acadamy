@@ -50,7 +50,7 @@ const AdminTable: React.FC<AdminTableProps> = ({
       <div className="hidden md:block overflow-x-auto rounded-xl border border-uca-border bg-uca-bg-surface">
         <table className="w-full text-sm text-left">
           <thead>
-            <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
+            <tr className="bg-uca-bg-elevated border-b border-uca-border">
               {columns.map((col) => (
                 <th
                   key={col.key}
@@ -75,7 +75,7 @@ const AdminTable: React.FC<AdminTableProps> = ({
                 key={row.id || i}
                 onClick={() => onRowClick?.(row)}
                 className={cn(
-                  "hover:bg-uca-bg-elevated/30 transition-colors",
+                  "hover:bg-uca-bg-elevated transition-colors",
                   onRowClick && "cursor-pointer"
                 )}
               >

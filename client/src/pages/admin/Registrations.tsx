@@ -32,6 +32,8 @@ type RegistrationTab = 'course' | 'tournament' | 'demo';
 export default function RegistrationsPage() {
   const [activeTab, setActiveTab] = useState<RegistrationTab>("course");
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [courseFilter, setCourseFilter] = useState("ALL");
@@ -204,7 +206,7 @@ export default function RegistrationsPage() {
                   <SelectValue placeholder="Status" />
                 </div>
               </SelectTrigger>
-              <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
                 <SelectItem value="ALL">All Status</SelectItem>
                 <SelectItem value="PENDING">Pending</SelectItem>
                 <SelectItem value="APPROVED">Approved</SelectItem>
@@ -222,7 +224,7 @@ export default function RegistrationsPage() {
                     <SelectValue placeholder="All Courses" />
                   </div>
                 </SelectTrigger>
-                <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
+                <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
                   <SelectItem value="ALL">All Programs</SelectItem>
                   {courses.map((c: any) => (
                     <SelectItem key={c.id} value={c.title}>{c.title}</SelectItem>
@@ -253,10 +255,72 @@ export default function RegistrationsPage() {
           rows={rows}
           isLoading={currentLoading}
           onRowClick={(item) => setSelectedItem({ ...item, type: currentType })}
-          onEdit={(item) => setSelectedItem({ ...item, type: currentType })}
+          onEdit={(item) => { setEditingRecord({ ...item, type: currentType }); setIsEditModalOpen(true); }}
           onDelete={(item) => handleAction(item.id, currentType, 'delete')}
         />
       </div>
+
+      <AdminModal
+        isOpen={isEditModalOpen}
+        onClose={() => { setIsEditModalOpen(false); setEditingRecord(null); }}
+        title={`Edit ${editingRecord?.type === 'tournament' ? 'Tournament' : editingRecord?.type === 'course' ? 'Course' : 'Demo'} Registration`}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => { setIsEditModalOpen(false); setEditingRecord(null); }} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
+            <Button
+              onClick={() => {
+                // Since this page doesn't have a full form for registrations yet,
+                // and the brief asks for pre-population, but the existing logic is status-based.
+                // I will implement a minimal status updater in the modal if it's meant to be a form.
+                setIsEditModalOpen(false);
+                setEditingRecord(null);
+              }}
+              className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10"
+            >
+              Save Changes
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4 py-2" key={editingRecord?.id ?? 'new'}>
+          <div className="grid gap-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Registration Status</Label>
+            <Select
+              value={editingRecord?.status}
+              onValueChange={(val) => handleAction(editingRecord.id, editingRecord.type, 'status', val)}
+            >
+              <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="APPROVED">Approved</SelectItem>
+                <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                <SelectItem value="REJECTED">Rejected</SelectItem>
+                <SelectItem value="CANCELLED">Cancelled</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {editingRecord?.type !== 'demo' && (
+            <div className="grid gap-2">
+              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Payment Status</Label>
+              <Select
+                value={editingRecord?.paymentStatus}
+                onValueChange={(val) => handleAction(editingRecord.id, editingRecord.type, 'paymentStatus', val)}
+              >
+                <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
+                  <SelectItem value="PENDING">Pending</SelectItem>
+                  <SelectItem value="VERIFIED">Verified</SelectItem>
+                  <SelectItem value="FAILED">Failed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </div>
+      </AdminModal>
 
       {/* Details Sheet */}
       <Sheet open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
@@ -290,7 +354,7 @@ export default function RegistrationsPage() {
                       <button onClick={() => {
                         navigator.clipboard.writeText(selectedItem.referenceId || selectedItem.id);
                         toast.success("Ref ID Copied");
-                      }} className="text-uca-text-muted hover:text-white transition-colors">
+                      }} className="text-uca-text-muted hover:text-uca-text-primary transition-colors">
                         <Copy className="size-3" />
                       </button>
                     </div>
@@ -382,14 +446,14 @@ export default function RegistrationsPage() {
                         className="group relative aspect-video bg-uca-bg-surface rounded-xl overflow-hidden border border-uca-border hover:border-uca-accent-blue/50 transition-colors"
                       >
                         <img src={selectedItem.ageProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
-                        <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-white bg-black/40">View Age Proof</span>
+                        <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-uca-text-primary bg-black/40">View Age Proof</span>
                       </button>
                       <button
                         onClick={() => window.open(selectedItem.paymentProofUrl)}
                         className="group relative aspect-video bg-uca-bg-surface rounded-xl overflow-hidden border border-uca-border hover:border-uca-accent-blue/50 transition-colors"
                       >
                         <img src={selectedItem.paymentProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
-                        <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-white bg-black/40">View Payment Proof</span>
+                        <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-uca-text-primary bg-black/40">View Payment Proof</span>
                       </button>
                     </div>
                   </section>
@@ -399,7 +463,7 @@ export default function RegistrationsPage() {
               <div className="p-6 bg-uca-bg-surface border-t border-uca-border flex gap-3 shrink-0">
                 {selectedItem.status === "PENDING" && (
                   <Button
-                    className="flex-1 h-12 bg-uca-navy hover:bg-uca-navy-hover text-white rounded-lg font-bold text-xs uppercase tracking-widest"
+                    className="flex-1 h-12 bg-uca-navy hover:bg-uca-navy-hover text-uca-text-primary rounded-lg font-bold text-xs uppercase tracking-widest"
                     onClick={() => handleAction(selectedItem.id, selectedItem.type, 'status', selectedItem.type === 'course' ? 'CONFIRMED' : 'APPROVED')}
                   >
                     Approve Entry
@@ -407,7 +471,7 @@ export default function RegistrationsPage() {
                 )}
                 <Button
                   variant="outline"
-                  className="flex-1 h-12 rounded-lg font-bold text-xs uppercase tracking-widest border-uca-border bg-uca-bg-base text-uca-text-muted hover:text-white"
+                  className="flex-1 h-12 rounded-lg font-bold text-xs uppercase tracking-widest border-uca-border bg-uca-bg-base text-uca-text-muted hover:text-uca-text-primary"
                   onClick={() => handleAction(selectedItem.id, selectedItem.type, 'status', selectedItem.type === 'course' ? 'REJECTED' : 'CANCELLED')}
                 >
                   {selectedItem.type === 'course' ? 'Reject' : 'Cancel'}

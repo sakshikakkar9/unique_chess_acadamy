@@ -33,6 +33,7 @@ const AdminTournaments: React.FC = () => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewData, setPreviewData] = useState<Tournament | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
+  const [editingRecord, setEditingRecord] = useState<Tournament | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedBrochure, setSelectedBrochure] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
@@ -72,6 +73,7 @@ const AdminTournaments: React.FC = () => {
 
   const handleAdd = () => {
     setSelectedTournament(null);
+    setEditingRecord(null);
     setSelectedFile(null);
     setSelectedBrochure(null);
     setPreviewUrl("");
@@ -112,6 +114,7 @@ const AdminTournaments: React.FC = () => {
 
   const handleEdit = (t: Tournament) => {
     setSelectedTournament(t);
+    setEditingRecord(t);
     setSelectedFile(null);
     setSelectedBrochure(null);
     setPreviewUrl(t.imageUrl || "");
@@ -265,27 +268,27 @@ const AdminTournaments: React.FC = () => {
       {/* Form Modal */}
       <AdminModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={selectedTournament ? "Update Tournament Arena" : "Construct New Arena"}
+        onClose={() => { setIsModalOpen(false); setEditingRecord(null); }}
+        title={editingRecord ? "Update Tournament Arena" : "Construct New Arena"}
         footer={
           <>
             <Button
               variant="ghost"
-              onClick={() => setIsModalOpen(false)}
-              className="text-uca-text-muted hover:text-white"
+              onClick={() => { setIsModalOpen(false); setEditingRecord(null); }}
+              className="text-uca-text-muted hover:text-uca-text-primary"
             >
               Cancel
             </Button>
             <Button
               onClick={handleSave}
-              className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10"
+              className="bg-uca-navy hover:bg-uca-navy-hover text-uca-text-primary font-bold px-8 h-10"
             >
-              {selectedTournament ? "Save Changes" : "Create Arena"}
+              {editingRecord ? "Save Changes" : "Create Arena"}
             </Button>
           </>
         }
       >
-        <div className="space-y-6 py-2">
+        <div className="space-y-6 py-2" key={editingRecord?.id ?? 'new'}>
           <div className="flex justify-end">
             <Button
               type="button"
@@ -393,7 +396,7 @@ const AdminTournaments: React.FC = () => {
                 <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
+                <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
                   <SelectItem value="UPCOMING">Upcoming</SelectItem>
                   <SelectItem value="ONGOING">Ongoing</SelectItem>
                   <SelectItem value="COMPLETED">Completed</SelectItem>
@@ -438,7 +441,7 @@ const AdminTournaments: React.FC = () => {
                       }}
                       className="absolute top-2 right-2 size-8 bg-uca-accent-red rounded-lg flex items-center justify-center shadow-lg"
                     >
-                      <X className="size-4 text-white" />
+                      <X className="size-4 text-uca-text-primary" />
                     </button>
                   </>
                 ) : (
