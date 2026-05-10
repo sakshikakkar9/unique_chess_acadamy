@@ -139,7 +139,7 @@ export default function RegistrationsPage() {
     { key: 'status', label: 'Status', align: 'right' }
   ];
 
-  const rows = currentData.map((item: any) => {
+  const rows = (currentData || []).map((item: any) => {
     const avatarStyles = getAvatarStyles(item.studentName || item.student?.fullName || "?");
     return {
       ...item,
