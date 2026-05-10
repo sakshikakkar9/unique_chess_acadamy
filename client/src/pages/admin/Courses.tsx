@@ -4,16 +4,16 @@ import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
 import AdminShell from "@/components/admin/AdminShell";
 import AdminModal from "@/components/admin/AdminModal";
 import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
-import ConfirmDialog from "@/components/shared/admin/ConfirmDialog";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Upload, Search, Calendar, BookOpen, X, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Upload, Search, Calendar, BookOpen, X, Filter, ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
 import { AGE_GROUP_LABELS } from "@/types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import RichTextEditor from "@/components/shared/admin/RichTextEditor";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import { cn } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 8;
@@ -22,13 +22,17 @@ const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Satur
 const AdminCourses = () => {
   const navigate = useNavigate();
   const { courses, isLoading, addCourse, updateCourse, deleteCourse } = useAdminCourses();
-  const { toast } = useToast();
+  const { success, error: toastError } = useToast();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [editingRecord, setEditingRecord] = useState<any>(null);
   
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
   const [formData, setFormData] = useState<any>({ 
     title: "",
     description: "",
@@ -73,7 +77,19 @@ const AdminCourses = () => {
     return filteredCourses.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredCourses, currentPage]);
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.title) errors.title = "Course title is required";
+    if (formData.fee === undefined || formData.fee === "") errors.fee = "Course fee is required";
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSave = async () => {
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
     try {
       const data = new FormData();
       data.append("title", formData.title);
@@ -93,24 +109,42 @@ const AdminCourses = () => {
 
       if (selectedCourse) {
         await updateCourse(selectedCourse.id, data);
-        toast({ title: "Course Updated" });
+        success("Course updated successfully");
       } else {
         await addCourse(data);
-        toast({ title: "Course Created" });
+        success("Course created successfully");
       }
       closeModal();
     } catch (err) {
-      toast({ variant: "destructive", title: "Operation Failed" });
+      toastError("Failed to save course. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedCourse) return;
+    setIsDeleting(true);
+    try {
+      await deleteCourse(selectedCourse.id);
+      success("Course removed successfully");
+      setIsConfirmOpen(false);
+    } catch (err) {
+      toastError("Failed to delete course.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   const closeModal = () => {
+    if (isSubmitting) return;
     setIsModalOpen(false);
     setSelectedCourse(null);
     setEditingRecord(null);
     setSelectedFile(null);
     setSelectedBrochure(null);
     setPreviewUrl("");
+    setFormErrors({});
     setFormData({ 
       title: "",
       description: "",
@@ -253,6 +287,8 @@ const AdminCourses = () => {
             setIsModalOpen(true);
           }}
           onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
+          entityName="courses"
+          onAddFirst={() => { closeModal(); setIsModalOpen(true); }}
         />
 
         {/* Pagination */}
@@ -292,9 +328,23 @@ const AdminCourses = () => {
         title={editingRecord ? "Update Program" : "Create Program"}
         footer={
           <>
-            <Button variant="ghost" onClick={closeModal} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
-            <Button onClick={handleSave} className="bg-uca-navy hover:bg-uca-navy-hover text-uca-text-primary font-bold px-8 h-10">
-              {editingRecord ? "Save Changes" : "Create Course"}
+            <Button variant="ghost" disabled={isSubmitting} onClick={closeModal} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
+            <Button
+              onClick={handleSave}
+              disabled={isSubmitting}
+              className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Check className="size-4" />
+                  {editingRecord ? "Save Changes" : "Create Course"}
+                </>
+              )}
             </Button>
           </>
         }
@@ -303,11 +353,34 @@ const AdminCourses = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Course Title</Label>
-              <Input className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" value={formData.title || ""} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+              <Input
+                className={cn(
+                  "h-11 bg-uca-bg-elevated border-uca-border rounded-lg transition-all focus:ring-2 focus:ring-uca-navy/30 focus:border-uca-navy outline-none",
+                  formErrors.title && "border-uca-accent-red ring-2 ring-red-100"
+                )}
+                value={formData.title || ""}
+                onChange={(e) => {
+                  setFormData({...formData, title: e.target.value});
+                  if (formErrors.title) setFormErrors({...formErrors, title: ""});
+                }}
+              />
+              {formErrors.title && <p className="text-[10px] text-uca-accent-red font-bold flex items-center gap-1"><X className="size-3" /> {formErrors.title}</p>}
             </div>
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Fee (₹)</Label>
-              <Input className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" type="number" value={formData.fee || ""} onChange={(e) => setFormData({...formData, fee: Number(e.target.value)})} />
+              <Input
+                className={cn(
+                  "h-11 bg-uca-bg-elevated border-uca-border rounded-lg transition-all focus:ring-2 focus:ring-uca-navy/30 focus:border-uca-navy outline-none",
+                  formErrors.fee && "border-uca-accent-red ring-2 ring-red-100"
+                )}
+                type="number"
+                value={formData.fee || ""}
+                onChange={(e) => {
+                  setFormData({...formData, fee: Number(e.target.value)});
+                  if (formErrors.fee) setFormErrors({...formErrors, fee: ""});
+                }}
+              />
+              {formErrors.fee && <p className="text-[10px] text-uca-accent-red font-bold flex items-center gap-1"><X className="size-3" /> {formErrors.fee}</p>}
             </div>
           </div>
 
@@ -452,9 +525,10 @@ const AdminCourses = () => {
       </AdminModal>
 
       <ConfirmDialog 
-        open={isConfirmOpen} 
-        onOpenChange={setIsConfirmOpen} 
-        onConfirm={() => deleteCourse(selectedCourse.id)} 
+        isOpen={isConfirmOpen}
+        onCancel={() => setIsConfirmOpen(false)}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
         title="Delete Course?" 
         description="This will permanently remove this program from the database." 
       />

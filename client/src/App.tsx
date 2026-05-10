@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
+import { ToastContainer } from "@/components/admin/Toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import PageLoader from "@/components/shared/PageLoader";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -57,6 +58,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <ToastContainer />
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>

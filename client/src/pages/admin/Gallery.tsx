@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import { useGallery } from "@/features/gallery/hooks/useGallery";
 import AdminShell from "@/components/admin/AdminShell";
-import ConfirmDialog from "@/components/shared/admin/ConfirmDialog";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import GalleryGrid from "@/components/admin/GalleryGrid";
 import GalleryUploadModal from "@/components/admin/GalleryUploadModal";
 import { GalleryImage } from "@/types";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 
 const AdminGallery: React.FC = () => {
   const { images, isLoading, uploadImage, deleteImage } = useGallery();
-  const { toast } = useToast();
+  const { success, error: toastError } = useToast();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
 
   const handleAdd = () => {
@@ -22,15 +23,29 @@ const AdminGallery: React.FC = () => {
   const handleUpload = async (data: FormData) => {
     try {
       await uploadImage(data as any);
-      toast({ title: "Success", description: "Image uploaded successfully!" });
+      success("Image uploaded successfully!");
     } catch (error) {
-      toast({ variant: "destructive", title: "Upload Failed" });
+      toastError("Upload Failed");
     }
   };
 
   const handleDelete = (image: GalleryImage) => {
     setSelectedImage(image);
     setIsConfirmOpen(true);
+  };
+
+  const onConfirmDelete = async () => {
+    if (!selectedImage) return;
+    setIsDeleting(true);
+    try {
+      await deleteImage(selectedImage.id);
+      success("Image removed");
+      setIsConfirmOpen(false);
+    } catch (err) {
+      toastError("Failed to delete image");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -72,9 +87,10 @@ const AdminGallery: React.FC = () => {
       />
 
       <ConfirmDialog
-        open={isConfirmOpen}
-        onOpenChange={setIsConfirmOpen}
-        onConfirm={async () => { if (selectedImage) await deleteImage(selectedImage.id); setIsConfirmOpen(false); }}
+        isOpen={isConfirmOpen}
+        onCancel={() => setIsConfirmOpen(false)}
+        onConfirm={onConfirmDelete}
+        isLoading={isDeleting}
         title="Delete Image"
         description="This will permanently remove the photo from the gallery."
       />

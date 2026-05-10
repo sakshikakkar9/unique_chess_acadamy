@@ -5,32 +5,35 @@ import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTourna
 import AdminShell from "@/components/admin/AdminShell";
 import AdminModal from "@/components/admin/AdminModal";
 import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
-import ConfirmDialog from "@/components/shared/admin/ConfirmDialog";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trophy, Upload, X, Search, Eye, Calendar, MapPin, Users } from "lucide-react";
+import { Plus, Upload, X, Search, Eye, Calendar, Users, Check, Loader2 } from "lucide-react";
 import { Tournament } from "@/types";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import RichTextEditor from "@/components/shared/admin/RichTextEditor";
 import { cn } from "@/lib/utils";
 import TournamentPreview from "@/features/tournaments/components/admin/TournamentPreview";
 import StatusBadge from "@/components/shared/admin/StatusBadge";
+import { useToast } from "@/hooks/useToast";
 
 type TournamentStatus = "ALL" | "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED";
 
 const AdminTournaments: React.FC = () => {
   const navigate = useNavigate();
   const { tournaments, isLoading, addTournament, updateTournament, deleteTournament } = useAdminTournaments();
+  const { success, error: toastError } = useToast();
 
   const [activeTab, setActiveTab] = useState<TournamentStatus>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [previewData, setPreviewData] = useState<Tournament | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [editingRecord, setEditingRecord] = useState<Tournament | null>(null);
@@ -38,6 +41,8 @@ const AdminTournaments: React.FC = () => {
   const [selectedBrochure, setSelectedBrochure] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<any>({
     title: "",
@@ -130,7 +135,21 @@ const AdminTournaments: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.title) errors.title = "Arena title is required";
+    if (!formData.startDate) errors.startDate = "Start date is required";
+    if (!formData.location) errors.location = "Venue is required";
+    if (!formData.category) errors.category = "Category is required";
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSave = async () => {
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
     const data = new FormData();
     Object.keys(formData).forEach(key => {
       if (formData[key] !== null && formData[key] !== undefined) {
@@ -146,11 +165,32 @@ const AdminTournaments: React.FC = () => {
     if (selectedBrochure) data.append("brochure", selectedBrochure);
 
     try {
-      if (selectedTournament?.id) await updateTournament(selectedTournament.id, data);
-      else await addTournament(data);
+      if (selectedTournament?.id) {
+        await updateTournament(selectedTournament.id, data);
+        success("Tournament updated successfully");
+      } else {
+        await addTournament(data);
+        success("Tournament created successfully");
+      }
       setIsModalOpen(false);
-    } catch (error: any) {
-      console.error("Save failed:", error);
+    } catch (err: any) {
+      toastError("Failed to save tournament. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedTournament) return;
+    setIsDeleting(true);
+    try {
+      await deleteTournament(selectedTournament.id);
+      success("Tournament dismantled successfully");
+      setIsConfirmOpen(false);
+    } catch (err) {
+      toastError("Failed to delete tournament.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -262,18 +302,21 @@ const AdminTournaments: React.FC = () => {
           onRowClick={(t) => navigate(`/admin/tournaments/${t.id}/portal`)}
           onEdit={handleEdit}
           onDelete={(t) => { setSelectedTournament(t); setIsConfirmOpen(true); }}
+          entityName="tournaments"
+          onAddFirst={handleAdd}
         />
       </div>
 
       {/* Form Modal */}
       <AdminModal
         isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setEditingRecord(null); }}
+        onClose={() => { if (!isSubmitting) { setIsModalOpen(false); setEditingRecord(null); } }}
         title={editingRecord ? "Update Tournament Arena" : "Construct New Arena"}
         footer={
           <>
             <Button
               variant="ghost"
+              disabled={isSubmitting}
               onClick={() => { setIsModalOpen(false); setEditingRecord(null); }}
               className="text-uca-text-muted hover:text-uca-text-primary"
             >
@@ -281,9 +324,20 @@ const AdminTournaments: React.FC = () => {
             </Button>
             <Button
               onClick={handleSave}
-              className="bg-uca-navy hover:bg-uca-navy-hover text-uca-text-primary font-bold px-8 h-10"
+              disabled={isSubmitting}
+              className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
             >
-              {editingRecord ? "Save Changes" : "Create Arena"}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Check className="size-4" />
+                  {editingRecord ? "Save Changes" : "Create Arena"}
+                </>
+              )}
             </Button>
           </>
         }
@@ -306,16 +360,35 @@ const AdminTournaments: React.FC = () => {
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Arena Title</Label>
               <Input
                 value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                onChange={(e) => {
+                  setFormData({...formData, title: e.target.value});
+                  if (formErrors.title) setFormErrors({...formErrors, title: ""});
+                }}
                 placeholder="e.g. Grand Master Invitational 2024"
-                className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"
+                className={cn(
+                  "h-11 bg-uca-bg-elevated border-uca-border rounded-lg transition-all focus:ring-2 focus:ring-uca-navy/30 focus:border-uca-navy outline-none",
+                  formErrors.title && "border-uca-accent-red ring-2 ring-red-100"
+                )}
               />
+              {formErrors.title && <p className="text-[10px] text-uca-accent-red font-bold flex items-center gap-1"><X className="size-3" /> {formErrors.title}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Starts On</Label>
-                <Input type="date" value={formData.startDate} onChange={(e) => setFormData({...formData, startDate: e.target.value})} className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" />
+                <Input
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) => {
+                    setFormData({...formData, startDate: e.target.value});
+                    if (formErrors.startDate) setFormErrors({...formErrors, startDate: ""});
+                  }}
+                  className={cn(
+                    "h-11 bg-uca-bg-elevated border-uca-border rounded-lg focus:ring-2 focus:ring-uca-navy/30 focus:border-uca-navy outline-none",
+                    formErrors.startDate && "border-uca-accent-red ring-2 ring-red-100"
+                  )}
+                />
+                {formErrors.startDate && <p className="text-[10px] text-uca-accent-red font-bold flex items-center gap-1"><X className="size-3" /> {formErrors.startDate}</p>}
               </div>
               <div className="grid gap-2">
                 <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Ends On</Label>
@@ -337,11 +410,35 @@ const AdminTournaments: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Venue</Label>
-                <Input value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="Location" className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" />
+                <Input
+                  value={formData.location}
+                  onChange={(e) => {
+                    setFormData({...formData, location: e.target.value});
+                    if (formErrors.location) setFormErrors({...formErrors, location: ""});
+                  }}
+                  placeholder="Location"
+                  className={cn(
+                    "h-11 bg-uca-bg-elevated border-uca-border rounded-lg focus:ring-2 focus:ring-uca-navy/30 focus:border-uca-navy outline-none",
+                    formErrors.location && "border-uca-accent-red ring-2 ring-red-100"
+                  )}
+                />
+                {formErrors.location && <p className="text-[10px] text-uca-accent-red font-bold flex items-center gap-1"><X className="size-3" /> {formErrors.location}</p>}
               </div>
               <div className="grid gap-2">
                 <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Category</Label>
-                <Input value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} placeholder="e.g. Open" className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" />
+                <Input
+                  value={formData.category}
+                  onChange={(e) => {
+                    setFormData({...formData, category: e.target.value});
+                    if (formErrors.category) setFormErrors({...formErrors, category: ""});
+                  }}
+                  placeholder="e.g. Open"
+                  className={cn(
+                    "h-11 bg-uca-bg-elevated border-uca-border rounded-lg focus:ring-2 focus:ring-uca-navy/30 focus:border-uca-navy outline-none",
+                    formErrors.category && "border-uca-accent-red ring-2 ring-red-100"
+                  )}
+                />
+                {formErrors.category && <p className="text-[10px] text-uca-accent-red font-bold flex items-center gap-1"><X className="size-3" /> {formErrors.category}</p>}
               </div>
             </div>
 
@@ -489,11 +586,13 @@ const AdminTournaments: React.FC = () => {
       </Dialog>
 
       <ConfirmDialog 
-        open={isConfirmOpen} 
-        onOpenChange={setIsConfirmOpen} 
-        onConfirm={async () => { if(selectedTournament) await deleteTournament(selectedTournament.id); setIsConfirmOpen(false); }}
+        isOpen={isConfirmOpen}
+        onCancel={() => setIsConfirmOpen(false)}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
         title="Dismantle Arena?"
         description="This will permanently remove the tournament and all player registrations from the system. This action cannot be undone."
+        confirmLabel="Dismantle"
       />
     </AdminShell>
   );

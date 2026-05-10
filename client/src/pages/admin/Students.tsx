@@ -4,17 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import {
   Search,
-  Users,
   Trophy,
   BookOpen,
-  Filter,
   Phone,
-  Eye,
-  Trash2
+  X
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
-import AdminModal from "@/components/admin/AdminModal";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import AddStudentModal from "@/components/shared/admin/AddStudentModal";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,15 +21,19 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/useToast";
 import { getAvatarStyles, cn } from "@/lib/utils";
 
 export default function StudentsPage() {
   const navigate = useNavigate();
+  const { success, error: toastError } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [tournamentFilter, setTournamentFilter] = useState("ALL");
   const [courseFilter, setCourseFilter] = useState("ALL");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [editingRecord, setEditingRecord] = useState<any>(null);
 
   const { data: students = [], isLoading, refetch } = useQuery({
@@ -65,14 +66,18 @@ export default function StudentsPage() {
     );
   }, [students, searchTerm]);
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure? This will delete the student and all their registrations.")) return;
+  const handleDelete = async () => {
+    if (!selectedStudent) return;
+    setIsDeleting(true);
     try {
-      await api.delete(`/students/${id}`);
-      toast.success("Student deleted successfully");
+      await api.delete(`/students/${selectedStudent.id}`);
+      success("Student deleted successfully");
+      setIsConfirmOpen(false);
       refetch();
     } catch (err) {
-      toast.error("Failed to delete student");
+      toastError("Failed to delete student");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -211,15 +216,29 @@ export default function StudentsPage() {
           isLoading={isLoading}
           onRowClick={(s) => navigate(`/admin/students/${s.id}`)}
           onEdit={(s) => { setEditingRecord(s); setIsAddModalOpen(true); }}
-          onDelete={(s) => handleDelete(s.id)}
+          onDelete={(s) => { setSelectedStudent(s); setIsConfirmOpen(true); }}
+          entityName="students"
+          onAddFirst={() => setIsAddModalOpen(true)}
         />
       </div>
 
       <AddStudentModal
         open={isAddModalOpen}
         onOpenChange={(open) => { setIsAddModalOpen(open); if (!open) setEditingRecord(null); }}
-        onSuccess={() => refetch()}
+        onSuccess={() => {
+          refetch();
+          success(editingRecord ? "Student updated" : "Student added");
+        }}
         editingRecord={editingRecord}
+      />
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        onCancel={() => setIsConfirmOpen(false)}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        title="Delete Student Profile?"
+        description="This will permanently remove the student and all their registrations. This action cannot be undone."
       />
     </AdminShell>
   );

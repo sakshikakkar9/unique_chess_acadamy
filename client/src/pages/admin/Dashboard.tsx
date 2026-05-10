@@ -125,21 +125,21 @@ const AdminDashboard: React.FC = () => {
           {stats.map((stat, i) => (
             <div
               key={i}
-              className="bg-uca-bg-surface border border-uca-border rounded-xl p-5 hover:bg-uca-bg-elevated transition-all cursor-pointer group shadow-sm"
+              className="bg-uca-bg-surface border border-uca-border rounded-2xl p-5 hover:bg-uca-bg-elevated transition-all cursor-pointer group shadow-sm"
               onClick={() => stat.path && navigate(stat.path)}
             >
-              <div className="flex justify-between items-start mb-4">
-                <div className={cn("size-10 rounded-lg flex items-center justify-center border border-uca-border transition-transform group-hover:scale-110", stat.bg)}>
+              <div className="flex justify-between items-start mb-2">
+                <div className={cn("size-10 rounded-xl flex items-center justify-center bg-uca-bg-elevated border border-uca-border transition-transform group-hover:scale-110")}>
                   <stat.icon className={cn("size-5", stat.accent)} />
                 </div>
                 <StatusBadge status={stat.status} />
               </div>
 
-              <div className={cn("text-3xl font-black tracking-tight leading-none mb-1", stat.numColor)}>
+              <div className={cn("text-3xl font-bold tracking-tight text-uca-text-primary mt-3 mb-1")}>
                 {stat.value}
               </div>
 
-              <div className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest">
+              <div className="text-sm text-uca-text-muted">
                 {stat.title}
               </div>
             </div>

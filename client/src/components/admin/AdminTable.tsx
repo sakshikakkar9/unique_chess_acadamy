@@ -1,6 +1,7 @@
 import React from "react";
 import RowActionMenu from "./RowActionMenu";
 import { cn } from "@/lib/utils";
+import { Inbox, ChevronsUpDown } from "lucide-react";
 
 export interface AdminTableColumn {
   key: string;
@@ -17,6 +18,8 @@ interface AdminTableProps {
   onDelete: (row: any) => void;
   onRowClick?: (row: any) => void;
   isLoading?: boolean;
+  entityName?: string;
+  onAddFirst?: () => void;
 }
 
 const AdminTable: React.FC<AdminTableProps> = ({
@@ -25,7 +28,9 @@ const AdminTable: React.FC<AdminTableProps> = ({
   onEdit,
   onDelete,
   onRowClick,
-  isLoading
+  isLoading,
+  entityName = "records",
+  onAddFirst
 }) => {
   if (isLoading) {
     return (
@@ -38,8 +43,22 @@ const AdminTable: React.FC<AdminTableProps> = ({
 
   if (rows.length === 0) {
     return (
-      <div className="bg-uca-bg-surface border border-uca-border rounded-xl p-12 text-center">
-        <p className="text-uca-text-muted">No records found.</p>
+      <div className="bg-uca-bg-surface border border-uca-border rounded-xl py-20 flex flex-col items-center justify-center gap-4 text-center">
+        <div className="size-16 rounded-full bg-uca-bg-elevated flex items-center justify-center mb-2">
+          <Inbox className="size-8 text-uca-text-muted opacity-40" />
+        </div>
+        <div className="space-y-1">
+          <p className="text-lg font-bold text-uca-text-primary">No {entityName} found</p>
+          <p className="text-sm text-uca-text-muted max-w-xs mx-auto">Your list is currently empty. Get started by adding your first entry.</p>
+        </div>
+        {onAddFirst && (
+          <button
+            onClick={onAddFirst}
+            className="mt-2 text-sm font-bold text-uca-accent-blue hover:underline underline-offset-4"
+          >
+            Add your first {entityName.slice(0, -1)}
+          </button>
+        )}
       </div>
     );
   }
@@ -47,10 +66,10 @@ const AdminTable: React.FC<AdminTableProps> = ({
   return (
     <div className="space-y-4">
       {/* Desktop / Tablet Table */}
-      <div className="hidden md:block overflow-x-auto rounded-xl border border-uca-border bg-uca-bg-surface">
-        <table className="w-full text-sm text-left">
+      <div className="hidden md:block overflow-x-auto rounded-xl border border-uca-border bg-uca-bg-surface relative">
+        <table className="w-full text-sm text-left border-collapse">
           <thead>
-            <tr className="bg-uca-bg-elevated border-b border-uca-border">
+            <tr className="bg-uca-bg-elevated border-b border-uca-border sticky top-0 z-10">
               {columns.map((col) => (
                 <th
                   key={col.key}
@@ -61,7 +80,10 @@ const AdminTable: React.FC<AdminTableProps> = ({
                     col.className
                   )}
                 >
-                  {col.label}
+                  <div className={cn("flex items-center gap-1", col.align === 'right' && "justify-end")}>
+                    {col.label}
+                    <ChevronsUpDown className="size-3 opacity-30" />
+                  </div>
                 </th>
               ))}
               <th className="px-6 py-4 text-right font-bold text-uca-text-muted uppercase tracking-wider text-[11px]">
@@ -75,7 +97,7 @@ const AdminTable: React.FC<AdminTableProps> = ({
                 key={row.id || i}
                 onClick={() => onRowClick?.(row)}
                 className={cn(
-                  "hover:bg-uca-bg-elevated transition-colors",
+                  "hover:bg-uca-bg-elevated transition-colors duration-100",
                   onRowClick && "cursor-pointer"
                 )}
               >
@@ -112,7 +134,7 @@ const AdminTable: React.FC<AdminTableProps> = ({
           <div
             key={row.id || i}
             onClick={() => onRowClick?.(row)}
-            className="relative bg-uca-bg-surface rounded-xl p-4 border border-uca-border shadow-sm active:bg-uca-bg-elevated transition-colors"
+            className="relative bg-uca-bg-surface rounded-xl p-4 border border-uca-border shadow-sm active:bg-uca-bg-elevated transition-colors duration-100"
           >
             <div className="pr-12">
               {/* First column as title */}

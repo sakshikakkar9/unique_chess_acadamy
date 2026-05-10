@@ -45,7 +45,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-200"
         onClick={onClose}
       />
 
@@ -53,7 +53,8 @@ const AdminModal: React.FC<AdminModalProps> = ({
       <div
         className={cn(
           "relative z-50 bg-uca-bg-surface border border-uca-border shadow-2xl flex flex-col w-full sm:max-w-lg max-h-[92vh] sm:max-h-[90vh] overflow-hidden overscroll-contain transition-all",
-          "rounded-t-2xl sm:rounded-2xl"
+          "rounded-t-2xl sm:rounded-2xl",
+          "animate-in fade-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-250 ease-out"
         )}
       >
         {/* Mobile Swipe Indicator */}
