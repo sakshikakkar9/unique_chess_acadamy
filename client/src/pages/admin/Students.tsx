@@ -86,7 +86,7 @@ export default function StudentsPage() {
 
 
   return (
-    <div className="p-8 max-w-[1600px] mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
         <AdminPageHeader
           title="Student Management"

@@ -153,7 +153,7 @@ const AdminCourses = () => {
   };
 
   return (
-    <div className="p-8 space-y-8 max-w-[1600px] mx-auto">
+    <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
       <AdminPageHeader
         title="Course Management"
         subtitle="Manage your academy programs and schedules."
@@ -206,8 +206,115 @@ const AdminCourses = () => {
         </div>
       </div>
 
+      {/* Mobile View: Cards */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {isLoading ? (
+          <div className="p-4 md:p-10 text-center bg-white rounded-2xl border border-slate-100">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0284c7] border-t-transparent mx-auto"></div>
+            <p className="text-[10px] font-black uppercase tracking-widest mt-2 text-slate-400">Loading Courses...</p>
+          </div>
+        ) : paginatedCourses.length > 0 ? (
+          paginatedCourses.map((c: any) => (
+            <div
+              key={c.id}
+              className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-4 group"
+              onClick={() => navigate(`/admin/courses/${c.id}/portal`)}
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-14 w-14 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
+                  <img
+                    src={c.custom_banner_url || "/placeholder.jpg"}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-slate-900 truncate group-hover:text-sky-600 transition-colors">{c.title}</p>
+                  <div className="flex gap-2 mt-1">
+                    <span
+                      style={{
+                        fontSize: '9px',
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: '20px',
+                        textTransform: 'uppercase',
+                        ...getLevelPillStyles(c.skillLevel)
+                      }}
+                    >
+                      {c.skillLevel}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '9px',
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: '20px',
+                        textTransform: 'uppercase',
+                        ...getModePillStyles(c.mode)
+                      }}
+                    >
+                      {c.mode}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 text-[#0284c7] hover:bg-sky-50"
+                    onClick={() => {
+                      setSelectedCourse(c);
+                      setFormData({
+                        ...c,
+                        posterOrientation: c.posterOrientation || "LANDSCAPE"
+                      });
+                      setPreviewUrl(c.custom_banner_url);
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    <Plus className="h-4 w-4" style={{ transform: 'rotate(45deg)' }} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 text-rose-500 hover:bg-rose-50"
+                    onClick={() => { setSelectedCourse(c); setIsConfirmOpen(true); }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pt-3 border-t border-slate-50">
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Schedule</p>
+                  <div className="flex flex-wrap gap-1">
+                    {c.days?.slice(0, 3).map((day: string) => (
+                      <span key={day} className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{day.substring(0, 3)}</span>
+                    ))}
+                    {c.days?.length > 3 && <span className="text-[10px] font-bold text-slate-400">+{c.days.length - 3}</span>}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Course Fee</p>
+                  <p className="text-sm font-bold text-sky-600">₹{c.fee.toLocaleString()}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="p-20 text-center bg-white rounded-2xl border border-slate-100 shadow-sm">
+            <div className="flex flex-col items-center gap-2 text-slate-300">
+              <BookOpen className="h-10 w-10" />
+              <p className="font-bold uppercase tracking-widest text-xs">No courses found</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop View: Table */}
       <div
-        className="bg-white overflow-hidden"
+        className="bg-white overflow-hidden hidden md:block"
         style={{
           border: '1px solid #e0eeff',
           borderRadius: '14px'
@@ -297,7 +404,7 @@ const AdminCourses = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-[#0284c7]"
+                          className="h-10 w-10 text-[#0284c7] hover:bg-sky-50"
                           onClick={() => {
                             setSelectedCourse(c);
                             setFormData({
@@ -308,12 +415,12 @@ const AdminCourses = () => {
                             setIsModalOpen(true);
                           }}
                         >
-                          <X className="h-4 w-4" style={{ transform: 'rotate(45deg)' }} />
+                          <Plus className="h-4 w-4" style={{ transform: 'rotate(45deg)' }} />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-rose-500"
+                          className="h-10 w-10 text-rose-500 hover:bg-rose-50"
                           onClick={() => { setSelectedCourse(c); setIsConfirmOpen(true); }}
                         >
                           <X className="h-4 w-4" />
@@ -324,43 +431,43 @@ const AdminCourses = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="py-20 text-center text-slate-400 text-sm">
+                  <td colSpan={4} className="p-4 md:py-20 text-center text-slate-400 text-sm">
                     No courses found.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
-
-            {/* Manual Pagination Controls */}
-            {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 bg-[#f8fafc] border-t border-slate-100">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                        Showing page <span className="text-sky-600">{currentPage}</span> of <span className="text-slate-900">{totalPages}</span>
-                    </p>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                            disabled={currentPage === 1}
-                            className="h-9 rounded-lg px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
-                        >
-                            <ChevronLeft className="mr-1 h-3.5 w-3.5" /> Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                            disabled={currentPage === totalPages}
-                            className="h-9 rounded-lg px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
-                        >
-                            Next <ChevronRight className="ml-1 h-3.5 w-3.5" />
-                        </Button>
-                    </div>
-                </div>
-            )}
       </div>
+
+      {/* Manual Pagination Controls */}
+      {totalPages > 1 && (
+          <div className="flex items-center justify-between px-6 py-4 bg-white border border-[#e0eeff] rounded-[14px]">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  Showing page <span className="text-sky-600">{currentPage}</span> of <span className="text-slate-900">{totalPages}</span>
+              </p>
+              <div className="flex items-center gap-2">
+                  <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      className="h-9 rounded-lg px-3 sm:px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
+                  >
+                      <ChevronLeft className="sm:mr-1 h-3.5 w-3.5" /> <span className="hidden sm:inline">Previous</span>
+                  </Button>
+                  <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                      className="h-9 rounded-lg px-3 sm:px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
+                  >
+                      <span className="hidden sm:inline">Next</span> <ChevronRight className="sm:ml-1 h-3.5 w-3.5" />
+                  </Button>
+              </div>
+          </div>
+      )}
 
       <AdminFormModal 
         open={isModalOpen} 

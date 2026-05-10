@@ -69,15 +69,15 @@ export default function AdminSettings() {
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
+    <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
       <div className="space-y-2">
         <h1 className="text-4xl font-black tracking-tight text-slate-900">Admin Settings</h1>
         <p className="text-slate-500 font-medium">Manage global configurations for the academy.</p>
       </div>
 
-      <div className="grid gap-8">
+      <div className="grid gap-4 md:p-8">
         <Card className="border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2rem] overflow-hidden">
-          <CardHeader className="bg-slate-50/50 p-8 border-b border-slate-100">
+          <CardHeader className="bg-slate-50/50 p-4 md:p-8 border-b border-slate-100">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20">
                 <Upload className="h-6 w-6 text-white" />
@@ -90,8 +90,8 @@ export default function AdminSettings() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-8 space-y-8">
-            <div className="grid md:grid-cols-2 gap-8 items-start">
+          <CardContent className="p-4 md:p-8 space-y-8">
+            <div className="grid md:grid-cols-2 gap-4 md:p-8 items-start">
               <div className="space-y-6">
                 <div className="space-y-2">
                   <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">
@@ -161,7 +161,7 @@ export default function AdminSettings() {
                         </div>
                       </>
                     ) : (
-                      <div className="text-center p-8">
+                      <div className="text-center p-4 md:p-8">
                         <AlertCircle className="h-10 w-10 text-slate-200 mx-auto mb-4" />
                         <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
                           No Scanner Configured

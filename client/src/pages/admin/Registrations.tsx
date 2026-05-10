@@ -131,7 +131,7 @@ export default function RegistrationsPage() {
   const { data: currentData, loading: currentLoading, type: currentType } = getActiveData();
 
   return (
-    <div className="p-8 max-w-[1600px] mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
       <AdminPageHeader
         title="Registrations"
         subtitle="Review and manage student enrollments across all programs."
@@ -544,7 +544,7 @@ export default function RegistrationsPage() {
               </div>
 
               {/* Sheet Footer Actions */}
-              <div className="p-8 bg-white border-t border-slate-100 flex items-center gap-4 relative z-30 shrink-0">
+              <div className="p-4 md:p-8 bg-white border-t border-slate-100 flex items-center gap-4 relative z-30 shrink-0">
                 {selectedItem.status === "PENDING" && (
                   <Button
                     className="flex-1 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-600/20"

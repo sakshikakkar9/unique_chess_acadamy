@@ -156,7 +156,7 @@ const AdminTournaments: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 p-8 max-w-[1600px] mx-auto">
+    <div className="space-y-8 p-4 md:p-8 max-w-7xl mx-auto">
       <AdminPageHeader
         title="Tournament Console"
         subtitle="Manage competitive tournaments and registrations window."
@@ -437,7 +437,7 @@ const AdminTournaments: React.FC = () => {
       {/* Preview Modal */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
         <DialogContent className="max-w-[95vw] lg:max-w-7xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
-          <div className="bg-slate-900 text-white p-6 md:p-8 flex items-center justify-between">
+          <div className="bg-slate-900 text-white p-6 md:p-4 md:p-8 flex items-center justify-between">
             <div className="space-y-1">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0284c7]">Arena Preview Mode</p>
               <DialogTitle className="text-xl md:text-3xl font-black">User Experience View</DialogTitle>
