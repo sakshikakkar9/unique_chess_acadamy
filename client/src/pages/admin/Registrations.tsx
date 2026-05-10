@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   Trophy, RefreshCw,
   Trash2, Mail, Phone, Eye, BookOpen, Copy,
@@ -25,16 +26,23 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { format } from "date-fns";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { toast } from "sonner";
 import { cn, getAvatarStyles } from "@/lib/utils";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import { useToast } from "@/hooks/useToast";
+import { Loader2, Check } from "lucide-react";
 
 type RegistrationTab = 'course' | 'tournament' | 'demo';
 
 export default function RegistrationsPage() {
+  const { success, error: toastError } = useToast();
   const [activeTab, setActiveTab] = useState<RegistrationTab>("course");
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [courseFilter, setCourseFilter] = useState("ALL");
@@ -89,8 +97,10 @@ export default function RegistrationsPage() {
   }, [demos, searchTerm, statusFilter]);
 
   const handleAction = async (id: string | number, type: string, action: 'status' | 'delete' | 'paymentStatus', value?: string) => {
-    if (action === 'delete' && !window.confirm("Permanent delete? This cannot be undone.")) return;
-    
+    const isDelete = action === 'delete';
+    if (isDelete) setIsDeleting(true);
+    else setIsSubmitting(true);
+
     const paths: any = {
       demo: `/demo/admin/${id}`,
       course: `/courses/enrollments/${id}`,
@@ -116,10 +126,17 @@ export default function RegistrationsPage() {
         else setSelectedItem({ ...selectedItem, status: value });
       }
 
-      toast.success(`${action === 'delete' ? 'Deleted' : 'Updated'} successfully`);
+      success(`${action === 'delete' ? 'Deleted' : 'Updated'} successfully`);
+      if (isDelete) {
+        setIsConfirmOpen(false);
+        setRecordToDelete(null);
+      }
     } catch (err) {
       console.error(err);
-      toast.error("Operation failed");
+      toastError("Operation failed");
+    } finally {
+      if (isDelete) setIsDeleting(false);
+      else setIsSubmitting(false);
     }
   };
 
@@ -257,28 +274,36 @@ export default function RegistrationsPage() {
           isLoading={currentLoading}
           onRowClick={(item) => setSelectedItem({ ...item, type: currentType })}
           onEdit={(item) => { setEditingRecord({ ...item, type: currentType }); setIsEditModalOpen(true); }}
-          onDelete={(item) => handleAction(item.id, currentType, 'delete')}
+          onDelete={(item) => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
         />
       </div>
 
       <AdminModal
         isOpen={isEditModalOpen}
-        onClose={() => { setIsEditModalOpen(false); setEditingRecord(null); }}
+        onClose={() => { if (!isSubmitting) { setIsEditModalOpen(false); setEditingRecord(null); } }}
         title={`Edit ${editingRecord?.type === 'tournament' ? 'Tournament' : editingRecord?.type === 'course' ? 'Course' : 'Demo'} Registration`}
         footer={
           <>
-            <Button variant="ghost" onClick={() => { setIsEditModalOpen(false); setEditingRecord(null); }} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
+            <Button variant="ghost" disabled={isSubmitting} onClick={() => { setIsEditModalOpen(false); setEditingRecord(null); }} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
             <Button
               onClick={() => {
-                // Since this page doesn't have a full form for registrations yet,
-                // and the brief asks for pre-population, but the existing logic is status-based.
-                // I will implement a minimal status updater in the modal if it's meant to be a form.
                 setIsEditModalOpen(false);
                 setEditingRecord(null);
               }}
-              className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10"
+              disabled={isSubmitting}
+              className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
             >
-              Save Changes
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Check className="size-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           </>
         }
@@ -323,6 +348,15 @@ export default function RegistrationsPage() {
         </div>
       </AdminModal>
 
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        onCancel={() => { setIsConfirmOpen(false); setRecordToDelete(null); }}
+        onConfirm={() => handleAction(recordToDelete.id, recordToDelete.type, 'delete')}
+        isLoading={isDeleting}
+        title="Permanent Delete?"
+        description="This action cannot be undone. The registration and associated student link will be removed."
+      />
+
       {/* Details Sheet */}
       <Sheet open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
         <SheetContent className="sm:max-w-xl rounded-l-[2rem] p-0 border-uca-border bg-uca-bg-base shadow-2xl overflow-y-auto">
@@ -354,7 +388,7 @@ export default function RegistrationsPage() {
                       </p>
                       <button onClick={() => {
                         navigator.clipboard.writeText(selectedItem.referenceId || selectedItem.id);
-                        toast.success("Ref ID Copied");
+                        success("Ref ID Copied");
                       }} className="text-uca-text-muted hover:text-uca-text-primary transition-colors">
                         <Copy className="size-3" />
                       </button>

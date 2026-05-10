@@ -15,6 +15,9 @@ Generated: 2024-05-22
 | 8 | Courses | Delete | Used native `window.confirm`. | Replaced with custom `ConfirmDialog`. |
 | 9 | Students | Deletion | No success/error feedback after deleting student. | Wired up new `useToast` system. |
 | 10| Gallery | Frame Selector | Selector didn't visually highlight properly. | Fixed conditional `className` logic for borders and backgrounds. |
+| 11| Registrations | Label | Page crashed with `ReferenceError: Label is not defined`. | Added missing import from `@/components/ui/label`. |
+| 12| Registrations | Interaction | Used native `window.confirm` for deletion. | Replaced with `ConfirmDialog` and wired to `useToast`. |
+| 13| Global | Forms | Missing loading feedback in some sub-modals (Student/Settings/Login). | Standardized `Loader2` spinners and disabled states. |
 
 ## Bugs Found But Out of Scope (Backend / API)
 | # | Page | Description |

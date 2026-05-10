@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy, AlertCircle } from "lucide-react";
+import { Trophy, AlertCircle, Loader2 } from "lucide-react";
 
 // IMPORTANT: We are importing your CUSTOM instance defined above
 import axios from "@/lib/axios"; 
@@ -77,7 +77,7 @@ const AdminLogin: React.FC = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-uca-text-muted">Username</Label>
+              <Label htmlFor="username" className="text-xs font-semibold text-uca-text-muted uppercase tracking-wide">Username</Label>
               <Input
                 id="username"
                 type="text"
@@ -85,11 +85,11 @@ const AdminLogin: React.FC = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="bg-uca-bg-elevated border-uca-border text-uca-text-primary placeholder:text-slate-600 focus:ring-uca-accent-blue"
+                className="h-11 bg-uca-bg-elevated border-uca-border text-uca-text-primary placeholder:text-slate-400 focus:ring-2 focus:ring-uca-navy/30 focus:border-uca-navy outline-none"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-uca-text-muted">Password</Label>
+              <Label htmlFor="password" className="text-xs font-semibold text-uca-text-muted uppercase tracking-wide">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -97,17 +97,24 @@ const AdminLogin: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-uca-bg-elevated border-uca-border text-uca-text-primary placeholder:text-slate-600 focus:ring-uca-accent-blue"
+                className="h-11 bg-uca-bg-elevated border-uca-border text-uca-text-primary placeholder:text-slate-400 focus:ring-2 focus:ring-uca-navy/30 focus:border-uca-navy outline-none"
               />
             </div>
           </CardContent>
           <CardFooter className="pb-8 sm:pb-6 px-6 sm:px-8">
             <Button
-              className="w-full bg-uca-navy hover:bg-uca-navy-hover text-white font-semibold h-11 rounded-xl transition-all"
+              className="w-full bg-uca-navy hover:bg-uca-navy-hover text-white font-bold h-11 rounded-xl transition-all gap-2 disabled:opacity-70"
               type="submit"
               disabled={isLoading}
             >
-              {isLoading ? "Logging in..." : "Login to Dashboard"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Logging in...
+                </>
+              ) : (
+                "Login to Dashboard"
+              )}
             </Button>
           </CardFooter>
         </form>
