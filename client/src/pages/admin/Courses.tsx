@@ -1,8 +1,9 @@
 import React, { useRef, useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
-import DataTable from "@/components/shared/admin/DataTable";
-import AdminFormModal from "@/components/shared/admin/AdminFormModal";
+import AdminShell from "@/components/admin/AdminShell";
+import AdminModal from "@/components/admin/AdminModal";
+import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
 import ConfirmDialog from "@/components/shared/admin/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +15,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import RichTextEditor from "@/components/shared/admin/RichTextEditor";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import AdminPageHeader from "@/components/shared/admin/AdminPageHeader";
-import StatusBadge from "@/components/shared/admin/StatusBadge";
 
 const ITEMS_PER_PAGE = 8;
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -136,372 +135,193 @@ const AdminCourses = () => {
 
   const getLevelPillStyles = (level: string) => {
     switch(level) {
-      case "BEGINNER": return { bg: "#f0fdf4", color: "#15803d" };
-      case "INTERMEDIATE": return { bg: "#eff6ff", color: "#1d4ed8" };
-      case "ADVANCED": return { bg: "#fdf4ff", color: "#7e22ce" };
-      default: return { bg: "#f1f5f9", color: "#475569" };
+      case "BEGINNER": return "bg-green-500/10 text-green-500";
+      case "INTERMEDIATE": return "bg-blue-500/10 text-blue-500";
+      case "ADVANCED": return "bg-purple-500/10 text-purple-500";
+      default: return "bg-slate-500/10 text-slate-500";
     }
   };
 
   const getModePillStyles = (mode: string) => {
     switch(mode) {
-      case "ONLINE": return { bg: "#ecfeff", color: "#0e7490" };
-      case "OFFLINE": return { bg: "#f8fafc", color: "#475569" };
-      case "HYBRID": return { bg: "#fdf2f8", color: "#9d174d" };
-      default: return { bg: "#f1f5f9", color: "#475569" };
+      case "ONLINE": return "bg-cyan-500/10 text-cyan-500";
+      case "OFFLINE": return "bg-slate-500/10 text-slate-400";
+      case "HYBRID": return "bg-pink-500/10 text-pink-500";
+      default: return "bg-slate-500/10 text-slate-500";
     }
   };
 
-  return (
-    <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
-      <AdminPageHeader
-        title="Course Management"
-        subtitle="Manage your academy programs and schedules."
-        action={
-          <Button onClick={() => { closeModal(); setIsModalOpen(true); }} className="shadow-lg bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-full px-6">
-            <Plus className="mr-2 h-4 w-4" /> Add New Course
-          </Button>
-        }
-      />
+  const columns: AdminTableColumn[] = [
+    { key: 'title', label: 'Course Info', className: 'min-w-[200px]' },
+    { key: 'days', label: 'Schedule', hiddenOn: 'mobile' },
+    { key: 'fee', label: 'Course Fee', align: 'right' }
+  ];
 
-      {/* Standardized Filter Bar */}
-      <div
-        className="flex flex-col md:flex-row gap-6 items-center justify-between bg-white"
-        style={{
-          border: '1px solid #e0eeff',
-          padding: '14px 18px',
-          borderRadius: '14px'
-        }}
-      >
-        <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="relative flex-1 md:flex-none">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8]" />
-                <Input
-                    className="pl-10 h-11 w-full md:w-80 rounded-xl border-slate-200 focus:ring-sky-500"
-                    placeholder="Search courses..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
+  const rows = paginatedCourses.map(c => ({
+    ...c,
+    title: (
+      <div className="flex items-center gap-3">
+        <div className="size-10 rounded-lg bg-uca-bg-elevated overflow-hidden shrink-0 border border-uca-border">
+          <img src={c.custom_banner_url || "/placeholder.jpg"} className="size-full object-cover" />
+        </div>
+        <div className="flex flex-col min-w-0">
+          <span className="font-bold text-uca-text-primary truncate">{c.title}</span>
+          <div className="flex gap-1.5 mt-0.5">
+            <span className={cn("text-[9px] font-black uppercase px-1.5 py-0.5 rounded", getLevelPillStyles(c.skillLevel))}>
+              {c.skillLevel}
+            </span>
+            <span className={cn("text-[9px] font-black uppercase px-1.5 py-0.5 rounded", getModePillStyles(c.mode))}>
+              {c.mode}
+            </span>
+          </div>
+        </div>
+      </div>
+    ),
+    days: (
+      <div className="flex flex-wrap gap-1">
+        {c.days?.slice(0, 3).map((day: string) => (
+          <span key={day} className="text-[10px] font-bold text-uca-text-muted bg-uca-bg-elevated px-1.5 py-0.5 rounded border border-uca-border">
+            {day.substring(0, 3)}
+          </span>
+        ))}
+        {c.days?.length > 3 && <span className="text-[10px] font-bold text-uca-text-muted">+{c.days.length - 3}</span>}
+      </div>
+    ),
+    fee: (
+      <div className="font-bold text-uca-accent-blue tabular-nums">
+        ₹{c.fee.toLocaleString()}
+      </div>
+    )
+  }));
+
+  return (
+    <AdminShell
+      title="Course Management"
+      subtitle="Manage your academy programs and schedules."
+      actionLabel="New Course"
+      onAction={() => { closeModal(); setIsModalOpen(true); }}
+    >
+      <div className="space-y-6">
+        {/* Filters */}
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-uca-bg-surface border border-uca-border p-4 rounded-xl">
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="relative flex-1 md:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-uca-text-muted" />
+              <Input
+                placeholder="Search courses..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 h-10 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg"
+              />
             </div>
 
             <Select value={levelFilter} onValueChange={setLevelFilter}>
-                <SelectTrigger className="h-11 w-44 rounded-xl border-slate-200 font-bold text-[10px] uppercase tracking-widest bg-white">
-                    <div className="flex items-center gap-2">
-                        <Filter className="h-3.5 w-3.5 text-slate-400" />
-                        <SelectValue placeholder="Skill Level" />
-                    </div>
-                </SelectTrigger>
-                <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
-                    <SelectItem value="ALL" className="font-bold text-[10px] uppercase tracking-widest py-3">All Levels</SelectItem>
-                    {["BEGINNER", "INTERMEDIATE", "ADVANCED", "GRANDMASTER"].map(l => (
-                        <SelectItem key={l} value={l} className="font-bold text-[10px] uppercase tracking-widest py-3">{l}</SelectItem>
-                    ))}
-                </SelectContent>
+              <SelectTrigger className="h-10 w-40 bg-uca-bg-base border-uca-border text-[10px] font-black uppercase tracking-widest">
+                <div className="flex items-center gap-2">
+                  <Filter className="size-3.5 text-uca-text-muted" />
+                  <SelectValue placeholder="Level" />
+                </div>
+              </SelectTrigger>
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
+                <SelectItem value="ALL">All Levels</SelectItem>
+                {["BEGINNER", "INTERMEDIATE", "ADVANCED", "GRANDMASTER"].map(l => (
+                  <SelectItem key={l} value={l}>{l}</SelectItem>
+                ))}
+              </SelectContent>
             </Select>
-        </div>
-
-        <div className="flex items-center gap-2 px-4 py-2 bg-sky-50/50 rounded-full border border-sky-100/50">
-            <BookOpen className="h-4 w-4 text-sky-500" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-sky-600">Total Courses: {filteredCourses.length}</span>
-        </div>
-      </div>
-
-      {/* Mobile View: Cards */}
-      <div className="grid grid-cols-1 gap-4 md:hidden">
-        {isLoading ? (
-          <div className="p-4 md:p-10 text-center bg-white rounded-2xl border border-slate-100">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0284c7] border-t-transparent mx-auto"></div>
-            <p className="text-[10px] font-black uppercase tracking-widest mt-2 text-slate-400">Loading Courses...</p>
           </div>
-        ) : paginatedCourses.length > 0 ? (
-          paginatedCourses.map((c: any) => (
-            <div
-              key={c.id}
-              className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-4 group"
-              onClick={() => navigate(`/admin/courses/${c.id}/portal`)}
-            >
-              <div className="flex items-center gap-4">
-                <div className="h-14 w-14 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
-                  <img
-                    src={c.custom_banner_url || "/placeholder.jpg"}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-slate-900 truncate group-hover:text-sky-600 transition-colors">{c.title}</p>
-                  <div className="flex gap-2 mt-1">
-                    <span
-                      style={{
-                        fontSize: '9px',
-                        fontWeight: 700,
-                        padding: '2px 8px',
-                        borderRadius: '20px',
-                        textTransform: 'uppercase',
-                        ...getLevelPillStyles(c.skillLevel)
-                      }}
-                    >
-                      {c.skillLevel}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: '9px',
-                        fontWeight: 700,
-                        padding: '2px 8px',
-                        borderRadius: '20px',
-                        textTransform: 'uppercase',
-                        ...getModePillStyles(c.mode)
-                      }}
-                    >
-                      {c.mode}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 text-[#0284c7] hover:bg-sky-50"
-                    onClick={() => {
-                      setSelectedCourse(c);
-                      setFormData({
-                        ...c,
-                        posterOrientation: c.posterOrientation || "LANDSCAPE"
-                      });
-                      setPreviewUrl(c.custom_banner_url);
-                      setIsModalOpen(true);
-                    }}
-                  >
-                    <Plus className="h-4 w-4" style={{ transform: 'rotate(45deg)' }} />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 text-rose-500 hover:bg-rose-50"
-                    onClick={() => { setSelectedCourse(c); setIsConfirmOpen(true); }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-3 border-t border-slate-50">
-                <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Schedule</p>
-                  <div className="flex flex-wrap gap-1">
-                    {c.days?.slice(0, 3).map((day: string) => (
-                      <span key={day} className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{day.substring(0, 3)}</span>
-                    ))}
-                    {c.days?.length > 3 && <span className="text-[10px] font-bold text-slate-400">+{c.days.length - 3}</span>}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Course Fee</p>
-                  <p className="text-sm font-bold text-sky-600">₹{c.fee.toLocaleString()}</p>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="p-20 text-center bg-white rounded-2xl border border-slate-100 shadow-sm">
-            <div className="flex flex-col items-center gap-2 text-slate-300">
-              <BookOpen className="h-10 w-10" />
-              <p className="font-bold uppercase tracking-widest text-xs">No courses found</p>
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-uca-accent-blue/10 rounded-full border border-uca-accent-blue/20">
+            <BookOpen className="size-3.5 text-uca-accent-blue" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-uca-accent-blue">Total: {filteredCourses.length}</span>
+          </div>
+        </div>
+
+        {/* Table Area */}
+        <AdminTable
+          columns={columns}
+          rows={rows}
+          isLoading={isLoading}
+          onRowClick={(c) => navigate(`/admin/courses/${c.id}/portal`)}
+          onEdit={(c) => {
+            setSelectedCourse(c);
+            setFormData({ ...c, posterOrientation: c.posterOrientation || "LANDSCAPE" });
+            setPreviewUrl(c.custom_banner_url);
+            setIsModalOpen(true);
+          }}
+          onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
+        />
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 bg-uca-bg-surface border border-uca-border rounded-xl">
+            <p className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted">
+              Page <span className="text-uca-accent-blue">{currentPage}</span> of {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="h-9 border-uca-border bg-uca-bg-base hover:bg-uca-bg-elevated"
+              >
+                <ChevronLeft className="size-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="h-9 border-uca-border bg-uca-bg-base hover:bg-uca-bg-elevated"
+              >
+                <ChevronRight className="size-4" />
+              </Button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Desktop View: Table */}
-      <div
-        className="bg-white overflow-hidden hidden md:block"
-        style={{
-          border: '1px solid #e0eeff',
-          borderRadius: '14px'
-        }}
+      {/* Form Modal */}
+      <AdminModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={selectedCourse ? "Update Program" : "Create Program"}
+        footer={
+          <>
+            <Button variant="ghost" onClick={closeModal} className="text-uca-text-muted hover:text-white">Cancel</Button>
+            <Button onClick={handleSave} className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10">
+              {selectedCourse ? "Save Changes" : "Create Course"}
+            </Button>
+          </>
+        }
       >
-          <table className="w-full border-collapse">
-            <thead>
-              <tr style={{ backgroundColor: '#f0f6ff', borderBottom: '2px solid #bae6fd' }}>
-                <th className="text-left px-6 py-[10px]" style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Course Info</th>
-                <th className="text-left px-6 py-[10px]" style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Schedule</th>
-                <th className="text-right px-6 py-[10px]" style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Fee</th>
-                <th className="text-right px-6 py-[10px]" style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={4} className="py-20 text-center">
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0284c7] border-t-transparent mx-auto"></div>
-                  </td>
-                </tr>
-              ) : paginatedCourses.length > 0 ? (
-                paginatedCourses.map((c: any) => (
-                  <tr
-                    key={c.id}
-                    className="group transition-all duration-120 cursor-pointer"
-                    style={{ borderBottom: '1px solid #f1f5f9' }}
-                    onClick={() => navigate(`/admin/courses/${c.id}/portal`)}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                  >
-                    <td className="px-6 py-3">
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
-                          <img
-                            src={c.custom_banner_url || "/placeholder.jpg"}
-                            alt=""
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="font-bold text-slate-900 leading-tight" style={{ fontSize: '13px' }}>{c.title}</div>
-                          <div className="flex gap-2">
-                            <span
-                              style={{
-                                fontSize: '10px',
-                                fontWeight: 700,
-                                padding: '3px 9px',
-                                borderRadius: '20px',
-                                textTransform: 'uppercase',
-                                ...getLevelPillStyles(c.skillLevel)
-                              }}
-                            >
-                              {c.skillLevel}
-                            </span>
-                            <span
-                              style={{
-                                fontSize: '10px',
-                                fontWeight: 700,
-                                padding: '3px 9px',
-                                borderRadius: '20px',
-                                textTransform: 'uppercase',
-                                ...getModePillStyles(c.mode)
-                              }}
-                            >
-                              {c.mode}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="flex flex-wrap gap-1">
-                        {c.days?.slice(0, 3).map((day: string) => (
-                          <span key={day} className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{day.substring(0, 3)}</span>
-                        ))}
-                        {c.days?.length > 3 && <span className="text-[10px] font-bold text-slate-400">+{c.days.length - 3}</span>}
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 text-right">
-                      <div style={{ fontWeight: 700, color: '#0284c7', fontVariantNumeric: 'tabular-nums' }}>
-                        ₹{c.fee.toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-10 w-10 text-[#0284c7] hover:bg-sky-50"
-                          onClick={() => {
-                            setSelectedCourse(c);
-                            setFormData({
-                              ...c,
-                              posterOrientation: c.posterOrientation || "LANDSCAPE"
-                            });
-                            setPreviewUrl(c.custom_banner_url);
-                            setIsModalOpen(true);
-                          }}
-                        >
-                          <Plus className="h-4 w-4" style={{ transform: 'rotate(45deg)' }} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-10 w-10 text-rose-500 hover:bg-rose-50"
-                          onClick={() => { setSelectedCourse(c); setIsConfirmOpen(true); }}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="p-4 md:py-20 text-center text-slate-400 text-sm">
-                    No courses found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-      </div>
-
-      {/* Manual Pagination Controls */}
-      {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 bg-white border border-[#e0eeff] rounded-[14px]">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  Showing page <span className="text-sky-600">{currentPage}</span> of <span className="text-slate-900">{totalPages}</span>
-              </p>
-              <div className="flex items-center gap-2">
-                  <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                      disabled={currentPage === 1}
-                      className="h-9 rounded-lg px-3 sm:px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
-                  >
-                      <ChevronLeft className="sm:mr-1 h-3.5 w-3.5" /> <span className="hidden sm:inline">Previous</span>
-                  </Button>
-                  <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                      disabled={currentPage === totalPages}
-                      className="h-9 rounded-lg px-3 sm:px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
-                  >
-                      <span className="hidden sm:inline">Next</span> <ChevronRight className="sm:ml-1 h-3.5 w-3.5" />
-                  </Button>
-              </div>
-          </div>
-      )}
-
-      <AdminFormModal 
-        open={isModalOpen} 
-        onOpenChange={(val) => !val && closeModal()} 
-        title={selectedCourse ? "Update Program" : "Create Program"} 
-        onSave={handleSave}
-      >
-        <div className="max-h-[70vh] overflow-y-auto pr-2 space-y-6 py-2 scrollbar-thin">
+        <div className="space-y-6 py-2">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Course Title</Label>
-                <Input className="h-11 rounded-xl" value={formData.title || ""} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Course Title</Label>
+              <Input className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" value={formData.title || ""} onChange={(e) => setFormData({...formData, title: e.target.value})} />
             </div>
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Fee (₹)</Label>
-                <Input className="h-11 rounded-xl" type="number" value={formData.fee || ""} onChange={(e) => setFormData({...formData, fee: Number(e.target.value)})} />
+              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Fee (₹)</Label>
+              <Input className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" type="number" value={formData.fee || ""} onChange={(e) => setFormData({...formData, fee: Number(e.target.value)})} />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Course Description</Label>
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Course Description</Label>
             <RichTextEditor
               value={formData.description || ""}
               onChange={(content) => setFormData({...formData, description: content})}
-              placeholder="Provide a detailed description of the course, its objectives, and what students will learn."
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Skill Level</Label>
+              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Skill Level</Label>
               <Select value={formData.skillLevel} onValueChange={(v) => setFormData({...formData, skillLevel: v})}>
-                <SelectTrigger className="h-11 rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
                   {["BEGINNER", "INTERMEDIATE", "ADVANCED", "GRANDMASTER"].map(l => (
                     <SelectItem key={l} value={l}>{l}</SelectItem>
                   ))}
@@ -509,10 +329,10 @@ const AdminCourses = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Class Mode</Label>
+              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Class Mode</Label>
               <Select value={formData.mode} onValueChange={(v) => setFormData({...formData, mode: v})}>
-                <SelectTrigger className="h-11 rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
                   {["ONLINE", "OFFLINE", "HYBRID"].map(m => (
                     <SelectItem key={m} value={m}>{m}</SelectItem>
                   ))}
@@ -521,137 +341,112 @@ const AdminCourses = () => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Calendar className="h-4 w-4" /> Training Days</Label>
+          <div className="space-y-3">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest flex items-center gap-2">
+              <Calendar className="size-3.5 text-uca-accent-blue" /> Training Days
+            </Label>
             <div className="flex flex-wrap gap-2">
               {WEEKDAYS.map(day => (
-                <Button 
-                    key={day} 
-                    type="button" 
-                    variant={formData.days?.includes(day) ? "default" : "outline"} 
-                    size="sm" 
-                    onClick={() => toggleDay(day)} 
-                    className={cn("rounded-full h-8 px-4 text-[10px] font-bold uppercase tracking-widest transition-all", formData.days?.includes(day) ? "bg-sky-500 text-white shadow-md shadow-sky-500/20" : "text-slate-500 hover:bg-sky-50")}
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => toggleDay(day)}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-[10px] font-bold uppercase transition-all border",
+                    formData.days?.includes(day)
+                      ? "bg-uca-accent-blue border-uca-accent-blue text-white shadow-lg shadow-uca-accent-blue/20"
+                      : "bg-uca-bg-elevated border-uca-border text-uca-text-muted hover:text-white"
+                  )}
                 >
                   {day}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Age Group Tag</Label>
-                <Select value={formData.ageGroup} onValueChange={(v) => setFormData({...formData, ageGroup: v})}>
-                    <SelectTrigger className="h-11 rounded-xl"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                        {Object.entries(AGE_GROUP_LABELS).map(([k, v]) => (
-                            <SelectItem key={k} value={k}>{v as string}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Age Group Tag</Label>
+              <Select value={formData.ageGroup} onValueChange={(v) => setFormData({...formData, ageGroup: v})}>
+                <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-uca-bg-surface border-uca-border text-white">
+                  {Object.entries(AGE_GROUP_LABELS).map(([k, v]) => (
+                    <SelectItem key={k} value={k}>{v as string}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Class Time (e.g. 18:00)</Label>
-                <Input className="h-11 rounded-xl" value={formData.classTime || ""} onChange={(e) => setFormData({...formData, classTime: e.target.value})} />
+              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Class Time</Label>
+              <Input className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" value={formData.classTime || ""} onChange={(e) => setFormData({...formData, classTime: e.target.value})} placeholder="e.g. 18:00" />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Duration (e.g. 4 Months)</Label>
-                <Input className="h-11 rounded-xl" value={formData.duration || ""} onChange={(e) => setFormData({...formData, duration: e.target.value})} />
+              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Duration</Label>
+              <Input className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" value={formData.duration || ""} onChange={(e) => setFormData({...formData, duration: e.target.value})} placeholder="e.g. 4 Months" />
             </div>
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Contact Details</Label>
-                <Input className="h-11 rounded-xl" value={formData.contactDetails || ""} onChange={(e) => setFormData({...formData, contactDetails: e.target.value})} />
+              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Contact Details</Label>
+              <Input className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" value={formData.contactDetails || ""} onChange={(e) => setFormData({...formData, contactDetails: e.target.value})} />
             </div>
           </div>
 
-          <div className="grid gap-2">
-            <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Course Brochure (PDF)</Label>
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1">
-                <input
-                  type="file"
-                  accept=".pdf"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  onChange={(e) => setSelectedBrochure(e.target.files?.[0] || null)}
-                />
-                <div className={`h-11 px-4 border-2 border-dashed rounded-xl flex items-center gap-2 transition-all ${selectedBrochure ? 'border-emerald-500 bg-emerald-50 text-emerald-600' : 'border-slate-200 bg-slate-50 text-slate-400'}`}>
-                  <Upload className="h-4 w-4" />
-                  <span className="text-[10px] font-bold uppercase truncate">{selectedBrochure ? selectedBrochure.name : (formData.brochureUrl ? "Change Brochure" : "Upload Brochure")}</span>
-                </div>
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Brochure (PDF)</Label>
+            <div className="relative">
+              <input
+                type="file"
+                accept=".pdf"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                onChange={(e) => setSelectedBrochure(e.target.files?.[0] || null)}
+              />
+              <div className={`h-11 px-4 border border-dashed rounded-lg flex items-center gap-2 transition-all ${selectedBrochure ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400' : 'border-uca-border bg-uca-bg-elevated text-uca-text-muted'}`}>
+                <Upload className="size-4" />
+                <span className="text-[10px] font-bold uppercase truncate">{selectedBrochure ? selectedBrochure.name : "Upload Brochure PDF"}</span>
               </div>
-              {formData.brochureUrl && !selectedBrochure && (
-                 <a href={formData.brochureUrl} target="_blank" rel="noopener noreferrer" className="text-sky-600 hover:underline text-[10px] font-black uppercase tracking-widest">View Current</a>
-              )}
             </div>
           </div>
 
-          <div className="space-y-4 pt-4 border-t">
-            <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Poster & Orientation</Label>
-
-            <RadioGroup
-              value={formData.posterOrientation}
-              onValueChange={(val) => setFormData({...formData, posterOrientation: val})}
-              className="flex gap-4"
-            >
-              <div className="flex items-center space-x-2 bg-slate-50 px-4 py-3 rounded-xl border border-slate-100 cursor-pointer flex-1">
+          <div className="space-y-4 pt-4 border-t border-uca-border">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Poster Orientation</Label>
+            <RadioGroup value={formData.posterOrientation} onValueChange={(val) => setFormData({...formData, posterOrientation: val})} className="flex gap-4">
+              <div className="flex items-center space-x-2 bg-uca-bg-elevated px-4 py-3 rounded-lg border border-uca-border cursor-pointer flex-1">
                 <RadioGroupItem value="LANDSCAPE" id="landscape" />
-                <Label htmlFor="landscape" className="font-bold text-sm cursor-pointer">Landscape</Label>
+                <Label htmlFor="landscape" className="font-bold text-xs cursor-pointer">Landscape</Label>
               </div>
-              <div className="flex items-center space-x-2 bg-slate-50 px-4 py-3 rounded-xl border border-slate-100 cursor-pointer flex-1">
+              <div className="flex items-center space-x-2 bg-uca-bg-elevated px-4 py-3 rounded-lg border border-uca-border cursor-pointer flex-1">
                 <RadioGroupItem value="PORTRAIT" id="portrait" />
-                <Label htmlFor="portrait" className="font-bold text-sm cursor-pointer">Portrait</Label>
+                <Label htmlFor="portrait" className="font-bold text-xs cursor-pointer">Portrait</Label>
               </div>
             </RadioGroup>
 
             <div
               className={cn(
-                "relative rounded-[1.5rem] border-2 border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-slate-50 cursor-pointer transition-all border-slate-200 bg-slate-50/50",
-                formData.posterOrientation === 'PORTRAIT' ? "aspect-[3/4] max-w-[240px] mx-auto" : "aspect-video"
+                "relative rounded-xl border border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-uca-bg-elevated cursor-pointer transition-all border-uca-border bg-uca-bg-base",
+                formData.posterOrientation === 'PORTRAIT' ? "aspect-[3/4] max-w-[200px] mx-auto" : "aspect-video"
               )}
               onClick={() => fileInputRef.current?.click()}
             >
               {previewUrl ? (
                 <>
-                  <img src={previewUrl} className="w-full h-full object-cover" />
-                  <Button
-                    size="icon"
-                    variant="destructive"
-                    className="absolute top-2 right-2 h-7 w-7 rounded-lg"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setPreviewUrl("");
-                      setSelectedFile(null);
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  <img src={previewUrl} className="size-full object-cover" />
+                  <button onClick={(e) => { e.stopPropagation(); setPreviewUrl(""); setSelectedFile(null); }} className="absolute top-2 right-2 size-8 bg-uca-accent-red rounded-lg flex items-center justify-center shadow-lg">
+                    <X className="size-4 text-white" />
+                  </button>
                 </>
               ) : (
-                <div className="text-center group">
-                  <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform mx-auto">
-                    <Upload className="h-6 w-6 text-sky-500" />
-                  </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Upload Banner ({formData.posterOrientation})</span>
+                <div className="text-center">
+                  <Upload className="size-6 text-uca-accent-blue mx-auto mb-2" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Upload {formData.posterOrientation}</span>
                 </div>
               )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) { setSelectedFile(file); setPreviewUrl(URL.createObjectURL(file)); }
-                }}
-              />
+              <input ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={(e) => { const file = e.target.files?.[0]; if (file) { setSelectedFile(file); setPreviewUrl(URL.createObjectURL(file)); } }} />
             </div>
           </div>
         </div>
-      </AdminFormModal>
+      </AdminModal>
 
       <ConfirmDialog 
         open={isConfirmOpen} 
@@ -660,7 +455,7 @@ const AdminCourses = () => {
         title="Delete Course?" 
         description="This will permanently remove this program from the database." 
       />
-    </div>
+    </AdminShell>
   );
 };
 

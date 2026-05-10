@@ -19,7 +19,8 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import StatusBadge from "@/components/shared/admin/StatusBadge";
-import { getAvatarStyles } from "@/lib/utils";
+import { getAvatarStyles, cn } from "@/lib/utils";
+import AdminShell from "@/components/admin/AdminShell";
 
 const CourseStudents: React.FC = () => {
   const { id } = useParams();
@@ -44,14 +45,14 @@ const CourseStudents: React.FC = () => {
 
   const filteredEnrollments = enrollments.filter((reg) => {
     const name = (reg?.student?.fullName || "").toLowerCase();
-    const id = (reg?.id || "").toLowerCase();
+    const regId = (reg?.id || "").toLowerCase();
     const phone = reg?.student?.phone || "";
     const search = searchQuery.toLowerCase();
-    return name.includes(search) || id.includes(search) || phone.includes(search);
+    return name.includes(search) || regId.includes(search) || phone.includes(search);
   });
 
   const handleExport = () => {
-    const headers = ["Reference ID", "Student Name", "Category", "Skill Level", "Phone", "Status"];
+    const headers = ["ID", "Student Name", "Category", "Skill Level", "Phone", "Status"];
     const rows = filteredEnrollments.map(r => [
       r?.id || "N/A",
       r?.student?.fullName || "N/A",
@@ -60,10 +61,7 @@ const CourseStudents: React.FC = () => {
       r?.student?.phone || "N/A",
       r?.status || "PENDING"
     ]);
-
-    const csvContent = "data:text/csv;charset=utf-8,"
-      + [headers, ...rows].map(e => e.join(",")).join("\n");
-
+    const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].map(e => e.join(",")).join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -73,211 +71,132 @@ const CourseStudents: React.FC = () => {
     document.body.removeChild(link);
   };
 
-
   if (isCourseLoading) {
     return (
-      <div className="p-4 md:p-8 space-y-6">
-        <Skeleton className="h-12 w-64" />
-        <Skeleton className="h-64 w-full rounded-2xl" />
-      </div>
+      <AdminShell title="Loading..." subtitle="Fetching enrollment roster">
+        <div className="space-y-6">
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-64 w-full rounded-2xl" />
+        </div>
+      </AdminShell>
     );
   }
 
   return (
-    <div className="space-y-6 p-2 md:p-4 md:p-8">
-      {/* Contextual Header */}
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center gap-4">
+    <AdminShell
+      title="Course Roster"
+      subtitle={course?.title}
+    >
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
           <Button
             variant="ghost"
-            size="icon"
-            onClick={() => navigate("/admin/courses")}
-            className="rounded-full hover:bg-slate-100"
+            size="sm"
+            onClick={() => navigate(`/admin/courses/${id}/portal`)}
+            className="rounded-lg hover:bg-uca-bg-elevated text-uca-text-muted gap-2 px-3"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="size-4" /> Back to Portal
           </Button>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-               <span
-                style={{
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  padding: '3px 9px',
-                  borderRadius: '20px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.3px',
-                  backgroundColor: '#e0f2fe',
-                  color: '#0284c7',
-                  border: '1px solid #bfdbfe'
-                }}
-               >
-                Course Roster
-               </span>
-               <span className="text-slate-300">/</span>
-               <span className="text-xs font-medium text-slate-500 italic">{course?.title}</span>
-            </div>
-            <h1
-              style={{
-                fontSize: '26px',
-                fontWeight: 800,
-                color: '#0c1a3a',
-                letterSpacing: '-0.6px'
-              }}
-            >
-              Registered Students
-            </h1>
-          </div>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-4">
-          <div className="md:col-span-2 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8]" />
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-uca-bg-surface border border-uca-border p-4 rounded-xl shadow-sm">
+          <div className="relative w-full md:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-uca-text-muted" />
             <Input
-              placeholder="Search by name, ID or phone..."
+              placeholder="Search enrollment..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-12 rounded-xl border-slate-200"
+              className="pl-10 h-11 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg"
             />
           </div>
           <Button
-            variant="outline"
-            className="h-12 rounded-xl font-bold gap-2 border-slate-200"
-            onClick={() => {/* Filter logic */}}
-          >
-            <Filter className="h-4 w-4" /> Filters
-          </Button>
-          <Button
-            className="h-12 rounded-xl font-bold gap-2 bg-[#0c1a3a] hover:bg-[#0284c7] transition-all"
+            className="h-11 rounded-lg font-bold gap-2 bg-uca-navy hover:bg-uca-navy-hover text-white text-xs uppercase tracking-widest w-full md:w-auto px-6"
             onClick={handleExport}
           >
-            <Download className="h-4 w-4" /> Export CSV
+            <Download className="size-4" /> Export CSV
           </Button>
         </div>
-      </div>
 
-      {/* Main Table */}
-      <div
-        className="bg-white overflow-hidden"
-        style={{
-          border: '1px solid #e0eeff',
-          borderRadius: '14px'
-        }}
-      >
-        <table className="w-full border-collapse">
-          <thead style={{ backgroundColor: '#f0f6ff', borderBottom: '2px solid #bae6fd' }}>
-            <tr className="text-[10px] font-black uppercase text-[#64748b] tracking-[0.08em]">
-              <th className="p-4 px-6 text-left">ID</th>
-              <th className="p-4 px-6 text-left">Student Name</th>
-              <th className="p-4 px-6 text-left">Category & Level</th>
-              <th className="p-4 px-6 text-left">Contact</th>
-              <th className="p-4 px-6 text-center">Status</th>
-              <th className="p-4 px-6 text-left">Enrolled On</th>
-            </tr>
-          </thead>
-          <tbody className="text-sm">
-            {isRegLoading ? (
-              [...Array(5)].map((_, i) => (
-                <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td colSpan={6} className="p-4 px-6"><Skeleton className="h-12 w-full" /></td>
+        <div className="bg-uca-bg-surface border border-uca-border rounded-xl overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">ID</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Student</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Skill & Level</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Contact</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-center">Status</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Enrolled</th>
                 </tr>
-              ))
-            ) : filteredEnrollments.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="h-64 text-center">
-                  <div className="flex flex-col items-center justify-center gap-4 py-12">
-                    <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center">
-                      <FileText className="h-10 w-10 text-slate-300" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-lg font-black text-slate-900">No Signups Yet</p>
-                      <p className="text-sm text-slate-500">Wait for students to discover this course.</p>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              filteredEnrollments.map((reg) => {
-                const fullName = reg?.student?.fullName || "N/A";
-                const avatarStyles = getAvatarStyles(fullName);
-                return (
-                  <tr
-                    key={reg?.id}
-                    className="group transition-all duration-120 cursor-pointer"
-                    style={{ borderBottom: '1px solid #f8fafc' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                  >
-                    <td className="p-4 px-6 font-mono text-[10px] font-bold text-[#0284c7]">{(reg?.id || "").substring(0, 8)}...</td>
-                    <td className="p-4 px-6">
-                      <div className="flex items-center gap-3">
-                        <div
-                          style={{
-                            width: '34px',
-                            height: '34px',
-                            borderRadius: '50%',
-                            backgroundColor: avatarStyles.bg,
-                            color: avatarStyles.color,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '12px',
-                            fontWeight: 700,
-                            flexShrink: 0
-                          }}
-                        >
-                          {(fullName || "?").charAt(0).toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                          <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{fullName}</p>
-                          <span style={{ fontSize: '11px', color: '#94a3b8' }}>{reg?.student?.gender || "N/A"} • {reg?.student?.dob ? format(new Date(reg.student.dob), "dd MMM yyyy") : 'N/A'}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4 px-6">
-                      <div className="space-y-1">
-                         <span
-                          style={{
-                            fontSize: '9px',
-                            fontWeight: 700,
-                            padding: '2px 8px',
-                            borderRadius: '20px',
-                            textTransform: 'uppercase',
-                            backgroundColor: '#f1f5f9',
-                            color: '#64748b'
-                          }}
-                         >
-                          {reg?.category || 'General'}
-                         </span>
-                         <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>Level: {reg?.student?.experienceLevel || "N/A"}</div>
-                      </div>
-                    </td>
-                    <td className="p-4 px-6">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
-                          <Phone className="h-3 w-3" /> {reg?.student?.phone || "N/A"}
-                        </div>
-                        <div className="flex items-center gap-2" style={{ fontSize: '10px', color: '#94a3b8' }}>
-                          <Mail className="h-3 w-3" /> {reg?.student?.email || 'No email provided'}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4 px-6 text-center">
-                      <StatusBadge status={reg.status} />
-                    </td>
-                    <td className="p-4 px-6">
-                      <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}>
-                        <Calendar className="h-3.5 w-3.5" />
-                        {reg.createdAt ? format(new Date(reg.createdAt), "MMM dd, yyyy") : 'N/A'}
-                      </div>
+              </thead>
+              <tbody className="divide-y divide-uca-border">
+                {isRegLoading ? (
+                  <tr><td colSpan={6} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading entries...</td></tr>
+                ) : filteredEnrollments.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-20 text-center">
+                      <FileText className="size-10 text-uca-bg-elevated mx-auto mb-3" />
+                      <p className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">No Enrollments Found</p>
                     </td>
                   </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                ) : (
+                  filteredEnrollments.map((reg) => {
+                    const name = reg?.student?.fullName || "N/A";
+                    const avatarStyles = getAvatarStyles(name);
+                    return (
+                      <tr key={reg.id} className="hover:bg-uca-bg-elevated/30 transition-colors">
+                        <td className="px-6 py-4 font-mono text-[10px] font-bold text-uca-accent-blue">{(reg.id || "").substring(0, 8)}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="size-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                              style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
+                            >
+                              {name.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-bold text-uca-text-primary truncate">{name}</p>
+                              <span className="text-[10px] text-uca-text-muted">
+                                {reg.student?.gender || 'N/A'} • {reg.student?.dob ? format(new Date(reg.student.dob), "dd MMM yyyy") : 'N/A'}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-xs font-semibold text-uca-text-primary uppercase tracking-tight">{reg.category || 'General'}</span>
+                            <span className="text-[10px] text-uca-text-muted">Level: {reg.student?.experienceLevel || 'Beginner'}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-1.5 text-xs text-uca-text-primary font-medium">
+                              <Phone className="size-3 text-uca-accent-blue" /> {reg.student?.phone || 'N/A'}
+                            </div>
+                            <div className="flex items-center gap-1.5 text-[10px] text-uca-text-muted">
+                              <Mail className="size-3" /> {reg.student?.email || 'N/A'}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <StatusBadge status={reg.status} />
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <span className="text-[10px] text-uca-text-muted font-bold">
+                            {reg.createdAt ? format(new Date(reg.createdAt), "MMM d, yyyy") : 'TBD'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-    </div>
+    </AdminShell>
   );
 };
 
