@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Upload, X, ImageIcon, Wand2 } from "lucide-react";
+import { Upload, X, ImageIcon, Wand2, Loader2, Check } from "lucide-react";
 import AdminModal from "./AdminModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,9 +94,19 @@ const GalleryUploadModal: React.FC<GalleryUploadModalProps> = ({ isOpen, onClose
           <Button
             onClick={handleSave}
             disabled={!selectedFile || isUploading || (frame === 'auto' && !selectedFile)}
-            className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 disabled:opacity-60"
+            className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
           >
-            {isUploading ? "Uploading..." : "Upload Asset"}
+            {isUploading ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Check className="size-4" />
+                Upload Asset
+              </>
+            )}
           </Button>
         </>
       }
@@ -162,7 +172,7 @@ const GalleryUploadModal: React.FC<GalleryUploadModalProps> = ({ isOpen, onClose
           <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Caption</Label>
           <Input
             placeholder="e.g. Academy Training Session"
-            className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary"
+            className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary transition-all focus:ring-2 focus:ring-uca-navy/30 focus:border-uca-navy outline-none"
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
           />

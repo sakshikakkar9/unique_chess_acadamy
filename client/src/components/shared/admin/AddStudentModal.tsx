@@ -11,9 +11,9 @@ import {
   Select, SelectContent, SelectItem,
   SelectTrigger, SelectValue
 } from "@/components/ui/select";
-import { Loader2, UserPlus, Shield, Zap, Info } from "lucide-react";
+import { Loader2, UserPlus, Shield, Zap, Info, Check } from "lucide-react";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/useToast";
 
 interface AddStudentModalProps {
   open: boolean;
@@ -23,6 +23,7 @@ interface AddStudentModalProps {
 }
 
 export default function AddStudentModal({ open, onOpenChange, onSuccess, editingRecord }: AddStudentModalProps) {
+  const { success, error: toastError } = useToast();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     fullName: editingRecord?.fullName || "",
@@ -45,10 +46,10 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
     try {
       if (editingRecord) {
         await api.patch(`/students/${editingRecord.id}`, form);
-        toast.success("Student updated successfully");
+        success("Student updated successfully");
       } else {
         await api.post("/students", form);
-        toast.success("Student added successfully");
+        success("Student added successfully");
       }
       onSuccess();
       onOpenChange(false);
@@ -67,7 +68,7 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
         discoverySource: "Social Media"
       });
     } catch (err: any) {
-      toast.error(err.response?.data?.error || "Failed to add student");
+      toastError(err.response?.data?.error || "Failed to save student");
     } finally {
       setLoading(false);
     }
@@ -259,10 +260,19 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
             <Button
               type="submit"
               disabled={loading}
-              className="h-14 w-full sm:w-auto rounded-2xl px-10 bg-sky-600 hover:bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-sky-600/20 transition-all"
+              className="h-14 w-full sm:w-auto rounded-2xl px-10 bg-sky-600 hover:bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-sky-600/20 transition-all gap-2 disabled:opacity-70"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <UserPlus className="h-4 w-4 mr-2" />}
-              {editingRecord ? "Update Student Record" : "Create Student Record"}
+              {loading ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Check className="size-4" />
+                  {editingRecord ? "Update Record" : "Create Record"}
+                </>
+              )}
             </Button>
           </DialogFooter>
         </form>

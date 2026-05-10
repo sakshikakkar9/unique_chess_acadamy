@@ -4,13 +4,13 @@ import api from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Upload, RefreshCw, CheckCircle2, AlertCircle, Eye, Settings } from "lucide-react";
+import { useToast } from "@/hooks/useToast";
+import { Upload, RefreshCw, CheckCircle2, AlertCircle, Eye, Settings, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import AdminShell from "@/components/admin/AdminShell";
 
 export default function AdminSettings() {
-  const { toast } = useToast();
+  const { success, error: toastError } = useToast();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -33,16 +33,12 @@ export default function AdminSettings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["global-settings"] });
-      toast({ title: "Settings updated successfully" });
+      success("Settings updated successfully");
       setSelectedFile(null);
       setPreviewUrl(null);
     },
     onError: (error: any) => {
-      toast({
-        variant: "destructive",
-        title: "Update failed",
-        description: error.response?.data?.error || "Could not update settings",
-      });
+      toastError(error.response?.data?.error || "Could not update settings");
     },
   });
 
@@ -113,14 +109,19 @@ export default function AdminSettings() {
                   <Button
                     onClick={handleSave}
                     disabled={!selectedFile || updateSettingsMutation.isPending}
-                    className="w-full h-12 bg-uca-navy hover:bg-uca-navy-hover text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all"
+                    className="w-full h-12 bg-uca-navy hover:bg-uca-navy-hover text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all gap-2 disabled:opacity-70"
                   >
                     {updateSettingsMutation.isPending ? (
-                      <RefreshCw className="size-4 animate-spin mr-2" />
+                      <>
+                        <Loader2 className="size-4 animate-spin" />
+                        Saving...
+                      </>
                     ) : (
-                      <CheckCircle2 className="size-4 mr-2" />
+                      <>
+                        <CheckCircle2 className="size-4" />
+                        Save Configuration
+                      </>
                     )}
-                    Save Configuration
                   </Button>
                 </div>
 
