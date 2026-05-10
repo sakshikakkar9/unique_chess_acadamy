@@ -17,10 +17,16 @@ const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
     e.stopPropagation();
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const shouldFlip = spaceBelow < 160;
+
       setMenuPosition({
-        top: rect.bottom + window.scrollY,
+        top: shouldFlip
+          ? rect.top + window.scrollY - 8 // Small offset
+          : rect.bottom + window.scrollY + 4,
         right: window.innerWidth - rect.right - window.scrollX,
-      });
+        flip: shouldFlip
+      } as any);
     }
     setIsOpen(!isOpen);
   };
@@ -65,11 +71,13 @@ const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
           <div
             style={{
               position: "absolute",
-              top: `${menuPosition.top + 4}px`,
+              top: `${menuPosition.top}px`,
               right: `${menuPosition.right}px`,
-              minWidth: '160px'
+              minWidth: '160px',
+              transformOrigin: (menuPosition as any).flip ? 'bottom right' : 'top right',
+              transform: (menuPosition as any).flip ? 'translateY(-100%)' : 'none'
             }}
-            className="z-[100] bg-uca-bg-surface border border-uca-border rounded-xl shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-100"
+            className="z-[100] bg-uca-bg-surface border border-uca-border rounded-xl shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150 ease-out"
           >
             <button
               onClick={(e) => {

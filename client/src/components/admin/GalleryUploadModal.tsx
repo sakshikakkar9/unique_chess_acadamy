@@ -35,11 +35,16 @@ const GalleryUploadModal: React.FC<GalleryUploadModalProps> = ({ isOpen, onClose
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
+      if (frame === 'auto') {
+        const orientation = await detectOrientation(file);
+        // Provide feedback for auto-detection
+        console.log(`Auto-detected orientation: ${orientation}`);
+      }
     }
   };
 
@@ -88,8 +93,8 @@ const GalleryUploadModal: React.FC<GalleryUploadModalProps> = ({ isOpen, onClose
           <Button variant="ghost" onClick={handleClose} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
           <Button
             onClick={handleSave}
-            disabled={!selectedFile || isUploading}
-            className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10"
+            disabled={!selectedFile || isUploading || (frame === 'auto' && !selectedFile)}
+            className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 disabled:opacity-60"
           >
             {isUploading ? "Uploading..." : "Upload Asset"}
           </Button>

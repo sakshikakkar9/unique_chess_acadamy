@@ -57,17 +57,15 @@ const AdminShell: React.FC<AdminShellProps> = ({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-screen flex flex-col transition-all duration-300 ease-in-out border-r border-uca-border bg-uca-sidebar-bg",
+          "fixed top-0 left-0 z-50 h-screen flex flex-col transition-transform duration-300 cubic-bezier(0.4, 0, 0.2, 1) border-r border-uca-border bg-uca-sidebar-bg",
           // Mobile
           isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-64",
-          // Tablet
-          "md:translate-x-0 md:w-16 md:hover:w-56 group/sidebar",
-          // Desktop
-          "lg:w-64 lg:hover:w-64"
+          // Tablet / Desktop overrides
+          "md:translate-x-0 md:w-16 md:hover:w-56 lg:w-64 lg:hover:w-64 group/sidebar transition-[width,transform] duration-300 ease-in-out"
         )}
       >
         {/* Logo block */}
-        <div className="h-16 flex items-center px-4 border-b border-uca-border overflow-hidden shrink-0">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-uca-border overflow-hidden shrink-0">
           <div className="flex items-center gap-3 min-w-max">
             <div className="size-8 rounded-lg bg-uca-navy flex items-center justify-center text-white font-black text-xs shrink-0 border border-uca-border">
               UCA
@@ -80,6 +78,14 @@ const AdminShell: React.FC<AdminShellProps> = ({
               <span className="text-[10px] text-uca-text-muted uppercase tracking-wider">Command Center</span>
             </div>
           </div>
+
+          {/* Close button - Mobile only */}
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="md:hidden p-1 rounded-lg text-uca-sidebar-text hover:bg-uca-sidebar-hover hover:text-white transition-colors"
+          >
+            <X className="size-5" />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -136,10 +142,10 @@ const AdminShell: React.FC<AdminShellProps> = ({
         <header className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 border-b border-uca-border bg-uca-bg-surface shadow-sm sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-4 flex-1 min-w-0">
             <button
-              onClick={() => setIsSidebarOpen(true)}
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="md:hidden p-2 -ml-2 text-uca-text-muted hover:text-uca-text-inverse transition-colors"
             >
-              <Menu className="size-6" />
+              {isSidebarOpen ? <X className="size-6" /> : <Menu className="size-6" />}
             </button>
             <div className="flex flex-col min-w-0 hidden sm:block">
               <h1 className="text-xl lg:text-2xl font-bold text-uca-text-primary truncate">{title}</h1>
