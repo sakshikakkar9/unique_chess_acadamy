@@ -118,7 +118,7 @@ const AdminDashboard: React.FC = () => {
   const chessSymbols = ["♟", "♜", "♛"];
 
   return (
-    <div className="space-y-8 max-w-[1600px] mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto">
       <AdminPageHeader
         title="Dashboard Overview"
         subtitle="Monitoring growth at Unique Chess Academy."

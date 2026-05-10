@@ -33,7 +33,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 }) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="fixed bottom-0 sm:bottom-auto left-0 sm:left-1/2 translate-x-0 sm:-translate-x-1/2 rounded-t-[2rem] sm:rounded-[1.5rem] border-x-0 sm:border-x border-b-0 sm:border-b shadow-2xl z-[200]">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>

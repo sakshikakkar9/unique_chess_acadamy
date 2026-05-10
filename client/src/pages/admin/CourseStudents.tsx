@@ -76,7 +76,7 @@ const CourseStudents: React.FC = () => {
 
   if (isCourseLoading) {
     return (
-      <div className="p-8 space-y-6">
+      <div className="p-4 md:p-8 space-y-6">
         <Skeleton className="h-12 w-64" />
         <Skeleton className="h-64 w-full rounded-2xl" />
       </div>
@@ -84,7 +84,7 @@ const CourseStudents: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-2 md:p-8">
+    <div className="space-y-6 p-2 md:p-4 md:p-8">
       {/* Contextual Header */}
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">

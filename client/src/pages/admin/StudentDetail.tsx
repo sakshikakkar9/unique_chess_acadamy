@@ -31,9 +31,9 @@ export default function StudentDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-8 space-y-8 max-w-[1200px] mx-auto">
+      <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
         <Skeleton className="h-10 w-40" />
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-4 md:p-8">
           <Skeleton className="h-[500px] md:col-span-1 rounded-3xl" />
           <Skeleton className="h-[500px] md:col-span-2 rounded-3xl" />
         </div>
@@ -41,10 +41,10 @@ export default function StudentDetailPage() {
     );
   }
 
-  if (!student) return <div className="p-8 text-center">Student not found</div>;
+  if (!student) return <div className="p-4 md:p-8 text-center">Student not found</div>;
 
   return (
-    <div className="p-8 max-w-[1200px] mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
@@ -60,7 +60,7 @@ export default function StudentDetailPage() {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-3 gap-4 md:p-8">
         {/* Left Column: Personal Info Card */}
         <div className="md:col-span-1 space-y-6">
           <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden">
@@ -72,7 +72,7 @@ export default function StudentDetailPage() {
               </div>
             </div>
 
-            <div className="pt-16 p-8 space-y-6">
+            <div className="pt-16 p-4 md:p-8 space-y-6">
               <div>
                 <h2 className="text-2xl font-black text-slate-900 leading-tight">{student.fullName}</h2>
                 <div className="flex items-center gap-2 mt-2">
@@ -119,7 +119,7 @@ export default function StudentDetailPage() {
             </div>
           </div>
 
-          <div className="bg-sky-50 rounded-[2rem] border border-sky-100 p-8 space-y-4">
+          <div className="bg-sky-50 rounded-[2rem] border border-sky-100 p-4 md:p-8 space-y-4">
             <div className="flex items-center gap-3">
               <ShieldCheck className="h-6 w-6 text-sky-600" />
               <h3 className="text-sm font-black uppercase text-slate-900 tracking-widest">Chess Profile</h3>

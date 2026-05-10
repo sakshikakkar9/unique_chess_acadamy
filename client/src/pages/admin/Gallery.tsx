@@ -87,7 +87,7 @@ const AdminGallery: React.FC = () => {
   };
 
   return (
-    <div className="p-8 space-y-8 max-w-[1600px] mx-auto">
+    <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
       <AdminPageHeader
         title="Gallery Management"
         subtitle="Manage and upload photos for the academy gallery."

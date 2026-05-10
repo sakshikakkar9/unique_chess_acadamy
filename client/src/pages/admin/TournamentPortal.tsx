@@ -42,17 +42,17 @@ const TournamentPortal: React.FC = () => {
 
   if (isTournamentLoading) {
     return (
-      <div className="p-8 space-y-6">
+      <div className="p-4 md:p-8 space-y-6">
         <Skeleton className="h-12 w-64" />
         <Skeleton className="h-[600px] w-full rounded-2xl" />
       </div>
     );
   }
 
-  if (!tournament) return <div className="p-8 text-center font-bold text-rose-500">Tournament not found</div>;
+  if (!tournament) return <div className="p-4 md:p-8 text-center font-bold text-rose-500">Tournament not found</div>;
 
   return (
-    <div className="space-y-6 p-2 md:p-8 max-w-[1600px] mx-auto animate-in fade-in duration-500">
+    <div className="space-y-6 p-2 md:p-4 md:p-8 max-w-7xl mx-auto animate-in fade-in duration-500">
       <div className="flex items-center gap-4 mb-8">
         <Button
           variant="ghost"
@@ -99,14 +99,14 @@ const TournamentPortal: React.FC = () => {
         </div>
 
         <TabsContent value="summary" className="mt-0 focus-visible:ring-0">
-           <div className="bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-slate-200/50 p-8 md:p-12 overflow-hidden">
+           <div className="bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-slate-200/50 p-4 md:p-8 md:p-12 overflow-hidden">
              <TournamentPreview tournament={tournament} />
            </div>
         </TabsContent>
 
         <TabsContent value="finance" className="mt-0 focus-visible:ring-0 space-y-8">
            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-             <div className="bg-white p-8 rounded-[24px] border border-slate-100 shadow-sm space-y-4">
+             <div className="bg-white p-4 md:p-8 rounded-[24px] border border-slate-100 shadow-sm space-y-4">
                 <div className="h-12 w-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
                   <TrendingUp className="h-6 w-6 text-emerald-600" />
                 </div>
@@ -119,7 +119,7 @@ const TournamentPortal: React.FC = () => {
                 </div>
              </div>
 
-             <div className="bg-white p-8 rounded-[24px] border border-slate-100 shadow-sm space-y-4">
+             <div className="bg-white p-4 md:p-8 rounded-[24px] border border-slate-100 shadow-sm space-y-4">
                 <div className="h-12 w-12 rounded-2xl bg-sky-50 flex items-center justify-center">
                   <Wallet className="h-6 w-6 text-sky-600" />
                 </div>
@@ -132,7 +132,7 @@ const TournamentPortal: React.FC = () => {
                 </div>
              </div>
 
-             <div className="bg-white p-8 rounded-[24px] border border-slate-100 shadow-sm space-y-4">
+             <div className="bg-white p-4 md:p-8 rounded-[24px] border border-slate-100 shadow-sm space-y-4">
                 <div className="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center">
                   <Award className="h-6 w-6 text-amber-600" />
                 </div>
@@ -146,7 +146,7 @@ const TournamentPortal: React.FC = () => {
              </div>
            </div>
 
-           <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm p-8 space-y-6">
+           <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm p-4 md:p-8 space-y-6">
               <div className="flex items-center gap-3">
                  <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center">
                     <Percent className="h-5 w-5 text-indigo-600" />
