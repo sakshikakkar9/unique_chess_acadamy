@@ -12,6 +12,9 @@ import TournamentPreview from "@/features/tournaments/components/admin/Tournamen
 import { Registration } from "@/types";
 import { format } from "date-fns";
 import StatusBadge from "@/components/shared/admin/StatusBadge";
+import AdminShell from "@/components/admin/AdminShell";
+import Pagination from "@/components/shared/admin/Pagination";
+import { getAvatarStyles, cn } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -33,7 +36,6 @@ const TournamentPortal: React.FC = () => {
     queryKey: ["tournament-registrations", id],
     queryFn: async () => {
       const res = await api.get(`/tournaments/admin/registrations?tournamentId=${id}`);
-      console.log('API Response:', res.data[0]);
       return res.data;
     },
   });
@@ -42,145 +44,118 @@ const TournamentPortal: React.FC = () => {
 
   if (isTournamentLoading) {
     return (
-      <div className="p-4 md:p-8 space-y-6">
-        <Skeleton className="h-12 w-64" />
-        <Skeleton className="h-[600px] w-full rounded-2xl" />
-      </div>
+      <AdminShell title="Loading Arena..." subtitle="Fetching tournament data">
+        <div className="space-y-6">
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-[600px] w-full rounded-2xl" />
+        </div>
+      </AdminShell>
     );
   }
 
-  if (!tournament) return <div className="p-4 md:p-8 text-center font-bold text-rose-500">Tournament not found</div>;
+  if (!tournament) return (
+    <AdminShell title="Not Found" subtitle="Tournament ID mismatch">
+      <div className="p-12 text-center bg-uca-bg-surface border border-uca-border rounded-2xl">
+        <p className="text-uca-text-muted">Tournament arena not found.</p>
+      </div>
+    </AdminShell>
+  );
 
   return (
-    <div className="space-y-6 p-2 md:p-4 md:p-8 max-w-7xl mx-auto animate-in fade-in duration-500">
-      <div className="flex items-center gap-4 mb-8">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate("/admin/tournaments")}
-          className="rounded-full hover:bg-slate-100 h-12 w-12"
-        >
-          <ArrowLeft className="h-6 w-6 text-slate-600" />
-        </Button>
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1 bg-sky-50 text-sky-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-sky-100">Tournament Portal</span>
-            <span className="text-slate-300">/</span>
-            <span className="text-xs font-bold text-slate-400">ID: {id?.substring(0, 8)}</span>
+    <AdminShell
+      title={tournament.title}
+      subtitle={`Portal ID: ${id?.substring(0, 8).toUpperCase()}`}
+    >
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/admin/tournaments")}
+            className="rounded-lg hover:bg-uca-bg-elevated text-uca-text-muted gap-2 px-3"
+          >
+            <ArrowLeft className="size-4" /> Back to Arenas
+          </Button>
+        </div>
+
+        <Tabs defaultValue="summary" className="w-full">
+          <div className="overflow-x-auto pb-2 scrollbar-none">
+            <TabsList className="bg-uca-bg-surface border border-uca-border p-1.5 h-12 rounded-xl mb-6 inline-flex min-w-max">
+              <TabsTrigger
+                value="summary"
+                className="rounded-lg px-6 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-uca-navy data-[state=active]:text-white transition-all"
+              >
+                <LayoutDashboard className="size-3.5 mr-2" /> Summary
+              </TabsTrigger>
+              <TabsTrigger
+                value="finance"
+                className="rounded-lg px-6 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-uca-navy data-[state=active]:text-white transition-all"
+              >
+                <CreditCard className="size-3.5 mr-2" /> Finance
+              </TabsTrigger>
+              <TabsTrigger
+                value="students"
+                className="rounded-lg px-6 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-uca-navy data-[state=active]:text-white transition-all"
+              >
+                <Users className="size-3.5 mr-2" /> Roster
+              </TabsTrigger>
+            </TabsList>
           </div>
-          <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.025em' }}>
-            {tournament.title}
-          </h1>
-        </div>
-      </div>
 
-      <Tabs defaultValue="summary" className="w-full">
-        <div className="overflow-x-auto pb-4 scrollbar-none">
-          <TabsList className="bg-white border border-slate-200 p-1.5 h-16 rounded-[20px] mb-4 md:mb-8 shadow-sm inline-flex min-w-max">
-          <TabsTrigger
-            value="summary"
-            className="rounded-[14px] px-8 h-full font-black text-[11px] uppercase tracking-[0.1em] data-[state=active]:bg-[#0284c7] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-sky-500/20 transition-all duration-300"
-          >
-            <LayoutDashboard className="h-4 w-4 mr-2" /> Summary
-          </TabsTrigger>
-          <TabsTrigger
-            value="finance"
-            className="rounded-[14px] px-8 h-full font-black text-[11px] uppercase tracking-[0.1em] data-[state=active]:bg-[#0284c7] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-sky-500/20 transition-all duration-300"
-          >
-            <CreditCard className="h-4 w-4 mr-2" /> Finance
-          </TabsTrigger>
-          <TabsTrigger
-            value="students"
-            className="rounded-[14px] px-8 h-full font-black text-[11px] uppercase tracking-[0.1em] data-[state=active]:bg-[#0284c7] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-sky-500/20 transition-all duration-300"
-          >
-            <Users className="h-4 w-4 mr-2" /> Students
-          </TabsTrigger>
-          </TabsList>
-        </div>
-
-        <TabsContent value="summary" className="mt-0 focus-visible:ring-0">
-           <div className="bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-slate-200/50 p-4 md:p-8 md:p-12 overflow-hidden">
-             <TournamentPreview tournament={tournament} />
-           </div>
-        </TabsContent>
-
-        <TabsContent value="finance" className="mt-0 focus-visible:ring-0 space-y-8">
-           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-             <div className="bg-white p-4 md:p-8 rounded-[24px] border border-slate-100 shadow-sm space-y-4">
-                <div className="h-12 w-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-emerald-600" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Collections</p>
-                  <p className="text-3xl font-black text-slate-900">₹{totalCollections.toLocaleString()}</p>
-                </div>
-                <div className="pt-4 border-t border-slate-50">
-                   <p className="text-xs font-bold text-slate-500">Based on {registrations.length} registrations</p>
-                </div>
+          <TabsContent value="summary" className="mt-0 focus-visible:ring-0">
+             <div className="bg-uca-bg-surface rounded-2xl border border-uca-border p-6 md:p-10 shadow-sm overflow-hidden">
+               <TournamentPreview tournament={tournament} />
              </div>
+          </TabsContent>
 
-             <div className="bg-white p-4 md:p-8 rounded-[24px] border border-slate-100 shadow-sm space-y-4">
-                <div className="h-12 w-12 rounded-2xl bg-sky-50 flex items-center justify-center">
-                  <Wallet className="h-6 w-6 text-sky-600" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Entry Fee</p>
-                  <p className="text-3xl font-black text-slate-900">₹{tournament?.entryFee?.toLocaleString() || "0"}</p>
-                </div>
-                <div className="pt-4 border-t border-slate-50">
-                   <p className="text-xs font-bold text-slate-500">Standard rate per player</p>
-                </div>
-             </div>
-
-             <div className="bg-white p-4 md:p-8 rounded-[24px] border border-slate-100 shadow-sm space-y-4">
-                <div className="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center">
-                  <Award className="h-6 w-6 text-amber-600" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Prize Pool</p>
-                  <p className="text-3xl font-black text-slate-900">{tournament.totalPrizePool || "₹0"}</p>
-                </div>
-                <div className="pt-4 border-t border-slate-50">
-                   <p className="text-xs font-bold text-slate-500">Total tournament rewards</p>
-                </div>
-             </div>
-           </div>
-
-           <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm p-4 md:p-8 space-y-6">
-              <div className="flex items-center gap-3">
-                 <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-                    <Percent className="h-5 w-5 text-indigo-600" />
+          <TabsContent value="finance" className="mt-0 focus-visible:ring-0 space-y-6">
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+               {[
+                 { label: 'Total Collections', value: `₹${totalCollections.toLocaleString()}`, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10', sub: `${registrations.length} players` },
+                 { label: 'Entry Fee', value: `₹${tournament?.entryFee?.toLocaleString() || "0"}`, icon: Wallet, color: 'text-uca-accent-blue', bg: 'bg-uca-accent-blue/10', sub: 'Standard rate' },
+                 { label: 'Prize Pool', value: tournament.totalPrizePool || "₹0", icon: Award, color: 'text-amber-500', bg: 'bg-amber-500/10', sub: 'Total rewards' }
+               ].map((stat, i) => (
+                 <div key={i} className="bg-uca-bg-surface p-6 rounded-xl border border-uca-border space-y-4 shadow-sm">
+                    <div className={cn("size-10 rounded-lg flex items-center justify-center border border-uca-border", stat.bg)}>
+                      <stat.icon className={cn("size-5", stat.color)} />
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-uca-text-muted mb-1">{stat.label}</p>
+                      <p className="text-2xl font-black text-uca-text-primary tracking-tight">{stat.value}</p>
+                    </div>
+                    <p className="text-[10px] font-bold text-uca-text-muted pt-3 border-t border-uca-border/50">{stat.sub}</p>
                  </div>
-                 <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">Discount & Offer Details</h3>
-              </div>
-              <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 min-h-[100px]">
-                 <p className="text-sm font-bold text-slate-600 leading-relaxed italic">
-                    {tournament.discountDetails || "No special discount details provided for this tournament."}
-                 </p>
-              </div>
-           </div>
-        </TabsContent>
+               ))}
+             </div>
 
-        <TabsContent value="students" className="mt-0 focus-visible:ring-0 space-y-6">
-           <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm">
-              <div className="relative w-full md:w-96">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8]" />
-                <Input
-                  placeholder="Search by name, ID or phone..."
-                  value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                  className="pl-9 h-12 rounded-xl border-slate-200"
-                />
-              </div>
-              <div className="flex items-center gap-3 w-full md:w-auto">
+             <div className="bg-uca-bg-surface rounded-xl border border-uca-border p-6 space-y-6 shadow-sm">
+                <div className="flex items-center gap-3">
+                   <div className="size-9 rounded-lg bg-uca-navy flex items-center justify-center border border-uca-border">
+                      <Percent className="size-4 text-uca-accent-blue" />
+                   </div>
+                   <h3 className="text-xs font-black uppercase tracking-widest text-uca-text-primary">Discount Intel</h3>
+                </div>
+                <div className="p-5 bg-uca-bg-base rounded-xl border border-uca-border min-h-[80px]">
+                   <p className="text-sm font-medium text-uca-text-muted leading-relaxed italic">
+                      {tournament.discountDetails || "No special discount details provided for this tournament."}
+                   </p>
+                </div>
+             </div>
+          </TabsContent>
+
+          <TabsContent value="students" className="mt-0 focus-visible:ring-0 space-y-6">
+             <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-uca-bg-surface p-5 rounded-xl border border-uca-border shadow-sm">
+                <div className="relative w-full md:w-80">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-uca-text-muted" />
+                  <Input
+                    placeholder="Search roster..."
+                    value={searchQuery}
+                    onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                    className="pl-10 h-11 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg"
+                  />
+                </div>
                 <Button
-                  variant="outline"
-                  className="h-12 rounded-xl font-bold gap-2 border-slate-200 flex-1 md:flex-none"
-                >
-                  <Filter className="h-4 w-4" /> Filters
-                </Button>
-                <Button
-                  className="h-12 rounded-xl font-bold gap-2 bg-[#0c1a3a] hover:bg-[#0284c7] transition-all flex-1 md:flex-none"
+                  className="h-11 rounded-lg font-bold gap-2 bg-uca-navy hover:bg-uca-navy-hover text-white text-xs uppercase tracking-widest w-full md:w-auto"
                   onClick={() => {
                     const headers = ["Reference ID", "Student Name", "Category", "FIDE ID", "Rating", "Phone", "Status"];
                     const rows = registrations?.map(r => [
@@ -202,261 +177,98 @@ const TournamentPortal: React.FC = () => {
                     document.body.removeChild(link);
                   }}
                 >
-                  <Download className="h-4 w-4" /> Export CSV
+                  <Download className="size-4" /> Export CSV
                 </Button>
-              </div>
-           </div>
+             </div>
 
-           {/* Mobile View: Cards */}
-           <div className="grid grid-cols-1 gap-4 md:hidden">
-             {isRegLoading ? (
-               [...Array(3)].map((_, i) => (
-                 <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                   <Skeleton className="h-20 w-full" />
-                 </div>
-               ))
-             ) : (registrations?.length || 0) === 0 ? (
-               <div className="bg-white p-12 text-center rounded-2xl border border-slate-100 shadow-sm">
-                 <FileText className="h-10 w-10 text-slate-200 mx-auto mb-4" />
-                 <p className="text-sm font-bold text-slate-400">No signups yet</p>
-               </div>
-             ) : (
-               (() => {
-                 const filtered = (registrations || []).filter((reg) => {
-                   const name = reg?.student?.fullName?.toLowerCase() || "";
-                   const refId = reg?.referenceId?.toLowerCase() || "";
-                   const phone = reg?.student?.phone || "";
-                   const search = searchQuery.toLowerCase();
-                   return name.includes(search) || refId.includes(search) || phone.includes(search);
-                 });
-                 const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
-
-                 return paginated.map((reg) => {
-                   const student = reg?.student;
-                   const fullName = student?.fullName || "N/A";
-                   const firstLetter = (fullName || "?").charAt(0).toUpperCase();
-                   let avatarStyles = { bg: "#fce7f3", color: "#be185d" };
-                   if ("ABCDE".includes(firstLetter)) avatarStyles = { bg: "#e0f2fe", color: "#0284c7" };
-                   else if ("FGHIJ".includes(firstLetter)) avatarStyles = { bg: "#ede9fe", color: "#6d28d9" };
-                   else if ("KLMNO".includes(firstLetter)) avatarStyles = { bg: "#d1fae5", color: "#065f46" };
-                   else if ("PQRST".includes(firstLetter)) avatarStyles = { bg: "#fef3c7", color: "#b45309" };
-
-                   return (
-                     <div key={reg?.id} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                       <div className="flex items-center justify-between">
-                         <div className="flex items-center gap-3">
-                           <div
-                             style={{
-                               width: '36px',
-                               height: '36px',
-                               borderRadius: '50%',
-                               backgroundColor: avatarStyles.bg,
-                               color: avatarStyles.color,
-                               display: 'flex',
-                               alignItems: 'center',
-                               justifyContent: 'center',
-                               fontSize: '12px',
-                               fontWeight: 700,
-                             }}
-                           >
-                             {firstLetter}
-                           </div>
-                           <div>
-                             <p className="text-sm font-bold text-slate-900">{fullName}</p>
-                             <p className="text-[10px] text-slate-400 font-medium">Ref: {reg?.referenceId}</p>
-                           </div>
-                         </div>
-                         <StatusBadge status={reg?.status} />
-                       </div>
-                       <div className="grid grid-cols-2 gap-4 pt-3 border-t border-slate-50">
-                         <div>
-                           <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Contact</p>
-                           <p className="text-[11px] font-bold text-slate-700">{student?.phone || "N/A"}</p>
-                         </div>
-                         <div>
-                           <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">FIDE Rating</p>
-                           <p className="text-[11px] font-bold text-slate-700">{student?.fideRating || 0}</p>
-                         </div>
-                       </div>
-                     </div>
-                   );
-                 });
-               })()
-             )}
-           </div>
-
-           {/* Desktop View: Table */}
-           <div className="bg-white overflow-hidden border border-slate-100 rounded-[24px] shadow-sm hidden md:block">
-              <table className="w-full border-collapse">
-                <thead style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                  <tr className="text-[10px] font-black uppercase text-[#64748b] tracking-[0.08em]">
-                    <th className="p-4 px-6 text-left">Reference ID</th>
-                    <th className="p-4 px-6 text-left">Student Name</th>
-                    <th className="p-4 px-6 text-left">Category & Rating</th>
-                    <th className="p-4 px-6 text-left">Contact</th>
-                    <th className="p-4 px-6 text-center">Status</th>
-                    <th className="p-4 px-6 text-left">Enrolled On</th>
-                  </tr>
-                </thead>
-                <tbody className="text-sm">
-                  {isRegLoading ? (
-                    [...Array(5)].map((_, i) => (
-                      <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td colSpan={6} className="p-4 px-6"><Skeleton className="h-12 w-full" /></td>
+             <div className="bg-uca-bg-surface border border-uca-border rounded-xl overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Player</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Division / FIDE</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted hidden lg:table-cell">Contact</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-center">Status</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Registered</th>
                       </tr>
-                    ))
-                  ) : (registrations?.length || 0) === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="h-64 text-center">
-                        <div className="flex flex-col items-center justify-center gap-4 py-12">
-                          <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center">
-                            <FileText className="h-10 w-10 text-slate-300" />
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-lg font-black text-slate-900">No Signups Yet</p>
-                            <p className="text-sm text-slate-500">Wait for students to discover this arena.</p>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    (() => {
-                      const filtered = (registrations || []).filter((reg) => {
-                        // Use optional chaining and default to empty strings to prevent crashes
-                        const name = reg?.student?.fullName?.toLowerCase() || "";
-                        const refId = reg?.referenceId?.toLowerCase() || "";
-                        const phone = reg?.student?.phone || "";
-                        const search = searchQuery.toLowerCase();
-                      
-                        return name.includes(search) || refId.includes(search) || phone.includes(search);
-                      });
-                      const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-                      const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+                    </thead>
+                    <tbody className="divide-y divide-uca-border">
+                      {isRegLoading ? (
+                        <tr><td colSpan={5} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading roster...</td></tr>
+                      ) : (
+                        (() => {
+                          const filtered = registrations.filter((reg) => {
+                            const name = reg?.student?.fullName?.toLowerCase() || "";
+                            const refId = reg?.referenceId?.toLowerCase() || "";
+                            const search = searchQuery.toLowerCase();
+                            return name.includes(search) || refId.includes(search);
+                          });
+                          const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+                          const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-                      return (
-                        <>
-                          {paginated.map((reg) => {
-                            const student = reg?.student;
-                            const fullName = student?.fullName || "N/A";
-                            const phone = student?.phone || "N/A";
-                            const email = student?.email || "No email provided";
-                            const gender = student?.gender || "N/A";
-                            const dob = student?.dob;
-                            const fideId = student?.fideId || "NA";
-                            const fideRating = student?.fideRating || 0;
-                            const status = reg?.status;
+                          if (paginated.length === 0) return <tr><td colSpan={5} className="py-20 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No players found</td></tr>;
 
-                            const firstLetter = (fullName || "?").charAt(0).toUpperCase();
-                            let avatarStyles = { bg: "#fce7f3", color: "#be185d" };
-                            if ("ABCDE".includes(firstLetter)) avatarStyles = { bg: "#e0f2fe", color: "#0284c7" };
-                            else if ("FGHIJ".includes(firstLetter)) avatarStyles = { bg: "#ede9fe", color: "#6d28d9" };
-                            else if ("KLMNO".includes(firstLetter)) avatarStyles = { bg: "#d1fae5", color: "#065f46" };
-                            else if ("PQRST".includes(firstLetter)) avatarStyles = { bg: "#fef3c7", color: "#b45309" };
-
-                            return (
-                              <tr
-                                key={reg?.id}
-                                className="group transition-all duration-120 cursor-pointer hover:bg-sky-50/50"
-                                style={{ borderBottom: '1px solid #f8fafc' }}
-                              >
-                                <td className="p-4 px-6 font-mono text-[10px] font-bold text-[#0284c7]">{reg?.referenceId}</td>
-                                <td className="p-4 px-6">
-                                  <div className="flex items-center gap-3">
-                                    <div
-                                      style={{
-                                        width: '34px',
-                                        height: '34px',
-                                        borderRadius: '50%',
-                                        backgroundColor: avatarStyles.bg,
-                                        color: avatarStyles.color,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: '12px',
-                                        fontWeight: 700,
-                                        flexShrink: 0
-                                      }}
-                                    >
-                                      {firstLetter}
-                                    </div>
-                                    <div className="min-w-0">
-                                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }} className="truncate">{fullName}</p>
-                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{gender} • {dob ? format(new Date(dob), "dd MMM yyyy") : 'Date TBD'}</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className="p-4 px-6">
-                                  <div className="space-y-1">
-                                     <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase">
-                                      {reg?.category || 'Open'}
-                                     </span>
-                                     <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8' }}>FIDE: {fideId} ({fideRating})</div>
-                                  </div>
-                                </td>
-                                <td className="p-4 px-6">
-                                  <div className="space-y-1">
-                                    <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
-                                      <Phone className="h-3 w-3" /> {phone}
-                                    </div>
-                                    <div className="flex items-center gap-2" style={{ fontSize: '10px', color: '#94a3b8' }}>
-                                      <Mail className="h-3 w-3" /> {email}
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className="p-4 px-6 text-center">
-                                  <StatusBadge status={status} />
-                                </td>
-                                <td className="p-4 px-6">
-                                  <div className="flex items-center gap-2" style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}>
-                                    <CalendarIcon className="h-3.5 w-3.5" />
-                                    {reg?.createdAt ? format(new Date(reg.createdAt), "MMM dd, yyyy") : 'Date TBD'}
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                          {/* Pagination Controls */}
-                          {totalPages > 1 && (
-                            <tr>
-                              <td colSpan={6} className="p-4 px-6 bg-slate-50/50">
-                                <div className="flex items-center justify-between">
-                                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                    Showing page <span className="text-sky-600">{currentPage}</span> of <span className="text-slate-900">{totalPages}</span>
-                                  </p>
-                                  <div className="flex items-center gap-2">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                      disabled={currentPage === 1}
-                                      className="h-9 rounded-lg px-3 sm:px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
-                                    >
-                                      <ChevronLeft className="sm:mr-1 h-3.5 w-3.5" /> <span className="hidden sm:inline">Previous</span>
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                      disabled={currentPage === totalPages}
-                                      className="h-9 rounded-lg px-3 sm:px-4 font-bold text-[10px] uppercase tracking-widest border-slate-200"
-                                    >
-                                      <span className="hidden sm:inline">Next</span> <ChevronRight className="sm:ml-1 h-3.5 w-3.5" />
-                                    </Button>
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </>
-                      );
-                    })()
-                  )}
-                </tbody>
-              </table>
-           </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+                          return (
+                            <>
+                              {paginated.map((reg) => {
+                                const name = reg?.student?.fullName || "N/A";
+                                const avatarStyles = getAvatarStyles(name);
+                                return (
+                                  <tr key={reg?.id} className="hover:bg-uca-bg-elevated/30 transition-colors">
+                                    <td className="px-6 py-4">
+                                      <div className="flex items-center gap-3">
+                                        <div className="size-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0" style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}>
+                                          {name.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div className="min-w-0">
+                                          <p className="text-sm font-bold text-uca-text-primary truncate">{name}</p>
+                                          <p className="text-[10px] text-uca-text-muted font-mono">{reg?.referenceId}</p>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                      <div className="flex flex-col gap-0.5">
+                                        <span className="text-xs font-semibold text-uca-text-primary">{reg?.category || 'Open'}</span>
+                                        <span className="text-[10px] text-uca-text-muted">FIDE: {reg?.student?.fideRating || 0}</span>
+                                      </div>
+                                    </td>
+                                    <td className="px-6 py-4 hidden lg:table-cell">
+                                      <div className="flex flex-col gap-0.5">
+                                        <span className="text-xs text-uca-text-primary font-medium">{reg?.student?.phone}</span>
+                                        <span className="text-[10px] text-uca-text-muted truncate max-w-[120px]">{reg?.student?.email}</span>
+                                      </div>
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                      <StatusBadge status={reg?.status} />
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                      <span className="text-[10px] text-uca-text-muted font-bold">
+                                        {reg?.createdAt ? format(new Date(reg.createdAt), "MMM d, yyyy") : 'TBD'}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                              {totalPages > 1 && (
+                                <tr>
+                                  <td colSpan={5} className="px-6 py-4 bg-uca-bg-elevated/20">
+                                    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+                                  </td>
+                                </tr>
+                              )}
+                            </>
+                          );
+                        })()
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+             </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </AdminShell>
   );
 };
 

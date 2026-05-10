@@ -16,11 +16,18 @@ const AdminLogin: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/admin/dashboard";
+
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/admin/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,29 +55,29 @@ const AdminLogin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-uca-bg-base lg:bg-[url('/bg-pattern.svg')] lg:bg-repeat p-0 sm:p-4">
+      <Card className="w-full max-w-none sm:max-w-md mx-4 sm:mx-0 bg-uca-bg-surface border-uca-border shadow-2xl">
+        <CardHeader className="space-y-1 text-center pt-8 sm:pt-6">
           <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
-              <Trophy className="text-primary-foreground h-8 w-8" />
+            <div className="w-12 h-12 rounded-xl bg-uca-navy flex items-center justify-center border border-uca-border">
+              <Trophy className="text-uca-accent-blue h-8 w-8" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Admin Login</CardTitle>
-          <CardDescription>Enter your credentials to access the dashboard</CardDescription>
+          <CardTitle className="text-2xl font-bold tracking-tight text-uca-text-primary">Admin Login</CardTitle>
+          <CardDescription className="text-uca-text-muted">Enter your credentials to access the command center</CardDescription>
         </CardHeader>
         
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 px-6 sm:px-8">
             {errorMsg && (
-              <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md flex items-center gap-2">
+              <div className="bg-uca-accent-red/10 border border-uca-accent-red/20 text-uca-accent-red text-sm p-3 rounded-lg flex items-center gap-2">
                 <span className="flex-shrink-0"><AlertCircle className="h-4 w-4" /></span>
                 <p>{errorMsg}</p>
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" className="text-uca-text-muted">Username</Label>
               <Input
                 id="username"
                 type="text"
@@ -78,10 +85,11 @@ const AdminLogin: React.FC = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                className="bg-uca-bg-elevated border-uca-border text-uca-text-primary placeholder:text-slate-600 focus:ring-uca-accent-blue"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-uca-text-muted">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -89,12 +97,17 @@ const AdminLogin: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="bg-uca-bg-elevated border-uca-border text-uca-text-primary placeholder:text-slate-600 focus:ring-uca-accent-blue"
               />
             </div>
           </CardContent>
-          <CardFooter>
-            <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading ? "Logging in..." : "Login"}
+          <CardFooter className="pb-8 sm:pb-6 px-6 sm:px-8">
+            <Button
+              className="w-full bg-uca-navy hover:bg-uca-navy-hover text-white font-semibold h-11 rounded-xl transition-all"
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : "Login to Dashboard"}
             </Button>
           </CardFooter>
         </form>

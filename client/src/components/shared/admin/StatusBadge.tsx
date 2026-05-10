@@ -18,53 +18,33 @@ interface StatusBadgeProps {
   className?: string;
 }
 
-const statusStyles: Record<string, { bg: string, color: string, border: string }> = {
-  PENDING:   { bg: "#fef3c7", color: "#92400e", border: "1px solid #fde68a" },
-  UPCOMING:  { bg: "#dbeafe", color: "#1e40af", border: "1px solid #bfdbfe" },
-  COMPLETED: { bg: "#d1fae5", color: "#065f46", border: "1px solid #6ee7b7" },
-  CANCELLED: { bg: "#fee2e2", color: "#991b1b", border: "1px solid #fca5a5" },
-  REJECTED:  { bg: "#fee2e2", color: "#991b1b", border: "1px solid #fca5a5" },
-  LIVE:      { bg: "#d1fae5", color: "#065f46", border: "1px solid #6ee7b7" },
-  // Map others to closest spec or default
-  APPROVED:  { bg: "#d1fae5", color: "#065f46", border: "1px solid #6ee7b7" },
-  VERIFIED:  { bg: "#d1fae5", color: "#065f46", border: "1px solid #6ee7b7" },
-  CONFIRMED: { bg: "#dbeafe", color: "#1e40af", border: "1px solid #bfdbfe" },
-  ONGOING:   { bg: "#dbeafe", color: "#1e40af", border: "1px solid #bfdbfe" },
+const statusStyles: Record<string, string> = {
+  PENDING:   "bg-amber-500/10 text-amber-500 border-amber-500/20",
+  UPCOMING:  "bg-uca-accent-blue/10 text-uca-accent-blue border-uca-accent-blue/20",
+  COMPLETED: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  CANCELLED: "bg-uca-accent-red/10 text-uca-accent-red border-uca-accent-red/20",
+  REJECTED:  "bg-uca-accent-red/10 text-uca-accent-red border-uca-accent-red/20",
+  LIVE:      "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  APPROVED:  "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  VERIFIED:  "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  CONFIRMED: "bg-uca-accent-blue/10 text-uca-accent-blue border-uca-accent-blue/20",
+  ONGOING:   "bg-uca-accent-blue/10 text-uca-accent-blue border-uca-accent-blue/20",
 };
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) => {
-  const normalizedStatus = status.toUpperCase();
-  const styleConfig = statusStyles[normalizedStatus] || { bg: "#f1f5f9", color: "#64748b", border: "1px solid #e2e8f0" };
+  const normalizedStatus = status?.toUpperCase();
+  const styleClasses = statusStyles[normalizedStatus] || "bg-uca-bg-elevated text-uca-text-muted border-uca-border";
 
   return (
     <span
       className={cn(
-        "inline-flex items-center",
+        "inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-colors",
+        styleClasses,
         className
       )}
-      style={{
-        fontSize: '10px',
-        fontWeight: 700,
-        padding: '3px 9px',
-        borderRadius: '20px',
-        textTransform: 'uppercase',
-        letterSpacing: '0.3px',
-        backgroundColor: styleConfig.bg,
-        color: styleConfig.color,
-        border: styleConfig.border
-      }}
     >
       {normalizedStatus === "LIVE" && (
-        <span
-          style={{
-            width: '6px',
-            height: '6px',
-            backgroundColor: '#10b981',
-            borderRadius: '50%',
-            marginRight: '6px',
-            display: 'inline-block'
-          }}
-        />
+        <span className="size-1.5 bg-emerald-500 rounded-full mr-1.5 animate-pulse" />
       )}
       {status}
     </span>

@@ -9,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -33,16 +34,23 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 }) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="fixed bottom-0 sm:bottom-auto left-0 sm:left-1/2 translate-x-0 sm:-translate-x-1/2 rounded-t-[2rem] sm:rounded-[1.5rem] border-x-0 sm:border-x border-b-0 sm:border-b shadow-2xl z-[200]">
+      <AlertDialogContent className="bg-uca-bg-surface border-uca-border rounded-t-2xl sm:rounded-2xl shadow-2xl z-[200]">
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+          <AlertDialogTitle className="text-uca-text-primary font-bold">{title}</AlertDialogTitle>
+          <AlertDialogDescription className="text-uca-text-muted">{description}</AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{cancelText}</AlertDialogCancel>
+        <AlertDialogFooter className="mt-6">
+          <AlertDialogCancel className="bg-transparent border-uca-border text-uca-text-muted hover:bg-uca-bg-elevated hover:text-uca-text-primary rounded-lg">
+            {cancelText}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className={isDestructive ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+            className={cn(
+              "rounded-lg font-bold",
+              isDestructive
+                ? "bg-uca-accent-red hover:bg-uca-accent-red/90 text-white"
+                : "bg-uca-navy hover:bg-uca-navy-hover text-white"
+            )}
           >
             {confirmText}
           </AlertDialogAction>

@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, RefreshCw, CheckCircle2, AlertCircle, Eye } from "lucide-react";
+import { Upload, RefreshCw, CheckCircle2, AlertCircle, Eye, Settings } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import AdminShell from "@/components/admin/AdminShell";
 
 export default function AdminSettings() {
   const { toast } = useToast();
@@ -60,131 +61,115 @@ export default function AdminSettings() {
     updateSettingsMutation.mutate(formData);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <RefreshCw className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
-    );
-  }
-
   return (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
-      <div className="space-y-2">
-        <h1 className="text-4xl font-black tracking-tight text-slate-900">Admin Settings</h1>
-        <p className="text-slate-500 font-medium">Manage global configurations for the academy.</p>
-      </div>
+    <AdminShell
+      title="Admin Settings"
+      subtitle="Manage global configurations for the academy."
+    >
+      <div className="max-w-4xl mx-auto space-y-6">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <RefreshCw className="size-8 animate-spin text-uca-accent-blue" />
+          </div>
+        ) : (
+          <Card className="bg-uca-bg-surface border-uca-border rounded-2xl overflow-hidden shadow-xl">
+            <CardHeader className="bg-uca-bg-elevated/30 p-6 border-b border-uca-border">
+              <div className="flex items-center gap-4">
+                <div className="size-12 bg-uca-navy rounded-xl flex items-center justify-center border border-uca-border">
+                  <Settings className="size-6 text-uca-accent-blue" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl font-black text-uca-text-primary">Global Payment Config</CardTitle>
+                  <CardDescription className="text-uca-text-muted">
+                    Update the UPI QR code used across all programs.
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6 md:p-8 space-y-8">
+              <div className="grid md:grid-cols-2 gap-8 items-start">
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">
+                      Upload New QR Scanner
+                    </Label>
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="group relative aspect-square rounded-2xl border-2 border-dashed border-uca-border flex flex-col items-center justify-center cursor-pointer hover:border-uca-accent-blue/50 hover:bg-uca-bg-elevated transition-all overflow-hidden bg-uca-bg-base"
+                    >
+                      {previewUrl ? (
+                        <img src={previewUrl} className="w-full h-full object-contain p-4" alt="Preview" />
+                      ) : (
+                        <div className="text-center p-6">
+                          <Upload className="size-8 text-uca-text-muted mb-3 group-hover:text-uca-accent-blue group-hover:scale-110 transition-all mx-auto" />
+                          <p className="text-sm font-bold text-uca-text-primary">Click to upload</p>
+                          <p className="text-[10px] text-uca-text-muted mt-1 uppercase font-black">PNG, JPG or WebP</p>
+                        </div>
+                      )}
+                      <input ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                    </div>
+                  </div>
 
-      <div className="grid gap-4 md:p-8">
-        <Card className="border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2rem] overflow-hidden">
-          <CardHeader className="bg-slate-50/50 p-4 md:p-8 border-b border-slate-100">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20">
-                <Upload className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-xl font-black">Global Payment Configuration</CardTitle>
-                <CardDescription className="font-medium">
-                  Update the UPI QR code used across all programs and tournaments.
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 md:p-8 space-y-8">
-            <div className="grid md:grid-cols-2 gap-4 md:p-8 items-start">
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">
-                    Upload New QR Scanner
-                  </Label>
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className="group relative aspect-square rounded-[2rem] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center cursor-pointer hover:border-blue-600/50 hover:bg-blue-50/30 transition-all overflow-hidden"
+                  <Button
+                    onClick={handleSave}
+                    disabled={!selectedFile || updateSettingsMutation.isPending}
+                    className="w-full h-12 bg-uca-navy hover:bg-uca-navy-hover text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all"
                   >
-                    {previewUrl ? (
-                      <img src={previewUrl} className="w-full h-full object-contain p-4" alt="Preview" />
+                    {updateSettingsMutation.isPending ? (
+                      <RefreshCw className="size-4 animate-spin mr-2" />
                     ) : (
-                      <div className="text-center p-6">
-                        <div className="h-12 w-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-100 group-hover:scale-110 transition-all">
-                          <Upload className="h-6 w-6 text-slate-400 group-hover:text-blue-600" />
-                        </div>
-                        <p className="text-sm font-bold text-slate-600">Click to upload</p>
-                        <p className="text-[10px] text-slate-400 mt-1 uppercase font-black">PNG, JPG or WebP</p>
-                      </div>
+                      <CheckCircle2 className="size-4 mr-2" />
                     )}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                    />
-                  </div>
+                    Save Configuration
+                  </Button>
                 </div>
 
-                <Button
-                  onClick={handleSave}
-                  disabled={!selectedFile || updateSettingsMutation.isPending}
-                  className="w-full h-14 bg-blue-600 hover:bg-slate-900 rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-600/10"
-                >
-                  {updateSettingsMutation.isPending ? (
-                    <RefreshCw className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">
+                      Current Active Scanner
+                    </Label>
+                    <div className="aspect-square rounded-2xl bg-uca-bg-base border border-uca-border flex flex-col items-center justify-center relative group overflow-hidden">
+                      {settings?.upiScannerUrl ? (
+                        <>
+                          <img src={settings.upiScannerUrl} className="w-full h-full object-contain p-4" alt="Current QR" />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              className="rounded-lg font-bold text-[10px] uppercase tracking-widest h-10 px-4 bg-uca-text-primary text-uca-bg-base"
+                              onClick={() => window.open(settings.upiScannerUrl, "_blank")}
+                            >
+                              <Eye className="size-3.5 mr-2" /> View Full
+                            </Button>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-center p-8">
+                          <AlertCircle className="size-10 text-uca-bg-elevated mx-auto mb-3" />
+                          <p className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest">
+                            No Scanner Configured
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {!settings?.upiScannerUrl && (
+                    <Alert className="rounded-xl border-uca-accent-red/20 bg-uca-accent-red/10 text-uca-accent-red">
+                      <AlertCircle className="size-4" />
+                      <AlertTitle className="font-black text-[10px] uppercase tracking-widest">Action Required</AlertTitle>
+                      <AlertDescription className="text-xs font-medium">
+                        Payment information is missing for student registrations.
+                      </AlertDescription>
+                    </Alert>
                   )}
-                  Save New Configuration
-                </Button>
-              </div>
-
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <Label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">
-                    Current Active Scanner
-                  </Label>
-                  <div className="aspect-square rounded-[2rem] bg-slate-50 border border-slate-100 flex flex-col items-center justify-center relative group overflow-hidden">
-                    {settings?.upiScannerUrl ? (
-                      <>
-                        <img
-                          src={settings.upiScannerUrl}
-                          className="w-full h-full object-contain p-4"
-                          alt="Current QR"
-                        />
-                        <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            className="rounded-full font-black text-[10px] uppercase tracking-widest h-10 px-6 shadow-2xl"
-                            onClick={() => window.open(settings.upiScannerUrl, "_blank")}
-                          >
-                            <Eye className="h-3.5 w-3.5 mr-2" /> View Full Scale
-                          </Button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-center p-4 md:p-8">
-                        <AlertCircle className="h-10 w-10 text-slate-200 mx-auto mb-4" />
-                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
-                          No Scanner Configured
-                        </p>
-                      </div>
-                    )}
-                  </div>
                 </div>
-
-                {!settings?.upiScannerUrl && (
-                  <Alert variant="destructive" className="rounded-2xl border-rose-100 bg-rose-50/50">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle className="font-black text-[10px] uppercase tracking-widest">Action Required</AlertTitle>
-                    <AlertDescription className="text-xs font-medium">
-                      Without a global scanner, students will not see payment information during registration.
-                    </AlertDescription>
-                  </Alert>
-                )}
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
-    </div>
+    </AdminShell>
   );
 }
