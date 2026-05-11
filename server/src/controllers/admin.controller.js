@@ -16,8 +16,8 @@ export const loginAdmin = async (req, res) => {
     // Set secure HTTP-only cookie
     res.cookie('admin_session', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true, // Required for sameSite: 'none'
+      sameSite: 'none', // Allow cross-site cookies (Vercel to Render)
       maxAge: 24 * 60 * 60 * 1000, // 1 day
       path: '/',
     });
@@ -32,8 +32,8 @@ export const logoutAdmin = async (req, res) => {
   res.clearCookie('admin_session', {
     path: '/',
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: true,
+    sameSite: 'none',
   });
   res.status(200).json({ message: 'Logout successful' });
 };

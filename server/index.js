@@ -33,14 +33,19 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5176',
   'https://unique-chess-academy.vercel.app',
-  'https://unique-chess-acadamy-tqe5.vercel.app' // 👈 Added this exactly as seen in your screenshot
+  'https://unique-chess-acadamy-tqe5.vercel.app'
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
     // allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
+
+    const isAllowed = allowedOrigins.indexOf(origin) !== -1 ||
+                     origin.endsWith('.vercel.app') ||
+                     origin.includes('localhost');
+
+    if (isAllowed) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

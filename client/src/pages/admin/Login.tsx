@@ -7,8 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy, AlertCircle, Loader2 } from "lucide-react";
 
-// IMPORTANT: We are importing your CUSTOM instance defined above
-import axios from "@/lib/axios"; 
+import api from "@/lib/api";
 
 const AdminLogin: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -36,8 +35,8 @@ const AdminLogin: React.FC = () => {
     setErrorMsg(""); 
 
     try {
-      // This call now automatically uses the BaseURL from your axios.ts file
-      const response = await axios.post("/api/admin/login", {
+      // This call now automatically uses the BaseURL from your api.ts file (which already includes /api)
+      const response = await api.post("/admin/login", {
         username,
         password,
       });
