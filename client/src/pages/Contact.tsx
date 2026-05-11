@@ -37,24 +37,24 @@ export default function ContactPage() {
       <Navbar />
 
       {/* HERO SECTION - Deep Pro Theme */}
-      <header className="relative h-[60vh] min-h-[450px] flex items-center bg-[#020617] overflow-hidden pt-20">
+      <header className="relative min-h-auto pt-24 pb-12 md:min-h-[400px] md:pt-28 md:pb-16 lg:min-h-[480px] lg:pt-32 lg:pb-20 flex items-center bg-[#020617] overflow-hidden">
         <SparkleCanvas density="subtle" />
         <div className="absolute inset-0 z-0 opacity-40">
            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,_var(--tw-gradient-stops))] from-sky-900/20 via-transparent to-transparent" />
         </div>
         
         <div className="container relative z-10 mx-auto px-6">
-          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left">
-            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-8">
+          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left max-w-3xl">
+            <motion.div variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase border border-white/20 bg-white/10 rounded-full px-4 py-1.5 inline-flex items-center gap-2 mb-6 text-white">
               <Headphones className="h-3.5 w-3.5" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Support Center</span>
+              <span>Support Center</span>
             </motion.div>
 
-            <motion.h1 variants={fadeUp} className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
+            <motion.h1 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-white mb-4">
               Get in <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">Touch</span>
             </motion.h1>
 
-            <motion.p variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.42, 0, 0.58, 1] } } }} className="max-w-xl text-slate-400 text-lg leading-relaxed">
+            <motion.p variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.42, 0, 0.58, 1] } } }} className="text-base sm:text-lg text-white/70 max-w-xl mb-8 leading-relaxed">
               Have questions? We'd love to hear from you. Our team is ready to help you start your chess journey.
             </motion.p>
           </motion.div>
@@ -62,8 +62,8 @@ export default function ContactPage() {
       </header>
 
       {/* CONTACT CONTENT */}
-      <section className="py-24 bg-white relative z-10 -mt-12">
-        <div className="container mx-auto px-6">
+      <section className="py-12 md:py-16 bg-white relative z-10 -mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             
             {/* FORM CARD */}

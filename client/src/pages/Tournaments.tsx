@@ -23,7 +23,7 @@ export default function TournamentsPage() {
       <Navbar />
 
       {/* HERO SECTION */}
-      <header className="relative min-h-[60vh] w-full flex items-center bg-[#020617] overflow-hidden pt-32 pb-20">
+      <header className="relative min-h-auto pt-24 pb-12 md:min-h-[400px] md:pt-28 md:pb-16 lg:min-h-[480px] lg:pt-32 lg:pb-20 w-full flex items-center bg-[#020617] overflow-hidden">
         <SparkleCanvas density="full" />
         <div className="absolute inset-0 z-0">
           <img 
@@ -35,18 +35,18 @@ export default function TournamentsPage() {
         </div>
         
         <div className="container relative z-10 mx-auto px-6">
-          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left">
-            <motion.div variants={fadeLeft} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-8">
+          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left max-w-3xl">
+            <motion.div variants={fadeLeft} className="text-xs font-semibold tracking-widest uppercase border border-white/20 bg-white/10 rounded-full px-4 py-1.5 inline-flex items-center gap-2 mb-6 text-white">
               <Trophy className="h-3.5 w-3.5" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Championship Hub</span>
+              <span>Championship Hub</span>
             </motion.div>
             
-            <motion.h1 variants={fadeLeft} className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
+            <motion.h1 variants={fadeLeft} className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-white mb-4">
               Prove Your <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">Strategic Might</span>
             </motion.h1>
             
-            <motion.p variants={fadeLeft} className="max-w-xl text-slate-400 text-lg leading-relaxed">
+            <motion.p variants={fadeLeft} className="text-base sm:text-lg text-white/70 max-w-xl mb-8 leading-relaxed">
               "In chess, as in life, strategy is the art of making use of time and space."
             </motion.p>
           </motion.div>
@@ -55,29 +55,25 @@ export default function TournamentsPage() {
 
       {/* STAT BAR */}
       <section className="relative z-20 -mt-20 mb-20">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-0 bg-[#0f172a] border border-white/10 rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[#0f172a] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
             {[
-              { icon: Timer, label: "Blitz", desc: "3-5 Mins", color: "text-blue-400", bg: "group-hover:bg-blue-500/10" },
-              { icon: Swords, label: "Rapid", desc: "15-30 Mins", color: "text-emerald-400", bg: "group-hover:bg-emerald-500/10" },
-              { icon: Calendar, label: "Classical", desc: "90+ Mins", color: "text-sky-400", bg: "group-hover:bg-sky-500/10" },
-              { icon: Medal, label: "Rated", desc: "Official ELO", color: "text-purple-400", bg: "group-hover:bg-purple-500/10" },
-            ].map((stat, i) => (
+              { icon: Timer, label: "Blitz", desc: "3-5 Mins", color: "text-blue-400" },
+              { icon: Swords, label: "Rapid", desc: "15-30 Mins", color: "text-emerald-400" },
+              { icon: Calendar, label: "Classical", desc: "90+ Mins", color: "text-sky-400" },
+              { icon: Medal, label: "Rated", desc: "Official ELO", color: "text-purple-400" },
+            ].map((stat) => (
               <div 
                 key={stat.label} 
-                className={cn(
-                  "group relative flex flex-col md:flex-row items-center gap-4 py-6 px-4 md:py-10 md:px-8 transition-all duration-300 hover:bg-white/[0.02]",
-                  i !== 3 && "md:border-r border-white/5"
-                )}
+                className="flex flex-col sm:flex-row items-center gap-3 p-5 sm:p-6 bg-[#0f172a] transition-all duration-300 hover:bg-white/[0.05]"
               >
-                <div className={cn("w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center transition-colors duration-300", stat.bg)}>
-                  <stat.icon className={cn("h-7 w-7", stat.color)} />
+                <div className="p-3 rounded-xl bg-white/10 flex-shrink-0">
+                  <stat.icon className={cn("h-6 w-6", stat.color)} />
                 </div>
-                <div className="text-center md:text-left">
-                  <p className="text-[13px] font-bold text-white uppercase tracking-[0.2em] mb-1">{stat.label}</p>
-                  <p className="text-xs font-medium text-slate-400">{stat.desc}</p>
+                <div className="text-center sm:text-left">
+                  <p className="text-sm font-bold text-white uppercase tracking-wide">{stat.label}</p>
+                  <p className="text-xs text-white/60">{stat.desc}</p>
                 </div>
-                <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent group-hover:w-full transition-all duration-500" />
               </div>
             ))}
           </div>
@@ -85,12 +81,12 @@ export default function TournamentsPage() {
       </section>
 
       {/* TOURNAMENT GRID */}
-      <section className="py-20 bg-white min-h-[600px]">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between mb-16">
+      <section className="py-12 md:py-16 bg-white min-h-[600px]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Active Arenas</h2>
-              <div className="h-1 w-12 bg-sky-500 mt-3 rounded-full" />
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-2">Active Arenas</h2>
+              <div className="w-12 h-1 bg-blue-600 rounded mb-8" />
             </div>
           </div>
 
@@ -100,82 +96,79 @@ export default function TournamentsPage() {
               <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Synchronizing Arenas...</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-              {tournaments.map((t, index) => (
-                <motion.div 
-                  key={t.id}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeUp}
-                  custom={index}
-                  className="group relative bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-sky-900/10 hover:border-sky-200 transition-all duration-500 flex flex-col h-full"
-                >
-                  {/* Image Container with Fixed Aspect Ratio for Uniformity */}
-                  <div className="relative w-full aspect-[16/10] bg-slate-100 overflow-hidden">
-                    <img
-                      src={t.imageUrl || "https://images.unsplash.com/photo-1528819622765-d6bcf132f793?q=80&w=2000"}
-                      alt={t.title}
-                      className={cn(
-                        "absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110",
-                        t.posterOrientation === 'PORTRAIT' ? "object-top" : "object-center"
-                      )}
-                    />
-                    <div className="absolute top-5 left-5 flex gap-2">
-                      <span className="px-4 py-1.5 bg-white/95 backdrop-blur-md rounded-xl text-[10px] font-black text-sky-600 shadow-xl shadow-sky-900/5 uppercase tracking-widest border border-sky-50">
-                        {t.category || 'Open'}
-                      </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {tournaments.map((t, index) => {
+                const isClosed = false; // Add real logic if available
+                return (
+                  <motion.div
+                    key={t.id}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={fadeUp}
+                    custom={index}
+                    className="group bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col h-full relative"
+                  >
+                    {/* Status Badge */}
+                    <div className={cn(
+                      "absolute top-3 left-3 z-10 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider",
+                      isClosed ? "bg-red-500" : "bg-green-500"
+                    )}>
+                      {isClosed ? "CLOSED" : "OPEN"}
                     </div>
-                    {/* Soft gradient overlay for professional feel */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  </div>
 
-                  <div className="p-6 md:p-9 flex flex-col h-full">
-                    <div className="flex justify-between items-start mb-8">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Start Date</span>
-                        <div className="flex items-center gap-2 text-slate-900 font-semibold">
-                          <Calendar className="h-4 w-4 text-sky-500" />
-                          {/* LOGIC CHANGE: Uses startDate from new schema */}
+                    {/* Banner Image */}
+                    <div className="w-full aspect-[4/3] bg-slate-100 overflow-hidden">
+                      <img
+                        src={t.imageUrl || "https://images.unsplash.com/photo-1528819622765-d6bcf132f793?q=80&w=2000"}
+                        alt={t.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+
+                    <div className="p-4 flex flex-col flex-1">
+                      {/* Start Date */}
+                      <div className="mb-3">
+                        <span className="text-[10px] font-semibold text-blue-600 uppercase tracking-wide block">
                           {new Date(t.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </div>
-                      </div>
-                    </div>
-
-                    <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-sky-600 transition-colors">
-                      {t.title}
-                    </h3>
-                    <div className="flex items-center gap-2 text-slate-500 text-sm mb-6 font-medium">
-                      <MapPin className="h-4 w-4 text-slate-400" />
-                      {t.location || 'Unique Chess Academy'}
-                    </div>
-
-                    <div className="flex flex-col mb-10">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Prize Fund</span>
-                      <span className="text-2xl font-bold text-slate-900">
-                        {/* LOGIC CHANGE: Uses totalPrizePool from new schema */}
-                        ₹{t.totalPrizePool?.toLocaleString() || 'TBD'}
-                      </span>
-                    </div>
-
-                    <div
-                      onClick={() => handleViewDetails(t.id.toString())}
-                      className="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between cursor-pointer group/btn"
-                    >
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-sky-600 uppercase tracking-widest mb-1">Entry Fee</span>
-                        <span className="text-2xl font-bold text-slate-900 group-hover:text-sky-600 transition-colors">
-                          ₹{t.entryFee?.toLocaleString() || '0'}
                         </span>
                       </div>
-                      <div className="h-12 px-6 bg-slate-900 group-hover:bg-sky-600 text-white rounded-xl flex items-center justify-center transition-all shadow-lg active:scale-95">
-                        <span className="text-xs font-bold uppercase tracking-widest">Enroll Now</span>
-                        <ChevronRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+
+                      {/* Title */}
+                      <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-1">
+                        {t.title}
+                      </h3>
+
+                      {/* Location */}
+                      <div className="flex items-center gap-1.5 text-sm text-slate-500 mb-3">
+                        <MapPin className="h-3.5 w-3.5" />
+                        <span className="line-clamp-1">{t.location || 'Unique Chess Academy'}</span>
+                      </div>
+
+                      {/* Prize Fund */}
+                      <div className="mb-4">
+                        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide block mb-0.5">Prize Fund</span>
+                        <span className="text-xl font-bold text-slate-900">
+                          ₹{t.totalPrizePool?.toLocaleString() || 'TBD'}
+                        </span>
+                      </div>
+
+                      {/* Bottom row */}
+                      <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <div className="text-sm font-semibold text-slate-700">
+                          ₹{t.entryFee?.toLocaleString() || '0'}
+                        </div>
+                        <button
+                          onClick={() => handleViewDetails(t.id.toString())}
+                          className="bg-slate-900 hover:bg-slate-700 text-white text-[10px] font-semibold px-4 py-2 rounded-lg transition-colors duration-150 uppercase tracking-wider"
+                        >
+                          Enroll Now
+                        </button>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </div>
           )}
         </div>

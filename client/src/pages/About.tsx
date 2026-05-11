@@ -33,7 +33,7 @@ export default function AboutPage() {
       <Navbar />
 
       {/* HERO SECTION - CINEMATIC DARK */}
-      <header className="relative min-h-[90vh] flex items-center bg-[#020617] pt-32 pb-20 overflow-hidden">
+      <header className="relative min-h-auto pt-24 pb-12 md:min-h-[400px] md:pt-28 md:pb-16 lg:min-h-[480px] lg:pt-32 lg:pb-20 flex items-center bg-[#020617] overflow-hidden">
         <SparkleCanvas density="low" />
         <div
           className="absolute inset-0 z-0 opacity-40 scale-110"
@@ -47,18 +47,18 @@ export default function AboutPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#020617]/90 via-[#020617] to-[#f8fafc]" />
 
         <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl">
+          <div className="max-w-3xl">
             <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left">
-              <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-8">
+              <motion.div variants={fadeIn} className="text-xs font-semibold tracking-widest uppercase border border-white/20 bg-white/10 rounded-full px-4 py-1.5 inline-flex items-center gap-2 mb-6 text-white">
                 <Trophy className="h-3.5 w-3.5" /> The Grandmaster Standard
               </motion.div>
               
-              <motion.h1 variants={fadeLeft} className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
+              <motion.h1 variants={fadeLeft} className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-white mb-4">
                 Architecting <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">Pure Intellect.</span>
               </motion.h1>
 
-              <motion.p variants={fadeLeft} className="text-slate-300 text-lg leading-relaxed max-w-xl mb-10">
+              <motion.p variants={fadeLeft} className="text-base sm:text-lg text-white/70 max-w-xl mb-8 leading-relaxed">
                 Unique Chess Academy is India's most elite strategic laboratory, where grandmaster theory meets modern computational logic.
               </motion.p>
               
@@ -73,13 +73,14 @@ export default function AboutPage() {
       </header>
 
       {/* STORY SECTION - CLEAN TRANSITION */}
-      <section className="py-32 bg-gradient-to-b from-[#f8fafc] to-[#e6f0f7] relative">
-        <div className="container mx-auto px-6">
+      <section className="py-12 md:py-16 bg-gradient-to-b from-[#f8fafc] to-[#e6f0f7] relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-[3fr_2fr] gap-20 items-center">
             <ScrollReveal variants={fadeLeft}>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-black uppercase tracking-widest mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-black uppercase tracking-widest mb-2">
                  <Trophy className="h-3.5 w-3.5" /> Established 2016
               </div>
+              <div className="w-12 h-1 bg-blue-600 rounded mb-8" />
               <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-slate-900 mb-10 tracking-tighter leading-[0.95]">
                 Beyond <br /><span className="text-blue-600 italic">Memorization.</span>
               </h2>
@@ -106,8 +107,8 @@ export default function AboutPage() {
       </section>
 
       {/* MISSION & VISION - REFINED TYPOGRAPHY */}
-      <section className="py-24 bg-[#f1f5f9] border-y border-slate-200">
-        <div className="container mx-auto px-6 grid lg:grid-cols-2 gap-8">
+      <section className="py-12 md:py-16 bg-[#f1f5f9] border-y border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-8">
           <ScrollReveal variants={fadeLeft}>
             <div className="bg-white/70 backdrop-blur-xl border border-white p-6 md:p-10 lg:p-12 rounded-2xl md:rounded-[3rem] group hover:bg-white transition-all duration-500 shadow-xl shadow-blue-900/5 h-full text-left">
               <div className="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-10 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
@@ -135,9 +136,9 @@ export default function AboutPage() {
       </section>
 
       {/* VALUES GRID */}
-      <section className="py-32 bg-[#f8fafc]">
-        <div className="container mx-auto px-6">
-          <div className="mb-24">
+      <section className="py-12 md:py-16 bg-[#f8fafc]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-10">
              <SectionHeading label="The UCA Edge" title="Defining the Method" />
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
@@ -159,8 +160,8 @@ export default function AboutPage() {
       </section>
 
       {/* COACHES SECTION */}
-      <section className="py-32 bg-white relative overflow-hidden">
-        <div className="container mx-auto px-6 relative z-10">
+      <section className="py-12 md:py-16 bg-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <SectionHeading label="The Faculty" title="Elite Tactical Minds" />
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-24">
             {coaches.map((c, i) => (
