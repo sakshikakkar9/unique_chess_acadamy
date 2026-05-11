@@ -311,7 +311,11 @@ const AdminTournaments: React.FC = () => {
             const original = tournaments.find(t => t.id === row.id);
             if (original) handleEdit(original);
           }}
-          onDelete={(t) => { setSelectedTournament(t); setIsConfirmOpen(true); }}
+          onDelete={(t) => {
+            const original = tournaments.find(item => item.id === t.id);
+            setSelectedTournament(original || t);
+            setIsConfirmOpen(true);
+          }}
           entityName="tournaments"
           onAddFirst={handleAdd}
         />

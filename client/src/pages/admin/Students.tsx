@@ -229,7 +229,11 @@ export default function StudentsPage() {
             const original = students.find((s: any) => s.id === row.id);
             if (original) handleEdit(original);
           }}
-          onDelete={(s) => { setSelectedStudent(s); setIsConfirmOpen(true); }}
+          onDelete={(s) => {
+            const original = students.find((student: any) => student.id === s.id);
+            setSelectedStudent(original || s);
+            setIsConfirmOpen(true);
+          }}
           entityName="students"
           onAddFirst={handleAdd}
         />

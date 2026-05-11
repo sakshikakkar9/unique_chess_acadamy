@@ -1,5 +1,5 @@
 import React from "react";
-import { Trash2, Pencil, PhotoIcon } from "lucide-react";
+import { Trash2, Pencil, Image as ImageIcon } from "lucide-react";
 import { GalleryImage } from "@/types";
 import { cn } from "@/lib/utils";
 

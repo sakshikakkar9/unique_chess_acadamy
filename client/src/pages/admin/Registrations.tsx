@@ -39,6 +39,7 @@ export default function RegistrationsPage() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [editingFormData, setEditingFormData] = useState<any>({ status: '', paymentStatus: '' });
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -158,6 +159,10 @@ export default function RegistrationsPage() {
 
   const handleEdit = (item: any) => {
     setEditingRecord({ ...item, type: currentType });
+    setEditingFormData({
+      status: item.status,
+      paymentStatus: item.paymentStatus || 'PENDING'
+    });
     setIsEditModalOpen(true);
   };
 
@@ -165,6 +170,38 @@ export default function RegistrationsPage() {
     if (isSubmitting) return;
     setIsEditModalOpen(false);
     setEditingRecord(null);
+    setEditingFormData({ status: '', paymentStatus: '' });
+  };
+
+  const handleManualSave = async () => {
+    if (!editingRecord) return;
+    setIsSubmitting(true);
+    try {
+      const paths: any = {
+        demo: `/demo/admin/${editingRecord.id}`,
+        course: `/courses/enrollments/${editingRecord.id}`,
+        tournament: `/tournaments/admin/registrations/${editingRecord.id}`
+      };
+
+      const payload: any = { status: editingFormData.status };
+      if (editingRecord.type !== 'demo') {
+        payload.paymentStatus = editingFormData.paymentStatus;
+      }
+
+      await api.patch(paths[editingRecord.type], payload);
+
+      const queryKey = editingRecord.type === 'tournament' ? "registrations" : editingRecord.type === 'course' ? "course-enrollments" : editingRecord.type;
+      qc.invalidateQueries({ queryKey: [queryKey] });
+      if (editingRecord.type === 'demo') refreshDemos();
+
+      success("Registration updated successfully");
+      handleClose();
+    } catch (err) {
+      console.error(err);
+      toastError("Failed to update registration");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const rows = (currentData || []).map((item: any) => {
@@ -283,12 +320,19 @@ export default function RegistrationsPage() {
           columns={columns}
           rows={rows}
           isLoading={currentLoading}
-          onRowClick={(item) => setSelectedItem({ ...item, type: currentType })}
+          onRowClick={(item) => {
+            const original = currentData.find((i: any) => i.id === item.id);
+            setSelectedItem({ ...original, type: currentType });
+          }}
           onEdit={(row) => {
             const original = currentData.find((item: any) => item.id === row.id);
             if (original) handleEdit(original);
           }}
-          onDelete={(item) => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
+          onDelete={(item) => {
+            const original = currentData.find((i: any) => i.id === item.id);
+            setRecordToDelete({ ...original, type: currentType });
+            setIsConfirmOpen(true);
+          }}
         />
       </div>
 
@@ -300,7 +344,7 @@ export default function RegistrationsPage() {
           <>
             <Button variant="ghost" disabled={isSubmitting} onClick={handleClose} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
             <Button
-              onClick={handleClose}
+              onClick={handleManualSave}
               disabled={isSubmitting}
               className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
             >
@@ -323,8 +367,8 @@ export default function RegistrationsPage() {
           <div className="grid gap-2">
             <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Registration Status</Label>
             <Select
-              value={editingRecord?.status}
-              onValueChange={(val) => handleAction(editingRecord.id, editingRecord.type, 'status', val)}
+              value={editingFormData.status}
+              onValueChange={(val) => setEditingFormData({ ...editingFormData, status: val })}
             >
               <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
                 <SelectValue />
@@ -342,8 +386,8 @@ export default function RegistrationsPage() {
             <div className="grid gap-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Payment Status</Label>
               <Select
-                value={editingRecord?.paymentStatus}
-                onValueChange={(val) => handleAction(editingRecord.id, editingRecord.type, 'paymentStatus', val)}
+                value={editingFormData.paymentStatus}
+                onValueChange={(val) => setEditingFormData({ ...editingFormData, paymentStatus: val })}
               >
                 <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
                   <SelectValue />

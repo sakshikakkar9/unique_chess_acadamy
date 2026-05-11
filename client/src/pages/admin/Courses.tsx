@@ -315,7 +315,11 @@ const AdminCourses = () => {
             const original = courses.find((c: any) => c.id === row.id);
             if (original) handleEdit(original);
           }}
-          onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
+          onDelete={(c) => {
+            const original = courses.find((course: any) => course.id === c.id);
+            setSelectedCourse(original);
+            setIsConfirmOpen(true);
+          }}
           entityName="courses"
           onAddFirst={handleAdd}
         />

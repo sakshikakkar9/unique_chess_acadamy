@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Upload, X, ImageIcon, Wand2, Loader2, Check } from "lucide-react";
+import { Upload, X, Image as ImageIcon, Wand2, Loader2, Check } from "lucide-react";
 import AdminModal from "./AdminModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
