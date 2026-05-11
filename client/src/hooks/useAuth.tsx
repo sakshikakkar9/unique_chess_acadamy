@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import api from "@/lib/api";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: { role: string } | null;
   login: (token: string) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -16,14 +17,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Check for token in localStorage
-    const token = localStorage.getItem("admin_token");
-    if (token) {
-      // Mock validation
-      setIsAuthenticated(true);
-      setUser({ role: "admin" });
-    }
-    setIsLoading(false);
+    const verifySession = async () => {
+      try {
+        const response = await api.get("/admin/me");
+        if (response.data) {
+          setIsAuthenticated(true);
+          setUser({ role: "admin", ...response.data });
+        }
+      } catch (err) {
+        setIsAuthenticated(false);
+        setUser(null);
+        localStorage.removeItem("admin_token");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    verifySession();
   }, []);
 
   const login = (token: string) => {
@@ -32,10 +42,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser({ role: "admin" });
   };
 
-  const logout = () => {
-    localStorage.removeItem("admin_token");
-    setIsAuthenticated(false);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await api.post("/admin/logout");
+    } catch (err) {
+      console.error("Logout failed", err);
+    } finally {
+      localStorage.removeItem("admin_token");
+      setIsAuthenticated(false);
+      setUser(null);
+    }
   };
 
   return (

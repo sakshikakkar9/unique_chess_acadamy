@@ -188,14 +188,46 @@ const AdminCourses = () => {
   };
 
   const columns: AdminTableColumn[] = [
-    { key: 'title', label: 'Course Info', className: 'min-w-[200px]' },
-    { key: 'days', label: 'Schedule', hiddenOn: 'mobile' },
-    { key: 'fee', label: 'Course Fee', align: 'right' }
+    { key: 'displayTitle', label: 'Course Info', className: 'min-w-[200px]' },
+    { key: 'displayDays', label: 'Schedule', hiddenOn: 'mobile' },
+    { key: 'displayFee', label: 'Course Fee', align: 'right' }
   ];
+
+  const handleAdd = () => {
+    setEditingRecord(null);
+    setSelectedCourse(null);
+    setSelectedFile(null);
+    setSelectedBrochure(null);
+    setPreviewUrl("");
+    setFormErrors({});
+    setFormData({
+      title: "",
+      description: "",
+      ageGroup: "ADULTS",
+      skillLevel: "BEGINNER",
+      mode: "ONLINE",
+      days: [],
+      fee: 0,
+      classTime: "",
+      duration: "",
+      contactDetails: "",
+      posterOrientation: "LANDSCAPE",
+      brochureUrl: ""
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (c: any) => {
+    setEditingRecord(c);
+    setSelectedCourse(c);
+    setFormData({ ...c, posterOrientation: c.posterOrientation || "LANDSCAPE" });
+    setPreviewUrl(c.custom_banner_url);
+    setIsModalOpen(true);
+  };
 
   const rows = paginatedCourses.map(c => ({
     ...c,
-    title: (
+    displayTitle: (
       <div className="flex items-center gap-3">
         <div className="size-10 rounded-lg bg-uca-bg-elevated overflow-hidden shrink-0 border border-uca-border">
           <img src={c.custom_banner_url || "/placeholder.jpg"} className="size-full object-cover" />
@@ -213,7 +245,7 @@ const AdminCourses = () => {
         </div>
       </div>
     ),
-    days: (
+    displayDays: (
       <div className="flex flex-wrap gap-1">
         {c.days?.slice(0, 3).map((day: string) => (
           <span key={day} className="text-[10px] font-bold text-uca-text-muted bg-uca-bg-elevated px-1.5 py-0.5 rounded border border-uca-border">
@@ -223,7 +255,7 @@ const AdminCourses = () => {
         {c.days?.length > 3 && <span className="text-[10px] font-bold text-uca-text-muted">+{c.days.length - 3}</span>}
       </div>
     ),
-    fee: (
+    displayFee: (
       <div className="font-bold text-uca-accent-blue tabular-nums">
         ₹{c.fee.toLocaleString()}
       </div>
@@ -235,7 +267,7 @@ const AdminCourses = () => {
       title="Course Management"
       subtitle="Manage your academy programs and schedules."
       actionLabel="New Course"
-      onAction={() => { closeModal(); setIsModalOpen(true); }}
+      onAction={handleAdd}
     >
       <div className="space-y-6">
         {/* Filters */}
@@ -279,16 +311,13 @@ const AdminCourses = () => {
           rows={rows}
           isLoading={isLoading}
           onRowClick={(c) => navigate(`/admin/courses/${c.id}/portal`)}
-          onEdit={(c) => {
-            setSelectedCourse(c);
-            setEditingRecord(c);
-            setFormData({ ...c, posterOrientation: c.posterOrientation || "LANDSCAPE" });
-            setPreviewUrl(c.custom_banner_url);
-            setIsModalOpen(true);
+          onEdit={(row) => {
+            const original = courses.find((c: any) => c.id === row.id);
+            if (original) handleEdit(original);
           }}
           onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
           entityName="courses"
-          onAddFirst={() => { closeModal(); setIsModalOpen(true); }}
+          onAddFirst={handleAdd}
         />
 
         {/* Pagination */}

@@ -7,6 +7,9 @@ const router = express.Router();
 // Public: Login to get the token
 router.post('/login', adminController.loginAdmin);
 
+// Public/Protected: Logout
+router.post('/logout', adminController.logoutAdmin);
+
 // Protected: Only an existing logged-in admin can create another admin
 router.post('/register', adminController.registerAdmin);
 

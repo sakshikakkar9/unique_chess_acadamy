@@ -77,8 +77,8 @@ const AdminTournaments: React.FC = () => {
   }, [tournaments, activeTab, searchQuery]);
 
   const handleAdd = () => {
-    setSelectedTournament(null);
     setEditingRecord(null);
+    setSelectedTournament(null);
     setSelectedFile(null);
     setSelectedBrochure(null);
     setPreviewUrl("");
@@ -102,6 +102,13 @@ const AdminTournaments: React.FC = () => {
       imageUrl: ""
     });
     setIsModalOpen(true);
+  };
+
+  const handleClose = () => {
+    if (isSubmitting) return;
+    setIsModalOpen(false);
+    setEditingRecord(null);
+    setSelectedTournament(null);
   };
 
   const handleViewPreview = (t: any) => {
@@ -196,7 +203,7 @@ const AdminTournaments: React.FC = () => {
 
   const columns: AdminTableColumn[] = [
     {
-      key: 'title',
+      key: 'displayTitle',
       label: 'Tournament Arena',
       className: 'min-w-[200px]'
     },
@@ -206,18 +213,18 @@ const AdminTournaments: React.FC = () => {
       hiddenOn: 'mobile'
     },
     {
-      key: 'dates',
+      key: 'displayDates',
       label: 'Event Dates',
       hiddenOn: 'tablet'
     },
     {
-      key: 'registrations',
+      key: 'displayRegistrations',
       label: 'Players',
       hiddenOn: 'mobile',
       align: 'right'
     },
     {
-      key: 'status',
+      key: 'displayStatus',
       label: 'Status',
       align: 'right'
     }
@@ -232,25 +239,25 @@ const AdminTournaments: React.FC = () => {
 
   const rows = filteredData.map(t => ({
     ...t,
-    title: (
+    displayTitle: (
       <div className="flex flex-col">
         <span className="font-bold text-uca-text-primary">{t.title}</span>
         <span className="text-[10px] text-uca-text-muted uppercase tracking-tight">{t.location || "Online"}</span>
       </div>
     ),
-    dates: (
+    displayDates: (
       <div className="flex items-center gap-2 text-xs font-medium">
         <Calendar className="size-3.5 text-uca-accent-blue" />
         {formatDateRange(t.startDate, t.endDate)}
       </div>
     ),
-    registrations: (
+    displayRegistrations: (
       <div className="flex items-center justify-end gap-1.5 text-uca-accent-blue font-black text-sm">
         <Users className="size-3.5" />
         {t._count?.registrations || 0}
       </div>
     ),
-    status: <StatusBadge status={t.status} />
+    displayStatus: <StatusBadge status={t.status} />
   }));
 
   return (
@@ -300,7 +307,10 @@ const AdminTournaments: React.FC = () => {
           rows={rows}
           isLoading={isLoading}
           onRowClick={(t) => navigate(`/admin/tournaments/${t.id}/portal`)}
-          onEdit={handleEdit}
+          onEdit={(row) => {
+            const original = tournaments.find(t => t.id === row.id);
+            if (original) handleEdit(original);
+          }}
           onDelete={(t) => { setSelectedTournament(t); setIsConfirmOpen(true); }}
           entityName="tournaments"
           onAddFirst={handleAdd}
@@ -310,14 +320,14 @@ const AdminTournaments: React.FC = () => {
       {/* Form Modal */}
       <AdminModal
         isOpen={isModalOpen}
-        onClose={() => { if (!isSubmitting) { setIsModalOpen(false); setEditingRecord(null); } }}
+        onClose={handleClose}
         title={editingRecord ? "Update Tournament Arena" : "Construct New Arena"}
         footer={
           <>
             <Button
               variant="ghost"
               disabled={isSubmitting}
-              onClick={() => { setIsModalOpen(false); setEditingRecord(null); }}
+              onClick={handleClose}
               className="text-uca-text-muted hover:text-uca-text-primary"
             >
               Cancel

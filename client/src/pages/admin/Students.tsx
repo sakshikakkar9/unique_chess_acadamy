@@ -82,11 +82,21 @@ export default function StudentsPage() {
   };
 
   const columns: AdminTableColumn[] = [
-    { key: 'fullName', label: 'Student', className: 'min-w-[200px]' },
-    { key: 'contact', label: 'Contact Info', hiddenOn: 'mobile' },
-    { key: 'activity', label: 'Last Activity', hiddenOn: 'tablet' },
-    { key: 'status', label: 'Status', align: 'right' }
+    { key: 'displayFullName', label: 'Student', className: 'min-w-[200px]' },
+    { key: 'displayContact', label: 'Contact Info', hiddenOn: 'mobile' },
+    { key: 'displayActivity', label: 'Last Activity', hiddenOn: 'tablet' },
+    { key: 'displayStatus', label: 'Status', align: 'right' }
   ];
+
+  const handleAdd = () => {
+    setEditingRecord(null);
+    setIsAddModalOpen(true);
+  };
+
+  const handleEdit = (s: any) => {
+    setEditingRecord(s);
+    setIsAddModalOpen(true);
+  };
 
   const rows = filteredStudents.map((student: any) => {
     const avatarStyles = getAvatarStyles(student.fullName);
@@ -95,7 +105,7 @@ export default function StudentsPage() {
 
     return {
       ...student,
-      fullName: (
+      displayFullName: (
         <div className="flex items-center gap-3">
           <div
             className="size-9 rounded-full flex items-center justify-center font-bold text-xs shrink-0"
@@ -111,7 +121,7 @@ export default function StudentsPage() {
           </div>
         </div>
       ),
-      contact: (
+      displayContact: (
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-uca-text-primary">
             <Phone className="size-3 text-uca-accent-blue" />
@@ -124,7 +134,7 @@ export default function StudentsPage() {
           )}
         </div>
       ),
-      activity: (
+      displayActivity: (
         <div className="flex flex-col gap-1">
           {lastTournament && (
             <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-500 uppercase tracking-tight">
@@ -141,7 +151,7 @@ export default function StudentsPage() {
           )}
         </div>
       ),
-      status: (
+      displayStatus: (
         <span
           className={cn(
             "inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
@@ -161,7 +171,7 @@ export default function StudentsPage() {
       title="Student Management"
       subtitle="Centralized directory of all academy students and their progress."
       actionLabel="Add Student"
-      onAction={() => setIsAddModalOpen(true)}
+      onAction={handleAdd}
     >
       <div className="space-y-6">
         {/* Standardized Filter Bar */}
@@ -215,10 +225,13 @@ export default function StudentsPage() {
           rows={rows}
           isLoading={isLoading}
           onRowClick={(s) => navigate(`/admin/students/${s.id}`)}
-          onEdit={(s) => { setEditingRecord(s); setIsAddModalOpen(true); }}
+          onEdit={(row) => {
+            const original = students.find((s: any) => s.id === row.id);
+            if (original) handleEdit(original);
+          }}
           onDelete={(s) => { setSelectedStudent(s); setIsConfirmOpen(true); }}
           entityName="students"
-          onAddFirst={() => setIsAddModalOpen(true)}
+          onAddFirst={handleAdd}
         />
       </div>
 
