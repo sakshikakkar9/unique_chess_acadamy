@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { 
   Trophy, RefreshCw,
   Trash2, Mail, Phone, Eye, BookOpen, Copy,
-  Search, Filter, ExternalLink, ShieldCheck, CreditCard, Image as ImageIcon,
+  Search, Filter, ExternalLink, ShieldCheck, CreditCard, Image as PhotoIcon,
   User, UserCheck
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
@@ -483,7 +483,7 @@ export default function RegistrationsPage() {
                 {selectedItem.type !== 'demo' && (
                   <section className="pb-8">
                     <div className="flex items-center gap-3 mb-5 text-uca-text-primary">
-                      <ImageIcon className="size-4 text-uca-accent-blue" />
+                      <PhotoIcon className="size-4 text-uca-accent-blue" />
                       <h4 className="text-xs font-black uppercase tracking-widest">Documents</h4>
                     </div>
                     <div className="grid grid-cols-2 gap-4">

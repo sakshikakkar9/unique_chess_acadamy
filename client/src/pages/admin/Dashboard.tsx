@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Link,useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  BookOpen, Trophy, Image as ImageIcon, Users,
+  BookOpen, Trophy, Image as PhotoIcon, Users,
   TrendingUp, Calendar, UserCheck, ArrowUpRight, GraduationCap
 } from "lucide-react";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";

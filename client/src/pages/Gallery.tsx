@@ -4,7 +4,7 @@ import GalleryItem from "@/features/gallery/components/GalleryItem";
 import { useGallery } from "@/features/gallery/hooks/useGallery";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Image as ImageIcon, Camera, LayoutGrid } from "lucide-react";
+import { Sparkles, Image as PhotoIcon, Camera, LayoutGrid } from "lucide-react";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import Footer from "@/components/layout/Footer";
 import SparkleCanvas from "@/components/shared/SparkleCanvas";
