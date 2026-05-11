@@ -149,18 +149,18 @@ export default function RegistrationsPage() {
   const { data: currentData, loading: currentLoading, type: currentType } = getActiveData();
 
   const columns: AdminTableColumn[] = [
-    { key: 'profile', label: 'Student Profile', className: 'min-w-[200px]' },
-    { key: 'program', label: 'Program', hiddenOn: 'mobile' },
-    { key: 'date', label: 'Submission', hiddenOn: 'tablet' },
-    { key: 'contact', label: 'Contact', hiddenOn: 'mobile' },
-    { key: 'status', label: 'Status', align: 'right' }
+    { key: 'displayProfile', label: 'Student Profile', className: 'min-w-[200px]' },
+    { key: 'displayProgram', label: 'Program', hiddenOn: 'mobile' },
+    { key: 'displayDate', label: 'Submission', hiddenOn: 'tablet' },
+    { key: 'displayContact', label: 'Contact', hiddenOn: 'mobile' },
+    { key: 'displayStatus', label: 'Status', align: 'right' }
   ];
 
   const rows = (currentData || []).map((item: any) => {
     const avatarStyles = getAvatarStyles(item.studentName || item.student?.fullName || "?");
     return {
       ...item,
-      profile: (
+      displayProfile: (
         <div className="flex items-center gap-3">
           <div
             className="size-8 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0"
@@ -176,7 +176,7 @@ export default function RegistrationsPage() {
           </div>
         </div>
       ),
-      program: (
+      displayProgram: (
         <div className="flex items-center gap-2">
           {currentType === 'tournament' ? <Trophy className="size-3.5 text-amber-500" /> : <BookOpen className="size-3.5 text-uca-accent-blue" />}
           <span className="text-xs font-semibold text-uca-text-primary truncate max-w-[150px]">
@@ -184,17 +184,17 @@ export default function RegistrationsPage() {
           </span>
         </div>
       ),
-      date: (
+      displayDate: (
         <span className="text-[10px] text-uca-text-muted font-medium">
           {item.createdAt ? format(new Date(item.createdAt), "MMM d, h:mm a") : 'N/A'}
         </span>
       ),
-      contact: (
+      displayContact: (
         <div className="flex items-center gap-1.5 text-xs text-uca-text-muted">
           <Phone className="size-3" /> {item.phone}
         </div>
       ),
-      status: <StatusBadge status={item.status} />
+      displayStatus: <StatusBadge status={item.status} />
     };
   });
 

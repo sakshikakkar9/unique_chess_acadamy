@@ -196,7 +196,7 @@ const AdminTournaments: React.FC = () => {
 
   const columns: AdminTableColumn[] = [
     {
-      key: 'title',
+      key: 'displayTitle',
       label: 'Tournament Arena',
       className: 'min-w-[200px]'
     },
@@ -206,18 +206,18 @@ const AdminTournaments: React.FC = () => {
       hiddenOn: 'mobile'
     },
     {
-      key: 'dates',
+      key: 'displayDates',
       label: 'Event Dates',
       hiddenOn: 'tablet'
     },
     {
-      key: 'registrations',
+      key: 'displayRegistrations',
       label: 'Players',
       hiddenOn: 'mobile',
       align: 'right'
     },
     {
-      key: 'status',
+      key: 'displayStatus',
       label: 'Status',
       align: 'right'
     }
@@ -232,25 +232,25 @@ const AdminTournaments: React.FC = () => {
 
   const rows = filteredData.map(t => ({
     ...t,
-    title: (
+    displayTitle: (
       <div className="flex flex-col">
         <span className="font-bold text-uca-text-primary">{t.title}</span>
         <span className="text-[10px] text-uca-text-muted uppercase tracking-tight">{t.location || "Online"}</span>
       </div>
     ),
-    dates: (
+    displayDates: (
       <div className="flex items-center gap-2 text-xs font-medium">
         <Calendar className="size-3.5 text-uca-accent-blue" />
         {formatDateRange(t.startDate, t.endDate)}
       </div>
     ),
-    registrations: (
+    displayRegistrations: (
       <div className="flex items-center justify-end gap-1.5 text-uca-accent-blue font-black text-sm">
         <Users className="size-3.5" />
         {t._count?.registrations || 0}
       </div>
     ),
-    status: <StatusBadge status={t.status} />
+    displayStatus: <StatusBadge status={t.status} />
   }));
 
   return (

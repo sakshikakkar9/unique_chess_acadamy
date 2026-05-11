@@ -1,9 +1,10 @@
 import jwt from 'jsonwebtoken';
 
 export const verifyAdmin = (req, res, next) => {
-  // Extract token from the "Authorization: Bearer <token>" header
+  // Extract token from the "Authorization: Bearer <token>" header or cookie
   const authHeader = req.header('Authorization');
-  const token = authHeader && authHeader.split(' ')[1];
+  const bearerToken = authHeader && authHeader.split(' ')[1];
+  const token = bearerToken || req.cookies?.admin_session;
 
   if (!token) {
     return res.status(401).json({ error: 'Access denied. No token provided.' });

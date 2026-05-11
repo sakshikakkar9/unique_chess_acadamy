@@ -82,10 +82,10 @@ export default function StudentsPage() {
   };
 
   const columns: AdminTableColumn[] = [
-    { key: 'fullName', label: 'Student', className: 'min-w-[200px]' },
-    { key: 'contact', label: 'Contact Info', hiddenOn: 'mobile' },
-    { key: 'activity', label: 'Last Activity', hiddenOn: 'tablet' },
-    { key: 'status', label: 'Status', align: 'right' }
+    { key: 'displayFullName', label: 'Student', className: 'min-w-[200px]' },
+    { key: 'displayContact', label: 'Contact Info', hiddenOn: 'mobile' },
+    { key: 'displayActivity', label: 'Last Activity', hiddenOn: 'tablet' },
+    { key: 'displayStatus', label: 'Status', align: 'right' }
   ];
 
   const rows = filteredStudents.map((student: any) => {
@@ -95,7 +95,7 @@ export default function StudentsPage() {
 
     return {
       ...student,
-      fullName: (
+      displayFullName: (
         <div className="flex items-center gap-3">
           <div
             className="size-9 rounded-full flex items-center justify-center font-bold text-xs shrink-0"
@@ -111,7 +111,7 @@ export default function StudentsPage() {
           </div>
         </div>
       ),
-      contact: (
+      displayContact: (
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-uca-text-primary">
             <Phone className="size-3 text-uca-accent-blue" />
@@ -124,7 +124,7 @@ export default function StudentsPage() {
           )}
         </div>
       ),
-      activity: (
+      displayActivity: (
         <div className="flex flex-col gap-1">
           {lastTournament && (
             <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-500 uppercase tracking-tight">
@@ -141,7 +141,7 @@ export default function StudentsPage() {
           )}
         </div>
       ),
-      status: (
+      displayStatus: (
         <span
           className={cn(
             "inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border",

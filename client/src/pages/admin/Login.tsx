@@ -19,8 +19,9 @@ const AdminLogin: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
 
-  const from = location.state?.from?.pathname || "/admin/dashboard";
+  const from = searchParams.get('from') || location.state?.from?.pathname || "/admin/dashboard";
 
   // Redirect if already authenticated
   React.useEffect(() => {

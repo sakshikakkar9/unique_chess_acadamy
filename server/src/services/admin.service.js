@@ -46,7 +46,7 @@ export const loginAdmin = async (credentials) => {
     { expiresIn: '1d' }
   );
   
-  return token;
+  return { token, adminId: admin.id };
 };
 
 export const getAdminById = async (id) => {

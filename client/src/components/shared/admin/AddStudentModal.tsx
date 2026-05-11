@@ -40,6 +40,41 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
     discoverySource: editingRecord?.discoverySource || "Social Media"
   });
 
+  // Keep state in sync if editingRecord changes (though key prop handles it too)
+  React.useEffect(() => {
+    if (editingRecord) {
+      setForm({
+        fullName: editingRecord.fullName || "",
+        email: editingRecord.email || "",
+        phone: editingRecord.phone || "",
+        gender: editingRecord.gender || "Male",
+        dob: editingRecord.dob ? new Date(editingRecord.dob).toISOString().split('T')[0] : "",
+        address: editingRecord.address || "",
+        fideId: editingRecord.fideId || "NA",
+        fideRating: editingRecord.fideRating?.toString() || "0",
+        clubAffiliation: editingRecord.clubAffiliation || "",
+        experienceLevel: editingRecord.experienceLevel || "BEGINNER",
+        preferredBatch: editingRecord.preferredBatch || "",
+        discoverySource: editingRecord.discoverySource || "Social Media"
+      });
+    } else {
+      setForm({
+        fullName: "",
+        email: "",
+        phone: "",
+        gender: "Male",
+        dob: "",
+        address: "",
+        fideId: "NA",
+        fideRating: "0",
+        clubAffiliation: "",
+        experienceLevel: "BEGINNER",
+        preferredBatch: "",
+        discoverySource: "Social Media"
+      });
+    }
+  }, [editingRecord]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
