@@ -77,8 +77,8 @@ const AdminTournaments: React.FC = () => {
   }, [tournaments, activeTab, searchQuery]);
 
   const handleAdd = () => {
-    setSelectedTournament(null);
     setEditingRecord(null);
+    setSelectedTournament(null);
     setSelectedFile(null);
     setSelectedBrochure(null);
     setPreviewUrl("");
@@ -102,6 +102,13 @@ const AdminTournaments: React.FC = () => {
       imageUrl: ""
     });
     setIsModalOpen(true);
+  };
+
+  const handleClose = () => {
+    if (isSubmitting) return;
+    setIsModalOpen(false);
+    setEditingRecord(null);
+    setSelectedTournament(null);
   };
 
   const handleViewPreview = (t: any) => {
@@ -300,7 +307,10 @@ const AdminTournaments: React.FC = () => {
           rows={rows}
           isLoading={isLoading}
           onRowClick={(t) => navigate(`/admin/tournaments/${t.id}/portal`)}
-          onEdit={handleEdit}
+          onEdit={(row) => {
+            const original = tournaments.find(t => t.id === row.id);
+            if (original) handleEdit(original);
+          }}
           onDelete={(t) => { setSelectedTournament(t); setIsConfirmOpen(true); }}
           entityName="tournaments"
           onAddFirst={handleAdd}
@@ -310,14 +320,14 @@ const AdminTournaments: React.FC = () => {
       {/* Form Modal */}
       <AdminModal
         isOpen={isModalOpen}
-        onClose={() => { if (!isSubmitting) { setIsModalOpen(false); setEditingRecord(null); } }}
+        onClose={handleClose}
         title={editingRecord ? "Update Tournament Arena" : "Construct New Arena"}
         footer={
           <>
             <Button
               variant="ghost"
               disabled={isSubmitting}
-              onClick={() => { setIsModalOpen(false); setEditingRecord(null); }}
+              onClick={handleClose}
               className="text-uca-text-muted hover:text-uca-text-primary"
             >
               Cancel

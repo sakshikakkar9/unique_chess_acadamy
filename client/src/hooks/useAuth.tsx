@@ -17,13 +17,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Check for token in localStorage (legacy support / sync)
-    const token = localStorage.getItem("admin_token");
-    if (token) {
-      setIsAuthenticated(true);
-      setUser({ role: "admin" });
-    }
-    setIsLoading(false);
+    const verifySession = async () => {
+      try {
+        const response = await api.get("/admin/me");
+        if (response.data) {
+          setIsAuthenticated(true);
+          setUser({ role: "admin", ...response.data });
+        }
+      } catch (err) {
+        setIsAuthenticated(false);
+        setUser(null);
+        localStorage.removeItem("admin_token");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    verifySession();
   }, []);
 
   const login = (token: string) => {

@@ -26,9 +26,9 @@ const AdminLogin: React.FC = () => {
   // Redirect if already authenticated
   React.useEffect(() => {
     if (isAuthenticated) {
-      navigate("/admin/dashboard", { replace: true });
+      navigate(from, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

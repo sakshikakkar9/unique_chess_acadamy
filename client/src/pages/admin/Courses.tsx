@@ -193,6 +193,38 @@ const AdminCourses = () => {
     { key: 'displayFee', label: 'Course Fee', align: 'right' }
   ];
 
+  const handleAdd = () => {
+    setEditingRecord(null);
+    setSelectedCourse(null);
+    setSelectedFile(null);
+    setSelectedBrochure(null);
+    setPreviewUrl("");
+    setFormErrors({});
+    setFormData({
+      title: "",
+      description: "",
+      ageGroup: "ADULTS",
+      skillLevel: "BEGINNER",
+      mode: "ONLINE",
+      days: [],
+      fee: 0,
+      classTime: "",
+      duration: "",
+      contactDetails: "",
+      posterOrientation: "LANDSCAPE",
+      brochureUrl: ""
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (c: any) => {
+    setEditingRecord(c);
+    setSelectedCourse(c);
+    setFormData({ ...c, posterOrientation: c.posterOrientation || "LANDSCAPE" });
+    setPreviewUrl(c.custom_banner_url);
+    setIsModalOpen(true);
+  };
+
   const rows = paginatedCourses.map(c => ({
     ...c,
     displayTitle: (
@@ -235,7 +267,7 @@ const AdminCourses = () => {
       title="Course Management"
       subtitle="Manage your academy programs and schedules."
       actionLabel="New Course"
-      onAction={() => { closeModal(); setIsModalOpen(true); }}
+      onAction={handleAdd}
     >
       <div className="space-y-6">
         {/* Filters */}
@@ -279,16 +311,13 @@ const AdminCourses = () => {
           rows={rows}
           isLoading={isLoading}
           onRowClick={(c) => navigate(`/admin/courses/${c.id}/portal`)}
-          onEdit={(c) => {
-            setSelectedCourse(c);
-            setEditingRecord(c);
-            setFormData({ ...c, posterOrientation: c.posterOrientation || "LANDSCAPE" });
-            setPreviewUrl(c.custom_banner_url);
-            setIsModalOpen(true);
+          onEdit={(row) => {
+            const original = courses.find((c: any) => c.id === row.id);
+            if (original) handleEdit(original);
           }}
           onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
           entityName="courses"
-          onAddFirst={() => { closeModal(); setIsModalOpen(true); }}
+          onAddFirst={handleAdd}
         />
 
         {/* Pagination */}

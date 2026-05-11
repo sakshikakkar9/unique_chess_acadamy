@@ -88,6 +88,16 @@ export default function StudentsPage() {
     { key: 'displayStatus', label: 'Status', align: 'right' }
   ];
 
+  const handleAdd = () => {
+    setEditingRecord(null);
+    setIsAddModalOpen(true);
+  };
+
+  const handleEdit = (s: any) => {
+    setEditingRecord(s);
+    setIsAddModalOpen(true);
+  };
+
   const rows = filteredStudents.map((student: any) => {
     const avatarStyles = getAvatarStyles(student.fullName);
     const lastTournament = student.registrations?.[0]?.tournament?.title;
@@ -161,7 +171,7 @@ export default function StudentsPage() {
       title="Student Management"
       subtitle="Centralized directory of all academy students and their progress."
       actionLabel="Add Student"
-      onAction={() => setIsAddModalOpen(true)}
+      onAction={handleAdd}
     >
       <div className="space-y-6">
         {/* Standardized Filter Bar */}
@@ -215,10 +225,13 @@ export default function StudentsPage() {
           rows={rows}
           isLoading={isLoading}
           onRowClick={(s) => navigate(`/admin/students/${s.id}`)}
-          onEdit={(s) => { setEditingRecord(s); setIsAddModalOpen(true); }}
+          onEdit={(row) => {
+            const original = students.find((s: any) => s.id === row.id);
+            if (original) handleEdit(original);
+          }}
           onDelete={(s) => { setSelectedStudent(s); setIsConfirmOpen(true); }}
           entityName="students"
-          onAddFirst={() => setIsAddModalOpen(true)}
+          onAddFirst={handleAdd}
         />
       </div>
 

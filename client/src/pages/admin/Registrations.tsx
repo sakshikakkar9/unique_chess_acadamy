@@ -156,6 +156,17 @@ export default function RegistrationsPage() {
     { key: 'displayStatus', label: 'Status', align: 'right' }
   ];
 
+  const handleEdit = (item: any) => {
+    setEditingRecord({ ...item, type: currentType });
+    setIsEditModalOpen(true);
+  };
+
+  const handleClose = () => {
+    if (isSubmitting) return;
+    setIsEditModalOpen(false);
+    setEditingRecord(null);
+  };
+
   const rows = (currentData || []).map((item: any) => {
     const avatarStyles = getAvatarStyles(item.studentName || item.student?.fullName || "?");
     return {
@@ -273,23 +284,23 @@ export default function RegistrationsPage() {
           rows={rows}
           isLoading={currentLoading}
           onRowClick={(item) => setSelectedItem({ ...item, type: currentType })}
-          onEdit={(item) => { setEditingRecord({ ...item, type: currentType }); setIsEditModalOpen(true); }}
+          onEdit={(row) => {
+            const original = currentData.find((item: any) => item.id === row.id);
+            if (original) handleEdit(original);
+          }}
           onDelete={(item) => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
         />
       </div>
 
       <AdminModal
         isOpen={isEditModalOpen}
-        onClose={() => { if (!isSubmitting) { setIsEditModalOpen(false); setEditingRecord(null); } }}
+        onClose={handleClose}
         title={`Edit ${editingRecord?.type === 'tournament' ? 'Tournament' : editingRecord?.type === 'course' ? 'Course' : 'Demo'} Registration`}
         footer={
           <>
-            <Button variant="ghost" disabled={isSubmitting} onClick={() => { setIsEditModalOpen(false); setEditingRecord(null); }} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
+            <Button variant="ghost" disabled={isSubmitting} onClick={handleClose} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
             <Button
-              onClick={() => {
-                setIsEditModalOpen(false);
-                setEditingRecord(null);
-              }}
+              onClick={handleClose}
               disabled={isSubmitting}
               className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
             >
