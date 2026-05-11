@@ -372,19 +372,17 @@ export default function TournamentDetails() {
             </motion.div>
           }
           form={
-            <Card className="border-none shadow-xl rounded-[3rem] overflow-hidden bg-white">
-              <div className="h-3 bg-sky-600" />
-              <CardContent className="p-10 md:p-14">
-                <form onSubmit={handleSubmit} className="space-y-10">
-                  <div className="space-y-8">
-                    <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                      <ShieldCheck className="h-6 w-6 text-sky-600" />
-                      <h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Registration</h2>
-                    </div>
-
-                    <div className="space-y-8">
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+              <div className="bg-slate-900 px-6 py-4 flex items-center gap-3">
+                <ShieldCheck className="size-5 text-blue-400" />
+                <h2 className="text-sm font-bold text-white tracking-widest uppercase">Registration</h2>
+              </div>
+              <div className="px-6 py-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-6">
+                    <div className="space-y-6">
                       {registrationStatus === "NOT_STARTED" && (
-                        <div className="p-6 bg-blue-50 border border-blue-100 rounded-3xl flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-4">
                           <div className="h-12 w-12 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0">
                             <Clock className="h-6 w-6 text-blue-600" />
                           </div>
@@ -408,50 +406,44 @@ export default function TournamentDetails() {
                       )}
 
                       <div className={cn("space-y-6 transition-all duration-500", isRegistrationDisabled && "opacity-40 grayscale pointer-events-none")}>
-                        <div className="space-y-3">
-                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Player Name <span className="text-[#FF0000]">*</span></Label>
+                        <div className="space-y-1.5">
+                          <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">Player Name <span className="text-[#FF0000]">*</span></Label>
                           <Input
                             value={form.studentName}
                             onChange={(e) => set("studentName", e.target.value)}
                             required
                             disabled={isRegistrationDisabled}
                             placeholder="Enter your full name"
-                            className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6 focus:ring-sky-600 transition-all placeholder:text-slate-300"
+                            className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors duration-150 h-auto"
                           />
                         </div>
 
-                        <div className="space-y-3">
-                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Gender <span className="text-[#FF0000]">*</span></Label>
-                          <div className="flex gap-10 pt-2 px-1">
+                        <div className="space-y-1.5">
+                          <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">Gender <span className="text-[#FF0000]">*</span></Label>
+                          <div className="flex gap-4 flex-wrap">
                             {["Male", "Female", "Other"].map((g) => (
-                              <label key={g} className={cn("flex items-center gap-3 cursor-pointer group", isRegistrationDisabled && "cursor-not-allowed")}>
-                                <div className="relative flex items-center justify-center">
-                                  <input
-                                    type="radio"
-                                    name="gender"
-                                    value={g}
-                                    checked={form.gender === g}
-                                    onChange={(e) => set("gender", e.target.value)}
-                                    className="peer sr-only"
-                                    disabled={isRegistrationDisabled}
-                                  />
-                                  <div className="h-6 w-6 rounded-full border border-slate-200 peer-checked:border-sky-600 transition-all" />
-                                  <div className="absolute h-3 w-3 rounded-full bg-sky-600 scale-0 peer-checked:scale-100 transition-transform" />
-                                </div>
-                                <span className={cn("text-base font-semibold tracking-tight transition-colors", form.gender === g ? "text-sky-600" : "text-slate-400 group-hover:text-slate-600")}>
-                                  {g}
-                                </span>
+                              <label key={g} className={cn("flex items-center gap-2 cursor-pointer text-sm text-slate-700", isRegistrationDisabled && "cursor-not-allowed")}>
+                                <input
+                                  type="radio"
+                                  name="gender"
+                                  value={g}
+                                  checked={form.gender === g}
+                                  onChange={(e) => set("gender", e.target.value)}
+                                  disabled={isRegistrationDisabled}
+                                  className="size-4"
+                                />
+                                {g}
                               </label>
                             ))}
                           </div>
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Category <span className="text-[#FF0000]">*</span></Label>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">Category <span className="text-[#FF0000]">*</span></Label>
                             <div className="relative">
                               <select
-                                className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-6 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-600 transition-all appearance-none cursor-pointer pr-12"
+                                className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors duration-150 appearance-none"
                                 value={form.category}
                                 onChange={(e) => set("category", e.target.value)}
                                 required
@@ -467,25 +459,25 @@ export default function TournamentDetails() {
                                 <option value="Under-19">Under-19</option>
                                 <option value="Open">Open</option>
                               </select>
-                              <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
                             </div>
                           </div>
-                          <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Date of Birth <span className="text-[#FF0000]">*</span></Label>
+                          <div className="space-y-1.5">
+                            <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">Date of Birth <span className="text-[#FF0000]">*</span></Label>
                             <Input
                               type="date"
                               value={form.dob}
                               onChange={(e) => set("dob", e.target.value)}
                               required
                               disabled={isRegistrationDisabled}
-                              className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6"
+                              className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors duration-150 h-auto"
                             />
                           </div>
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Phone Number <span className="text-[#FF0000]">*</span></Label>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">Phone Number <span className="text-[#FF0000]">*</span></Label>
                             <Input
                               type="tel"
                               value={form.phone}
@@ -493,62 +485,62 @@ export default function TournamentDetails() {
                               required
                               disabled={isRegistrationDisabled}
                               placeholder="+91 XXXXX XXXXX"
-                              className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6"
+                              className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors duration-150 h-auto"
                             />
                           </div>
-                          <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Email (Optional)</Label>
+                          <div className="space-y-1.5">
+                            <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">Email (Optional)</Label>
                             <Input
                               type="email"
                               value={form.email}
                               onChange={(e) => set("email", e.target.value)}
                               disabled={isRegistrationDisabled}
                               placeholder="john@example.com"
-                              className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6"
+                              className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors duration-150 h-auto"
                             />
                           </div>
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">FIDE ID</Label>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">FIDE ID</Label>
                             <Input
                               value={form.fideId}
                               onChange={(e) => set("fideId", e.target.value)}
                               disabled={isRegistrationDisabled}
                               placeholder="0"
-                              className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6"
+                              className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors duration-150 h-auto"
                             />
                           </div>
-                          <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">FIDE Rating</Label>
+                          <div className="space-y-1.5">
+                            <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">FIDE Rating</Label>
                             <Input
                               type="number"
                               value={form.fideRating}
                               onChange={(e) => set("fideRating", e.target.value)}
                               disabled={isRegistrationDisabled}
                               placeholder="0"
-                              className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-6"
+                              className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors duration-150 h-auto"
                             />
                           </div>
                         </div>
 
-                        <div className="space-y-3">
-                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Full Address <span className="text-[#FF0000]">*</span></Label>
+                        <div className="space-y-1.5">
+                          <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">Full Address <span className="text-[#FF0000]">*</span></Label>
                           <Textarea
                             value={form.address}
                             onChange={(e) => set("address", e.target.value)}
                             required
                             disabled={isRegistrationDisabled}
                             placeholder="Enter your complete residential address"
-                            className="rounded-2xl border border-slate-100 bg-slate-50/50 min-h-[120px] p-6 font-medium text-slate-900 resize-none focus:ring-sky-600 transition-all"
+                            className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors duration-150 min-h-[100px] resize-none"
                           />
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 1 <span className="text-[#FF0000]">*</span></Label>
-                            <div className="relative h-20">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">Payment Proof 1 <span className="text-[#FF0000]">*</span></Label>
+                            <div className="relative">
                               <input
                                 type="file"
                                 onChange={(e) => handleFileChange(e, 'payment1')}
@@ -557,17 +549,17 @@ export default function TournamentDetails() {
                                 disabled={isRegistrationDisabled}
                               />
                               <div className={cn(
-                                "h-full w-full border border-dashed rounded-2xl flex items-center justify-center gap-3 px-6 transition-all",
-                                files.payment1 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-sky-400"
+                                "w-full border border-dashed rounded-lg flex items-center justify-center gap-2 px-3 py-2.5 transition-all text-sm h-10",
+                                files.payment1 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-300 bg-white text-slate-400 hover:border-blue-500"
                               )}>
-                                {files.payment1 ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
-                                <span className="text-sm font-semibold truncate">{files.payment1 ? files.payment1.name : "Upload Proof"}</span>
+                                {files.payment1 ? <CheckCircle2 className="size-4" /> : <Upload className="size-4" />}
+                                <span className="truncate">{files.payment1 ? files.payment1.name : "Upload Proof"}</span>
                               </div>
                             </div>
                           </div>
-                          <div className="space-y-3">
-                            <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Proof 2 <span className="text-[#FF0000]">*</span></Label>
-                            <div className="relative h-20">
+                          <div className="space-y-1.5">
+                            <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">Payment Proof 2 <span className="text-[#FF0000]">*</span></Label>
+                            <div className="relative">
                               <input
                                 type="file"
                                 onChange={(e) => handleFileChange(e, 'payment2')}
@@ -576,21 +568,21 @@ export default function TournamentDetails() {
                                 disabled={isRegistrationDisabled}
                               />
                               <div className={cn(
-                                "h-full w-full border border-dashed rounded-2xl flex items-center justify-center gap-3 px-6 transition-all",
-                                files.payment2 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-sky-400"
+                                "w-full border border-dashed rounded-lg flex items-center justify-center gap-2 px-3 py-2.5 transition-all text-sm h-10",
+                                files.payment2 ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-300 bg-white text-slate-400 hover:border-blue-500"
                               )}>
-                                {files.payment2 ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
-                                <span className="text-sm font-semibold truncate">{files.payment2 ? files.payment2.name : "Upload Proof"}</span>
+                                {files.payment2 ? <CheckCircle2 className="size-4" /> : <Upload className="size-4" />}
+                                <span className="truncate">{files.payment2 ? files.payment2.name : "Upload Proof"}</span>
                               </div>
                             </div>
                           </div>
                         </div>
 
-                        <div className="space-y-3">
-                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">How did you find us?</Label>
+                        <div className="space-y-1.5">
+                          <Label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide">How did you find us?</Label>
                           <div className="relative">
                             <select
-                              className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-6 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-600 transition-all appearance-none cursor-pointer pr-12"
+                              className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-colors duration-150 appearance-none"
                               value={form.discoverySource}
                               onChange={(e) => set("discoverySource", e.target.value)}
                               disabled={isRegistrationDisabled}
@@ -611,19 +603,19 @@ export default function TournamentDetails() {
                   <Button
                     type="submit"
                     disabled={isPending || isRegistrationDisabled}
-                    className="w-full h-20 bg-sky-600 hover:bg-slate-900 text-white text-xl font-bold rounded-3xl transition-all shadow-lg shadow-sky-600/30 active:scale-[0.98] uppercase tracking-wider disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+                    className="w-full h-12 bg-slate-900 hover:bg-slate-700 text-white text-sm font-bold rounded-lg transition-all shadow-sm active:scale-[0.98] uppercase tracking-wider disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
                   >
                     {isPending ? (
-                      <span className="flex items-center gap-3">
-                        <Loader2 className="h-6 w-6 animate-spin" /> Submitting...
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" /> Submitting...
                       </span>
                     ) : (
                       "Complete Registration"
                     )}
                   </Button>
                 </form>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           }
         />
       </main>

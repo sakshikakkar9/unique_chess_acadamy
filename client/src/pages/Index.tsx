@@ -94,24 +94,24 @@ export default function HomePage() {
       <Navbar />
 
       {/* HERO SECTION - RE-ENGINEERED FOR RESPONSIVENESS */}
-      <section className="relative bg-[#020617] flex flex-col min-h-screen">
+      <section className="relative bg-[#020617] flex flex-col min-h-auto pt-24 pb-12 md:min-h-[400px] md:pt-28 md:pb-16 lg:min-h-[480px] lg:pt-32 lg:pb-20">
         <SparkleCanvas density="low" />
         
         {/* Container for Text and Image */}
-        <div className="container mx-auto px-6 z-10 pt-32 pb-16 lg:pt-48 lg:pb-64 grid lg:grid-cols-2 gap-12 items-center flex-grow">
-          <motion.div variants={stagger} initial="hidden" animate="visible" className="text-left">
-            <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-8">
+        <div className="container mx-auto px-6 z-10 grid lg:grid-cols-2 gap-12 items-center">
+          <motion.div variants={stagger} initial="hidden" animate="visible" className="text-left max-w-3xl">
+            <motion.div variants={fadeIn} className="text-xs font-semibold tracking-widest uppercase border border-white/20 bg-white/10 rounded-full px-4 py-1.5 inline-flex items-center gap-2 mb-6 text-white">
               <Star className="h-3.5 w-3.5 fill-current" /> India's Premier Chess Academy
             </motion.div>
             
             <motion.div variants={fadeLeft}>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-white mb-4">
                 Strategic <br className="hidden sm:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-sky-200 to-blue-600">Might.</span>
               </h1>
             </motion.div>
 
-            <motion.p variants={fadeLeft} className="max-w-xl text-slate-300 text-lg leading-relaxed mb-10">
+            <motion.p variants={fadeLeft} className="text-base sm:text-lg text-white/70 max-w-xl mb-8 leading-relaxed">
               Join an elite community where every move is calculated for victory. We build champions through grandmaster-led logic.
             </motion.p>
 
@@ -135,11 +135,15 @@ export default function HomePage() {
              />
           </motion.div>
         </div>
+      </section>
 
-        {/* STATS DOCK - POSITIONED TO ADAPT TO CONTENT FLOW */}
-        <div className="w-full px-4 md:px-6 lg:absolute lg:bottom-0 lg:left-0 z-20">
-          <div className="container mx-auto">
-            <div className="grid grid-cols-2 lg:grid-cols-4 bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 rounded-2xl lg:rounded-b-none lg:rounded-t-[3rem] overflow-hidden shadow-2xl">
+      {/* SECTION DIVIDER */}
+      <div className="h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+
+      {/* STATS DOCK */}
+      <section className="bg-white">
+        <div className="container mx-auto px-4 md:px-6 -mt-12 relative z-20">
+          <div className="grid grid-cols-2 lg:grid-cols-4 bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
               {stats.map((stat, i) => (
                 <div key={stat.id} className={cn(
                   "flex flex-col items-center justify-center py-8 lg:py-12 px-4 text-center border-white/10",
@@ -155,16 +159,16 @@ export default function HomePage() {
               ))}
             </div>
           </div>
-        </div>
       </section>
 
       {/* FEATURES SECTION */}
-      <section className="py-24 md:py-32 bg-white relative">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col items-start text-left mb-24">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100 text-[10px] font-black uppercase tracking-widest mb-6">
+      <section className="py-12 md:py-16 bg-white relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-start text-left mb-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100 text-[10px] font-black uppercase tracking-widest mb-2">
                 <Trophy className="h-3.5 w-3.5" /> WHY UNIQUE CHESS ACADEMY?
               </div>
+              <div className="w-12 h-1 bg-blue-600 rounded mb-8" />
               <h2 className="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-8 leading-tight">
                 Strategic <span className="text-sky-600 italic">Advantage</span>
               </h2>
@@ -191,8 +195,8 @@ export default function HomePage() {
       </section>
 
       {/* GALLERY ARENA */}
-      <section className="py-28 bg-[#020617] overflow-hidden border-y border-white/5">
-        <div className="flex items-center gap-6 px-10 mb-16">
+      <section className="py-12 md:py-16 bg-[#020617] overflow-hidden border-y border-white/5">
+        <div className="flex items-center gap-6 px-4 sm:px-6 lg:px-8 mb-16">
           <div className="w-3 h-3 bg-sky-500 animate-ping rounded-full" />
           <span className="text-white font-black uppercase tracking-[0.4em] text-xs">The Arena Gallery</span>
           <div className="h-[1px] flex-grow bg-white/20" />
@@ -219,12 +223,13 @@ export default function HomePage() {
       </section>
 
       {/* CURRICULUM SECTION */}
-      <section className="py-32 bg-[#020617] relative overflow-hidden">
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-3xl mb-24">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[11px] font-black uppercase tracking-widest mb-6">
+      <section className="py-12 md:py-16 bg-[#020617] relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-3xl mb-10">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[11px] font-black uppercase tracking-widest mb-2">
               Academy Path
             </div>
+            <div className="w-12 h-1 bg-blue-600 rounded mb-8" />
             <h2 className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tighter">Structured for Growth.</h2>
             <p className="text-slate-300 text-xl leading-relaxed font-medium">Precision-engineered for competitive success.</p>
           </div>

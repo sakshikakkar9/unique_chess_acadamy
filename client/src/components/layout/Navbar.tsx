@@ -9,11 +9,11 @@ import logoImg from "@/assets/logo.jpeg";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 60);
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -32,79 +32,70 @@ const Navbar = () => {
   return (
     <nav
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300",
-        scrolled
-          ? "bg-white border-b border-slate-200 py-2 shadow-sm"
-          : "bg-transparent py-4"
+        "fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 flex items-center",
+        isScrolled
+          ? "bg-white/95 backdrop-blur-md shadow-sm"
+          : "bg-transparent"
       )}
     >
-      <div className="container mx-auto px-6 grid grid-cols-2 lg:grid-cols-3 items-center">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         {/* LEFT SECTION: LOGO */}
-        <div className="flex justify-start">
-          <Link to="/" className="flex items-center group">
-            <img 
-              src={logoImg} 
-              alt="Unique Chess Academy"
-              className={cn(
-                "h-10 sm:h-14 md:h-16 w-auto transition-all duration-300 object-contain rounded-lg",
-                scrolled ? "mix-blend-multiply opacity-95" : "brightness-110 contrast-110"
-              )}
-            />
-          </Link>
-        </div>
+        <Link to="/" className="flex items-center">
+          <img
+            src={logoImg}
+            alt="Unique Chess Academy"
+            className="h-10 w-auto object-contain rounded-lg transition-all duration-300"
+          />
+        </Link>
 
         {/* CENTER SECTION: DESKTOP NAVIGATION */}
-        <div className="hidden lg:flex justify-center items-center gap-8">
+        <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
               className={cn(
-                "relative text-[14px] font-medium transition-colors duration-200 py-1",
+                "text-sm font-medium transition-all duration-300 relative py-1",
                 isActive(link.path)
-                  ? "text-blue-600"
-                  : scrolled
-                    ? "text-slate-600 hover:text-slate-900"
+                  ? cn(
+                      "underline decoration-2 underline-offset-4",
+                      isScrolled ? "text-blue-600" : "text-white"
+                    )
+                  : isScrolled
+                    ? "text-slate-700 hover:text-blue-600"
                     : "text-white/80 hover:text-white"
               )}
             >
               {link.name}
-              {isActive(link.path) && (
-                <motion.div
-                  layoutId="nav-underline"
-                  className="absolute -bottom-1 left-0 right-0 h-[2px] bg-blue-600"
-                />
-              )}
             </Link>
           ))}
         </div>
 
-        {/* RIGHT SECTION: EMPTY (FOR BALANCING) OR MOBILE TOGGLE */}
-        <div className="flex justify-end">
+        {/* RIGHT SECTION: MOBILE TOGGLE */}
+        <div className="md:hidden">
           <button
             className={cn(
-              "lg:hidden p-2 transition-colors",
-              scrolled ? "text-slate-900" : "text-white"
+              "p-2 transition-colors",
+              isScrolled ? "text-slate-900" : "text-white"
             )}
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => setIsOpen(true)}
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            <Menu size={24} />
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="lg:hidden fixed inset-0 w-full h-screen bg-white z-[60] flex flex-col p-8"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 bg-white z-[60] flex flex-col p-8"
           >
             <div className="flex justify-between items-center mb-12">
-              <img src={logoImg} alt="Logo" className="h-12 w-auto mix-blend-multiply" />
+              <img src={logoImg} alt="Logo" className="h-10 w-auto rounded-lg" />
               <button
                 className="p-2 text-slate-900"
                 onClick={() => setIsOpen(false)}
@@ -113,7 +104,7 @@ const Navbar = () => {
               </button>
             </div>
 
-            <div className="flex flex-col gap-6 overflow-y-auto items-center text-center">
+            <div className="flex flex-col gap-6 items-center justify-center flex-1">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.path}
@@ -124,8 +115,8 @@ const Navbar = () => {
                   <Link
                     to={link.path}
                     className={cn(
-                      "text-2xl font-bold transition-colors",
-                      isActive(link.path) ? "text-blue-600" : "text-slate-600"
+                      "text-xl font-semibold transition-colors",
+                      isActive(link.path) ? "text-blue-600" : "text-slate-700"
                     )}
                     onClick={() => setIsOpen(false)}
                   >
