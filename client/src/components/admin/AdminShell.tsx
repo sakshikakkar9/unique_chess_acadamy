@@ -8,7 +8,7 @@ import {
   BookOpen,
   Trophy,
   Users,
-  Image as ImageIcon,
+  Image as PhotoIcon,
   Settings,
   ChevronLeft
 } from "lucide-react";
@@ -29,7 +29,7 @@ const menuItems = [
   { icon: Trophy,          label: "Tournaments",   href: "/admin/tournaments"  },
   { icon: Users,           label: "Students",      href: "/admin/students"     },
   { icon: Users,           label: "Registrations", href: "/admin/registrations"},
-  { icon: ImageIcon,       label: "Gallery",       href: "/admin/gallery"      },
+  { icon: PhotoIcon,       label: "Gallery",       href: "/admin/gallery"      },
   { icon: Settings,        label: "Settings",      href: "/admin/settings"     },
 ];
 
