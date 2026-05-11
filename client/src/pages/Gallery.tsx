@@ -4,7 +4,7 @@ import GalleryItem from "@/features/gallery/components/GalleryItem";
 import { useGallery } from "@/features/gallery/hooks/useGallery";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Image as ImageIcon, Camera, LayoutGrid } from "lucide-react";
+import { Sparkles, Image as PhotoIcon, Camera, LayoutGrid } from "lucide-react";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import Footer from "@/components/layout/Footer";
 import SparkleCanvas from "@/components/shared/SparkleCanvas";
@@ -107,7 +107,7 @@ export default function GalleryPage() {
                     className="col-span-full flex flex-col items-center justify-center py-40 border-2 border-dashed border-slate-200 rounded-3xl md:rounded-[3rem] bg-white"
                   >
                     <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center mb-6">
-                      <ImageIcon className="h-10 w-10 text-slate-300" />
+                      <PhotoIcon className="h-10 w-10 text-slate-300" />
                     </div>
                     <h3 className="text-xl font-bold text-slate-900 mb-2">No Moments Captured Yet</h3>
                     <p className="text-slate-500 italic">Check back soon for new gallery updates.</p>

@@ -10,6 +10,20 @@ const api = axios.create({
   withCredentials: true,
 });
 
+// Response interceptor to handle session expiration
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      // If we're not already on the login page, redirect to it
+      if (window.location.pathname !== '/admin/login' && window.location.pathname.startsWith('/admin')) {
+        window.location.href = `/admin/login?from=${encodeURIComponent(window.location.pathname)}`;
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Interceptor to attach the Admin JWT token for protected routes
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('admin_token'); 

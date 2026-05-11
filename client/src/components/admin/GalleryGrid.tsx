@@ -1,5 +1,5 @@
 import React from "react";
-import { Trash2, Pencil, Image as ImageIcon } from "lucide-react";
+import { Trash2, Pencil, Image as PhotoIcon } from "lucide-react";
 import { GalleryImage } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +56,7 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({ images, onEdit, onDelete }) =
       <div className="flex flex-col items-center justify-center py-20 gap-4
                     text-uca-text-muted border-2 border-dashed border-uca-border rounded-2xl bg-uca-bg-surface">
         <div className="size-12 rounded-full bg-uca-bg-elevated flex items-center justify-center">
-            <ImageIcon className="size-6 opacity-40" />
+            <PhotoIcon className="size-6 opacity-40" />
         </div>
         <div className="text-center">
             <p className="text-sm font-bold text-uca-text-primary uppercase tracking-widest">No photos yet</p>

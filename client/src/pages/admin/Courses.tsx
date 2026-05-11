@@ -359,6 +359,7 @@ const AdminCourses = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         title={editingRecord ? "Update Program" : "Create Program"}
+        key={editingRecord?.id ?? 'new'}
         footer={
           <>
             <Button variant="ghost" disabled={isSubmitting} onClick={closeModal} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>

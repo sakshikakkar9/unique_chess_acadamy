@@ -326,6 +326,7 @@ const AdminTournaments: React.FC = () => {
         isOpen={isModalOpen}
         onClose={handleClose}
         title={editingRecord ? "Update Tournament Arena" : "Construct New Arena"}
+        key={editingRecord?.id ?? 'new'}
         footer={
           <>
             <Button
