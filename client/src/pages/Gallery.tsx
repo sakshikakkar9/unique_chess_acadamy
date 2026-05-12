@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import { useGallery } from "@/features/gallery/hooks/useGallery";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { LayoutGrid, Image as PhotoIcon } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { LayoutGrid, Image as PhotoIcon, X } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import { stagger, fadeLeft, fadeIn } from "@/components/shared/motion";
 
 export default function GalleryPage() {
   const { images, filter, setFilter, categories, isLoading } = useGallery();
+  const [selectedImg, setSelectedImg] = useState<string | null>(null);
   const [orientations, setOrientations] = useState<Record<string, 'landscape' | 'portrait' | 'square'>>({});
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
 
@@ -158,6 +159,7 @@ export default function GalleryPage() {
                 key={img.id}
                 style={getSpanStyle(orientations[img.id] || 'square')}
                 className="relative overflow-hidden rounded-2xl bg-slate-100 group cursor-pointer"
+                onClick={() => setSelectedImg(img.imageUrl)}
               >
                 <img
                   src={img.imageUrl}
@@ -185,6 +187,39 @@ export default function GalleryPage() {
       </section>
 
       <Footer />
+
+      {/* LIGHTBOX OVERLAY */}
+      <AnimatePresence>
+        {selectedImg && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer"
+            onClick={() => setSelectedImg(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-7xl w-full flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={selectedImg}
+                alt="Enlarged"
+                className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+              />
+              <button
+                onClick={() => setSelectedImg(null)}
+                className="absolute -top-12 right-0 p-2 text-white/70 hover:text-white transition-colors focus:outline-none"
+              >
+                <X className="size-8" />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
