@@ -1,157 +1,107 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/shared/ScrollReveal";
-import SectionHeading from "@/components/shared/SectionHeading";
-import SparkleCanvas from "@/components/shared/SparkleCanvas";
-import { Target, Shield, Award, Users, TrendingUp, Trophy, ChevronRight, BrainCircuit } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { fadeLeft, fadeRight, stagger, scaleIn, fadeIn } from "@/components/shared/motion";
+import { ArrowRight } from "lucide-react";
+import { stagger, scaleIn, fadeIn, fadeLeft } from "@/components/shared/motion";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 
-const values = [
-  { icon: Target, title: "Algorithmic Precision", text: "We teach verifiable logical systems, eliminating tactical blind spots through grandmaster-verified drills.", color: "blue" },
-  { icon: Shield, title: "Competitive Integrity", text: "Cultivating the 'Grandmaster Mindset'—absolute discipline, psychological resilience, and sportsmanship.", color: "sky" },
-  { icon: Award, title: "Elite Pedigree", text: "With 50+ National titles, our methodology is proven at the highest levels of competitive play.", color: "sky-blue" },
-  { icon: Users, title: "The Syndicate", text: "An exclusive global network of elite players for high-stakes sparring and collaborative growth.", color: "blue" },
-  { icon: BrainCircuit, title: "Neural Agility", text: "Blending human intuition with cutting-edge engine analysis to sharpen split-second decision making.", color: "sky" },
-  { icon: Trophy, title: "Absolute Dominance", text: "We prepare students to command the board and lead the leaderboards, not just participate.", color: "sky-blue" },
+const instructors = [
+  { name: "GM Vikram Iyer", title: "Head of Pedagogy", photo: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800", quote: "Chess is not just a game, it's a way of building architectural logic.", specialty: "Theory" },
+  { name: "IM Ananya Desai", title: "Technical Lead", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800", quote: "We focus on converting microscopic advantages into clinical victories.", specialty: "Endgames" },
+  { name: "FM Rohan Patel", title: "Tactical Head", photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=800", quote: "Mastering tactical chaos requires disciplined calculation and focus.", specialty: "Calculation" },
+  { name: "WIM Kavya Nair", title: "Elite Mentor", photo: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800", quote: "Building strong foundations is the key to shaping the next generation of masters.", specialty: "Foundations" },
 ];
-
-const coaches = [
-  { name: "GM Vikram Iyer", title: "Head of Pedagogy", elo: "2450", specialty: "Theory", bio: "Architect of the UCA Masterclass curriculum with 20+ years of Grandmaster circuit experience." },
-  { name: "IM Ananya Desai", title: "Technical Lead", elo: "2280", specialty: "Endgames", bio: "Renowned technical specialist famous for converting microscopic advantages into clinical victories." },
-  { name: "FM Rohan Patel", title: "Tactical Head", elo: "2200", specialty: "Calculation", bio: "Specialist in speed-calculation and visual-spatial dominance. The master of tactical chaos." },
-  { name: "WIM Kavya Nair", title: "Elite Mentor", elo: "2150", specialty: "Foundations", bio: "The strategic force behind our junior prodigy program, shaping the next generation of masters." },
-];
-
-const ABOUT_HERO_BG = "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?q=80&w=2000&auto=format&fit=crop";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#f8fafc] selection:bg-blue-600/30 selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-white selection:bg-blue-600/30 selection:text-white overflow-x-hidden">
       <Navbar />
 
-      {/* HERO SECTION - CINEMATIC DARK */}
-      <header className="relative min-h-auto pt-24 pb-12 md:min-h-[400px] md:pt-28 md:pb-16 lg:min-h-[480px] lg:pt-32 lg:pb-20 flex items-center bg-[#020617] overflow-hidden">
-        <SparkleCanvas density="low" />
-        <div
-          className="absolute inset-0 z-0 opacity-40 scale-110"
-          style={{
-            backgroundImage: `url(${ABOUT_HERO_BG})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'blur(8px) saturate(0.5)'
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#020617]/90 via-[#020617] to-[#f8fafc]" />
+      {/* HERO SECTION */}
+      <section className="relative bg-[#070F1C] min-h-[560px] flex items-center overflow-hidden">
+        {/* Chess pattern texture */}
+        <div className="absolute inset-0 opacity-[0.035]"
+             style={{
+               backgroundImage: `linear-gradient(45deg,#fff 25%,transparent 25%),
+                                 linear-gradient(-45deg,#fff 25%,transparent 25%),
+                                 linear-gradient(45deg,transparent 75%,#fff 75%),
+                                 linear-gradient(-45deg,transparent 75%,#fff 75%)`,
+               backgroundSize: '32px 32px',
+               backgroundPosition: '0 0,0 16px,16px -16px,-16px 0'
+             }} />
 
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-3xl">
-            <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left">
-              <motion.div variants={fadeIn} className="text-xs font-semibold tracking-widest uppercase border border-white/20 bg-white/10 rounded-full px-4 py-1.5 inline-flex items-center gap-2 mb-6 text-white">
-                <Trophy className="h-3.5 w-3.5" /> The Grandmaster Standard
-              </motion.div>
-              
-              <motion.h1 variants={fadeLeft} className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-white mb-4">
-                Architecting <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">Pure Intellect.</span>
-              </motion.h1>
+        {/* Glow */}
+        <div className="absolute top-0 left-0 w-[500px] h-[500px]
+                        bg-blue-600/10 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/3" />
 
-              <motion.p variants={fadeLeft} className="text-base sm:text-lg text-white/70 max-w-xl mb-8 leading-relaxed">
-                Unique Chess Academy is India's most elite strategic laboratory, where grandmaster theory meets modern computational logic.
-              </motion.p>
-              
-              <motion.div variants={scaleIn}>
-                <Button className="bg-blue-600 hover:bg-blue-500 text-white font-black px-12 h-16 rounded-2xl group transition-all active:scale-95 shadow-2xl shadow-blue-900/40">
-                  EXPLORE THE METHOD <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </motion.div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8
+                        w-full pt-24 sm:pt-28 pb-16 sm:pb-20">
+          <motion.div variants={stagger} initial="hidden" animate="visible" className="max-w-2xl">
+            {/* Eyebrow */}
+            <motion.div variants={fadeIn} className="inline-flex items-center gap-2 mb-5
+                            bg-blue-500/15 border border-blue-500/25 rounded-full
+                            px-4 py-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+              <span className="text-xs font-semibold text-blue-300 uppercase tracking-widest">
+                Our Story
+              </span>
             </motion.div>
-          </div>
-        </div>
-      </header>
 
-      {/* STORY SECTION - CLEAN TRANSITION */}
-      <section className="py-12 md:py-16 bg-gradient-to-b from-[#f8fafc] to-[#e6f0f7] relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-[3fr_2fr] gap-20 items-center">
-            <ScrollReveal variants={fadeLeft}>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-black uppercase tracking-widest mb-2">
-                 <Trophy className="h-3.5 w-3.5" /> Established 2016
-              </div>
-              <div className="w-12 h-1 bg-blue-600 rounded mb-8" />
-              <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-slate-900 mb-10 tracking-tighter leading-[0.95]">
-                Beyond <br /><span className="text-blue-600 italic">Memorization.</span>
-              </h2>
-              <div className="space-y-8 text-slate-600 text-lg md:text-xl leading-relaxed font-medium">
-                <p>Since 2016, we have pioneered a shift from rote learning to deep architectural understanding. We view the chessboard as the ultimate gym for cognitive development.</p>
-                <p>Our ecosystem is precision-built for those who seek to master positional pressure and tactical explosiveness.</p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal variants={scaleIn}>
-              <div className="grid grid-cols-1 gap-8">
-                <div className="p-6 md:p-10 rounded-2xl md:rounded-[3rem] bg-white border border-blue-100 shadow-[0_25px_80px_rgba(37,99,235,0.05)] backdrop-blur-md">
-                  <p className="text-6xl font-black text-slate-900 tracking-tighter">5K+</p>
-                  <p className="text-[11px] font-black text-blue-500 uppercase tracking-[0.2em] mt-3">Elite Alumni Worldwide</p>
-                </div>
-                <div className="p-6 md:p-10 rounded-2xl md:rounded-[3rem] bg-white border border-blue-100 shadow-[0_25px_80px_rgba(37,99,235,0.05)] backdrop-blur-md">
-                  <p className="text-6xl font-black text-slate-900 tracking-tighter">98%</p>
-                  <p className="text-[11px] font-black text-blue-500 uppercase tracking-[0.2em] mt-3">Elo Growth Rate</p>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
+            <motion.h1 variants={fadeLeft} className="text-4xl sm:text-5xl font-black text-white leading-[1.1] tracking-tight mb-4">
+              Built by Players.<br />
+              <span className="text-blue-400">Driven by Purpose.</span>
+            </motion.h1>
+            <motion.p variants={fadeLeft} className="text-base sm:text-lg text-white/60 leading-relaxed max-w-xl mb-8">
+              Founded in 2018, UCA has grown from a single classroom
+              to India's most trusted chess institution.
+            </motion.p>
+          </motion.div>
         </div>
+
+        {/* Fade to white */}
+        <div className="absolute bottom-0 left-0 right-0 h-20
+                        bg-gradient-to-t from-white to-transparent" />
       </section>
 
-      {/* MISSION & VISION - REFINED TYPOGRAPHY */}
-      <section className="py-12 md:py-16 bg-[#f1f5f9] border-y border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-8">
-          <ScrollReveal variants={fadeLeft}>
-            <div className="bg-white/70 backdrop-blur-xl border border-white p-6 md:p-10 lg:p-12 rounded-2xl md:rounded-[3rem] group hover:bg-white transition-all duration-500 shadow-xl shadow-blue-900/5 h-full text-left">
-              <div className="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-10 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                <Target className="h-7 w-7" />
-              </div>
-              <h3 className="text-3xl lg:text-4xl font-black text-slate-900 mb-5 tracking-tight">The Mission</h3>
-              <p className="text-slate-500 text-base lg:text-lg leading-relaxed font-medium max-w-md">
-                To democratize elite-level chess education through scientific, measurable methodologies that guarantee tactical and strategic mastery.
-              </p>
-            </div>
-          </ScrollReveal>
-          
-          <ScrollReveal variants={fadeRight}>
-            <div className="bg-white/70 backdrop-blur-xl border border-white p-6 md:p-10 lg:p-12 rounded-2xl md:rounded-[3rem] group hover:bg-white transition-all duration-500 shadow-xl shadow-blue-900/5 h-full text-left">
-              <div className="w-14 h-14 bg-sky-500 text-white rounded-2xl flex items-center justify-center mb-10 shadow-lg shadow-sky-500/20 group-hover:scale-105 transition-transform">
-                <TrendingUp className="h-7 w-7" />
-              </div>
-              <h3 className="text-3xl lg:text-4xl font-black text-slate-900 mb-5 tracking-tight">The Vision</h3>
-              <p className="text-slate-500 text-base lg:text-lg leading-relaxed font-medium max-w-md">
-                To be the global gold-standard for intellectual training, forging strategic leaders who dominate every industry.
-              </p>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* VALUES GRID */}
-      <section className="py-12 md:py-16 bg-[#f8fafc]">
+      {/* MISSION / VALUES SECTION */}
+      <section className="py-14 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Section heading block */}
           <div className="mb-10">
-             <SectionHeading label="The UCA Edge" title="Defining the Method" />
+            <p className="text-xs font-bold text-blue-600 uppercase tracking-[0.15em] mb-2">
+              What Drives Us
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+              Our Core Values.
+            </h2>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
-            {values.map((v, i) => (
-              <ScrollReveal key={v.title} delay={i * 0.1}>
-                <div className="group p-6 md:p-12 rounded-3xl md:rounded-[3.5rem] bg-white border border-blue-50 hover:border-blue-200 hover:shadow-[0_30px_80px_rgba(0,0,0,0.06)] transition-all duration-500 h-full flex flex-col items-start text-left">
-                  <div className={cn("w-16 h-16 rounded-[2rem] flex items-center justify-center mb-12 transition-all group-hover:rotate-6 group-hover:scale-110", 
-                    v.color === 'blue' ? 'bg-blue-50 text-blue-600' : 
-                    v.color === 'sky' ? 'bg-cyan-50 text-cyan-600' : 'bg-sky-100 text-sky-600')}>
-                    <v.icon className="h-8 w-8" />
-                  </div>
-                  <h3 className="text-2xl font-black mb-6 text-slate-900 tracking-tight leading-snug">{v.title}</h3>
-                  <p className="text-slate-500 leading-relaxed font-medium flex-grow text-base">{v.text}</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              {
+                icon: '♟',
+                title: 'Discipline First',
+                body: 'Chess is a mirror of life. We teach students to think before they act.'
+              },
+              {
+                icon: '🏆',
+                title: 'Excellence Always',
+                body: 'We set high standards because we believe every student is capable of surpassing them.'
+              },
+              {
+                icon: '🤝',
+                title: 'Community First',
+                body: 'Our players compete hard but grow together, mentoring each other at every level.'
+              },
+            ].map((val, i) => (
+              <ScrollReveal key={i} delay={i * 0.1}>
+                <div className="p-8 rounded-2xl border border-slate-200 bg-slate-50
+                                hover:border-blue-200 hover:bg-blue-50/30
+                                transition-colors duration-200 h-full flex flex-col">
+                  <div className="text-3xl mb-6">{val.icon}</div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-3">{val.title}</h3>
+                  <p className="text-sm font-normal text-slate-500 leading-relaxed max-w-xl">{val.body}</p>
                 </div>
               </ScrollReveal>
             ))}
@@ -159,27 +109,50 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* COACHES SECTION */}
-      <section className="py-12 md:py-16 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <SectionHeading label="The Faculty" title="Elite Tactical Minds" />
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-24">
-            {coaches.map((c, i) => (
-              <ScrollReveal key={c.name} delay={i * 0.1}>
-                <div className="bg-[#f8fafc] border border-blue-100 p-6 md:p-10 rounded-2xl md:rounded-[3rem] group hover:bg-white hover:border-blue-300 transition-all duration-700 h-full flex flex-col items-start text-left hover:shadow-xl hover:shadow-blue-900/5">
-                  <div className="flex justify-between items-start mb-12 w-full">
-                    <div className="w-20 h-20 rounded-[2rem] bg-blue-600 flex items-center justify-center text-3xl font-extrabold text-white group-hover:scale-110 transition-transform duration-500 shadow-xl shadow-blue-600/30">
-                      {c.name.split(" ").map(n => n[0]).join("")}
-                    </div>
-                    <div className="px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 shadow-sm">
-                      <span className="text-[10px] font-black text-blue-600 tracking-tighter uppercase tabular-nums">{c.elo} ELO</span>
-                    </div>
+      {/* INSTRUCTORS SECTION */}
+      <section className="py-14 sm:py-16 bg-slate-50/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-10">
+            <p className="text-xs font-bold text-blue-600 uppercase tracking-[0.15em] mb-2">
+              Our Faculty
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+              World-Class Coaching Staff.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {instructors.map((person, i) => (
+              <ScrollReveal key={i} delay={i * 0.1}>
+                <div className="flex flex-col bg-white border border-slate-200
+                                rounded-2xl overflow-hidden
+                                hover:shadow-md hover:-translate-y-1
+                                transition-all duration-200 h-full">
+
+                  {/* Photo */}
+                  <div className="aspect-square bg-slate-100 overflow-hidden">
+                    <img src={person.photo} alt={person.name}
+                         className="w-full h-full object-cover object-top"
+                         loading="lazy" />
                   </div>
-                  <h3 className="text-3xl font-extrabold text-slate-900 mb-2 tracking-tight">{c.name}</h3>
-                  <p className="text-blue-600 text-xs font-black uppercase tracking-[0.2em] mb-10 pb-4 border-b border-blue-100 w-fit">{c.title}</p>
-                  <p className="text-slate-600 text-sm leading-relaxed mb-10 italic font-medium flex-grow">"{c.bio}"</p>
-                  <div className="pt-6 border-t border-slate-200 mt-auto w-full">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Specialty: {c.specialty}</span>
+
+                  {/* Content */}
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-sm font-bold text-slate-900">{person.name}</h3>
+                    <p className="text-xs font-medium text-blue-600 mt-0.5 mb-3">{person.title}</p>
+
+                    {/* Quote — strictly 3 lines max */}
+                    <p className="text-xs text-slate-500 italic leading-relaxed line-clamp-3 flex-1">
+                      "{person.quote}"
+                    </p>
+
+                    {/* Specialty — always at bottom */}
+                    <div className="mt-4 pt-3 border-t border-slate-100">
+                      <span className="text-[10px] font-bold text-blue-600
+                                       uppercase tracking-widest">
+                        ♟ {person.specialty}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </ScrollReveal>
