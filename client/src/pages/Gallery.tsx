@@ -2,15 +2,17 @@ import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import { useGallery } from "@/features/gallery/hooks/useGallery";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { LayoutGrid, Image as PhotoIcon } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { LayoutGrid, Image as PhotoIcon, X, ZoomIn } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import { stagger, fadeLeft, fadeIn } from "@/components/shared/motion";
+import { GalleryImage } from "@/types";
 
 export default function GalleryPage() {
   const { images, filter, setFilter, categories, isLoading } = useGallery();
   const [orientations, setOrientations] = useState<Record<string, 'landscape' | 'portrait' | 'square'>>({});
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -158,6 +160,7 @@ export default function GalleryPage() {
                 key={img.id}
                 style={getSpanStyle(orientations[img.id] || 'square')}
                 className="relative overflow-hidden rounded-2xl bg-slate-100 group cursor-pointer"
+                onClick={() => setSelectedImage(img)}
               >
                 <img
                   src={img.imageUrl}
@@ -172,17 +175,61 @@ export default function GalleryPage() {
 
                 {/* Hover overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                  {img.caption && (
-                    <p className="text-white text-sm font-medium">
-                      {img.caption}
-                    </p>
-                  )}
+                  <div className="flex flex-col gap-1 w-full">
+                    <div className="flex justify-between items-center">
+                      {img.caption && (
+                        <p className="text-white text-sm font-medium">
+                          {img.caption}
+                        </p>
+                      )}
+                      <ZoomIn className="size-5 text-white/80" />
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </section>
+
+      {/* LIGHTBOX MODAL */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 md:p-8"
+            onClick={() => setSelectedImage(null)}
+          >
+            <button
+              className="absolute top-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
+            >
+              <X className="size-6" />
+            </button>
+
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-5xl w-full h-full flex flex-col items-center justify-center gap-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={selectedImage.imageUrl}
+                alt={selectedImage.caption || "Full size gallery image"}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+              />
+              {selectedImage.caption && (
+                <p className="text-white text-center text-lg font-medium px-4">
+                  {selectedImage.caption}
+                </p>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>

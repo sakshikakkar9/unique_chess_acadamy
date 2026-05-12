@@ -56,6 +56,17 @@ const AdminGallery: React.FC = () => {
     }
   };
 
+  const getSpanStyle = (orientation: string): React.CSSProperties => {
+    switch (orientation) {
+      case 'landscape':
+        return { gridColumn: 'span 2', gridRow: 'span 1' };
+      case 'portrait':
+        return { gridColumn: 'span 1', gridRow: 'span 2' };
+      default:
+        return { gridColumn: 'span 1', gridRow: 'span 1' };
+    }
+  };
+
   return (
     <AdminShell
       title="Gallery Management"
@@ -76,10 +87,7 @@ const AdminGallery: React.FC = () => {
             {['landscape', 'portrait', 'square', 'square', 'landscape', 'portrait', 'portrait', 'square', 'landscape'].map((o, i) => (
               <div
                 key={i}
-                style={{
-                  gridColumn: o === 'landscape' ? 'span 2' : 'span 1',
-                  gridRow: o === 'portrait' ? 'span 2' : 'span 1',
-                }}
+                style={getSpanStyle(o)}
                 className="rounded-xl bg-uca-bg-elevated animate-pulse"
               />
             ))}
