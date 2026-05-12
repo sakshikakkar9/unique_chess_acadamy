@@ -22,12 +22,12 @@ model GlobalSettings {
 }
 
 model ContactMessage {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   name      String
-  email     String
-  phone     String?
+  email     String   @default("")
+  phone     String   @default("")
   message   String
-  isRead    Boolean  @default(false)
+  status    String   @default("unread")
   createdAt DateTime @default(now())
 }
 
