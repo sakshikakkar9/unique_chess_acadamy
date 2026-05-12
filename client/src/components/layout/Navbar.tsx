@@ -18,70 +18,75 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Courses", path: "/courses" },
-    { name: "Tournaments", path: "/tournaments" },
-    { name: "Gallery", path: "/gallery" },
-    { name: "Contact", path: "/contact" },
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
+    { label: "Courses", href: "/courses" },
+    { label: "Tournaments", href: "/tournaments" },
+    { label: "Gallery", href: "/gallery" },
+    { label: "Contact", href: "/contact" },
   ];
 
-  const isActive = (path: string) => location.pathname === path || (path !== '/' && location.pathname.startsWith(path + '/'));
+  const isActive = (path: string) =>
+    location.pathname === path || (path !== '/' && location.pathname.startsWith(path + '/'));
 
   return (
     <>
-      <nav
-        className={cn(
-          "fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 flex items-center",
-          isScrolled
-            ? "bg-white/95 backdrop-blur-md shadow-sm"
-            : "bg-transparent"
-        )}
-      >
-        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          {/* LEFT SECTION: LOGO */}
-          <Link to="/" className="flex items-center">
-            <img
-              src={logoImg}
-              alt="Unique Chess Academy"
-              className="h-10 w-auto object-contain rounded-lg transition-all duration-300"
-            />
+      <nav className={cn(
+        "fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300",
+        isScrolled
+          ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100'
+          : 'bg-transparent border-b border-transparent'
+      )}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+
+          {/* Logo — fixed size always */}
+          <Link to="/">
+            <img src={logoImg} alt="UCA" className="h-9 w-auto rounded-lg" />
           </Link>
 
-          {/* CENTER SECTION: DESKTOP NAVIGATION */}
+          {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
+            {navLinks.map(link => (
               <Link
-                key={link.path}
-                to={link.path}
+                key={link.href}
+                to={link.href}
                 className={cn(
-                  "text-sm transition-all duration-300 relative py-1",
-                  isActive(link.path)
-                    ? cn(
-                        "text-blue-600 font-semibold border-b-2 border-blue-600 pb-0.5"
-                      )
+                  "text-sm font-medium transition-colors duration-150",
+                  isActive(link.href)
+                    ? 'text-blue-600'
                     : isScrolled
-                      ? "text-slate-600 hover:text-slate-900 font-medium"
-                      : "text-white/80 hover:text-white font-medium"
+                      ? 'text-slate-600 hover:text-slate-900'
+                      : 'text-white/80 hover:text-white'
                 )}
               >
-                {link.name}
+                {link.label}
               </Link>
             ))}
           </div>
 
-          {/* RIGHT SECTION: MOBILE TOGGLE */}
-          <div className="md:hidden">
-            <button
-              className={cn(
-                "p-2 transition-colors",
-                isScrolled ? "text-slate-900" : "text-white"
-              )}
-              onClick={() => setIsOpen(true)}
-            >
-              <Menu size={24} />
-            </button>
-          </div>
+          {/* Desktop CTA */}
+          <Link
+            to="/tournaments"
+            className={cn(
+              "hidden md:flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-150",
+              isScrolled
+                ? 'bg-slate-900 text-white hover:bg-slate-700'
+                : 'bg-white/15 text-white border border-white/30 hover:bg-white/25'
+            )}
+          >
+            Enroll Now
+          </Link>
+
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setIsOpen(true)}
+            className={cn(
+              "md:hidden p-2 rounded-lg transition-colors",
+              isScrolled ? "text-slate-700" : "text-white"
+            )}
+          >
+            <Menu className="size-5" />
+          </button>
         </div>
       </nav>
 
@@ -92,7 +97,7 @@ const Navbar = () => {
       )}>
         {/* Top bar inside overlay */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-          <img src={logoImg} alt="UCA" className="h-10 w-auto rounded-lg" />
+          <img src={logoImg} alt="UCA" className="h-9 w-auto rounded-lg" />
           <button onClick={() => setIsOpen(false)}
                   className="p-2 rounded-lg hover:bg-white/10 text-white">
             <XMarkIcon className="size-6" />
@@ -102,16 +107,16 @@ const Navbar = () => {
         {/* Nav links */}
         <nav className="flex flex-col px-6 pt-8 gap-1">
           {navLinks.map(link => (
-            <Link key={link.path}
-               to={link.path}
+            <Link key={link.href}
+               to={link.href}
                onClick={() => setIsOpen(false)}
                className={cn(
                  "px-4 py-3 rounded-xl text-lg font-semibold transition-colors duration-150",
-                 isActive(link.path)
+                 isActive(link.href)
                    ? 'bg-blue-600/20 text-blue-400'
                    : 'text-white/70 hover:text-white hover:bg-white/8'
                )}>
-              {link.name}
+              {link.label}
             </Link>
           ))}
         </nav>
@@ -123,7 +128,7 @@ const Navbar = () => {
              className="flex items-center justify-center gap-2 w-full
                         bg-blue-600 hover:bg-blue-500 text-white
                         font-semibold py-3.5 rounded-xl transition-colors duration-150">
-            View Tournaments
+            Enroll Now
           </Link>
         </div>
       </div>

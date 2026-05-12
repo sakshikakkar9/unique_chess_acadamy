@@ -5,11 +5,10 @@ import ScrollReveal from "@/components/shared/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, MessageCircle, Loader2, Sparkles, Send, Headphones } from "lucide-react";
+import { Mail, Phone, MapPin, MessageCircle, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
-import SparkleCanvas from "@/components/shared/SparkleCanvas";
-import { scaleIn, fadeLeft, fadeRight, stagger, fadeUp } from "@/components/shared/motion";
+import { stagger, fadeLeft, fadeRight, fadeIn } from "@/components/shared/motion";
 import { motion } from "framer-motion";
 
 export default function ContactPage() {
@@ -33,98 +32,118 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white selection:bg-sky-100 selection:text-sky-900 overflow-x-hidden">
+    <div className="min-h-screen bg-white selection:bg-blue-600/30 selection:text-white overflow-x-hidden">
       <Navbar />
 
-      {/* HERO SECTION - Deep Pro Theme */}
-      <header className="relative min-h-auto pt-24 pb-12 md:min-h-[400px] md:pt-28 md:pb-16 lg:min-h-[480px] lg:pt-32 lg:pb-20 flex items-center bg-[#020617] overflow-hidden">
-        <SparkleCanvas density="subtle" />
-        <div className="absolute inset-0 z-0 opacity-40">
-           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,_var(--tw-gradient-stops))] from-sky-900/20 via-transparent to-transparent" />
-        </div>
-        
-        <div className="container relative z-10 mx-auto px-6">
-          <motion.div initial="hidden" animate="visible" variants={stagger} className="text-left max-w-3xl">
-            <motion.div variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase border border-white/20 bg-white/10 rounded-full px-4 py-1.5 inline-flex items-center gap-2 mb-6 text-white">
-              <Headphones className="h-3.5 w-3.5" />
-              <span>Support Center</span>
+      {/* HERO SECTION */}
+      <section className="relative bg-[#070F1C] min-h-[560px] flex items-center overflow-hidden">
+        {/* Chess pattern texture */}
+        <div className="absolute inset-0 opacity-[0.035]"
+             style={{
+               backgroundImage: `linear-gradient(45deg,#fff 25%,transparent 25%),
+                                 linear-gradient(-45deg,#fff 25%,transparent 25%),
+                                 linear-gradient(45deg,transparent 75%,#fff 75%),
+                                 linear-gradient(-45deg,transparent 75%,#fff 75%)`,
+               backgroundSize: '32px 32px',
+               backgroundPosition: '0 0,0 16px,16px -16px,-16px 0'
+             }} />
+
+        {/* Glow */}
+        <div className="absolute top-0 left-0 w-[500px] h-[500px]
+                        bg-blue-600/10 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/3" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8
+                        w-full pt-24 sm:pt-28 pb-16 sm:pb-20">
+          <motion.div variants={stagger} initial="hidden" animate="visible" className="max-w-2xl">
+            {/* Eyebrow */}
+            <motion.div variants={fadeIn} className="inline-flex items-center gap-2 mb-5
+                            bg-blue-500/15 border border-blue-500/25 rounded-full
+                            px-4 py-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+              <span className="text-xs font-semibold text-blue-300 uppercase tracking-widest">
+                Support Center
+              </span>
             </motion.div>
 
-            <motion.h1 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-white mb-4">
-              Get in <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">Touch</span>
+            <motion.h1 variants={fadeLeft} className="text-4xl sm:text-5xl font-black text-white leading-[1.1] tracking-tight mb-4">
+              Get in <br />
+              <span className="text-blue-400">Touch.</span>
             </motion.h1>
-
-            <motion.p variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.42, 0, 0.58, 1] } } }} className="text-base sm:text-lg text-white/70 max-w-xl mb-8 leading-relaxed">
-              Have questions? We'd love to hear from you. Our team is ready to help you start your chess journey.
+            <motion.p variants={fadeLeft} className="text-base sm:text-lg text-white/60 leading-relaxed max-w-xl mb-8">
+              Have questions? We'd love to hear from you. Our team is ready to help.
             </motion.p>
           </motion.div>
         </div>
-      </header>
+
+        {/* Fade to white */}
+        <div className="absolute bottom-0 left-0 right-0 h-20
+                        bg-gradient-to-t from-white to-transparent" />
+      </section>
 
       {/* CONTACT CONTENT */}
-      <section className="py-12 md:py-16 bg-white relative z-10 -mt-12">
+      <section className="py-14 sm:py-16 bg-white relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             
             {/* FORM CARD */}
             <ScrollReveal variants={fadeLeft}>
-              <div className="bg-white p-6 md:p-12 rounded-2xl sm:rounded-[2.5rem] border border-slate-100 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)]">
+              <div className="bg-white p-8 md:p-12 rounded-[2rem] border border-slate-100 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)]">
                 <div className="mb-10">
-                  <h2 className="text-2xl font-black text-slate-900 mb-2">Send a Message</h2>
-                  <p className="text-slate-500 text-sm">We'll respond to your inquiry within 24 business hours.</p>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">Send a Message.</h2>
+                  <p className="text-sm font-normal text-slate-500">We'll respond to your inquiry within 24 hours.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                       <Input
                         name="name"
-                        placeholder="Sakshi ..."
+                        placeholder="John Doe"
                         required
-                        className="bg-slate-50 border-slate-100 h-14 rounded-2xl focus:bg-white focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-900 font-medium"
+                        className="bg-slate-50 border-slate-200 h-12 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all text-slate-900 text-sm"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
                       <Input
                         name="phone"
                         placeholder="+91 XXXXX XXXXX"
-                        className="bg-slate-50 border-slate-100 h-14 rounded-2xl focus:bg-white focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-900 font-medium"
+                        className="bg-slate-50 border-slate-200 h-12 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all text-slate-900 text-sm"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                     <Input
                       name="email"
                       type="email"
                       placeholder="you@example.com"
                       required
-                      className="bg-slate-50 border-slate-100 h-14 rounded-2xl focus:bg-white focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-900 font-medium"
+                      className="bg-slate-50 border-slate-200 h-12 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all text-slate-900 text-sm"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Your Message</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Your Message</label>
                     <Textarea
                       name="message"
-                      placeholder="How can we help you master the board?"
+                      placeholder="How can we help you?"
                       rows={5}
                       required
-                      className="bg-slate-50 border-slate-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-900 font-medium p-4"
+                      className="bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all text-slate-900 text-sm p-4"
                     />
                   </div>
                   <Button
                     type="submit"
-                    className="w-full h-16 bg-[#020617] hover:bg-sky-600 text-white font-black rounded-2xl transition-all duration-300 shadow-xl hover:shadow-sky-600/20 flex items-center justify-center gap-3 active:scale-95 disabled:opacity-70"
+                    className="w-full h-14 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-70 uppercase text-xs tracking-widest"
                     disabled={loading}
                   >
                     {loading ? (
                       <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
                       <>
-                        SEND MESSAGE
-                        <Send className="h-5 w-5" />
+                        Send Message
+                        <Send className="h-4 w-4" />
                       </>
                     )}
                   </Button>
@@ -137,17 +156,17 @@ export default function ContactPage() {
               <ScrollReveal variants={fadeRight}>
                 <div className="space-y-12">
                   <div className="relative">
-                    <div className="h-1.5 w-16 bg-sky-500 rounded-full mb-8" />
-                    <h3 className="text-4xl font-black text-slate-900 mb-10 tracking-tight leading-tight">
+                    <div className="h-1 w-12 bg-blue-600 rounded-full mb-8" />
+                    <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-10 tracking-tight leading-tight">
                       Let's Start Your <br />
-                      <span className="text-sky-500">Chess Journey</span>
+                      <span className="text-blue-600">Chess Journey.</span>
                     </h3>
                     
                     <div className="space-y-10">
                       <ContactInfoItem
                         icon={MapPin}
                         label="Academy Location"
-                        value="Chess House, Andheri West, Mumbai 400058, India"
+                        value="Andheri West, Mumbai, India"
                       />
                       <ContactInfoItem icon={Phone} label="Direct Line" value="+91 98765 43210" />
                       <ContactInfoItem icon={Mail} label="Official Support" value="info@uniquechess.in" />
@@ -158,14 +177,14 @@ export default function ContactPage() {
                     href="https://wa.me/919876543210"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-6 p-8 bg-emerald-50 rounded-[2rem] border border-emerald-100 group transition-all hover:bg-emerald-100/50 hover:border-emerald-200"
+                    className="flex items-center gap-6 p-8 bg-emerald-50 rounded-2xl border border-emerald-100 group transition-all hover:bg-emerald-100/50 hover:border-emerald-200"
                   >
-                    <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-all duration-500">
-                      <MessageCircle className="h-8 w-8 text-emerald-600" />
+                    <div className="w-14 h-14 rounded-xl bg-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-all duration-300">
+                      <MessageCircle className="h-7 w-7 text-emerald-600" />
                     </div>
                     <div>
-                      <p className="text-lg font-black text-slate-900">Chat on WhatsApp</p>
-                      <p className="text-emerald-700 text-sm font-medium">Quick replies, usually within minutes</p>
+                      <p className="text-lg font-bold text-slate-900">Chat on WhatsApp.</p>
+                      <p className="text-emerald-700 text-sm font-medium">Quick replies within minutes.</p>
                     </div>
                   </a>
                 </div>
@@ -191,11 +210,11 @@ function ContactInfoItem({
 }) {
   return (
     <div className="flex items-start gap-6 group">
-      <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 group-hover:bg-sky-500 group-hover:border-sky-500 transition-all duration-500">
-        <Icon className="h-6 w-6 text-slate-400 group-hover:text-white transition-colors" />
+      <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 group-hover:bg-blue-600 group-hover:border-blue-600 transition-all duration-300">
+        <Icon className="h-5 w-5 text-slate-400 group-hover:text-white transition-colors" />
       </div>
       <div>
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{label}</p>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{label}</p>
         <p className="text-slate-900 font-bold text-lg leading-tight">{value}</p>
       </div>
     </div>
