@@ -9,16 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  Calendar, MapPin, ArrowLeft, Trophy,
+  Calendar, MapPin, ArrowLeft, Trophy, Tag,
   Upload, CheckCircle2, Loader2,
-  CreditCard, Copy, FileText, Phone, Award, ChevronDown, AlertCircle, Clock, ShieldCheck
+  CreditCard, Copy, FileText, Phone, Award, ChevronDown, AlertCircle, Clock, ShieldCheck,
+  FileDown
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
-import { fadeUp, stagger } from "@/components/shared/motion";
 import PaymentDisplay from "@/components/shared/PaymentDisplay";
-import OrientationWrapper from "@/features/tournaments/components/OrientationWrapper";
 import 'react-quill/dist/quill.snow.css';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2000&auto=format&fit=crop";
@@ -208,211 +207,232 @@ export default function TournamentDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-14 sm:pt-28 sm:pb-16">
-        <div className="mb-10">
-          <Link to="/tournaments" className="inline-flex items-center gap-2 text-[10px] font-bold text-slate-400 hover:text-blue-600 transition-colors group uppercase tracking-widest">
-            <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
-            <span>Back to Arenas</span>
-          </Link>
-        </div>
+      {/* Back link */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-4">
+        <Link to="/tournaments"
+           className="inline-flex items-center gap-2 text-sm font-medium
+                      text-slate-500 hover:text-slate-900 transition-colors duration-150">
+          <ArrowLeft className="size-4" />
+          Back to Arenas
+        </Link>
+      </div>
 
-        <OrientationWrapper
-          orientation={tournament.posterOrientation}
-          poster={
-            <motion.div initial="hidden" animate="visible" variants={fadeUp} className={cn(
-              "relative rounded-2xl overflow-hidden shadow-sm border border-slate-100",
-              tournament.posterOrientation === 'PORTRAIT' ? "aspect-[3/4]" : "aspect-video"
-            )}>
+      {/* Main two-column layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8 items-start">
+
+          {/* LEFT COLUMN */}
+          <div className="space-y-6 order-2 lg:order-1">
+            {/* Title & Description Card */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-2">
+                Tournament Details
+              </p>
+              <h1 className="text-2xl font-bold text-slate-900 leading-tight tracking-tight mb-4">
+                {tournament.title}
+              </h1>
+              {tournament.description && (
+                <div
+                  className="text-sm text-slate-600 leading-relaxed ql-editor ql-viewer p-0"
+                  dangerouslySetInnerHTML={{ __html: tournament.description }}
+                />
+              )}
+            </div>
+
+            {/* Poster card */}
+            <div className="rounded-2xl overflow-hidden shadow-sm border border-slate-200 bg-white">
               <img
                 src={tournament.imageUrl || DEFAULT_BANNER}
                 alt={tournament.title}
-                className="w-full h-full object-cover"
+                className="w-full object-cover"
                 loading="lazy"
               />
-              <div className="absolute top-4 left-4">
-                <span className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-lg">
-                  {tournament.category || "Professional"}
+            </div>
+
+            {/* Info pills grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                {
+                  icon: <Calendar className="size-4 text-blue-500" />,
+                  label: 'Schedule',
+                  value: `${new Date(tournament.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}${tournament.endDate ? ` - ${new Date(tournament.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}`,
+                },
+                {
+                  icon: <MapPin className="size-4 text-blue-500" />,
+                  label: 'Venue',
+                  value: tournament.location,
+                },
+                {
+                  icon: <Trophy className="size-4 text-amber-500" />,
+                  label: 'Prize Pool',
+                  value: tournament.totalPrizePool,
+                },
+                {
+                  icon: <Tag className="size-4 text-green-500" />,
+                  label: 'Category',
+                  value: tournament.category,
+                },
+              ].map(info => (
+                <div key={info.label}
+                     className="bg-white border border-slate-200 rounded-xl p-4
+                                flex flex-col gap-2 shadow-sm">
+                  <div className="flex items-center gap-1.5">
+                    {info.icon}
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      {info.label}
+                    </span>
+                  </div>
+                  <span className="text-base font-bold text-slate-900 leading-snug">
+                    {info.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Rules card */}
+            {tournament.otherDetails && (
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <div className="flex items-center gap-2.5 mb-4">
+                  <div className="p-2 rounded-lg bg-slate-100">
+                    <FileText className="size-4 text-slate-600" />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
+                    Rules & Regulations
+                  </h3>
+                </div>
+                <div
+                  className="text-sm text-slate-600 leading-relaxed ql-editor ql-viewer p-0"
+                  dangerouslySetInnerHTML={{ __html: tournament.otherDetails.replace(/\s*\[\d+(,\s*\d+)*\]/g, '') }}
+                />
+                {tournament.brochureUrl && (
+                  <button
+                    onClick={(e) => handleBrochureDownload(e, tournament.brochureUrl!)}
+                    className="inline-flex items-center gap-2 mt-4 text-sm font-semibold
+                               text-blue-600 hover:text-blue-500 transition-colors"
+                  >
+                    <FileDown className="size-4" />
+                    Download Brochure PDF
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Payment card */}
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+              <div className="bg-slate-900 px-6 py-4 flex items-center justify-between">
+                <span className="text-xs font-bold text-white uppercase tracking-widest">
+                  Registration Fee
+                </span>
+                <span className="text-2xl font-black text-white">
+                  ₹{tournament.entryFee?.toLocaleString('en-IN')}
                 </span>
               </div>
-            </motion.div>
-          }
-          details={
-            <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-10">
-              <motion.div variants={fadeUp} className="space-y-8">
-                {/* Title & Description */}
-                <div className="space-y-3">
-                  <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">
-                    Arena Details
-                  </p>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight tracking-tight">
-                    {tournament.title}
-                  </h1>
-
-                  {tournament.description && (
-                    <div
-                      className="text-sm font-normal text-slate-500 leading-relaxed ql-editor ql-viewer p-0"
-                      dangerouslySetInnerHTML={{ __html: tournament.description }}
-                    />
-                  )}
-                </div>
-
-                {/* Info Grid */}
-                <div className="grid grid-cols-2 gap-y-6 gap-x-8 py-6 border-t border-b border-slate-100">
-                  <div className="flex items-start gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                      <Calendar className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Schedule</p>
-                      <p className="text-sm font-bold text-slate-900 tracking-tight">
-                        {new Date(tournament.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                        {tournament.endDate && ` - ${new Date(tournament.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                      <MapPin className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Venue</p>
-                      <p className="text-sm font-bold text-slate-900 tracking-tight line-clamp-1">{tournament.location}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                      <Trophy className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Prize Pool</p>
-                      <p className="text-sm font-bold text-slate-900 tracking-tight">{tournament.totalPrizePool}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                      <Award className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Category</p>
-                      <p className="text-sm font-bold text-slate-900 tracking-tight">{tournament.category}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Rules */}
-                {tournament.otherDetails && (
-                  <div className="space-y-3">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Rules & Regulations</p>
-                    <div
-                      className="text-sm text-slate-500 font-normal leading-relaxed ql-editor ql-viewer p-0"
-                      dangerouslySetInnerHTML={{ __html: tournament.otherDetails }}
-                    />
-                  </div>
-                )}
-
-                {/* Contact & Resources */}
-                <div className="flex flex-wrap gap-x-10 gap-y-6 py-6 border-t border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
-                      <Phone className="h-4 w-4 text-slate-400" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Support</p>
-                      <p className="text-sm font-bold text-slate-900">{tournament.contactDetails}</p>
-                    </div>
-                  </div>
-
-                  {tournament.brochureUrl && (
-                    <button
-                      onClick={(e) => handleBrochureDownload(e, tournament.brochureUrl!)}
-                      className="flex items-center gap-3 group"
-                    >
-                      <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
-                        <FileText className="h-4 w-4 text-blue-600" />
+              <div className="p-6">
+                <div className="flex flex-col sm:flex-row gap-6 items-start">
+                  <div className="flex-1 space-y-3">
+                    <p className="text-sm font-semibold text-slate-900">How to pay:</p>
+                    <ol className="space-y-2.5">
+                      {[
+                        'Scan the QR code with any UPI app',
+                        'Enter the registration fee amount',
+                        'Add your name in payment remarks',
+                        'Submit the form below with your details',
+                      ].map((step, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <span className="flex-shrink-0 w-5 h-5 rounded-full
+                                           bg-blue-100 text-blue-600
+                                           text-[10px] font-bold
+                                           flex items-center justify-center mt-0.5">
+                            {i + 1}
+                          </span>
+                          <span className="text-sm text-slate-600">{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                    <div className="pt-2">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Accepted via</p>
+                      <div className="flex flex-wrap gap-2">
+                        {['GPay', 'PhonePe', 'Paytm', 'BHIM', 'Any UPI'].map(app => (
+                          <span key={app} className="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">
+                            {app}
+                          </span>
+                        ))}
                       </div>
-                      <div className="text-left">
-                        <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Resources</p>
-                        <p className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors underline decoration-blue-600/20 underline-offset-4">Brochure PDF</p>
-                      </div>
-                    </button>
-                  )}
-                </div>
-
-                {/* Payment Section */}
-                <div className="space-y-6 pt-6 border-t border-slate-100">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Registration Fee</p>
-                      <p className="text-3xl font-bold text-blue-600 tracking-tight">₹{tournament.entryFee.toLocaleString()}</p>
-                    </div>
-                    <div className="h-10 w-10 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg">
-                      <CreditCard className="h-5 w-5 text-white" />
                     </div>
                   </div>
-
-                  {tournament.discountDetails && (
-                    <p className="text-xs font-bold text-blue-600 uppercase tracking-wider italic">
-                      Note: {tournament.discountDetails}
-                    </p>
-                  )}
-
-                  <PaymentDisplay />
+                  <div className="flex-shrink-0 flex flex-col items-center gap-2 mx-auto sm:mx-0">
+                    <div className="border-2 border-slate-200 rounded-xl p-3 bg-white shadow-sm">
+                      <PaymentDisplay />
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-[10px] font-bold text-green-600 uppercase tracking-wide">Active Scanner</span>
+                    </div>
+                    <p className="text-[10px] text-slate-400 text-center max-w-[140px]">Scan with any UPI app to pay</p>
+                  </div>
                 </div>
-              </motion.div>
-            </motion.div>
-          }
-          form={
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-              <div className="bg-slate-900 px-6 py-4 flex items-center gap-3">
-                <ShieldCheck className="size-4 text-blue-400" />
-                <h2 className="text-xs font-bold text-white tracking-widest uppercase">Registration Form</h2>
               </div>
-              <div className="px-6 py-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {registrationStatus === "NOT_STARTED" && (
-                    <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-4">
-                      <Clock className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                      <div>
-                        <p className="text-blue-900 font-bold text-sm">Registration hasn't started.</p>
-                        <p className="text-blue-600 text-xs">Available from {tournament.regStartDate ? new Date(tournament.regStartDate).toLocaleDateString() : 'TBD'}.</p>
-                      </div>
-                    </div>
-                  )}
+            </div>
+          </div>
 
-                  {registrationStatus === "CLOSED" && (
-                    <div className="p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-4">
-                      <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
-                      <div>
-                        <p className="text-red-900 font-bold text-sm">Registration is closed.</p>
-                        <p className="text-red-600 text-xs">The enrollment period has ended.</p>
-                      </div>
-                    </div>
-                  )}
+          {/* RIGHT COLUMN — sticky registration form */}
+          <div className="lg:sticky lg:top-24 order-1 lg:order-2">
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+              <div className="bg-slate-900 px-6 py-4 flex items-center gap-3">
+                <ShieldCheck className="size-5 text-blue-400" />
+                <div>
+                  <p className="text-sm font-bold text-white">Registration Form</p>
+                  <p className="text-xs text-white/50 mt-0.5">Secure · Instant confirmation</p>
+                </div>
+              </div>
 
-                  <div className={cn("space-y-6 transition-all duration-300", isRegistrationDisabled && "opacity-40 grayscale pointer-events-none")}>
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Player Name *</Label>
+              <div className="px-6 pt-4">
+                <div className={cn(
+                  "flex items-center justify-between rounded-xl px-4 py-2.5 mb-4 border",
+                  registrationStatus === "OPEN" ? "bg-green-50 border-green-200 text-green-700" :
+                  registrationStatus === "CLOSED" ? "bg-red-50 border-red-200 text-red-700" :
+                  "bg-blue-50 border-blue-200 text-blue-700"
+                )}>
+                  <div className="flex items-center gap-2">
+                    <span className={cn("w-2 h-2 rounded-full",
+                      registrationStatus === "OPEN" ? "bg-green-500" :
+                      registrationStatus === "CLOSED" ? "bg-red-500" : "bg-blue-500"
+                    )} />
+                    <span className="text-xs font-semibold">
+                      {registrationStatus === "OPEN" ? "Registration Open" :
+                       registrationStatus === "CLOSED" ? "Registration Closed" : "Registration Starting Soon"}
+                    </span>
+                  </div>
+                  <span className="text-xs opacity-80">
+                    {registrationStatus === "OPEN" ? (tournament.spotsLeft ?? 'Limited') + " spots left" :
+                     registrationStatus === "CLOSED" ? "Enrollment ended" : `Starts ${tournament.regStartDate ? new Date(tournament.regStartDate).toLocaleDateString() : 'TBD'}`}
+                  </span>
+                </div>
+              </div>
+
+              <div className="px-6 pb-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className={cn("space-y-4 transition-all duration-300", isRegistrationDisabled && "opacity-40 grayscale pointer-events-none")}>
+                    <div className="space-y-1.5">
+                      <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Player Name *</Label>
                       <Input
                         value={form.studentName}
                         onChange={(e) => set("studentName", e.target.value)}
                         required
                         disabled={isRegistrationDisabled}
                         placeholder="Full Name"
-                        className="bg-slate-50 border-slate-200 h-11 rounded-xl text-sm"
+                        className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 placeholder:text-slate-300 h-11"
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Gender *</Label>
-                      <div className="flex gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gender *</Label>
+                      <div className="flex gap-6 py-1">
                         {["Male", "Female", "Other"].map((g) => (
-                          <label key={g} className="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
+                          <label key={g} className="flex items-center gap-2.5 cursor-pointer group">
                             <input
                               type="radio"
                               name="gender"
@@ -420,20 +440,20 @@ export default function TournamentDetails() {
                               checked={form.gender === g}
                               onChange={(e) => set("gender", e.target.value)}
                               disabled={isRegistrationDisabled}
-                              className="size-3.5 accent-blue-600"
+                              className="accent-blue-600 w-4 h-4 cursor-pointer"
                             />
-                            {g}
+                            <span className="text-sm text-slate-700 group-hover:text-slate-900">{g}</span>
                           </label>
                         ))}
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Category *</Label>
+                      <div className="space-y-1.5">
+                        <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Category *</Label>
                         <div className="relative">
                           <select
-                            className="w-full h-11 bg-slate-50 border border-slate-200 rounded-xl px-3 text-sm appearance-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 outline-none"
+                            className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 appearance-none cursor-pointer h-11"
                             value={form.category}
                             onChange={(e) => set("category", e.target.value)}
                             required
@@ -452,22 +472,22 @@ export default function TournamentDetails() {
                           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">DOB *</Label>
+                      <div className="space-y-1.5">
+                        <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">DOB *</Label>
                         <Input
                           type="date"
                           value={form.dob}
                           onChange={(e) => set("dob", e.target.value)}
                           required
                           disabled={isRegistrationDisabled}
-                          className="bg-slate-50 border-slate-200 h-11 rounded-xl text-sm"
+                          className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 h-11"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone *</Label>
+                      <div className="space-y-1.5">
+                        <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phone *</Label>
                         <Input
                           type="tel"
                           value={form.phone}
@@ -475,37 +495,37 @@ export default function TournamentDetails() {
                           required
                           disabled={isRegistrationDisabled}
                           placeholder="+91"
-                          className="bg-slate-50 border-slate-200 h-11 rounded-xl text-sm"
+                          className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 placeholder:text-slate-300 h-11"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email</Label>
+                      <div className="space-y-1.5">
+                        <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Email</Label>
                         <Input
                           type="email"
                           value={form.email}
                           onChange={(e) => set("email", e.target.value)}
                           disabled={isRegistrationDisabled}
                           placeholder="Email"
-                          className="bg-slate-50 border-slate-200 h-11 rounded-xl text-sm"
+                          className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 placeholder:text-slate-300 h-11"
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Address *</Label>
+                    <div className="space-y-1.5">
+                      <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Address *</Label>
                       <Textarea
                         value={form.address}
                         onChange={(e) => set("address", e.target.value)}
                         required
                         disabled={isRegistrationDisabled}
                         placeholder="Full Address"
-                        className="bg-slate-50 border-slate-200 rounded-xl text-sm min-h-[80px] resize-none"
+                        className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 placeholder:text-slate-300 min-h-[80px] resize-none"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Age Proof *</Label>
+                      <div className="space-y-1.5">
+                        <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Age Proof *</Label>
                         <div className="relative">
                           <input
                             type="file"
@@ -523,8 +543,8 @@ export default function TournamentDetails() {
                           </div>
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Payment *</Label>
+                      <div className="space-y-1.5">
+                        <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Payment *</Label>
                         <div className="relative">
                           <input
                             type="file"
@@ -548,7 +568,7 @@ export default function TournamentDetails() {
                   <Button
                     type="submit"
                     disabled={isPending || isRegistrationDisabled}
-                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-md uppercase tracking-widest disabled:bg-slate-100 disabled:text-slate-400"
+                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm py-3.5 rounded-xl transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed h-auto mt-2"
                   >
                     {isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -559,9 +579,10 @@ export default function TournamentDetails() {
                 </form>
               </div>
             </div>
-          }
-        />
-      </main>
+          </div>
+
+        </div>
+      </div>
 
       <Footer />
     </div>
