@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
+import RowActionMenuExtended from "@/components/admin/RowActionMenuExtended";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import AddStudentModal from "@/components/shared/admin/AddStudentModal";
 import { Input } from "@/components/ui/input";
@@ -162,6 +163,12 @@ export default function StudentsPage() {
         >
           {student.accountStatus}
         </span>
+      ),
+      displayActions: (
+        <RowActionMenuExtended
+          onEdit={() => handleEdit(student)}
+          onDelete={() => { setSelectedStudent(student); setIsConfirmOpen(true); }}
+        />
       )
     };
   });
@@ -220,19 +227,21 @@ export default function StudentsPage() {
         </div>
 
         {/* Table Area */}
-        <AdminTable
-          columns={columns}
-          rows={rows}
-          isLoading={isLoading}
-          onRowClick={(s) => navigate(`/admin/students/${s.id}`)}
-          onEdit={(row) => {
-            const original = students.find((s: any) => s.id === row.id);
-            if (original) handleEdit(original);
-          }}
-          onDelete={(s) => { setSelectedStudent(s); setIsConfirmOpen(true); }}
-          entityName="students"
-          onAddFirst={handleAdd}
-        />
+        <div className="bg-uca-bg-surface border border-uca-border rounded-xl overflow-hidden">
+          <AdminTable
+            columns={columns}
+            rows={rows}
+            isLoading={isLoading}
+            onRowClick={(s) => navigate(`/admin/students/${s.id}`)}
+            onEdit={(row) => {
+              const original = students.find((s: any) => s.id === row.id);
+              if (original) handleEdit(original);
+            }}
+            onDelete={(s) => { setSelectedStudent(s); setIsConfirmOpen(true); }}
+            entityName="students"
+            onAddFirst={handleAdd}
+          />
+        </div>
       </div>
 
       <AddStudentModal

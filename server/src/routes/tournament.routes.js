@@ -48,6 +48,7 @@ router.put(
   ]),
   tournamentController.updateTournament
 );
+router.patch('/admin/status/:id', tournamentController.updateTournamentStatus);
 router.delete('/admin/delete/:id', tournamentController.deleteTournament);
 
 export default router;

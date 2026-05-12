@@ -57,6 +57,9 @@ export const createTournament = async (data) => {
       endDate: parseDate(data.endDate),
       regStartDate: parseDate(data.regStartDate),
       regEndDate: parseDate(data.regEndDate),
+      startTime: data.startTime || null,
+      endTime: data.endTime || null,
+      registrationDeadlineTime: data.registrationDeadlineTime || null,
       posterOrientation: data.posterOrientation || 'LANDSCAPE',
       category: data.category || null,
       totalPrizePool: data.totalPrizePool || null,
@@ -96,6 +99,9 @@ export const updateTournament = async (id, data) => {
       endDate: (data.endDate !== undefined && data.endDate !== "") ? parseDate(data.endDate) : undefined,
       regStartDate: (data.regStartDate !== undefined && data.regStartDate !== "") ? parseDate(data.regStartDate) : undefined,
       regEndDate: (data.regEndDate !== undefined && data.regEndDate !== "") ? parseDate(data.regEndDate) : undefined,
+      startTime: data.startTime !== undefined ? data.startTime : undefined,
+      endTime: data.endTime !== undefined ? data.endTime : undefined,
+      registrationDeadlineTime: data.registrationDeadlineTime !== undefined ? data.registrationDeadlineTime : undefined,
       posterOrientation: data.posterOrientation || undefined,
     }
   });

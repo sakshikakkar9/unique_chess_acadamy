@@ -15,6 +15,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import RichTextEditor from "@/components/shared/admin/RichTextEditor";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/lib/utils";
+import DatePickerField from "@/components/admin/DatePickerField";
+import TimePickerField from "@/components/admin/TimePickerField";
+import RowActionMenuExtended from "@/components/admin/RowActionMenuExtended";
+import { formatDateDisplay, formatTimeDisplay, todayISO, getStatusFromDates } from "@/lib/dateUtils";
+import api from "@/lib/api";
 
 const ITEMS_PER_PAGE = 8;
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -38,7 +43,14 @@ const AdminCourses = () => {
     description: "",
     ageGroup: "ADULTS",
     skillLevel: "BEGINNER",
+    startDate: todayISO(),
+    startTime: "09:00",
+    endDate: "",
+    endTime: "18:00",
+    regDeadlineDate: "",
+    regDeadlineTime: "23:59",
     mode: "ONLINE",
+    status: "UPCOMING",
     days: [],
     fee: 0,
     classTime: "",
@@ -55,21 +67,22 @@ const AdminCourses = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [levelFilter, setLevelFilter] = useState("ALL");
+  const [activeFilter, setActiveFilter] = useState("ALL");
 
   // Reset page when searching or filtering
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, levelFilter]);
+  }, [searchTerm, activeFilter]);
 
   const filteredCourses = useMemo(() => {
     if (!courses || !Array.isArray(courses)) return [];
     return courses.filter((course: any) => {
         const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesLevel = levelFilter === "ALL" || course.skillLevel === levelFilter;
-        return matchesSearch && matchesLevel;
+        const status = getStatusFromDates(course.startDate, course.endDate, course.status).toUpperCase();
+        const matchesFilter = activeFilter === "ALL" || status === activeFilter;
+        return matchesSearch && matchesFilter;
     });
-  }, [courses, searchTerm, levelFilter]);
+  }, [courses, searchTerm, activeFilter]);
 
   const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
   const paginatedCourses = useMemo(() => {
@@ -82,6 +95,23 @@ const AdminCourses = () => {
     if (!formData.title) errors.title = "Course title is required";
     if (formData.fee === undefined || formData.fee === "") errors.fee = "Course fee is required";
 
+    if (!formData.startDate) {
+      errors.startDate = 'Enrollment start is required';
+    }
+    if (!formData.startTime) errors.startTime = 'Start time is required';
+
+    if (!formData.endDate) {
+      errors.endDate = 'Enrollment end is required';
+    } else if (formData.startDate && new Date(formData.endDate) < new Date(formData.startDate)) {
+      errors.endDate = 'End date must be after start date';
+    }
+
+    if (!formData.endTime) {
+      errors.endTime = 'End time is required';
+    } else if (formData.startDate === formData.endDate && formData.startTime && formData.endTime <= formData.startTime) {
+      errors.endTime = 'End time must be after start time';
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -92,17 +122,17 @@ const AdminCourses = () => {
     setIsSubmitting(true);
     try {
       const data = new FormData();
-      data.append("title", formData.title);
-      data.append("description", formData.description || "");
-      data.append("ageGroup", formData.ageGroup);
-      data.append("skillLevel", formData.skillLevel);
-      data.append("classTime", formData.classTime);
-      data.append("duration", formData.duration);
-      data.append("fee", String(formData.fee));
-      data.append("mode", formData.mode);
-      data.append("contactDetails", formData.contactDetails);
-      data.append("days", JSON.stringify(formData.days));
-      data.append("posterOrientation", formData.posterOrientation);
+      Object.keys(formData).forEach(key => {
+        if (formData[key] !== null && formData[key] !== undefined) {
+          if (['startDate', 'endDate', 'regDeadlineDate'].includes(key)) {
+            if (formData[key]) data.append(key, new Date(formData[key]).toISOString());
+          } else if (key === 'days') {
+            data.append(key, JSON.stringify(formData[key]));
+          } else if (key !== 'custom_banner_url' && key !== 'brochureUrl' && key !== 'imageUrl') {
+            data.append(key, String(formData[key]));
+          }
+        }
+      });
 
       if (selectedFile) data.append("image", selectedFile);
       if (selectedBrochure) data.append("brochure", selectedBrochure);
@@ -136,6 +166,16 @@ const AdminCourses = () => {
     }
   };
 
+  const handleUpdateStatus = async (courseId: string, status: string) => {
+    try {
+      await api.patch(`/courses/${courseId}/status`, { status });
+      success(`Course marked as ${status.toLowerCase()}`);
+      window.location.reload();
+    } catch (err) {
+      toastError("Failed to update status");
+    }
+  };
+
   const closeModal = () => {
     if (isSubmitting) return;
     setIsModalOpen(false);
@@ -150,7 +190,14 @@ const AdminCourses = () => {
       description: "",
       ageGroup: "ADULTS", 
       skillLevel: "BEGINNER", 
+      startDate: todayISO(),
+      startTime: "09:00",
+      endDate: "",
+      endTime: "18:00",
+      regDeadlineDate: "",
+      regDeadlineTime: "23:59",
       mode: "ONLINE", 
+      status: "UPCOMING",
       days: [], 
       fee: 0,
       classTime: "",
@@ -189,8 +236,8 @@ const AdminCourses = () => {
 
   const columns: AdminTableColumn[] = [
     { key: 'displayTitle', label: 'Course Info', className: 'min-w-[200px]' },
-    { key: 'displayDays', label: 'Schedule', hiddenOn: 'mobile' },
-    { key: 'displayFee', label: 'Course Fee', align: 'right' }
+    { key: 'displaySchedule', label: 'Enrollment', hiddenOn: 'mobile' },
+    { key: 'displayStatus', label: 'Status', align: 'right' }
   ];
 
   const handleAdd = () => {
@@ -205,7 +252,14 @@ const AdminCourses = () => {
       description: "",
       ageGroup: "ADULTS",
       skillLevel: "BEGINNER",
+      startDate: todayISO(),
+      startTime: "09:00",
+      endDate: "",
+      endTime: "18:00",
+      regDeadlineDate: "",
+      regDeadlineTime: "23:59",
       mode: "ONLINE",
+      status: "UPCOMING",
       days: [],
       fee: 0,
       classTime: "",
@@ -220,7 +274,13 @@ const AdminCourses = () => {
   const handleEdit = (c: any) => {
     setEditingRecord(c);
     setSelectedCourse(c);
-    setFormData({ ...c, posterOrientation: c.posterOrientation || "LANDSCAPE" });
+    setFormData({
+      ...c,
+      startDate: c.startDate ? new Date(c.startDate).toISOString().split('T')[0] : "",
+      endDate: c.endDate ? new Date(c.endDate).toISOString().split('T')[0] : "",
+      regDeadlineDate: c.regDeadlineDate ? new Date(c.regDeadlineDate).toISOString().split('T')[0] : "",
+      posterOrientation: c.posterOrientation || "LANDSCAPE"
+    });
     setPreviewUrl(c.custom_banner_url);
     setIsModalOpen(true);
   };
@@ -245,22 +305,38 @@ const AdminCourses = () => {
         </div>
       </div>
     ),
-    displayDays: (
-      <div className="flex flex-wrap gap-1">
-        {c.days?.slice(0, 3).map((day: string) => (
-          <span key={day} className="text-[10px] font-bold text-uca-text-muted bg-uca-bg-elevated px-1.5 py-0.5 rounded border border-uca-border">
-            {day.substring(0, 3)}
-          </span>
-        ))}
-        {c.days?.length > 3 && <span className="text-[10px] font-bold text-uca-text-muted">+{c.days.length - 3}</span>}
+    displaySchedule: (
+      <div className="flex flex-col gap-0.5">
+        <div className="flex items-center gap-2 text-xs font-bold text-uca-text-primary">
+          <Calendar className="size-3.5 text-uca-accent-blue" />
+          {formatDateDisplay(c.startDate)} {c.startTime && `· ${formatTimeDisplay(c.startTime)}`}
+        </div>
+        {c.endDate && (
+           <div className="text-[10px] text-uca-text-muted font-bold uppercase ml-5">
+             until {formatDateDisplay(c.endDate)} {c.endTime && `· ${formatTimeDisplay(c.endTime)}`}
+           </div>
+        )}
       </div>
     ),
-    displayFee: (
-      <div className="font-bold text-uca-accent-blue tabular-nums">
-        ₹{c.fee.toLocaleString()}
-      </div>
+    displayStatus: <StatusBadge status={getStatusFromDates(c.startDate, c.endDate, c.status)} />,
+    displayActions: (
+      <RowActionMenuExtended
+        onEdit={() => handleEdit(c)}
+        onDelete={() => { setSelectedCourse(c); setIsConfirmOpen(true); }}
+        onMarkCompleted={() => handleUpdateStatus(c.id, 'COMPLETED')}
+        onMarkRejected={() => handleUpdateStatus(c.id, 'REJECTED')}
+        currentStatus={getStatusFromDates(c.startDate, c.endDate, c.status)}
+      />
     )
   }));
+
+  const FILTERS = [
+    { value: 'ALL', label: 'All' },
+    { value: 'UPCOMING', label: 'Upcoming' },
+    { value: 'ONGOING', label: 'Ongoing' },
+    { value: 'COMPLETED', label: 'Completed' },
+    { value: 'REJECTED', label: 'Rejected' },
+  ];
 
   return (
     <AdminShell
@@ -272,8 +348,8 @@ const AdminCourses = () => {
       <div className="space-y-6">
         {/* Filters */}
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-uca-bg-surface border border-uca-border p-4 rounded-xl">
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="relative flex-1 md:w-80">
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto flex-1">
+            <div className="relative flex-1 w-full md:max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-uca-text-muted" />
               <Input
                 placeholder="Search courses..."
@@ -283,20 +359,32 @@ const AdminCourses = () => {
               />
             </div>
 
-            <Select value={levelFilter} onValueChange={setLevelFilter}>
-              <SelectTrigger className="h-10 w-40 bg-uca-bg-base border-uca-border text-[10px] font-black uppercase tracking-widest">
-                <div className="flex items-center gap-2">
-                  <Filter className="size-3.5 text-uca-text-muted" />
-                  <SelectValue placeholder="Level" />
-                </div>
-              </SelectTrigger>
-              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
-                <SelectItem value="ALL">All Levels</SelectItem>
-                {["BEGINNER", "INTERMEDIATE", "ADVANCED", "GRANDMASTER"].map(l => (
-                  <SelectItem key={l} value={l}>{l}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex gap-1.5 p-1 bg-uca-bg-base rounded-lg overflow-x-auto scrollbar-none">
+              {FILTERS.map((f) => {
+                const isActive = activeFilter === f.value;
+                const count = courses.filter(c => f.value === "ALL" ? true : getStatusFromDates(c.startDate, c.endDate, c.status).toUpperCase() === f.value).length;
+                return (
+                  <button
+                    key={f.value}
+                    onClick={() => setActiveFilter(f.value)}
+                    className={cn(
+                      "px-4 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap flex items-center gap-2",
+                      isActive
+                        ? "bg-uca-navy text-white shadow-sm"
+                        : "text-uca-text-muted hover:text-uca-text-primary"
+                    )}
+                  >
+                    {f.label}
+                    <span className={cn(
+                      "px-1.5 py-0.5 rounded-full text-[9px]",
+                      isActive ? "bg-white/20 text-white" : "bg-uca-bg-elevated text-uca-text-muted"
+                    )}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-uca-accent-blue/10 rounded-full border border-uca-accent-blue/20">
@@ -306,19 +394,21 @@ const AdminCourses = () => {
         </div>
 
         {/* Table Area */}
-        <AdminTable
-          columns={columns}
-          rows={rows}
-          isLoading={isLoading}
-          onRowClick={(c) => navigate(`/admin/courses/${c.id}/portal`)}
-          onEdit={(row) => {
-            const original = courses.find((c: any) => c.id === row.id);
-            if (original) handleEdit(original);
-          }}
-          onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
-          entityName="courses"
-          onAddFirst={handleAdd}
-        />
+        <div className="bg-uca-bg-surface border border-uca-border rounded-xl overflow-hidden">
+          <AdminTable
+            columns={columns}
+            rows={rows}
+            isLoading={isLoading}
+            onRowClick={(c) => navigate(`/admin/courses/${c.id}/portal`)}
+            onEdit={(row) => {
+              const original = courses.find((c: any) => c.id === row.id);
+              if (original) handleEdit(original);
+            }}
+            onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
+            entityName="courses"
+            onAddFirst={handleAdd}
+          />
+        </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
@@ -413,6 +503,59 @@ const AdminCourses = () => {
             </div>
           </div>
 
+          <div className="space-y-4">
+            <p className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest">Enrollment Window</p>
+
+            <div className="grid grid-cols-2 gap-4">
+              <DatePickerField
+                label="Start Date"
+                value={formData.startDate}
+                onChange={(val) => {
+                  setFormData(prev => ({ ...prev, startDate: val, endDate: prev.endDate < val ? '' : prev.endDate }));
+                  if (formErrors.startDate) setFormErrors({...formErrors, startDate: ""});
+                }}
+                required
+                error={formErrors.startDate}
+                helperText="DD/MM/YYYY"
+              />
+              <TimePickerField
+                label="Start Time"
+                value={formData.startTime}
+                onChange={(val) => {
+                  setFormData(prev => ({ ...prev, startTime: val }));
+                  if (formErrors.startTime) setFormErrors({...formErrors, startTime: ""});
+                }}
+                required
+                error={formErrors.startTime}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <DatePickerField
+                label="End Date"
+                value={formData.endDate}
+                onChange={(val) => {
+                  setFormData(prev => ({ ...prev, endDate: val }));
+                  if (formErrors.endDate) setFormErrors({...formErrors, endDate: ""});
+                }}
+                minDate={formData.startDate || todayISO()}
+                required
+                error={formErrors.endDate}
+                helperText="Must be ≥ start date"
+              />
+              <TimePickerField
+                label="End Time"
+                value={formData.endTime}
+                onChange={(val) => {
+                  setFormData(prev => ({ ...prev, endTime: val }));
+                  if (formErrors.endTime) setFormErrors({...formErrors, endTime: ""});
+                }}
+                required
+                error={formErrors.endTime}
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Course Description</Label>
             <RichTextEditor
@@ -496,6 +639,22 @@ const AdminCourses = () => {
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Contact Details</Label>
               <Input className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" value={formData.contactDetails || ""} onChange={(e) => setFormData({...formData, contactDetails: e.target.value})} />
             </div>
+          </div>
+
+          <div className="grid gap-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Course Status</Label>
+            <Select value={formData.status} onValueChange={(val) => setFormData({...formData, status: val})}>
+              <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
+                <SelectItem value="UPCOMING">Upcoming</SelectItem>
+                <SelectItem value="ONGOING">Ongoing</SelectItem>
+                <SelectItem value="COMPLETED">Completed</SelectItem>
+                <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                <SelectItem value="REJECTED">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

@@ -8,6 +8,7 @@ import {
   getCourseById,
   createCourse,
   updateCourse,
+  updateCourseStatus,
   deleteCourse,
   enrollInCourse,
   getAllEnrollments,
@@ -91,6 +92,7 @@ router.post('/:id/enroll', handleEnrollmentUpload, enrollInCourse);
 // 4. Course Management (Admin)
 router.post('/', verifyAdmin, handleCourseUpload, createCourse);
 router.put('/:id', verifyAdmin, handleCourseUpload, updateCourse);
+router.patch('/:id/status', verifyAdmin, updateCourseStatus);
 router.delete('/:id', verifyAdmin, deleteCourse);
 
 export default router;

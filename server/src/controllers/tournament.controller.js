@@ -172,6 +172,31 @@ export const deleteRegistration = async (req, res) => {
   }
 };
 
+export const updateTournamentStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: 'Only status updates via PATCH' });
+    }
+
+    const validStatuses = ['UPCOMING', 'ONGOING', 'COMPLETED', 'CANCELLED', 'REJECTED'];
+    if (!validStatuses.includes(status.toUpperCase())) {
+      return res.status(400).json({ error: 'Invalid status value' });
+    }
+
+    const updated = await prisma.tournament.update({
+      where: { id: parseInt(id) },
+      data: { status: status.toUpperCase() },
+    });
+
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: 'Update failed: ' + error.message });
+  }
+};
+
 export const getRegistrationsByTournamentId = async (req, res) => {
   try {
     const { tournamentId } = req.query;

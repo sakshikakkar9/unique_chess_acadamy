@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
 import AdminShell from "@/components/admin/AdminShell";
 import AdminModal from "@/components/admin/AdminModal";
@@ -10,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Upload, X, Search, Eye, Calendar, Users, Check, Loader2 } from "lucide-react";
+import { Plus, Upload, X, Search, Eye, Calendar, Users, Check, Loader2, Filter } from "lucide-react";
 import { Tournament } from "@/types";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -19,8 +18,13 @@ import { cn } from "@/lib/utils";
 import TournamentPreview from "@/features/tournaments/components/admin/TournamentPreview";
 import StatusBadge from "@/components/shared/admin/StatusBadge";
 import { useToast } from "@/hooks/useToast";
+import DatePickerField from "@/components/admin/DatePickerField";
+import TimePickerField from "@/components/admin/TimePickerField";
+import RowActionMenuExtended from "@/components/admin/RowActionMenuExtended";
+import { formatDateDisplay, formatTimeDisplay, todayISO, getStatusFromDates, ItemStatus } from "@/lib/dateUtils";
+import api from "@/lib/api";
 
-type TournamentStatus = "ALL" | "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED";
+type TournamentStatus = "ALL" | "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED" | "REJECTED";
 
 const AdminTournaments: React.FC = () => {
   const navigate = useNavigate();
@@ -47,10 +51,14 @@ const AdminTournaments: React.FC = () => {
   const [formData, setFormData] = useState<any>({
     title: "",
     description: "",
-    startDate: new Date().toISOString().split('T')[0],
+    startDate: todayISO(),
+    startTime: "09:00",
     endDate: "",
+    endTime: "18:00",
     regStartDate: "",
     regEndDate: "",
+    registrationDeadline: "",
+    registrationDeadlineTime: "23:59",
     location: "",
     category: "",
     totalPrizePool: "",
@@ -66,7 +74,12 @@ const AdminTournaments: React.FC = () => {
 
   const filteredData = useMemo(() => {
     let result = tournaments;
-    if (activeTab !== "ALL") result = result.filter((t) => t.status === activeTab);
+    if (activeTab !== "ALL") {
+      result = result.filter((t) => {
+        const status = getStatusFromDates(t.startDate, t.endDate, t.status);
+        return status.toUpperCase() === activeTab;
+      });
+    }
     if (searchQuery) {
       result = result.filter((t) => 
         t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -85,10 +98,14 @@ const AdminTournaments: React.FC = () => {
     setFormData({ 
       title: "", 
       description: "",
-      startDate: new Date().toISOString().split('T')[0],
+      startDate: todayISO(),
+      startTime: "09:00",
       endDate: "",
+      endTime: "18:00",
       regStartDate: "",
       regEndDate: "",
+      registrationDeadline: "",
+      registrationDeadlineTime: "23:59",
       location: "", 
       category: "",
       totalPrizePool: "",
@@ -98,7 +115,7 @@ const AdminTournaments: React.FC = () => {
       brochureUrl: "",
       contactDetails: "",
       posterOrientation: "LANDSCAPE",
-      status: activeTab === "ALL" ? "UPCOMING" : activeTab,
+      status: "UPCOMING",
       imageUrl: ""
     });
     setIsModalOpen(true);
@@ -124,7 +141,7 @@ const AdminTournaments: React.FC = () => {
     setIsPreviewOpen(true);
   };
 
-  const handleEdit = (t: Tournament) => {
+  const handleEdit = (t: any) => {
     setSelectedTournament(t);
     setEditingRecord(t);
     setSelectedFile(null);
@@ -136,6 +153,10 @@ const AdminTournaments: React.FC = () => {
       endDate: t.endDate ? new Date(t.endDate).toISOString().split('T')[0] : "",
       regStartDate: t.regStartDate ? new Date(t.regStartDate).toISOString().split('T')[0] : "",
       regEndDate: t.regEndDate ? new Date(t.regEndDate).toISOString().split('T')[0] : "",
+      registrationDeadline: t.registrationDeadline ? new Date(t.registrationDeadline).toISOString().split('T')[0] : "",
+      startTime: t.startTime || "09:00",
+      endTime: t.endTime || "18:00",
+      registrationDeadlineTime: t.registrationDeadlineTime || "23:59",
       posterOrientation: t.posterOrientation || "LANDSCAPE",
       entryFee: t.entryFee || 0
     });
@@ -145,9 +166,42 @@ const AdminTournaments: React.FC = () => {
   const validateForm = () => {
     const errors: Record<string, string> = {};
     if (!formData.title) errors.title = "Arena title is required";
-    if (!formData.startDate) errors.startDate = "Start date is required";
     if (!formData.location) errors.location = "Venue is required";
     if (!formData.category) errors.category = "Category is required";
+
+    // Date & Time Validation
+    if (!formData.startDate) {
+      errors.startDate = 'Start date is required';
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (new Date(formData.startDate) < today) {
+        errors.startDate = 'Start date cannot be in the past';
+      }
+    }
+
+    if (!formData.startTime) errors.startTime = 'Start time is required';
+
+    if (!formData.endDate) {
+      errors.endDate = 'End date is required';
+    } else if (formData.startDate && new Date(formData.endDate) < new Date(formData.startDate)) {
+      errors.endDate = 'End date must be after start date';
+    }
+
+    if (!formData.endTime) {
+      errors.endTime = 'End time is required';
+    } else if (formData.startDate === formData.endDate && formData.startTime && formData.endTime <= formData.startTime) {
+      errors.endTime = 'End time must be after start time';
+    }
+
+    if (formData.registrationDeadline) {
+      if (formData.startDate && new Date(formData.registrationDeadline) > new Date(formData.startDate)) {
+        errors.registrationDeadline = 'Deadline must be before start date';
+      }
+      if (!formData.registrationDeadlineTime) {
+        errors.registrationDeadlineTime = 'Deadline time is required';
+      }
+    }
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -160,7 +214,7 @@ const AdminTournaments: React.FC = () => {
     const data = new FormData();
     Object.keys(formData).forEach(key => {
       if (formData[key] !== null && formData[key] !== undefined) {
-        if (['startDate', 'endDate', 'regStartDate', 'regEndDate'].includes(key)) {
+        if (['startDate', 'endDate', 'regStartDate', 'regEndDate', 'registrationDeadline'].includes(key)) {
           if (formData[key]) data.append(key, new Date(formData[key]).toISOString());
         } else if (key !== 'imageUrl' && key !== 'brochureUrl') {
           data.append(key, String(formData[key]));
@@ -201,6 +255,16 @@ const AdminTournaments: React.FC = () => {
     }
   };
 
+  const handleUpdateStatus = async (tournamentId: number, status: string) => {
+    try {
+      await api.patch(`/tournaments/admin/status/${tournamentId}`, { status });
+      success(`Tournament marked as ${status.toLowerCase()}`);
+      window.location.reload();
+    } catch (err) {
+      toastError("Failed to update status");
+    }
+  };
+
   const columns: AdminTableColumn[] = [
     {
       key: 'displayTitle',
@@ -227,15 +291,13 @@ const AdminTournaments: React.FC = () => {
       key: 'displayStatus',
       label: 'Status',
       align: 'right'
+    },
+    {
+      key: 'displayActions',
+      label: 'Actions',
+      align: 'right'
     }
   ];
-
-  const formatDateRange = (start?: string, end?: string) => {
-    if (!start) return "N/A";
-    const startStr = format(new Date(start), "MMM d");
-    if (!end) return startStr;
-    return `${startStr} - ${format(new Date(end), "MMM d")}`;
-  };
 
   const rows = filteredData.map(t => ({
     ...t,
@@ -246,9 +308,16 @@ const AdminTournaments: React.FC = () => {
       </div>
     ),
     displayDates: (
-      <div className="flex items-center gap-2 text-xs font-medium">
-        <Calendar className="size-3.5 text-uca-accent-blue" />
-        {formatDateRange(t.startDate, t.endDate)}
+      <div className="flex flex-col gap-0.5">
+        <div className="flex items-center gap-2 text-xs font-bold text-uca-text-primary">
+          <Calendar className="size-3.5 text-uca-accent-blue" />
+          {formatDateDisplay(t.startDate)} {t.startTime && `· ${formatTimeDisplay(t.startTime)}`}
+        </div>
+        {t.endDate && (
+           <div className="text-[10px] text-uca-text-muted font-bold uppercase ml-5">
+             to {formatDateDisplay(t.endDate)} {t.endTime && `· ${formatTimeDisplay(t.endTime)}`}
+           </div>
+        )}
       </div>
     ),
     displayRegistrations: (
@@ -257,7 +326,16 @@ const AdminTournaments: React.FC = () => {
         {t._count?.registrations || 0}
       </div>
     ),
-    displayStatus: <StatusBadge status={t.status} />
+    displayStatus: <StatusBadge status={getStatusFromDates(t.startDate, t.endDate, t.status)} />,
+    displayActions: (
+      <RowActionMenuExtended
+        onEdit={() => handleEdit(t)}
+        onDelete={() => { setSelectedTournament(t); setIsConfirmOpen(true); }}
+        onMarkCompleted={() => handleUpdateStatus(t.id, 'COMPLETED')}
+        onMarkRejected={() => handleUpdateStatus(t.id, 'REJECTED')}
+        currentStatus={getStatusFromDates(t.startDate, t.endDate, t.status)}
+      />
+    )
   }));
 
   return (
@@ -271,20 +349,27 @@ const AdminTournaments: React.FC = () => {
         {/* Filters */}
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-uca-bg-surface border border-uca-border p-4 rounded-xl">
           <div className="flex gap-1.5 p-1 bg-uca-bg-base rounded-lg w-full md:w-auto overflow-x-auto scrollbar-none">
-            {(["ALL", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"] as TournamentStatus[]).map((tab) => {
+            {(["ALL", "UPCOMING", "ONGOING", "COMPLETED", "REJECTED", "CANCELLED"] as (TournamentStatus | "ALL")[]).map((tab) => {
               const isActive = activeTab === tab;
+              const count = tournaments.filter(t => tab === "ALL" ? true : getStatusFromDates(t.startDate, t.endDate, t.status).toUpperCase() === tab).length;
               return (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={cn(
-                    "px-4 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap",
+                    "px-4 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap flex items-center gap-2",
                     isActive
                       ? "bg-uca-navy text-white shadow-sm"
                       : "text-uca-text-muted hover:text-uca-text-primary"
                   )}
                 >
                   {tab}
+                  <span className={cn(
+                    "px-1.5 py-0.5 rounded-full text-[9px]",
+                    isActive ? "bg-white/20 text-white" : "bg-uca-bg-elevated text-uca-text-muted"
+                  )}>
+                    {count}
+                  </span>
                 </button>
               );
             })}
@@ -302,19 +387,21 @@ const AdminTournaments: React.FC = () => {
         </div>
 
         {/* Table Area */}
-        <AdminTable
-          columns={columns}
-          rows={rows}
-          isLoading={isLoading}
-          onRowClick={(t) => navigate(`/admin/tournaments/${t.id}/portal`)}
-          onEdit={(row) => {
-            const original = tournaments.find(t => t.id === row.id);
-            if (original) handleEdit(original);
-          }}
-          onDelete={(t) => { setSelectedTournament(t); setIsConfirmOpen(true); }}
-          entityName="tournaments"
-          onAddFirst={handleAdd}
-        />
+        <div className="bg-uca-bg-surface border border-uca-border rounded-xl overflow-hidden">
+          <AdminTable
+            columns={columns.slice(0, -1)} // Pass columns without displayActions to AdminTable as it adds its own action column
+            rows={rows}
+            isLoading={isLoading}
+            onRowClick={(t) => navigate(`/admin/tournaments/${t.id}/portal`)}
+            onEdit={(row) => {
+              const original = tournaments.find(t => t.id === row.id);
+              if (original) handleEdit(original);
+            }}
+            onDelete={(t) => { setSelectedTournament(t); setIsConfirmOpen(true); }}
+            entityName="tournaments"
+            onAddFirst={handleAdd}
+          />
+        </div>
       </div>
 
       {/* Form Modal */}
@@ -383,26 +470,87 @@ const AdminTournaments: React.FC = () => {
               {formErrors.title && <p className="text-[10px] text-uca-accent-red font-bold flex items-center gap-1"><X className="size-3" /> {formErrors.title}</p>}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Starts On</Label>
-                <Input
-                  type="date"
+            <div className="space-y-4">
+              <p className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest">Schedule</p>
+
+              <div className="grid grid-cols-2 gap-4">
+                <DatePickerField
+                  label="Start Date"
                   value={formData.startDate}
-                  onChange={(e) => {
-                    setFormData({...formData, startDate: e.target.value});
+                  onChange={(val) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      startDate: val,
+                      endDate: prev.endDate < val ? '' : prev.endDate,
+                      registrationDeadline: prev.registrationDeadline > val ? '' : prev.registrationDeadline,
+                    }));
                     if (formErrors.startDate) setFormErrors({...formErrors, startDate: ""});
                   }}
-                  className={cn(
-                    "h-11 bg-uca-bg-elevated border-uca-border rounded-lg focus:ring-2 focus:ring-uca-navy/30 focus:border-uca-navy outline-none",
-                    formErrors.startDate && "border-uca-accent-red ring-2 ring-red-100"
-                  )}
+                  required
+                  error={formErrors.startDate}
+                  helperText="DD/MM/YYYY"
                 />
-                {formErrors.startDate && <p className="text-[10px] text-uca-accent-red font-bold flex items-center gap-1"><X className="size-3" /> {formErrors.startDate}</p>}
+                <TimePickerField
+                  label="Start Time"
+                  value={formData.startTime}
+                  onChange={(val) => {
+                    setFormData(prev => ({ ...prev, startTime: val }));
+                    if (formErrors.startTime) setFormErrors({...formErrors, startTime: ""});
+                  }}
+                  required
+                  error={formErrors.startTime}
+                />
               </div>
-              <div className="grid gap-2">
-                <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Ends On</Label>
-                <Input type="date" value={formData.endDate} onChange={(e) => setFormData({...formData, endDate: e.target.value})} className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" />
+
+              <div className="grid grid-cols-2 gap-4">
+                <DatePickerField
+                  label="End Date"
+                  value={formData.endDate}
+                  onChange={(val) => {
+                    setFormData(prev => ({ ...prev, endDate: val }));
+                    if (formErrors.endDate) setFormErrors({...formErrors, endDate: ""});
+                  }}
+                  minDate={formData.startDate || todayISO()}
+                  required
+                  error={formErrors.endDate}
+                  helperText="Must be ≥ start date"
+                />
+                <TimePickerField
+                  label="End Time"
+                  value={formData.endTime}
+                  onChange={(val) => {
+                    setFormData(prev => ({ ...prev, endTime: val }));
+                    if (formErrors.endTime) setFormErrors({...formErrors, endTime: ""});
+                  }}
+                  required
+                  error={formErrors.endTime}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <DatePickerField
+                  label="Reg. Deadline Date"
+                  value={formData.registrationDeadline}
+                  onChange={(val) => {
+                    setFormData(prev => ({ ...prev, registrationDeadline: val }));
+                    if (formErrors.registrationDeadline) setFormErrors({...formErrors, registrationDeadline: ""});
+                  }}
+                  minDate={todayISO()}
+                  maxDate={formData.startDate || undefined}
+                  required
+                  error={formErrors.registrationDeadline}
+                  helperText="Before start date"
+                />
+                <TimePickerField
+                  label="Reg. Deadline Time"
+                  value={formData.registrationDeadlineTime}
+                  onChange={(val) => {
+                    setFormData(prev => ({ ...prev, registrationDeadlineTime: val }));
+                    if (formErrors.registrationDeadlineTime) setFormErrors({...formErrors, registrationDeadlineTime: ""});
+                  }}
+                  required={!!formData.registrationDeadline}
+                  error={formErrors.registrationDeadlineTime}
+                />
               </div>
             </div>
 
@@ -508,6 +656,7 @@ const AdminTournaments: React.FC = () => {
                   <SelectItem value="ONGOING">Ongoing</SelectItem>
                   <SelectItem value="COMPLETED">Completed</SelectItem>
                   <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  <SelectItem value="REJECTED">Rejected</SelectItem>
                 </SelectContent>
               </Select>
             </div>

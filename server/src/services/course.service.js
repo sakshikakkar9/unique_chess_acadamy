@@ -44,6 +44,12 @@ export const createCourse = async (data) => {
     }
   }
 
+  const parseDate = (date) => {
+    if (!date || date === "null" || date === "undefined" || date === "") return null;
+    const d = new Date(date);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
   return await prisma.course.create({
     data: {
       title: data.title || "Untitled Course",
@@ -51,15 +57,22 @@ export const createCourse = async (data) => {
       ageGroup: data.ageGroup || 'ADULTS',
       // Force Uppercase to match Prisma SkillLevel Enum
       skillLevel: (data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
+      startDate: parseDate(data.startDate),
+      endDate: parseDate(data.endDate),
+      regDeadlineDate: parseDate(data.regDeadlineDate),
+      startTime: data.startTime || null,
+      endTime: data.endTime || null,
+      regDeadlineTime: data.regDeadlineTime || null,
       duration: data.duration || "N/A",
       custom_banner_url: data.custom_banner_url || null,
       brochureUrl: data.brochureUrl || null,
       // Ensure Float type for PostgreSQL
       fee: parseFloat(data.fee) || 0.0,
       days: Array.isArray(parsedDays) ? parsedDays : [],
-      classTime: data.classTime || "TBD", 
+      classTime: data.classTime || "TBD",
       // Force Uppercase to match Prisma ClassMode Enum
       mode: (data.mode || "ONLINE").toUpperCase(),
+      status: data.status || "UPCOMING",
       posterOrientation: data.posterOrientation || "LANDSCAPE",
       contactDetails: data.contactDetails || "Contact Academy Admin",
     },
@@ -98,8 +111,22 @@ export const updateCourse = async (id, data) => {
   if (parsedDays) updatePayload.days = parsedDays;
   if (data.classTime) updatePayload.classTime = data.classTime;
   if (data.mode) updatePayload.mode = data.mode.toUpperCase();
+  if (data.status) updatePayload.status = data.status.toUpperCase();
   if (data.posterOrientation) updatePayload.posterOrientation = data.posterOrientation;
   if (data.contactDetails) updatePayload.contactDetails = data.contactDetails;
+
+  const parseDate = (date) => {
+    if (!date || date === "null" || date === "undefined" || date === "") return null;
+    const d = new Date(date);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
+  if (data.startDate !== undefined) updatePayload.startDate = data.startDate ? parseDate(data.startDate) : null;
+  if (data.endDate !== undefined) updatePayload.endDate = data.endDate ? parseDate(data.endDate) : null;
+  if (data.regDeadlineDate !== undefined) updatePayload.regDeadlineDate = data.regDeadlineDate ? parseDate(data.regDeadlineDate) : null;
+  if (data.startTime !== undefined) updatePayload.startTime = data.startTime;
+  if (data.endTime !== undefined) updatePayload.endTime = data.endTime;
+  if (data.regDeadlineTime !== undefined) updatePayload.regDeadlineTime = data.regDeadlineTime;
 
   return await prisma.course.update({
     where: { id },

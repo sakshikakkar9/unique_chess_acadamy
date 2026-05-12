@@ -12,6 +12,7 @@ import {
 import AdminShell from "@/components/admin/AdminShell";
 import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
 import AdminModal from "@/components/admin/AdminModal";
+import RowActionMenuExtended from "@/components/admin/RowActionMenuExtended";
 import StatusBadge from "@/components/shared/admin/StatusBadge";
 import {
   Select,
@@ -21,7 +22,6 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { useDemoAdmin } from "@/features/demo/hooks/useDemoRegistration";
-import { Label } from "@/components/ui/label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { format } from "date-fns";
@@ -30,6 +30,7 @@ import { cn, getAvatarStyles } from "@/lib/utils";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import { useToast } from "@/hooks/useToast";
 import { Loader2, Check } from "lucide-react";
+import { formatDateDisplay } from "@/lib/dateUtils";
 
 type RegistrationTab = 'course' | 'tournament' | 'demo';
 
@@ -46,6 +47,7 @@ export default function RegistrationsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [courseFilter, setCourseFilter] = useState("ALL");
+  const [viewingReg, setViewingReg] = useState<any>(null);
 
   const qc = useQueryClient();
 
@@ -209,7 +211,13 @@ export default function RegistrationsPage() {
           <Phone className="size-3" /> {item.student?.phone || item.phone}
         </div>
       ),
-      displayStatus: <StatusBadge status={item.status} />
+      displayStatus: <StatusBadge status={item.status} />,
+      displayActions: (
+        <RowActionMenuExtended
+          onEdit={() => setViewingReg(item)}
+          onDelete={() => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
+        />
+      )
     };
   });
 
@@ -283,17 +291,19 @@ export default function RegistrationsPage() {
         </div>
 
         {/* Table Area */}
-        <AdminTable
-          columns={columns}
-          rows={rows}
-          isLoading={currentLoading}
-          onRowClick={(item) => setSelectedItem({ ...item, type: currentType })}
-          onEdit={(row) => {
-            const original = currentData.find((item: any) => item.id === row.id);
-            if (original) handleEdit(original);
-          }}
-          onDelete={(item) => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
-        />
+        <div className="bg-uca-bg-surface border border-uca-border rounded-xl overflow-hidden">
+          <AdminTable
+            columns={columns}
+            rows={rows}
+            isLoading={currentLoading}
+            onRowClick={(item) => setSelectedItem({ ...item, type: currentType })}
+            onEdit={(row) => {
+              const original = currentData.find((item: any) => item.id === row.id);
+              if (original) handleEdit(original);
+            }}
+            onDelete={(item) => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
+          />
+        </div>
       </div>
 
       <AdminModal
@@ -361,6 +371,41 @@ export default function RegistrationsPage() {
             </div>
           )}
         </div>
+      </AdminModal>
+
+      <AdminModal
+        isOpen={!!viewingReg}
+        onClose={() => setViewingReg(null)}
+        title="Registration Details"
+      >
+        {viewingReg && (
+            <div className="space-y-4">
+            {[
+                { label: 'Player Name',   value: viewingReg.student?.fullName || viewingReg.studentName },
+                { label: 'Program',      value: viewingReg.tournament?.title || viewingReg.course?.title || 'Demo Class' },
+                { label: 'Date',          value: formatDateDisplay(viewingReg.createdAt?.split('T')[0]) },
+                { label: 'Gender',        value: viewingReg.student?.gender || viewingReg.gender },
+                { label: 'Category',      value: viewingReg.category || 'General' },
+                { label: 'Date of Birth', value: (viewingReg.student?.dob || viewingReg.dob)
+                    ? formatDateDisplay(viewingReg.student?.dob || viewingReg.dob) : '—' },
+                { label: 'Phone',         value: viewingReg.student?.phone || viewingReg.phone },
+                { label: 'Email',         value: viewingReg.student?.email || viewingReg.email || '—' },
+                { label: 'Address',       value: viewingReg.student?.address || viewingReg.address || '—' },
+            ].map(field => (
+                <div key={field.label}
+                    className="flex flex-col gap-1 pb-3
+                                border-b border-uca-border last:border-0">
+                <span className="text-[10px] font-black text-uca-text-muted
+                                uppercase tracking-widest">
+                    {field.label}
+                </span>
+                <span className="text-sm font-bold text-uca-text-primary">
+                    {field.value}
+                </span>
+                </div>
+            ))}
+            </div>
+        )}
       </AdminModal>
 
       <ConfirmDialog
