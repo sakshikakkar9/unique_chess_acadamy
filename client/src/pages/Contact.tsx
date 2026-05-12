@@ -156,11 +156,11 @@ export default function ContactPage() {
               <ScrollReveal variants={fadeRight}>
                 <div className="space-y-12">
                   <div className="relative">
-                    <div className="h-1 w-12 bg-blue-600 rounded-full mb-8" />
-                    <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-10 tracking-tight leading-tight">
+                    <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 tracking-tight leading-tight">
                       Let's Start Your <br />
                       <span className="text-blue-600">Chess Journey.</span>
                     </h3>
+                    <div className="h-1 w-12 bg-blue-600 rounded-full mb-3" />
                     
                     <div className="space-y-10">
                       <ContactInfoItem
@@ -173,20 +173,6 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <a
-                    href="https://wa.me/919876543210"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-6 p-8 bg-emerald-50 rounded-2xl border border-emerald-100 group transition-all hover:bg-emerald-100/50 hover:border-emerald-200"
-                  >
-                    <div className="w-14 h-14 rounded-xl bg-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-all duration-300">
-                      <MessageCircle className="h-7 w-7 text-emerald-600" />
-                    </div>
-                    <div>
-                      <p className="text-lg font-bold text-slate-900">Chat on WhatsApp.</p>
-                      <p className="text-emerald-700 text-sm font-medium">Quick replies within minutes.</p>
-                    </div>
-                  </a>
                 </div>
               </ScrollReveal>
             </div>

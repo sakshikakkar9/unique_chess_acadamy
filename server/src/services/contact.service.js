@@ -1,15 +1,13 @@
 import prisma from '../../lib/prisma.js';
 
-// export const createMessage = async (data) => {
-//   return await prisma.contactMessage.create({ data });
-// };
 export const createMessage = async (data) => {
-  return await prisma.contactMessage.create({ // Changed 'contact' to 'contactMessage'
+  return await prisma.contactMessage.create({
     data: {
       name: data.name,
-      email: data.email,
-      phone: data.phone,
-      message: data.message, 
+      email: data.email || "",
+      phone: data.phone || "",
+      message: data.message,
+      status: 'unread'
     },
   });
 };
@@ -21,7 +19,7 @@ export const getAllMessages = async () => {
 export const markMessageAsRead = async (id) => {
   return await prisma.contactMessage.update({
     where: { id },
-    data: { isRead: true },
+    data: { status: 'read' },
   });
 };
 

@@ -10,7 +10,8 @@ import {
   Users,
   Image as PhotoIcon,
   Settings,
-  ChevronLeft
+  ChevronLeft,
+  Mail
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ const menuItems = [
   { icon: Trophy,          label: "Tournaments",   href: "/admin/tournaments"  },
   { icon: Users,           label: "Students",      href: "/admin/students"     },
   { icon: Users,           label: "Registrations", href: "/admin/registrations"},
+  { icon: Mail,            label: "Messages",      href: "/admin/messages"     },
   { icon: PhotoIcon,       label: "Gallery",       href: "/admin/gallery"      },
   { icon: Settings,        label: "Settings",      href: "/admin/settings"     },
 ];

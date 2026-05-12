@@ -68,8 +68,10 @@ export default function RegistrationsPage() {
 
   const filteredEnrollments = useMemo(() => {
     return enrollments.filter((item: any) => {
-      const matchesSearch = (item.studentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            item.phone?.includes(searchTerm) ||
+      const studentName = item.student?.fullName || item.studentName || "";
+      const phone = item.student?.phone || item.phone || "";
+      const matchesSearch = (studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            phone.includes(searchTerm) ||
                             item.referenceId?.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesStatus = statusFilter === "ALL" || item.status === statusFilter;
       const matchesCourse = courseFilter === "ALL" || item.course?.title === courseFilter;
@@ -79,8 +81,10 @@ export default function RegistrationsPage() {
 
   const filteredRegistrations = useMemo(() => {
     return registrations.filter((item: any) => {
-      const matchesSearch = (item.studentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            item.phone?.includes(searchTerm) ||
+      const studentName = item.student?.fullName || item.studentName || "";
+      const phone = item.student?.phone || item.phone || "";
+      const matchesSearch = (studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            phone.includes(searchTerm) ||
                             item.referenceId?.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesStatus = statusFilter === "ALL" || item.status === statusFilter;
       return matchesSearch && matchesStatus;
@@ -202,7 +206,7 @@ export default function RegistrationsPage() {
       ),
       displayContact: (
         <div className="flex items-center gap-1.5 text-xs text-uca-text-muted">
-          <Phone className="size-3" /> {item.phone}
+          <Phone className="size-3" /> {item.student?.phone || item.phone}
         </div>
       ),
       displayStatus: <StatusBadge status={item.status} />
