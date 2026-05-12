@@ -15,6 +15,14 @@ const AdminGallery: React.FC = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [orientations, setOrientations] = useState<Record<string, 'landscape' | 'portrait' | 'square'>>({});
+
+  const handleImageLoad = (id: string, e: React.SyntheticEvent<HTMLImageElement>) => {
+    const el = e.currentTarget;
+    const ratio = el.naturalWidth / el.naturalHeight;
+    const o = ratio > 1.2 ? 'landscape' : ratio < 0.85 ? 'portrait' : 'square';
+    setOrientations(prev => ({ ...prev, [id]: o }));
+  };
 
   const handleAdd = () => {
     setIsModalOpen(true);
@@ -57,23 +65,32 @@ const AdminGallery: React.FC = () => {
     >
       <div className="space-y-6">
         {isLoading ? (
-          <div className="grid gap-3 [grid-auto-flow:dense] [grid-template-columns:repeat(2,1fr)] sm:[grid-template-columns:repeat(3,1fr)] lg:[grid-template-columns:repeat(auto-fill,minmax(200px,1fr))]">
-            {[...Array(6)].map((_, i) => (
+          <div
+            className="grid gap-3"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+              gridAutoRows: '180px',
+              gridAutoFlow: 'dense',
+            }}
+          >
+            {['landscape', 'portrait', 'square', 'square', 'landscape', 'portrait', 'portrait', 'square', 'landscape'].map((o, i) => (
               <div
                 key={i}
-                style={i % 3 === 0
-                  ? { gridColumn: 'span 2', gridRow: 'span 1' }
-                  : { gridColumn: 'span 1', gridRow: 'span 2' }}
-                className="rounded-xl bg-uca-bg-elevated animate-pulse min-h-[120px]"
+                style={{
+                  gridColumn: o === 'landscape' ? 'span 2' : 'span 1',
+                  gridRow: o === 'portrait' ? 'span 2' : 'span 1',
+                }}
+                className="rounded-xl bg-uca-bg-elevated animate-pulse"
               />
             ))}
           </div>
         ) : (
           <GalleryGrid
             images={images}
+            orientations={orientations}
+            onImageLoad={handleImageLoad}
             onEdit={(img) => {
-              // Edit not specified in brief for gallery yet, but hook up to modal if needed
-              // For now, only delete is wired in gridcard
+              // Edit not specified in brief for gallery yet
             }}
             onDelete={handleDelete}
           />
