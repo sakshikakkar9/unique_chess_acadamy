@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useGallery } from "@/features/gallery/hooks/useGallery";
 import AdminShell from "@/components/admin/AdminShell";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
@@ -16,6 +16,31 @@ const AdminGallery: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [orientations, setOrientations] = useState<Record<string, 'landscape' | 'portrait' | 'square'>>({});
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const getGridStyle = (): React.CSSProperties => {
+    if (windowWidth < 640) return {
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gridAutoRows: '150px',
+      gridAutoFlow: 'dense',
+    };
+    if (windowWidth < 1024) return {
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gridAutoRows: '170px',
+      gridAutoFlow: 'dense',
+    };
+    return {
+      gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+      gridAutoRows: '180px',
+      gridAutoFlow: 'dense',
+    };
+  };
 
   const handleImageLoad = (id: string, e: React.SyntheticEvent<HTMLImageElement>) => {
     const el = e.currentTarget;
@@ -65,14 +90,7 @@ const AdminGallery: React.FC = () => {
     >
       <div className="space-y-6">
         {isLoading ? (
-          <div
-            className="grid gap-3"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-              gridAutoRows: '180px',
-              gridAutoFlow: 'dense',
-            }}
-          >
+          <div className="grid gap-3" style={getGridStyle()}>
             {['landscape', 'portrait', 'square', 'square', 'landscape', 'portrait', 'portrait', 'square', 'landscape'].map((o, i) => (
               <div
                 key={i}
