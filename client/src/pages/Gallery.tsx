@@ -1,13 +1,61 @@
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import { useGallery } from "@/features/gallery/hooks/useGallery";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { LayoutGrid } from "lucide-react";
+import { LayoutGrid, Image as PhotoIcon } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import { stagger, fadeLeft, fadeIn } from "@/components/shared/motion";
 
 export default function GalleryPage() {
   const { images, filter, setFilter, categories, isLoading } = useGallery();
+  const [orientations, setOrientations] = useState<Record<string, 'landscape' | 'portrait' | 'square'>>({});
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const handleImageLoad = (id: string, e: React.SyntheticEvent<HTMLImageElement>) => {
+    const el = e.currentTarget;
+    const ratio = el.naturalWidth / el.naturalHeight;
+    const o = ratio > 1.2 ? 'landscape' : ratio < 0.85 ? 'portrait' : 'square';
+    setOrientations(prev => ({ ...prev, [id]: o }));
+  };
+
+  const getGridStyle = (): React.CSSProperties => {
+    if (windowWidth < 640) return {
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gridAutoRows: '150px',
+      gridAutoFlow: 'dense',
+    };
+    if (windowWidth < 1024) return {
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gridAutoRows: '170px',
+      gridAutoFlow: 'dense',
+    };
+    return {
+      gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+      gridAutoRows: '180px',
+      gridAutoFlow: 'dense',
+    };
+  };
+
+  const getSpanStyle = (orientation: 'landscape' | 'portrait' | 'square'): React.CSSProperties => {
+    switch (orientation) {
+      case 'landscape': return { gridColumn: 'span 2', gridRow: 'span 1' };
+      case 'portrait': return { gridColumn: 'span 1', gridRow: 'span 2' };
+      default: return { gridColumn: 'span 1', gridRow: 'span 1' };
+    }
+  };
+
+  const skeletonPattern: Array<'landscape' | 'portrait' | 'square'> = [
+    'landscape', 'portrait', 'square',
+    'square',    'landscape', 'portrait',
+    'portrait',  'square',    'landscape',
+  ];
 
   return (
     <div className="min-h-screen bg-white selection:bg-blue-600/30 selection:text-white overflow-x-hidden">
@@ -86,49 +134,50 @@ export default function GalleryPage() {
       {/* GALLERY GRID */}
       <section className="py-14 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[400px]">
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          <div className="grid gap-3" style={getGridStyle()}>
+            {skeletonPattern.map((o, i) => (
               <div
                 key={i}
-                className="aspect-square animate-pulse rounded-2xl bg-slate-100"
+                style={getSpanStyle(o)}
+                className="rounded-2xl bg-slate-100 animate-pulse"
               />
             ))}
           </div>
         ) : images.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-slate-400">
-            <p className="text-sm font-medium">Gallery coming soon.</p>
+          <div className="flex flex-col items-center justify-center py-24 gap-4 text-slate-400 border-2 border-dashed border-slate-100 rounded-2xl">
+            <PhotoIcon className="size-12 opacity-30" />
+            <div className="text-center">
+              <p className="text-sm font-semibold text-slate-500">No photos yet</p>
+              <p className="text-xs text-slate-400 mt-1">Check back soon for photos from our events</p>
+            </div>
           </div>
         ) : (
-          <div
-            className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            style={{
-              gridAutoRows: '200px',
-              gridAutoFlow: 'dense',
-            }}
-          >
+          <div className="grid gap-3 w-full" style={getGridStyle()}>
             {images.map((img) => (
               <div
                 key={img.id}
-                style={{
-                  gridColumn: `span ${img.orientation === 'landscape' ? '2' : '1'}`,
-                  gridRow: `span ${img.orientation === 'portrait' ? '2' : '1'}`,
-                }}
-                className="relative overflow-hidden rounded-2xl bg-slate-100 group"
+                style={getSpanStyle(orientations[img.id] || 'square')}
+                className="relative overflow-hidden rounded-2xl bg-slate-100 group cursor-pointer"
               >
                 <img
                   src={img.imageUrl}
                   alt={img.caption ?? 'Gallery'}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onLoad={(e) => handleImageLoad(img.id, e)}
                   loading="lazy"
                   onError={(e) => {
-                    e.currentTarget.src = '/placeholder.svg';
+                    e.currentTarget.parentElement!.style.display = 'none';
                   }}
                 />
-                {img.caption && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                    <p className="text-white text-xs font-bold uppercase tracking-wider">{img.caption}</p>
-                  </div>
-                )}
+
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                  {img.caption && (
+                    <p className="text-white text-sm font-medium">
+                      {img.caption}
+                    </p>
+                  )}
+                </div>
               </div>
             ))}
           </div>
