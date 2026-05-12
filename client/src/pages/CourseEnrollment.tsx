@@ -13,14 +13,12 @@ import {
   ArrowLeft, CheckCircle2, Loader2, Upload,
   Clock, Calendar, BarChart3,
   ShieldCheck, CreditCard, User, ChevronDown,
-  Zap, HelpCircle, FileText
+  Zap, HelpCircle, FileText, Star, ArrowRight, Check
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
-import { fadeUp, stagger } from "@/components/shared/motion";
 import PaymentDisplay from "@/components/shared/PaymentDisplay";
-import OrientationWrapper from "@/features/tournaments/components/OrientationWrapper";
 import 'react-quill/dist/quill.snow.css';
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2000&auto=format&fit=crop";
@@ -172,366 +170,328 @@ export default function CourseEnrollmentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
 
-      <main className="container mx-auto px-6 pt-32 pb-20">
-        <div className="mb-12">
-          <Link to="/courses" className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-blue-600 transition-colors group uppercase tracking-[0.2em]">
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            <span>Back to Programs</span>
-          </Link>
-        </div>
+      {/* Back link */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-4">
+        <Link to="/courses"
+           className="inline-flex items-center gap-2 text-sm font-medium
+                      text-slate-500 hover:text-slate-900 transition-colors duration-150">
+          <ArrowLeft className="size-4" />
+          Back to Programs
+        </Link>
+      </div>
 
-        <OrientationWrapper
-          orientation={course.posterOrientation}
-          poster={
-            <motion.div initial="hidden" animate="visible" variants={fadeUp} className={cn(
-              "relative rounded-[2.5rem] overflow-hidden shadow-xl border-4 border-white",
-              course.posterOrientation === 'PORTRAIT' ? "aspect-[3/4]" : "aspect-video"
-            )}>
+      {/* Main two-column layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+
+          {/* LEFT COLUMN */}
+          <div className="space-y-6 order-2 lg:order-1">
+            {/* Title Card */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+                Course Details
+              </p>
+              <h1 className="text-2xl font-bold text-slate-900 leading-tight tracking-tight">
+                {course.title}
+              </h1>
+            </div>
+
+            {/* Banner card */}
+            <div className="rounded-2xl overflow-hidden shadow-sm border border-slate-200 bg-white">
               <img
                 src={course.custom_banner_url || DEFAULT_BANNER}
                 alt={course.title}
-                className="w-full h-full object-cover"
+                className="w-full object-cover"
+                loading="lazy"
               />
-              <div className="absolute top-6 left-6">
-                <span className="px-4 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] shadow-lg">
-                  {course.mode}
-                </span>
-              </div>
-            </motion.div>
-          }
-          details={
-            <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-12">
-              <motion.div variants={fadeUp} className="space-y-10">
-                {/* Title & Description */}
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]">
-                      Course Details
+            </div>
+
+            {/* Info pills grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { icon: <Clock className="size-4 text-blue-500" />,  label: 'Duration',  value: course.duration },
+                { icon: <Star className="size-4 text-blue-500" />,   label: 'Level',     value: course.skillLevel },
+                { icon: <User className="size-4 text-blue-500" />,   label: 'Mode',     value: course.mode },
+                { icon: <Calendar className="size-4 text-blue-500" />, label: 'Schedule', value: course.classTime },
+              ].map(info => (
+                <div key={info.label}
+                     className="bg-white border border-slate-200 rounded-xl p-4
+                                flex flex-col gap-2 shadow-sm">
+                  <div className="flex items-center gap-1.5">
+                    {info.icon}
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      {info.label}
                     </span>
-                    <h1 className="text-3xl font-bold text-slate-900 leading-tight tracking-tight">
-                      {course.title}
-                    </h1>
                   </div>
-
-                  {course.description && (
-                    <div
-                      className="text-slate-600 font-medium leading-relaxed text-base ql-editor ql-viewer p-0"
-                      dangerouslySetInnerHTML={{ __html: course.description }}
-                    />
-                  )}
+                  <span className="text-base font-bold text-slate-900 leading-snug">
+                    {info.value}
+                  </span>
                 </div>
+              ))}
+            </div>
 
-                {/* Info Grid - Clean & Minimal */}
-                <div className="grid grid-cols-2 gap-y-8 gap-x-12 py-4 border-t border-b border-slate-100">
-                  <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                      <BarChart3 className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Skill Level</p>
-                      <p className="text-base font-bold text-slate-900">{course.skillLevel}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                      <Clock className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Duration</p>
-                      <p className="text-base font-bold text-slate-900">{course.duration}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                      <Zap className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Age Group</p>
-                      <p className="text-base font-bold text-slate-900">{course.ageGroup}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                      <Calendar className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Class Time</p>
-                      <p className="text-base font-bold text-slate-900">{course.classTime}</p>
-                    </div>
-                  </div>
+            {/* Description card */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="p-2 rounded-lg bg-slate-100">
+                  <FileText className="size-4 text-slate-600" />
                 </div>
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
+                  Course Overview
+                </h3>
+              </div>
+              <div
+                className="text-sm text-slate-600 leading-relaxed ql-editor ql-viewer p-0"
+                dangerouslySetInnerHTML={{ __html: course.description || '' }}
+              />
+            </div>
 
-                {/* Training Days - Simplified Alignment */}
-                <div className="space-y-4">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Weekly Training Schedule</p>
-                  <div className="flex flex-wrap gap-2">
-                    {course.days.map((day) => (
-                      <span key={day} className="px-4 py-2 bg-slate-50 text-slate-600 text-xs font-bold rounded-xl border border-slate-100 uppercase tracking-wider">
-                        {day}
-                      </span>
-                    ))}
-                  </div>
+            {/* Training Days */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="p-2 rounded-lg bg-slate-100">
+                  <Calendar className="size-4 text-slate-600" />
                 </div>
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
+                  Weekly Schedule
+                </h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {course.days?.map((day) => (
+                  <span key={day} className="px-4 py-2 bg-slate-50 text-slate-600 text-xs font-bold rounded-xl border border-slate-100 uppercase tracking-wider">
+                    {day}
+                  </span>
+                ))}
+              </div>
+            </div>
 
-                {/* Contact & Resources - Clean Row */}
-                <div className="flex flex-wrap gap-8 py-6 border-t border-slate-100">
-                  <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
-                      <HelpCircle className="h-5 w-5 text-slate-400" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Support</p>
-                      <p className="text-base font-bold text-slate-900">{course.contactDetails}</p>
-                    </div>
-                  </div>
+            {/* Resources card */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="p-2 rounded-lg bg-slate-100">
+                  <HelpCircle className="size-4 text-slate-600" />
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
+                  Resources & Support
+                </h3>
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                  <p className="text-sm text-slate-600">Need help? Contact: <span className="font-bold text-slate-900">{course.contactDetails}</span></p>
+                </div>
+                {course.brochureUrl && (
+                  <button
+                    onClick={(e) => handleBrochureDownload(e, course.brochureUrl!)}
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-500 transition-colors"
+                  >
+                    <FileText className="size-4" />
+                    Download Brochure PDF
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
 
-                  {course.brochureUrl && (
-                    <button
-                      onClick={(e) => handleBrochureDownload(e, course.brochureUrl!)}
-                      className="flex items-center gap-4 group"
-                    >
-                      <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
-                        <FileText className="h-5 w-5 text-blue-600" />
+          {/* RIGHT COLUMN — sticky enrollment card */}
+          <div className="lg:sticky lg:top-24 order-1 lg:order-2">
+            {/* Enrollment card */}
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+              <div className="bg-slate-900 px-6 py-5">
+                <p className="text-xs text-white/50 font-medium mb-1">Course Fee</p>
+                <p className="text-3xl font-black text-white">
+                  ₹{course.fee?.toLocaleString('en-IN')}
+                </p>
+                <p className="text-xs text-white/40 mt-1 uppercase tracking-widest">Single Payment</p>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <ul className="space-y-2.5">
+                  {[
+                    'Lifetime access to course material',
+                    'Live sessions with FIDE-rated coaches',
+                    'Certificate upon completion',
+                    'Access to UCA student community',
+                  ].map(point => (
+                    <li key={point} className="flex items-start gap-2.5">
+                      <Check className="size-4 text-green-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-slate-600">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="pt-2 border-t border-slate-100 space-y-3">
+                  <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                    <div className="bg-slate-900 px-6 py-4 flex items-center gap-3">
+                      <ShieldCheck className="size-5 text-blue-400" />
+                      <div>
+                        <p className="text-sm font-bold text-white">Enrollment Form</p>
                       </div>
-                      <div className="text-left">
-                        <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Resources</p>
-                        <p className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors underline decoration-blue-600/20 underline-offset-4">Brochure PDF</p>
-                      </div>
-                    </button>
-                  )}
-                </div>
-
-                {/* Payment Section - Refined */}
-                <div className="space-y-6 pt-6 border-t border-slate-100">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Investment</p>
-                      <p className="text-4xl font-bold text-blue-600 tracking-tighter">₹{course.fee.toLocaleString()}</p>
                     </div>
-                    <div className="h-12 w-12 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg">
-                      <CreditCard className="h-6 w-6 text-white" />
-                    </div>
-                  </div>
-
-                  <PaymentDisplay />
-                </div>
-              </motion.div>
-            </motion.div>
-          }
-          form={
-            <Card className="border-none shadow-xl rounded-[3rem] overflow-hidden bg-white">
-              <div className="h-3 bg-blue-600" />
-              <CardContent className="p-10 md:p-14">
-                <form onSubmit={handleSubmit} className="space-y-10">
-                  <div className="space-y-8">
-                    <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                      <ShieldCheck className="h-6 w-6 text-blue-600" />
-                      <h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">Registration</h2>
-                    </div>
-
-                    <div className="space-y-6">
-                      {/* Player Name */}
-                      <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Player Name <span className="text-[#FF0000]">*</span></Label>
-                        <div className="relative">
-                          <User className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                    <div className="p-6">
+                      <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="space-y-1.5">
+                          <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Player Name *</Label>
                           <Input
                             value={form.studentName}
                             onChange={(e) => set("studentName", e.target.value)}
                             required
-                            placeholder="Enter player's full name"
-                            className="h-16 pl-14 rounded-2xl border-slate-200 bg-slate-50/50 font-semibold text-slate-900 focus:ring-blue-600 transition-all placeholder:text-slate-300"
+                            placeholder="Full Name"
+                            className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 h-11"
                           />
                         </div>
-                      </div>
 
-                      {/* Gender */}
-                      <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Gender <span className="text-[#FF0000]">*</span></Label>
-                        <div className="flex gap-10 pt-2 px-1">
-                          {["Male", "Female", "Other"].map((g) => (
-                            <label key={g} className="flex items-center gap-3 cursor-pointer group">
-                              <div className="relative flex items-center justify-center">
+                        <div className="space-y-1.5">
+                          <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gender *</Label>
+                          <div className="flex gap-4">
+                            {["Male", "Female", "Other"].map((g) => (
+                              <label key={g} className="flex items-center gap-2 cursor-pointer group">
                                 <input
                                   type="radio"
                                   name="gender"
                                   value={g}
                                   checked={form.gender === g}
                                   onChange={(e) => set("gender", e.target.value)}
-                                  className="peer sr-only"
+                                  className="accent-blue-600 w-4 h-4 cursor-pointer"
                                 />
-                                <div className="h-6 w-6 rounded-full border border-slate-200 peer-checked:border-blue-600 transition-all" />
-                                <div className="absolute h-3 w-3 rounded-full bg-blue-600 scale-0 peer-checked:scale-100 transition-transform" />
-                              </div>
-                              <span className={cn("text-base font-semibold tracking-tight transition-colors", form.gender === g ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600")}>
-                                {g}
-                              </span>
-                            </label>
-                          ))}
+                                <span className="text-sm text-slate-700 group-hover:text-slate-900">{g}</span>
+                              </label>
+                            ))}
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="grid md:grid-cols-2 gap-8">
-                        {/* Category */}
-                        <div className="space-y-3">
-                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Category <span className="text-[#FF0000]">*</span></Label>
-                          <div className="relative">
-                            <select
-                              className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-5 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer pr-12"
-                              value={form.category}
-                              onChange={(e) => set("category", e.target.value)}
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="space-y-1.5">
+                            <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Category *</Label>
+                            <div className="relative">
+                              <select
+                                className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 appearance-none h-11"
+                                value={form.category}
+                                onChange={(e) => set("category", e.target.value)}
+                                required
+                              >
+                                <option value="">Select</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Professional">Professional</option>
+                              </select>
+                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
+                            </div>
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">DOB *</Label>
+                            <Input
+                              type="date"
+                              value={form.dob}
+                              onChange={(e) => set("dob", e.target.value)}
                               required
-                            >
-                              <option value="">Select Category</option>
-                              <option value="Beginner">Beginner</option>
-                              <option value="Intermediate">Intermediate</option>
-                              <option value="Advanced">Advanced</option>
-                              <option value="Professional">Professional</option>
-                              <option value="Under-7">Under-7</option>
-                              <option value="Under-9">Under-9</option>
-                              <option value="Under-11">Under-11</option>
-                              <option value="Under-13">Under-13</option>
-                              <option value="Under-15">Under-15</option>
-                              <option value="Open">Open</option>
-                            </select>
-                            <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                              className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 h-11"
+                            />
                           </div>
                         </div>
 
-                        {/* Date of Birth */}
-                        <div className="space-y-3">
-                          <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Date of Birth <span className="text-[#FF0000]">*</span></Label>
+                        <div className="space-y-1.5">
+                          <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Phone *</Label>
                           <Input
-                            type="date"
-                            value={form.dob}
-                            onChange={(e) => set("dob", e.target.value)}
+                            type="tel"
+                            value={form.phone}
+                            onChange={(e) => set("phone", e.target.value)}
                             required
-                            className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-5"
+                            placeholder="+91"
+                            className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 h-11"
                           />
                         </div>
-                      </div>
 
-                      {/* Phone Number */}
-                      <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Phone Number <span className="text-[#FF0000]">*</span></Label>
-                        <Input
-                          type="tel"
-                          value={form.phone}
-                          onChange={(e) => set("phone", e.target.value)}
-                          required
-                          placeholder="+91 XXXXX XXXXX"
-                          className="h-16 rounded-2xl border border-slate-100 bg-slate-50/50 font-semibold text-slate-900 px-5"
-                        />
-                      </div>
-
-                      {/* Address */}
-                      <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Full Residential Address <span className="text-[#FF0000]">*</span></Label>
-                        <Textarea
-                          value={form.address}
-                          onChange={(e) => set("address", e.target.value)}
-                          required
-                          placeholder="Enter complete address"
-                          className="rounded-2xl border border-slate-100 bg-slate-50/50 min-h-[120px] p-5 font-medium text-slate-900 resize-none focus:ring-blue-600 transition-all"
-                        />
-                      </div>
-
-                      {/* Discovery Source */}
-                      <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">How did you find us? <span className="text-[#FF0000]">*</span></Label>
-                        <div className="relative">
-                          <select
-                            className="w-full h-16 rounded-2xl border border-slate-100 bg-slate-50/50 px-5 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer pr-12"
-                            value={form.discoverySource}
-                            onChange={(e) => set("discoverySource", e.target.value)}
+                        <div className="space-y-1.5">
+                          <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Address *</Label>
+                          <Textarea
+                            value={form.address}
+                            onChange={(e) => set("address", e.target.value)}
                             required
-                          >
-                            <option value="">Select Option</option>
-                            <option>Social Media</option>
-                            <option>Google Search</option>
-                            <option>Friend / Recommendation</option>
-                            <option>Academy Advertisement</option>
-                            <option>Through Coach</option>
-                            <option>Other</option>
-                          </select>
-                          <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                            placeholder="Full Address"
+                            className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 min-h-[80px] resize-none"
+                          />
                         </div>
-                      </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="space-y-1.5">
+                            <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Age Proof *</Label>
+                            <div className="relative">
+                              <input
+                                type="file"
+                                onChange={(e) => handleFileChange(e, 'age')}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                required
+                              />
+                              <div className={cn(
+                                "w-full h-11 border border-dashed rounded-xl flex items-center justify-center gap-2 px-3 transition-all text-[11px] font-bold uppercase",
+                                files.age ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400"
+                              )}>
+                                {files.age ? <CheckCircle2 className="size-3.5" /> : <Upload className="size-3.5" />}
+                                <span className="truncate">{files.age ? "Uploaded" : "Age Proof"}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Payment Proof *</Label>
+                            <div className="relative">
+                              <input
+                                type="file"
+                                onChange={(e) => handleFileChange(e, 'payment')}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                required
+                              />
+                              <div className={cn(
+                                "w-full h-11 border border-dashed rounded-xl flex items-center justify-center gap-2 px-3 transition-all text-[11px] font-bold uppercase",
+                                files.payment ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400"
+                              )}>
+                                {files.payment ? <CheckCircle2 className="size-3.5" /> : <Upload className="size-3.5" />}
+                                <span className="truncate">{files.payment ? "Uploaded" : "Payment Proof"}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <PaymentDisplay />
+
+                        <Button
+                          type="submit"
+                          disabled={loading}
+                          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm py-3.5 rounded-xl transition-colors duration-150 flex items-center justify-center gap-2 h-auto"
+                        >
+                          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enroll Now"}
+                          <ArrowRight className="size-4" />
+                        </Button>
+                      </form>
                     </div>
                   </div>
 
-                  {/* Documents Section */}
-                  <div className="space-y-8 pt-10 border-t border-slate-50">
-                    <div className="flex items-center gap-3">
-                      <CreditCard className="h-6 w-6 text-blue-600" />
-                      <h2 className="text-xl font-bold text-slate-900 uppercase tracking-tight">Verification Documents</h2>
-                    </div>
+                  <a href="/contact"
+                     className="block text-center text-sm text-blue-600
+                                hover:text-blue-500 font-medium transition-colors">
+                    Book a free demo first →
+                  </a>
+                </div>
 
-                    <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Age Proof <span className="text-[#FF0000]">*</span></Label>
-                        <div className="relative h-20">
-                          <input
-                            type="file"
-                            onChange={(e) => handleFileChange(e, 'age')}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            required
-                          />
-                          <div className={cn(
-                            "h-full w-full border border-dashed rounded-2xl flex items-center justify-center gap-3 px-5 transition-all",
-                            files.age ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-blue-400"
-                          )}>
-                            {files.age ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
-                            <span className="text-sm font-semibold truncate">{files.age ? files.age.name : "Upload ID Proof"}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <Label className="text-[11px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1">Payment Screenshot <span className="text-[#FF0000]">*</span></Label>
-                        <div className="relative h-20">
-                          <input
-                            type="file"
-                            onChange={(e) => handleFileChange(e, 'payment')}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            required
-                          />
-                          <div className={cn(
-                            "h-full w-full border border-dashed rounded-2xl flex items-center justify-center gap-3 px-5 transition-all",
-                            files.payment ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400 hover:border-blue-400"
-                          )}>
-                            {files.payment ? <CheckCircle2 className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
-                            <span className="text-sm font-semibold truncate">{files.payment ? files.payment.name : "Upload Proof"}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-center gap-4 pt-2">
+                  <span className="text-xs text-slate-400 flex items-center gap-1">
+                    <ShieldCheck className="size-3.5 text-green-500" />
+                    Secure payment
+                  </span>
+                  <span className="text-xs text-slate-400 flex items-center gap-1">
+                    <Star className="size-3.5 text-amber-500" />
+                    4.9 rated coaches
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full h-20 bg-blue-600 hover:bg-slate-900 text-white text-xl font-bold rounded-3xl transition-all shadow-lg shadow-blue-600/30 active:scale-[0.98] uppercase tracking-wider"
-                  >
-                    {loading ? (
-                      <span className="flex items-center gap-3">
-                        <Loader2 className="h-6 w-6 animate-spin" /> Submitting...
-                      </span>
-                    ) : (
-                      "Complete Registration"
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          }
-        />
-      </main>
+        </div>
+      </div>
 
       <Footer />
     </div>
