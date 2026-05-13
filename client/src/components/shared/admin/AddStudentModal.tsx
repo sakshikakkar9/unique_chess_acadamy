@@ -7,10 +7,12 @@ import {
   Select, SelectContent, SelectItem,
   SelectTrigger, SelectValue
 } from "@/components/ui/select";
-import { Loader2, UserPlus, Shield, Zap, Info, Check } from "lucide-react";
+import { Loader2, UserPlus, Shield, Zap, Info, Check, Plus, X } from "lucide-react";
 import api from "@/lib/api";
 import { useToast } from "@/hooks/useToast";
 import AdminModal from "@/components/admin/AdminModal";
+import DatePickerField from "@/components/admin/DatePickerField";
+import { cn } from "@/lib/utils";
 
 interface AddStudentModalProps {
   open: boolean;
@@ -99,201 +101,163 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
     <AdminModal
       isOpen={open}
       onClose={() => onOpenChange(false)}
-      title={editingRecord ? "Update Student Profile" : "Initialize Student Profile"}
+      title={editingRecord ? "Update Student Profile" : "Create Student Profile"}
       footer={
-        <div className="flex flex-col-reverse sm:flex-row gap-3 w-full sm:w-auto">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-            className="h-11 px-8 font-bold uppercase text-[10px] tracking-widest text-uca-text-muted hover:text-uca-text-primary"
-          >
-            Cancel
-          </Button>
+        <>
+          <Button variant="ghost" disabled={loading} onClick={() => onOpenChange(false)} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
           <Button
             onClick={handleSubmit}
             disabled={loading}
-            className="h-11 px-10 bg-uca-accent-blue hover:bg-uca-sidebar-bg text-white font-bold uppercase text-[10px] tracking-widest shadow-lg shadow-blue-500/20 transition-all gap-2 disabled:opacity-70"
+            className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
           >
             {loading ? (
               <>
-                <Loader2 className="size-3.5 animate-spin" />
-                Saving Intelligence...
+                <Loader2 className="size-4 animate-spin" />
+                Saving...
               </>
             ) : (
               <>
-                <Check className="size-3.5" />
-                {editingRecord ? "Sync Changes" : "Create Profile"}
+                <Check className="size-4" />
+                {editingRecord ? "Save Changes" : "Create Student"}
               </>
             )}
           </Button>
-        </div>
+        </>
       }
     >
-      <div className="space-y-10" key={editingRecord?.id ?? 'new'}>
-        {/* Banner Section */}
-        <div className="bg-uca-sidebar-bg -mx-6 -mt-5 p-8 text-white mb-6">
-          <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center mb-4 border border-white/10">
-            <UserPlus className="h-6 w-6 text-uca-accent-blue" />
+      <div className="space-y-6 py-2" key={editingRecord?.id ?? 'new'}>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Full Name</Label>
+            <Input
+              required
+              className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"
+              value={form.fullName}
+              onChange={e => update("fullName", e.target.value)}
+            />
           </div>
-          <h2 className="text-2xl font-black tracking-tight text-white uppercase leading-tight">
-            {editingRecord ? "Modify Records" : "Academy Intake"}
-          </h2>
-          <p className="text-white/50 font-bold uppercase text-[9px] tracking-widest mt-2 max-w-xs">
-            {editingRecord ? "Synchronizing student intelligence with central directory." : "Initializing decentralized student profile for academy boarding."}
-          </p>
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Phone Number</Label>
+            <Input
+              required
+              className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"
+              value={form.phone}
+              onChange={e => update("phone", e.target.value)}
+            />
+          </div>
         </div>
 
-        {/* Personal Section */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3 pb-3 border-b border-uca-border">
-            <Info className="h-5 w-5 text-uca-accent-blue" />
-            <h3 className="text-xs font-black uppercase text-uca-text-primary tracking-widest">Personal Intelligence</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Email Address</Label>
+            <Input
+              type="email"
+              className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"
+              value={form.email}
+              onChange={e => update("email", e.target.value)}
+            />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">Full Name *</Label>
-              <Input
-                required
-                className="h-12 rounded-xl border-uca-border bg-uca-bg-base font-bold px-4 focus:ring-uca-accent-blue"
-                value={form.fullName}
-                onChange={e => update("fullName", e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">Phone Number *</Label>
-              <Input
-                required
-                className="h-12 rounded-xl border-uca-border bg-uca-bg-base font-bold px-4 focus:ring-uca-accent-blue"
-                value={form.phone}
-                onChange={e => update("phone", e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">Email Address</Label>
-              <Input
-                type="email"
-                className="h-12 rounded-xl border-uca-border bg-uca-bg-base font-bold px-4 focus:ring-uca-accent-blue"
-                value={form.email}
-                onChange={e => update("email", e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">Date of Birth *</Label>
-              <Input
-                required
-                type="date"
-                className="h-12 rounded-xl border-uca-border bg-uca-bg-base font-bold px-4 focus:ring-uca-accent-blue"
-                value={form.dob}
-                onChange={e => update("dob", e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">Gender</Label>
-              <Select value={form.gender} onValueChange={v => update("gender", v)}>
-                <SelectTrigger className="h-12 rounded-xl border-uca-border bg-uca-bg-base font-bold px-4 focus:ring-uca-accent-blue">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl font-bold bg-uca-bg-surface border-uca-border">
-                  <SelectItem value="Male">Male</SelectItem>
-                  <SelectItem value="Female">Female</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">Discovery Source</Label>
-              <Select value={form.discoverySource} onValueChange={v => update("discoverySource", v)}>
-                <SelectTrigger className="h-12 rounded-xl border-uca-border bg-uca-bg-base font-bold px-4 text-left focus:ring-uca-accent-blue">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl font-bold bg-uca-bg-surface border-uca-border">
-                  <SelectItem value="Social Media">Social Media</SelectItem>
-                  <SelectItem value="Google Search">Google Search</SelectItem>
-                  <SelectItem value="Word of Mouth">Word of Mouth</SelectItem>
-                  <SelectItem value="Through Coach">Through Coach</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="col-span-2 space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">Residential Address</Label>
-              <Textarea
-                className="rounded-xl border-uca-border bg-uca-bg-base font-bold p-4 min-h-[80px] resize-none focus:ring-uca-accent-blue"
-                value={form.address}
-                onChange={e => update("address", e.target.value)}
-              />
-            </div>
-          </div>
-        </section>
+          <DatePickerField
+            label="Date of Birth"
+            value={form.dob}
+            onChange={val => update("dob", val)}
+            required
+          />
+        </div>
 
-        {/* Chess Profile */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3 pb-3 border-b border-uca-border">
-            <Shield className="h-5 w-5 text-uca-accent-blue" />
-            <h3 className="text-xs font-black uppercase text-uca-text-primary tracking-widest">Chess & FIDE Profile</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Gender</Label>
+            <Select value={form.gender} onValueChange={v => update("gender", v)}>
+              <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
+                <SelectItem value="Male">Male</SelectItem>
+                <SelectItem value="Female">Female</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">FIDE ID</Label>
-              <Input
-                className="h-12 rounded-xl border-uca-border bg-uca-bg-base font-bold px-4 focus:ring-uca-accent-blue"
-                value={form.fideId}
-                onChange={e => update("fideId", e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">FIDE Rating</Label>
-              <Input
-                type="number"
-                className="h-12 rounded-xl border-uca-border bg-uca-bg-base font-bold px-4 focus:ring-uca-accent-blue"
-                value={form.fideRating}
-                onChange={e => update("fideRating", e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">Club Affiliation</Label>
-              <Input
-                className="h-12 rounded-xl border-uca-border bg-uca-bg-base font-bold px-4 focus:ring-uca-accent-blue"
-                value={form.clubAffiliation}
-                onChange={e => update("clubAffiliation", e.target.value)}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Discovery Source</Label>
+            <Select value={form.discoverySource} onValueChange={v => update("discoverySource", v)}>
+              <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
+                <SelectItem value="Social Media">Social Media</SelectItem>
+                <SelectItem value="Google Search">Google Search</SelectItem>
+                <SelectItem value="Word of Mouth">Word of Mouth</SelectItem>
+                <SelectItem value="Through Coach">Through Coach</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </section>
+        </div>
 
-        {/* Academic Profile */}
-        <section className="space-y-6 pb-6">
-          <div className="flex items-center gap-3 pb-3 border-b border-uca-border">
-            <Zap className="h-5 w-5 text-uca-accent-blue" />
-            <h3 className="text-xs font-black uppercase text-uca-text-primary tracking-widest">Academy Intelligence</h3>
+        <div className="space-y-2">
+          <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Residential Address</Label>
+          <Textarea
+            className="bg-uca-bg-elevated border-uca-border rounded-lg min-h-[80px] resize-none"
+            value={form.address}
+            onChange={e => update("address", e.target.value)}
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">FIDE ID</Label>
+            <Input
+              className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"
+              value={form.fideId}
+              onChange={e => update("fideId", e.target.value)}
+            />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">Experience Level</Label>
-              <Select value={form.experienceLevel} onValueChange={v => update("experienceLevel", v)}>
-                <SelectTrigger className="h-12 rounded-xl border-uca-border bg-uca-bg-base font-bold px-4 focus:ring-uca-accent-blue">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl font-bold bg-uca-bg-surface border-uca-border">
-                  <SelectItem value="BEGINNER">BEGINNER</SelectItem>
-                  <SelectItem value="INTERMEDIATE">INTERMEDIATE</SelectItem>
-                  <SelectItem value="ADVANCED">ADVANCED</SelectItem>
-                  <SelectItem value="PROFESSIONAL">PROFESSIONAL</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted ml-1">Preferred Batch</Label>
-              <Input
-                className="h-12 rounded-xl border-uca-border bg-uca-bg-base font-bold px-4 focus:ring-uca-accent-blue"
-                value={form.preferredBatch}
-                onChange={e => update("preferredBatch", e.target.value)}
-                placeholder="e.g. Mon/Wed 5PM"
-              />
-            </div>
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">FIDE Rating</Label>
+            <Input
+              type="number"
+              className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"
+              value={form.fideRating}
+              onChange={e => update("fideRating", e.target.value)}
+            />
           </div>
-        </section>
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Club Affiliation</Label>
+            <Input
+              className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"
+              value={form.clubAffiliation}
+              onChange={e => update("clubAffiliation", e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Experience Level</Label>
+            <Select value={form.experienceLevel} onValueChange={v => update("experienceLevel", v)}>
+              <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
+                <SelectItem value="BEGINNER">BEGINNER</SelectItem>
+                <SelectItem value="INTERMEDIATE">INTERMEDIATE</SelectItem>
+                <SelectItem value="ADVANCED">ADVANCED</SelectItem>
+                <SelectItem value="PROFESSIONAL">PROFESSIONAL</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Preferred Batch</Label>
+            <Input
+              className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"
+              value={form.preferredBatch}
+              onChange={e => update("preferredBatch", e.target.value)}
+              placeholder="e.g. Mon/Wed 5PM"
+            />
+          </div>
+        </div>
       </div>
     </AdminModal>
   );

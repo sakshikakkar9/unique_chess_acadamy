@@ -130,6 +130,11 @@ export default function RegistrationsPage() {
         else setSelectedItem({ ...selectedItem, status: value });
       }
 
+      if (editingRecord && editingRecord.id === id) {
+        if (action === 'paymentStatus') setEditingRecord({ ...editingRecord, paymentStatus: value });
+        else setEditingRecord({ ...editingRecord, status: value });
+      }
+
       success(`${action === 'delete' ? 'Deleted' : 'Updated'} successfully`);
       if (isDelete) {
         setIsConfirmOpen(false);
@@ -209,7 +214,13 @@ export default function RegistrationsPage() {
           <Phone className="size-3" /> {item.student?.phone || item.phone}
         </div>
       ),
-      displayStatus: <StatusBadge status={item.status} />
+      displayStatus: <StatusBadge status={item.status} />,
+      actions: (
+        <RowActionMenu
+          onEdit={() => handleEdit(item)}
+          onDelete={() => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
+        />
+      )
     };
   });
 
@@ -293,6 +304,24 @@ export default function RegistrationsPage() {
             if (original) handleEdit(original);
           }}
           onDelete={(item) => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
+          renderActions={(row) => (
+            <div className="flex items-center gap-2">
+               {row.status === 'PENDING' && (
+                 <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAction(row.id, currentType, 'status', currentType === 'course' ? 'CONFIRMED' : 'APPROVED');
+                    }}
+                 >
+                   Approve
+                 </Button>
+               )}
+               {row.actions}
+            </div>
+          )}
         />
       </div>
 

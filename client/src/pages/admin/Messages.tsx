@@ -22,6 +22,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import { useToast } from "@/hooks/useToast";
 import { getAvatarStyles } from "@/lib/utils";
+import RowActionMenu from "@/components/admin/RowActionMenu";
+import { useEffect } from "react";
 
 interface Message {
   id: string;
@@ -48,6 +50,12 @@ export default function MessagesPage() {
     queryKey: ["admin-messages"],
     queryFn: async () => (await api.get("/admin/messages")).data
   });
+
+  useEffect(() => {
+    if (selectedMessage && selectedMessage.status === 'unread') {
+      handleMarkAsRead(selectedMessage.id);
+    }
+  }, [selectedMessage]);
 
   const filteredMessages = useMemo(() => {
     return messages.filter((msg) => {
@@ -139,6 +147,12 @@ export default function MessagesPage() {
         }`}>
           {msg.status}
         </span>
+      ),
+      actions: (
+        <RowActionMenu
+          onEdit={() => setSelectedMessage(msg)}
+          onDelete={() => { setMessageToDelete(msg); setIsConfirmOpen(true); }}
+        />
       )
     };
   });
@@ -184,6 +198,7 @@ export default function MessagesPage() {
           onRowClick={setSelectedMessage}
           onEdit={setSelectedMessage}
           onDelete={(msg) => { setMessageToDelete(msg); setIsConfirmOpen(true); }}
+          renderActions={(row) => row.actions}
         />
       </div>
 

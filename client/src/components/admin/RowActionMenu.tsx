@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 
 interface RowActionMenuProps {
   onEdit: () => void;
@@ -10,24 +9,30 @@ interface RowActionMenuProps {
 
 const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0, flip: false });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const toggleMenu = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
+      const dropH = 110; // Approx height for 2 items
       const spaceBelow = window.innerHeight - rect.bottom;
-      const shouldFlip = spaceBelow < 160;
+      const shouldFlip = spaceBelow < dropH;
 
       setMenuPosition({
         top: shouldFlip
-          ? rect.top + window.scrollY - 8 // Small offset
+          ? rect.top + window.scrollY - 8
           : rect.bottom + window.scrollY + 4,
         right: window.innerWidth - rect.right - window.scrollX,
         flip: shouldFlip
-      } as any);
+      });
     }
     setIsOpen(!isOpen);
   };
@@ -69,10 +74,10 @@ const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
         onClick={toggleMenu}
         className="size-11 flex items-center justify-center rounded-lg text-uca-text-muted hover:text-uca-text-primary hover:bg-uca-bg-elevated transition-colors"
       >
-        <MoreVertical className="size-5" />
+        <EllipsisVertical className="size-5" />
       </button>
 
-      {isOpen &&
+      {mounted && isOpen &&
         createPortal(
           <div
             ref={menuRef}
@@ -81,8 +86,8 @@ const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
               top: `${menuPosition.top}px`,
               right: `${menuPosition.right}px`,
               minWidth: '160px',
-              transformOrigin: (menuPosition as any).flip ? 'bottom right' : 'top right',
-              transform: (menuPosition as any).flip ? 'translateY(-100%)' : 'none'
+              transformOrigin: menuPosition.flip ? 'bottom right' : 'top right',
+              transform: menuPosition.flip ? 'translateY(-100%)' : 'none'
             }}
             className="z-[100] bg-uca-bg-surface border border-uca-border rounded-xl shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150 ease-out"
           >
