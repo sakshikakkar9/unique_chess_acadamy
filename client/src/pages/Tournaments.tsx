@@ -2,19 +2,14 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
-import { Trophy, Calendar, MapPin, ArrowRight } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { fadeLeft, fadeIn, stagger } from "@/components/shared/motion";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { TournamentCard } from "@/features/tournaments/components/TournamentCard";
 
 export default function TournamentsPage() {
   const { tournaments, isLoading } = useAdminTournaments();
   const navigate = useNavigate();
-
-  const handleViewDetails = (tournamentId: string) => {
-    navigate(`/tournaments/${tournamentId}`);
-  };
 
   return (
     <div className="min-h-screen bg-white selection:bg-blue-600/30 selection:text-white overflow-x-hidden">
@@ -89,60 +84,13 @@ export default function TournamentsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {tournaments.map((t) => (
-                <motion.div
+              {tournaments.map((t, idx) => (
+                <TournamentCard
                   key={t.id}
-                  variants={fadeIn}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  className="group bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col h-full"
-                >
-                  <div className="w-full aspect-[4/3] bg-slate-100 overflow-hidden">
-                    <img
-                      src={t.imageUrl || "https://images.unsplash.com/photo-1528819622765-d6bcf132f793?q=80&w=2000"}
-                      alt={t.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  <div className="p-4 flex flex-col flex-1">
-                    <div className="mb-3">
-                      <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest block">
-                        {new Date(t.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </span>
-                    </div>
-
-                    <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-1 leading-tight">
-                      {t.title}
-                    </h3>
-
-                    <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-4">
-                      <MapPin className="size-3" />
-                      <span className="line-clamp-1">{t.location || 'UCA Academy'}</span>
-                    </div>
-
-                    <div className="mb-6">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Prize Fund</p>
-                      <p className="text-lg font-bold text-slate-900">
-                        ₹{t.totalPrizePool?.toLocaleString() || 'TBD'}
-                      </p>
-                    </div>
-
-                    <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between">
-                      <div className="text-sm font-bold text-slate-700">
-                        ₹{t.entryFee?.toLocaleString() || '0'}
-                      </div>
-                      <button
-                        onClick={() => handleViewDetails(t.id.toString())}
-                        className="bg-slate-900 hover:bg-slate-700 text-white text-[10px] font-bold px-4 py-2 rounded-lg transition-colors duration-150 uppercase tracking-widest"
-                      >
-                        Enroll Now
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
+                  tournament={t}
+                  delay={idx * 0.1}
+                  onRegister={() => navigate(`/tournaments/${t.id}`)}
+                />
               ))}
             </div>
           )}
