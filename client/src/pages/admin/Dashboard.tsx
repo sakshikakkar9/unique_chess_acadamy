@@ -71,17 +71,22 @@ const AdminDashboard: React.FC = () => {
 
   const pendingEnrollments = enrollments.filter((e) => e.status === "PENDING");
 
+  // Calculate Collections
+  const totalCourseCollections = useMemo(() => {
+    return enrollments
+      .filter(e => e.paymentStatus === 'VERIFIED')
+      .reduce((sum, e) => sum + (e.course?.fee || 0), 0);
+  }, [enrollments]);
+
+  const totalTournamentCollections = useMemo(() => {
+    return registrations
+      .filter(r => r.paymentStatus === 'VERIFIED')
+      .reduce((sum, r) => sum + (r.tournament?.entryFee || 0), 0);
+  }, [registrations]);
+
+  const totalInvestment = totalCourseCollections + totalTournamentCollections;
+
   const stats = [
-    {
-      title: "Total Courses",
-      value: courses.length.toString(),
-      icon: BookOpen,
-      accent: "text-uca-accent-blue",
-      bg: "bg-uca-accent-blue/10",
-      numColor: "text-uca-accent-blue",
-      status: "LIVE",
-      path: "/admin/courses"
-    },
     {
       title: "Enrollments",
       value: enrollLoading ? "…" : enrollments.length.toString(),
@@ -93,22 +98,23 @@ const AdminDashboard: React.FC = () => {
       path: "/admin/registrations"
     },
     {
-      title: "Registrations",
-      value: tournamentLoading ? "…" : registrations.length.toString(),
-      icon: Trophy,
-      accent: "text-purple-500",
-      bg: "bg-purple-500/10",
-      numColor: "text-purple-500",
-      status: registrations.some(r => r.status === 'PENDING') ? "PENDING" : "LIVE",
+      title: "Investment",
+      value: tournamentLoading || enrollLoading ? "…" : `₹${totalInvestment.toLocaleString()}`,
+      icon: TrendingUp,
+      accent: "text-emerald-500",
+      bg: "bg-emerald-500/10",
+      numColor: "text-emerald-500",
+      status: "PROFITS",
+      subtitle: `Courses: ₹${totalCourseCollections.toLocaleString()} | Tournaments: ₹${totalTournamentCollections.toLocaleString()}`,
       path: "/admin/registrations"
     },
     {
       title: "Demo Leads",
       value: demosLoading ? "…" : demos.length.toString(),
       icon: Users,
-      accent: "text-emerald-500",
-      bg: "bg-emerald-500/10",
-      numColor: "text-emerald-500",
+      accent: "text-uca-accent-blue",
+      bg: "bg-uca-accent-blue/10",
+      numColor: "text-uca-accent-blue",
       status: "LIVE",
       path: "/admin/registrations"
     },
@@ -121,7 +127,7 @@ const AdminDashboard: React.FC = () => {
     >
       <div className="space-y-6">
         {/* Stats Grid */}
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {stats.map((stat, i) => (
             <div
               key={i}
@@ -139,9 +145,15 @@ const AdminDashboard: React.FC = () => {
                 {stat.value}
               </div>
 
-              <div className="text-sm text-uca-text-muted">
+              <div className="text-sm font-semibold text-uca-text-primary">
                 {stat.title}
               </div>
+
+              {stat.subtitle && (
+                <div className="text-[10px] text-uca-text-muted mt-2 pt-2 border-t border-uca-border/50">
+                  {stat.subtitle}
+                </div>
+              )}
             </div>
           ))}
         </div>

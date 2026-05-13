@@ -221,6 +221,7 @@ export const getAllEnrollments = async (courseId) => {
         select: {
           title: true,
           ageGroup: true,
+          fee: true,
         }
       },
       student: true
