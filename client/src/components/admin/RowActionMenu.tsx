@@ -11,6 +11,7 @@ interface RowActionMenuProps {
 const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
 
   const toggleMenu = (e: React.MouseEvent) => {
@@ -33,7 +34,12 @@ const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (isOpen && !triggerRef.current?.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        isOpen &&
+        !triggerRef.current?.contains(target) &&
+        !menuRef.current?.contains(target)
+      ) {
         setIsOpen(false);
       }
     };
@@ -69,6 +75,7 @@ const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
       {isOpen &&
         createPortal(
           <div
+            ref={menuRef}
             style={{
               position: "absolute",
               top: `${menuPosition.top}px`,

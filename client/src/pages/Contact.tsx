@@ -16,14 +16,15 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     setLoading(true);
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
     try {
       await api.post("/contact", data);
       toast.success("Message sent! We'll get back to you within 24 hours.");
-      e.currentTarget.reset();
+      form.reset();
     } catch (error) {
       toast.error("Failed to send message. Please try again later.");
     } finally {

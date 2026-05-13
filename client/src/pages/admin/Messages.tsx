@@ -182,6 +182,7 @@ export default function MessagesPage() {
           rows={rows}
           isLoading={isLoading}
           onRowClick={setSelectedMessage}
+          onEdit={setSelectedMessage}
           onDelete={(msg) => { setMessageToDelete(msg); setIsConfirmOpen(true); }}
         />
       </div>
