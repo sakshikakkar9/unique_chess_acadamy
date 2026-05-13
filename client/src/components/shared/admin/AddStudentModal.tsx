@@ -115,9 +115,10 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px] p-0 overflow-hidden border-none shadow-2xl
-        fixed bottom-0 sm:bottom-auto left-0 sm:left-auto translate-x-0 sm:-translate-x-1/2 sm:translate-y-0
+        fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]
+        max-h-[90vh] overflow-y-auto
         rounded-t-[2.5rem] sm:rounded-[2.5rem] transition-all duration-300">
-        <div className="bg-slate-900 p-8 text-white">
+        <div className="bg-slate-900 p-8 text-white w-full">
           <DialogHeader>
             <div className="h-12 w-12 rounded-2xl bg-sky-500/20 flex items-center justify-center mb-4 border border-sky-500/20">
               <UserPlus className="h-6 w-6 text-sky-400" />

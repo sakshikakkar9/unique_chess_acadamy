@@ -13,6 +13,12 @@ const parseDate = (date) => {
  */
 export const getAllCourses = async () => {
   return await prisma.course.findMany({
+    where: {
+      OR: [
+        { status: { not: 'deleted' } },
+        { status: null }
+      ]
+    },
     orderBy: { createdAt: 'desc' },
   });
 };
@@ -22,7 +28,13 @@ export const getAllCourses = async () => {
  */
 export const getCoursesByAgeGroup = async (ageGroup) => {
   return await prisma.course.findMany({
-    where: { ageGroup },
+    where: {
+      ageGroup,
+      OR: [
+        { status: { not: 'deleted' } },
+        { status: null }
+      ]
+    },
     orderBy: { createdAt: 'desc' },
   });
 };

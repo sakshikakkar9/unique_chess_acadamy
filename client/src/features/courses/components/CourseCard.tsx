@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { AGE_GROUP_RANGES, Course } from "@/types";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import { cn } from "@/lib/utils";
+import { resolveStatus, STATUS_CONFIG } from "@/lib/statusUtils";
 
 interface CourseCardProps {
   course: Course;
@@ -12,6 +13,11 @@ interface CourseCardProps {
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&q=80&w=800";
 
 const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
+  const status = resolveStatus(course.startDate, course.endDate, course.status);
+  const statusConfig = STATUS_CONFIG[status];
+  const isInactive = status === 'cancelled' || status === 'rejected' || status === 'completed';
+  const isGated = isInactive || status === 'completed'; // For courses, completed might also gate enrollment
+
   const ageRange =
     course.minAge && course.maxAge
       ? `Ages ${course.minAge}–${course.maxAge}`
@@ -42,7 +48,10 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
 
   return (
     <ScrollReveal delay={delay}>
-      <div className="card-pro overflow-hidden p-0 flex flex-col h-full border-[#e2e8f0]">
+      <div className={cn(
+        "card-pro overflow-hidden p-0 flex flex-col h-full border-[#e2e8f0] transition-all duration-300",
+        (status === 'cancelled' || status === 'rejected') && "grayscale opacity-50 pointer-events-none"
+      )}>
         {/* Top accent bar */}
         <div className={cn("w-full h-1", getAccentColor())} />
         
@@ -58,6 +67,16 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
               target.src = DEFAULT_IMAGE;
             }}
           />
+
+          {/* Status Badge Overlay */}
+          <div className="absolute top-4 right-4 z-10">
+            <span className={cn(
+              "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm",
+              statusConfig.badge
+            )}>
+              {statusConfig.label}
+            </span>
+          </div>
         </div>
 
         {/* CONTENT SECTION */}
@@ -86,10 +105,14 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
             </div>
             
             <Button
-              className="bg-[#2563eb] text-white font-semibold rounded-full px-8 py-2 h-auto hover:bg-[#1d4ed8] transition-all"
-              onClick={() => onEnroll?.(course)}
+              className={cn(
+                "bg-[#2563eb] text-white font-semibold rounded-full px-8 py-2 h-auto hover:bg-[#1d4ed8] transition-all",
+                isInactive && "bg-slate-400 hover:bg-slate-400 cursor-not-allowed"
+              )}
+              onClick={() => !isInactive && onEnroll?.(course)}
+              disabled={isInactive}
             >
-              Enroll
+              {status === 'completed' ? 'Finished' : status === 'cancelled' ? 'Cancelled' : 'Enroll'}
             </Button>
           </div>
         </div>
