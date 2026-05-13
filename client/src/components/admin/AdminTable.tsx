@@ -31,7 +31,8 @@ const AdminTable: React.FC<AdminTableProps> = ({
   onRowClick,
   isLoading,
   entityName = "records",
-  onAddFirst
+  onAddFirst,
+  renderActions
 }) => {
   if (isLoading) {
     return (

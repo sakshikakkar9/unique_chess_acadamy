@@ -1,5 +1,5 @@
 'use client';
-import { Calendar as CalendarIcon, AlertCircle as ExclamationCircleIcon }
+import { Calendar as CalendarIcon, CircleAlert as ExclamationCircleIcon }
   from 'lucide-react';
 import { toDisplayDate, todayISO } from '@/lib/dateUtils';
 
@@ -24,23 +24,27 @@ export default function DatePickerField({
   const min = minDate ?? todayISO();
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1.5">
 
-      <label className="text-[10px] font-bold text-slate-500
-                        uppercase tracking-widest">
-        {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
-      </label>
-
-      {/* DD/MM/YYYY display — always visible above input */}
-      <div className="relative">
+      {/* Label row with DD/MM/YYYY display */}
+      <div className="flex items-center justify-between">
+        <label className="text-[10px] font-bold text-slate-500
+                          uppercase tracking-widest">
+          {label}
+          {required && (
+            <span className="text-red-500 ml-0.5">*</span>
+          )}
+        </label>
+        {/* DD/MM/YYYY shown clearly next to label */}
         {value && (
-          <div className="absolute -top-5 right-0
-                          text-[10px] font-semibold text-blue-600">
-            {toDisplayDate(value)}
-          </div>
+          <span className="text-xs font-bold text-blue-600
+                           bg-blue-50 px-2 py-0.5 rounded-lg">
+            📅 {toDisplayDate(value)}
+          </span>
         )}
+      </div>
 
+      <div className="relative">
         <input
           type="date"
           value={value}
