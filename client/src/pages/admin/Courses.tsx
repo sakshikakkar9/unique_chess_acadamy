@@ -1,5 +1,7 @@
 import React, { useRef, useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
 import AdminShell from "@/components/admin/AdminShell";
 import AdminModal from "@/components/admin/AdminModal";
@@ -28,6 +30,7 @@ const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Satur
 
 const AdminCourses = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { courses, isLoading, addCourse, updateCourse, deleteCourse } = useAdminCourses();
   const { success, error: toastError } = useToast();
   
@@ -258,19 +261,17 @@ const AdminCourses = () => {
     const statusToSave = newStatus === 'restore' ? null : newStatus;
 
     try {
-      const response = await fetch(`/api/admin/courses/status/${course.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: statusToSave }),
+      const response = await api.patch(`/courses/status/${course.id}`, {
+        status: statusToSave
       });
 
-      if (!response.ok) throw new Error('Failed to update status');
+      if (!response.data) throw new Error('Failed to update status');
 
       const label = newStatus === 'restore'
         ? 'Restored to active'
         : `Marked as ${newStatus}`;
       success(label);
-      window.location.reload();
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
 
     } catch (err) {
       toastError('Failed to update status');

@@ -33,12 +33,14 @@ export default function StatusActionMenu({
     setMounted(true);
   }, []);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // Close on outside click
   useEffect(() => {
     if (!open) return;
     const fn = (e: MouseEvent) => {
-      if (!triggerRef.current?.contains(e.target as Node))
+      const target = e.target as Node;
+      if (!triggerRef.current?.contains(target) && !menuRef.current?.contains(target))
         setOpen(false);
     };
     document.addEventListener('mousedown', fn);
@@ -161,6 +163,7 @@ export default function StatusActionMenu({
 
       {mounted && open && createPortal(
         <div
+          ref={menuRef}
           style={{
             position: 'absolute',
             top: pos.top,
