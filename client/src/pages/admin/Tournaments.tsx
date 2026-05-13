@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,23 +30,28 @@ import StatusFilterBar from "@/components/admin/StatusFilterBar";
 const AdminTournaments: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { tournaments, isLoading, addTournament, updateTournament, deleteTournament } = useAdminTournaments();
+  const { tournaments: fetchedTournaments, isLoading, addTournament, updateTournament, deleteTournament } = useAdminTournaments();
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const { success, error: toastError } = useToast();
+
+  useEffect(() => {
+    if (fetchedTournaments) setTournaments(fetchedTournaments);
+  }, [fetchedTournaments]);
 
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [confirmStatus, setConfirmStatus] = useState<{
-    tournament: Tournament;
+    item: Tournament;
     newStatus: ItemStatus | 'restore';
   } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<Tournament | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [previewData, setPreviewData] = useState<Tournament | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
-  const [editingRecord, setEditingRecord] = useState<Tournament | null>(null);
+  const [editingTournament, setEditingTournament] = useState<Tournament | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedBrochure, setSelectedBrochure] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
@@ -92,7 +97,7 @@ const AdminTournaments: React.FC = () => {
   }, [tournaments, activeTab, searchQuery]);
 
   const handleAdd = () => {
-    setEditingRecord(null);
+    setEditingTournament(null);
     setSelectedTournament(null);
     setSelectedFile(null);
     setSelectedBrochure(null);
@@ -119,10 +124,10 @@ const AdminTournaments: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleClose = () => {
+  const handleModalClose = () => {
     if (isSubmitting) return;
     setIsModalOpen(false);
-    setEditingRecord(null);
+    setEditingTournament(null);
     setSelectedTournament(null);
   };
 
@@ -139,23 +144,23 @@ const AdminTournaments: React.FC = () => {
     setIsPreviewOpen(true);
   };
 
-  const handleEdit = (t: Tournament) => {
-    setSelectedTournament(t);
-    setEditingRecord(t);
+  const handleEdit = (tournament: Tournament) => {
+    setEditingTournament(tournament); // set data FIRST
+    setSelectedTournament(tournament);
     setSelectedFile(null);
     setSelectedBrochure(null);
-    setPreviewUrl(t.imageUrl || "");
+    setPreviewUrl(tournament.imageUrl || "");
     setFormData({ 
-      ...t, 
-      startDate: t.startDate ? new Date(t.startDate).toISOString().split('T')[0] : "",
-      endDate: t.endDate ? new Date(t.endDate).toISOString().split('T')[0] : "",
-      regStartDate: t.regStartDate ? new Date(t.regStartDate).toISOString().split('T')[0] : "",
-      regEndDate: t.regEndDate ? new Date(t.regEndDate).toISOString().split('T')[0] : "",
-      posterOrientation: t.posterOrientation || "LANDSCAPE",
-      entryFee: t.entryFee || 0,
-      registrationDeadline: t.regEndDate ? new Date(t.regEndDate).toISOString().split('T')[0] : ""
+      ...tournament,
+      startDate: tournament.startDate ? new Date(tournament.startDate).toISOString().split('T')[0] : "",
+      endDate: tournament.endDate ? new Date(tournament.endDate).toISOString().split('T')[0] : "",
+      regStartDate: tournament.regStartDate ? new Date(tournament.regStartDate).toISOString().split('T')[0] : "",
+      regEndDate: tournament.regEndDate ? new Date(tournament.regEndDate).toISOString().split('T')[0] : "",
+      posterOrientation: tournament.posterOrientation || "LANDSCAPE",
+      entryFee: tournament.entryFee || 0,
+      registrationDeadline: tournament.regEndDate ? new Date(tournament.regEndDate).toISOString().split('T')[0] : ""
     });
-    setIsModalOpen(true);
+    setIsModalOpen(true); // open modal AFTER
   };
 
   const handleStatusChange = async (
@@ -170,6 +175,15 @@ const AdminTournaments: React.FC = () => {
       });
 
       if (!response.data) throw new Error('Failed to update status');
+
+      // Update local state immediately:
+      setTournaments(prev => prev.map(t =>
+        t.id === tournament.id
+          ? { ...t, status: statusToSave }
+          : t
+      ));
+
+      setConfirmStatus(null);
 
       const label = newStatus === 'restore'
         ? 'Restored to active'
@@ -212,8 +226,8 @@ const AdminTournaments: React.FC = () => {
     if (selectedBrochure) data.append("brochure", selectedBrochure);
 
     try {
-      if (selectedTournament?.id) {
-        await updateTournament(selectedTournament.id, data);
+      if (editingTournament?.id) {
+        await updateTournament(editingTournament.id, data);
         success("Tournament updated successfully");
       } else {
         await addTournament(data);
@@ -227,15 +241,17 @@ const AdminTournaments: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!selectedTournament) return;
+  const handleDelete = async (tournament: Tournament) => {
     setIsDeleting(true);
     try {
-      await deleteTournament(selectedTournament.id);
-      success("Tournament dismantled successfully");
-      setIsConfirmOpen(false);
+      await api.delete(`/tournaments/admin/delete/${tournament.id}`);
+      // Remove from local state:
+      setTournaments(prev => prev.filter(t => t.id !== tournament.id));
+      setConfirmDelete(null);
+      success('Tournament deleted');
+      queryClient.invalidateQueries({ queryKey: ["tournaments"] });
     } catch (err) {
-      toastError("Failed to delete tournament.");
+      toastError('Failed to delete tournament');
     } finally {
       setIsDeleting(false);
     }
@@ -305,12 +321,12 @@ const AdminTournaments: React.FC = () => {
       <StatusActionMenu
         currentStatus={resolveStatus(t.startDate, t.endDate, t.status)}
         onEdit={() => handleEdit(t)}
-        onDelete={() => { setSelectedTournament(t); setIsConfirmOpen(true); }}
+        onDelete={() => setConfirmDelete(t)}
         onStatusChange={(newStatus) => {
           if (newStatus === 'restore') {
             handleStatusChange(t, 'restore');
           } else {
-            setConfirmStatus({ tournament: t, newStatus });
+            setConfirmStatus({ item: t, newStatus });
           }
         }}
       />
@@ -344,7 +360,7 @@ const AdminTournaments: React.FC = () => {
             const original = tournaments.find(t => t.id === row.id);
             if (original) handleEdit(original);
           }}
-          onDelete={(t) => { setSelectedTournament(t); setIsConfirmOpen(true); }}
+          onDelete={(t) => setConfirmDelete(t)}
           entityName="tournaments"
           onAddFirst={handleAdd}
           renderActions={(row) => row.actions}
@@ -354,14 +370,14 @@ const AdminTournaments: React.FC = () => {
       {/* Form Modal */}
       <AdminModal
         isOpen={isModalOpen}
-        onClose={handleClose}
-        title={editingRecord ? "Update Tournament Arena" : "Construct New Arena"}
+        onClose={handleModalClose}
+        title={editingTournament ? "Update Tournament Arena" : "Construct New Arena"}
         footer={
           <>
             <Button
               variant="ghost"
               disabled={isSubmitting}
-              onClick={handleClose}
+              onClick={handleModalClose}
               className="text-uca-text-muted hover:text-uca-text-primary"
             >
               Cancel
@@ -379,14 +395,14 @@ const AdminTournaments: React.FC = () => {
               ) : (
                 <>
                   <Check className="size-4" />
-                  {editingRecord ? "Save Changes" : "Create Arena"}
+                  {editingTournament ? "Save Changes" : "Create Arena"}
                 </>
               )}
             </Button>
           </>
         }
       >
-        <div className="space-y-6 py-2" key={editingRecord?.id ?? 'new'}>
+        <div className="space-y-6 py-2" key={editingTournament?.id ?? 'new'}>
           <div className="flex justify-end">
             <Button
               type="button"
@@ -623,9 +639,9 @@ const AdminTournaments: React.FC = () => {
       </Dialog>
 
       <ConfirmDialog 
-        isOpen={isConfirmOpen}
-        onCancel={() => setIsConfirmOpen(false)}
-        onConfirm={handleDelete}
+        isOpen={!!confirmDelete}
+        onCancel={() => setConfirmDelete(null)}
+        onConfirm={() => confirmDelete && handleDelete(confirmDelete)}
         isLoading={isDeleting}
         title="Dismantle Arena?"
         description="This will permanently remove the tournament and all player registrations from the system. This action cannot be undone."
@@ -637,20 +653,16 @@ const AdminTournaments: React.FC = () => {
         title={`Mark as ${confirmStatus?.newStatus}?`}
         description={
           confirmStatus?.newStatus === 'cancelled'
-            ? 'This will cancel the tournament. Registrations will be notified.'
+            ? 'This tournament will be cancelled. Registered players should be notified.'
             : confirmStatus?.newStatus === 'rejected'
             ? 'This tournament will be marked as rejected.'
-            : 'This will mark the tournament as completed.'
+            : 'This tournament will be marked as completed.'
         }
         confirmLabel={`Yes, mark as ${confirmStatus?.newStatus}`}
         onConfirm={() => {
           if (confirmStatus) {
-            handleStatusChange(
-              confirmStatus.tournament,
-              confirmStatus.newStatus
-            );
+            handleStatusChange(confirmStatus.item, confirmStatus.newStatus);
           }
-          setConfirmStatus(null);
         }}
         onCancel={() => setConfirmStatus(null)}
       />

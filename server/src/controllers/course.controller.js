@@ -1,3 +1,4 @@
+import prisma from '../../lib/prisma.js';
 import * as courseService from '../services/course.service.js';
 
 const VALID_AGE_GROUPS = ['CHILDREN', 'TEENAGERS', 'ADULTS'];
@@ -133,10 +134,14 @@ export const updateCourseStatus = async (req, res) => {
       return res.status(400).json({ error: 'Invalid status' });
     }
 
-    const updated = await courseService.updateCourse(req.params.id, { status });
+    const updated = await prisma.course.update({
+      where: { id: req.params.id },
+      data: { status }
+    });
 
     res.json(updated);
   } catch (error) {
+    console.error('PATCH error:', error);
     res.status(500).json({ error: 'Update failed' });
   }
 };

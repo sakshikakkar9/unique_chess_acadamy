@@ -31,19 +31,24 @@ const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Satur
 const AdminCourses = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { courses, isLoading, addCourse, updateCourse, deleteCourse } = useAdminCourses();
+  const { courses: fetchedCourses, isLoading, addCourse, updateCourse, deleteCourse } = useAdminCourses();
+  const [courses, setCourses] = useState<any[]>([]);
   const { success, error: toastError } = useToast();
+
+  useEffect(() => {
+    if (fetchedCourses) setCourses(fetchedCourses);
+  }, [fetchedCourses]);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
   const [confirmStatus, setConfirmStatus] = useState<{
-    course: any;
+    item: any;
     newStatus: ItemStatus | 'restore';
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
-  const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [editingCourse, setEditingCourse] = useState<any | null>(null);
   
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -127,14 +132,14 @@ const AdminCourses = () => {
       if (selectedFile) data.append("image", selectedFile);
       if (selectedBrochure) data.append("brochure", selectedBrochure);
 
-      if (selectedCourse) {
-        await updateCourse(selectedCourse.id, data);
+      if (editingCourse?.id) {
+        await updateCourse(editingCourse.id, data);
         success("Course updated successfully");
       } else {
         await addCourse(data);
         success("Course created successfully");
       }
-      closeModal();
+      handleModalClose();
     } catch (err) {
       toastError("Failed to save course. Please try again.");
     } finally {
@@ -142,25 +147,27 @@ const AdminCourses = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!selectedCourse) return;
+  const handleDelete = async (course: any) => {
     setIsDeleting(true);
     try {
-      await deleteCourse(selectedCourse.id);
-      success("Course removed successfully");
-      setIsConfirmOpen(false);
+      await api.delete(`/courses/${course.id}`);
+      // Remove from local state:
+      setCourses(prev => prev.filter(c => c.id !== course.id));
+      setConfirmDelete(null);
+      success('Course deleted');
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
     } catch (err) {
-      toastError("Failed to delete course.");
+      toastError('Failed to delete course');
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const closeModal = () => {
+  const handleModalClose = () => {
     if (isSubmitting) return;
     setIsModalOpen(false);
     setSelectedCourse(null);
-    setEditingRecord(null);
+    setEditingCourse(null);
     setSelectedFile(null);
     setSelectedBrochure(null);
     setPreviewUrl("");
@@ -216,7 +223,7 @@ const AdminCourses = () => {
   ];
 
   const handleAdd = () => {
-    setEditingRecord(null);
+    setEditingCourse(null);
     setSelectedCourse(null);
     setSelectedFile(null);
     setSelectedBrochure(null);
@@ -241,17 +248,17 @@ const AdminCourses = () => {
     setIsModalOpen(true);
   };
 
-  const handleEdit = (c: any) => {
-    setEditingRecord(c);
-    setSelectedCourse(c);
+  const handleEdit = (course: any) => {
+    setEditingCourse(course); // set data FIRST
+    setSelectedCourse(course);
     setFormData({
-      ...c,
-      posterOrientation: c.posterOrientation || "LANDSCAPE",
-      startDate: c.startDate ? new Date(c.startDate).toISOString().split('T')[0] : "",
-      endDate: c.endDate ? new Date(c.endDate).toISOString().split('T')[0] : ""
+      ...course,
+      posterOrientation: course.posterOrientation || "LANDSCAPE",
+      startDate: course.startDate ? new Date(course.startDate).toISOString().split('T')[0] : "",
+      endDate: course.endDate ? new Date(course.endDate).toISOString().split('T')[0] : ""
     });
-    setPreviewUrl(c.custom_banner_url);
-    setIsModalOpen(true);
+    setPreviewUrl(course.custom_banner_url);
+    setIsModalOpen(true); // open modal AFTER
   };
 
   const handleStatusChange = async (
@@ -267,6 +274,14 @@ const AdminCourses = () => {
 
       if (!response.data) throw new Error('Failed to update status');
 
+      // Update local state immediately:
+      setCourses(prev => prev.map(c =>
+        c.id === course.id
+          ? { ...c, status: statusToSave }
+          : c
+      ));
+
+      setConfirmStatus(null);
       const label = newStatus === 'restore'
         ? 'Restored to active'
         : `Marked as ${newStatus}`;
@@ -315,12 +330,12 @@ const AdminCourses = () => {
       <StatusActionMenu
         currentStatus={resolveStatus(c.startDate, c.endDate, c.status)}
         onEdit={() => handleEdit(c)}
-        onDelete={() => { setSelectedCourse(c); setIsConfirmOpen(true); }}
+        onDelete={() => setConfirmDelete(c)}
         onStatusChange={(newStatus) => {
           if (newStatus === 'restore') {
             handleStatusChange(c, 'restore');
           } else {
-            setConfirmStatus({ course: c, newStatus });
+            setConfirmStatus({ item: c, newStatus });
           }
         }}
       />
@@ -354,7 +369,7 @@ const AdminCourses = () => {
             const original = courses.find((c: any) => c.id === row.id);
             if (original) handleEdit(original);
           }}
-          onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
+          onDelete={(c) => setConfirmDelete(c)}
           entityName="courses"
           onAddFirst={handleAdd}
           renderActions={(row) => row.actions}
@@ -393,11 +408,11 @@ const AdminCourses = () => {
       {/* Form Modal */}
       <AdminModal
         isOpen={isModalOpen}
-        onClose={closeModal}
-        title={editingRecord ? "Update Program" : "Create Program"}
+        onClose={handleModalClose}
+        title={editingCourse ? "Update Program" : "Create Program"}
         footer={
           <>
-            <Button variant="ghost" disabled={isSubmitting} onClick={closeModal} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
+            <Button variant="ghost" disabled={isSubmitting} onClick={handleModalClose} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
             <Button
               onClick={handleSave}
               disabled={isSubmitting}
@@ -411,14 +426,14 @@ const AdminCourses = () => {
               ) : (
                 <>
                   <Check className="size-4" />
-                  {editingRecord ? "Save Changes" : "Create Course"}
+                  {editingCourse ? "Save Changes" : "Create Course"}
                 </>
               )}
             </Button>
           </>
         }
       >
-        <div className="space-y-6 py-2" key={editingRecord?.id ?? 'new'}>
+        <div className="space-y-6 py-2" key={editingCourse?.id ?? 'new'}>
           <div className="grid grid-cols-2 gap-4">
             <DatePickerField
               label="Start Date"
@@ -613,9 +628,9 @@ const AdminCourses = () => {
       </AdminModal>
 
       <ConfirmDialog 
-        isOpen={isConfirmOpen}
-        onCancel={() => setIsConfirmOpen(false)}
-        onConfirm={handleDelete}
+        isOpen={!!confirmDelete}
+        onCancel={() => setConfirmDelete(null)}
+        onConfirm={() => confirmDelete && handleDelete(confirmDelete)}
         isLoading={isDeleting}
         title="Delete Course?" 
         description="This will permanently remove this program from the database." 
@@ -628,12 +643,8 @@ const AdminCourses = () => {
         confirmLabel={`Yes, mark as ${confirmStatus?.newStatus}`}
         onConfirm={() => {
           if (confirmStatus) {
-            handleStatusChange(
-              confirmStatus.course,
-              confirmStatus.newStatus
-            );
+            handleStatusChange(confirmStatus.item, confirmStatus.newStatus);
           }
-          setConfirmStatus(null);
         }}
         onCancel={() => setConfirmStatus(null)}
       />

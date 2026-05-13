@@ -23,10 +23,14 @@ export const updateTournamentStatus = async (req, res) => {
       return res.status(400).json({ error: 'Invalid status' });
     }
 
-    const updated = await tournamentService.updateTournament(req.params.id, { status });
+    const updated = await prisma.tournament.update({
+      where: { id: parseInt(req.params.id) },
+      data: { status }
+    });
 
     res.json(updated);
   } catch (error) {
+    console.error('PATCH error:', error);
     res.status(500).json({ error: 'Update failed' });
   }
 };
