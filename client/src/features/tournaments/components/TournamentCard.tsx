@@ -4,6 +4,7 @@ import { MapPin, Calendar, Ticket, ArrowRight, Trophy } from "lucide-react";
 import { Tournament } from "@/types";
 import { cn } from "@/lib/utils";
 import { fadeUp } from "@/components/shared/motion";
+import { resolveStatus, STATUS_CONFIG } from "@/lib/statusUtils";
 
 interface TournamentCardProps {
   tournament: Tournament;
@@ -12,6 +13,18 @@ interface TournamentCardProps {
 }
 
 export const TournamentCard = ({ tournament, delay = 0, onRegister }: TournamentCardProps) => {
+  const status = resolveStatus(tournament.startDate, tournament.endDate, tournament.status);
+  const statusConfig = STATUS_CONFIG[status];
+
+  const now = new Date();
+  const regStart = tournament.regStartDate ? new Date(tournament.regStartDate) : null;
+  const regEnd = tournament.regEndDate ? new Date(tournament.regEndDate) : null;
+  if (regEnd) regEnd.setHours(23, 59, 59, 999);
+
+  const isRegOpen = (!regStart || now >= regStart) && (!regEnd || now <= regEnd);
+  const isInactive = status === 'cancelled' || status === 'rejected' || status === 'completed';
+  const isEnrollable = isRegOpen && !isInactive;
+
   return (
     <motion.div
       variants={fadeUp}
@@ -19,15 +32,17 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
       transition={{ delay }}
-      className="card-pro group border-l-[3px] border-l-sky-600 hover:border-l-sky-700 flex flex-col h-full bg-white p-6 rounded-2xl shadow-sm border border-slate-100"
+      className={cn(
+        "card-pro group border-l-[3px] border-l-sky-600 hover:border-l-sky-700 flex flex-col h-full bg-white p-6 rounded-2xl shadow-sm border border-slate-100 transition-all duration-300",
+        (status === 'cancelled' || status === 'rejected') && "grayscale opacity-50 pointer-events-none"
+      )}
     >
       <div className="flex justify-between items-start mb-8">
         <div className={cn(
           "px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider",
-          tournament.category ? 'bg-sky-50 text-sky-600 border border-sky-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+          statusConfig.badge
         )}>
-          {/* ✅ CHANGE: Uses category or default status */}
-          {tournament.category || 'Upcoming'}
+          {statusConfig.label}
         </div>
 
         <div className="bg-[#f8fafc] px-4 py-1.5 rounded-full border border-[#e2e8f0]">
@@ -77,11 +92,17 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
       <button 
         onClick={(e) => {
           e.preventDefault();
-          onRegister();
+          if (isEnrollable) onRegister();
         }}
-        className="mt-auto w-full py-3.5 rounded-xl border border-[#0f172a] text-[#0f172a] font-bold text-[14px] transition-all hover:bg-[#0f172a] hover:text-white flex items-center justify-center gap-2 group/btn"
+        disabled={!isEnrollable}
+        className={cn(
+          "mt-auto w-full py-3.5 rounded-xl border border-[#0f172a] text-[#0f172a] font-bold text-[14px] transition-all flex items-center justify-center gap-2 group/btn",
+          isEnrollable
+            ? "hover:bg-[#0f172a] hover:text-white"
+            : "opacity-50 cursor-not-allowed border-slate-300 text-slate-400"
+        )}
       >
-        View Details
+        {status === 'completed' ? 'Tournament Ended' : isRegOpen ? 'View Details' : 'Registration Closed'}
         <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
       </button>
     </motion.div>

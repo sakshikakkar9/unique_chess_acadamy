@@ -3,6 +3,12 @@ import prisma from '../../lib/prisma.js';
 // --- GET ALL TOURNAMENTS ---
 export const getAllTournaments = async () => {
   return await prisma.tournament.findMany({
+    where: {
+      OR: [
+        { status: { not: 'deleted' } },
+        { status: null }
+      ]
+    },
     include: {
       results: true,
       _count: {
