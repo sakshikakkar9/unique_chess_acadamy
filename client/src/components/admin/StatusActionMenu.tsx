@@ -2,11 +2,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
-  MoreVertical as EllipsisVerticalIcon,
+  EllipsisVertical as EllipsisVerticalIcon,
   Pencil as PencilSquareIcon,
   Trash2 as TrashIcon,
-  CheckCircle as CheckCircleIcon,
-  XCircle as XCircleIcon,
+  CircleCheck as CheckCircleIcon,
+  CircleX as XCircleIcon,
   Slash as NoSymbolIcon,
   RotateCcw as ArrowPathIcon,
 } from 'lucide-react';
@@ -26,7 +26,12 @@ export default function StatusActionMenu({
   onStatusChange,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Close on outside click
@@ -154,7 +159,7 @@ export default function StatusActionMenu({
         <EllipsisVerticalIcon className="size-5 text-slate-400" />
       </button>
 
-      {open && createPortal(
+      {mounted && open && createPortal(
         <div
           style={{
             position: 'absolute',

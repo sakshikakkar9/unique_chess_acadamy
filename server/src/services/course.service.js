@@ -1,5 +1,11 @@
 import prisma from '../../lib/prisma.js';
 
+const parseDate = (date) => {
+  if (!date || date === "null" || date === "undefined" || date === "") return null;
+  const d = new Date(date);
+  return isNaN(d.getTime()) ? null : d;
+};
+
 // --- Course Services ---
 
 /**

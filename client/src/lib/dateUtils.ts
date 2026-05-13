@@ -3,7 +3,9 @@
  */
 export const toDisplayDate = (iso: string): string => {
   if (!iso) return '—';
-  const [y, m, d] = iso.split('-');
+  // Handle full ISO datetime strings by splitting at 'T'
+  const dateOnly = iso.split('T')[0];
+  const [y, m, d] = dateOnly.split('-');
   if (!y || !m || !d) return iso;
   return `${d}/${m}/${y}`;
 };
