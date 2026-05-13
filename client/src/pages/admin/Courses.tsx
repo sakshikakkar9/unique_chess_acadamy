@@ -15,6 +15,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import RichTextEditor from "@/components/shared/admin/RichTextEditor";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/lib/utils";
+import { resolveStatus, ItemStatus } from "@/lib/statusUtils";
+import { toDisplayDate, todayISO } from "@/lib/dateUtils";
+import DatePickerField from "@/components/admin/DatePickerField";
+import TimePickerField from "@/components/admin/TimePickerField";
+import StatusBadge from "@/components/admin/StatusBadge";
+import StatusActionMenu from "@/components/admin/StatusActionMenu";
+import StatusFilterBar from "@/components/admin/StatusFilterBar";
 
 const ITEMS_PER_PAGE = 8;
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -26,6 +33,10 @@ const AdminCourses = () => {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmStatus, setConfirmStatus] = useState<{
+    course: any;
+    newStatus: ItemStatus | 'restore';
+  } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
@@ -42,6 +53,8 @@ const AdminCourses = () => {
     days: [],
     fee: 0,
     classTime: "",
+    startDate: "",
+    endDate: "",
     duration: "",
     contactDetails: "",
     posterOrientation: "LANDSCAPE",
@@ -56,20 +69,22 @@ const AdminCourses = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [levelFilter, setLevelFilter] = useState("ALL");
+  const [activeFilter, setActiveFilter] = useState("all");
 
   // Reset page when searching or filtering
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, levelFilter]);
+  }, [searchTerm, levelFilter, activeFilter]);
 
   const filteredCourses = useMemo(() => {
     if (!courses || !Array.isArray(courses)) return [];
     return courses.filter((course: any) => {
         const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesLevel = levelFilter === "ALL" || course.skillLevel === levelFilter;
-        return matchesSearch && matchesLevel;
+        const matchesStatus = activeFilter === 'all' || resolveStatus(course.startDate, course.endDate, course.status) === activeFilter;
+        return matchesSearch && matchesLevel && matchesStatus;
     });
-  }, [courses, searchTerm, levelFilter]);
+  }, [courses, searchTerm, levelFilter, activeFilter]);
 
   const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
   const paginatedCourses = useMemo(() => {
@@ -97,6 +112,8 @@ const AdminCourses = () => {
       data.append("ageGroup", formData.ageGroup);
       data.append("skillLevel", formData.skillLevel);
       data.append("classTime", formData.classTime);
+      if (formData.startDate) data.append("startDate", new Date(formData.startDate).toISOString());
+      if (formData.endDate) data.append("endDate", new Date(formData.endDate).toISOString());
       data.append("duration", formData.duration);
       data.append("fee", String(formData.fee));
       data.append("mode", formData.mode);
@@ -154,6 +171,8 @@ const AdminCourses = () => {
       days: [], 
       fee: 0,
       classTime: "",
+      startDate: "",
+      endDate: "",
       duration: "",
       contactDetails: "",
       posterOrientation: "LANDSCAPE",
@@ -209,6 +228,8 @@ const AdminCourses = () => {
       days: [],
       fee: 0,
       classTime: "",
+      startDate: "",
+      endDate: "",
       duration: "",
       contactDetails: "",
       posterOrientation: "LANDSCAPE",
@@ -220,9 +241,40 @@ const AdminCourses = () => {
   const handleEdit = (c: any) => {
     setEditingRecord(c);
     setSelectedCourse(c);
-    setFormData({ ...c, posterOrientation: c.posterOrientation || "LANDSCAPE" });
+    setFormData({
+      ...c,
+      posterOrientation: c.posterOrientation || "LANDSCAPE",
+      startDate: c.startDate ? new Date(c.startDate).toISOString().split('T')[0] : "",
+      endDate: c.endDate ? new Date(c.endDate).toISOString().split('T')[0] : ""
+    });
     setPreviewUrl(c.custom_banner_url);
     setIsModalOpen(true);
+  };
+
+  const handleStatusChange = async (
+    course: any,
+    newStatus: ItemStatus | 'restore'
+  ) => {
+    const statusToSave = newStatus === 'restore' ? null : newStatus;
+
+    try {
+      const response = await fetch(`/api/admin/courses/status/${course.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: statusToSave }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update status');
+
+      const label = newStatus === 'restore'
+        ? 'Restored to active'
+        : `Marked as ${newStatus}`;
+      success(label);
+      window.location.reload();
+
+    } catch (err) {
+      toastError('Failed to update status');
+    }
   };
 
   const rows = paginatedCourses.map(c => ({
@@ -238,9 +290,7 @@ const AdminCourses = () => {
             <span className={cn("text-[9px] font-black uppercase px-1.5 py-0.5 rounded", getLevelPillStyles(c.skillLevel))}>
               {c.skillLevel}
             </span>
-            <span className={cn("text-[9px] font-black uppercase px-1.5 py-0.5 rounded", getModePillStyles(c.mode))}>
-              {c.mode}
-            </span>
+            <StatusBadge status={resolveStatus(c.startDate, c.endDate, c.status)} />
           </div>
         </div>
       </div>
@@ -259,6 +309,20 @@ const AdminCourses = () => {
       <div className="font-bold text-uca-accent-blue tabular-nums">
         ₹{c.fee.toLocaleString()}
       </div>
+    ),
+    actions: (
+      <StatusActionMenu
+        currentStatus={resolveStatus(c.startDate, c.endDate, c.status)}
+        onEdit={() => handleEdit(c)}
+        onDelete={() => { setSelectedCourse(c); setIsConfirmOpen(true); }}
+        onStatusChange={(newStatus) => {
+          if (newStatus === 'restore') {
+            handleStatusChange(c, 'restore');
+          } else {
+            setConfirmStatus({ course: c, newStatus });
+          }
+        }}
+      />
     )
   }));
 
@@ -270,40 +334,14 @@ const AdminCourses = () => {
       onAction={handleAdd}
     >
       <div className="space-y-6">
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-uca-bg-surface border border-uca-border p-4 rounded-xl">
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="relative flex-1 md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-uca-text-muted" />
-              <Input
-                placeholder="Search courses..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-10 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg"
-              />
-            </div>
-
-            <Select value={levelFilter} onValueChange={setLevelFilter}>
-              <SelectTrigger className="h-10 w-40 bg-uca-bg-base border-uca-border text-[10px] font-black uppercase tracking-widest">
-                <div className="flex items-center gap-2">
-                  <Filter className="size-3.5 text-uca-text-muted" />
-                  <SelectValue placeholder="Level" />
-                </div>
-              </SelectTrigger>
-              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
-                <SelectItem value="ALL">All Levels</SelectItem>
-                {["BEGINNER", "INTERMEDIATE", "ADVANCED", "GRANDMASTER"].map(l => (
-                  <SelectItem key={l} value={l}>{l}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-uca-accent-blue/10 rounded-full border border-uca-accent-blue/20">
-            <BookOpen className="size-3.5 text-uca-accent-blue" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-uca-accent-blue">Total: {filteredCourses.length}</span>
-          </div>
-        </div>
+        <StatusFilterBar
+          items={courses}
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+          searchValue={searchTerm}
+          onSearchChange={setSearchTerm}
+          searchPlaceholder="Search courses..."
+        />
 
         {/* Table Area */}
         <AdminTable
@@ -318,6 +356,7 @@ const AdminCourses = () => {
           onDelete={(c) => { setSelectedCourse(c); setIsConfirmOpen(true); }}
           entityName="courses"
           onAddFirst={handleAdd}
+          renderActions={(row) => row.actions}
         />
 
         {/* Pagination */}
@@ -379,6 +418,22 @@ const AdminCourses = () => {
         }
       >
         <div className="space-y-6 py-2" key={editingRecord?.id ?? 'new'}>
+          <div className="grid grid-cols-2 gap-4">
+            <DatePickerField
+              label="Start Date"
+              value={formData.startDate || ""}
+              onChange={(val) => setFormData({...formData, startDate: val})}
+              helperText="Optional"
+            />
+            <DatePickerField
+              label="End Date"
+              value={formData.endDate || ""}
+              minDate={formData.startDate || todayISO()}
+              onChange={(val) => setFormData({...formData, endDate: val})}
+              helperText="Optional"
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Course Title</Label>
@@ -482,8 +537,11 @@ const AdminCourses = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Class Time</Label>
-              <Input className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" value={formData.classTime || ""} onChange={(e) => setFormData({...formData, classTime: e.target.value})} placeholder="e.g. 18:00" />
+              <TimePickerField
+                label="Class Time"
+                value={formData.classTime || ""}
+                onChange={(val) => setFormData({...formData, classTime: val})}
+              />
             </div>
           </div>
 
@@ -560,6 +618,23 @@ const AdminCourses = () => {
         isLoading={isDeleting}
         title="Delete Course?" 
         description="This will permanently remove this program from the database." 
+      />
+
+      <ConfirmDialog
+        isOpen={!!confirmStatus}
+        title={`Mark as ${confirmStatus?.newStatus}?`}
+        description={`This will mark the course as ${confirmStatus?.newStatus}.`}
+        confirmLabel={`Yes, mark as ${confirmStatus?.newStatus}`}
+        onConfirm={() => {
+          if (confirmStatus) {
+            handleStatusChange(
+              confirmStatus.course,
+              confirmStatus.newStatus
+            );
+          }
+          setConfirmStatus(null);
+        }}
+        onCancel={() => setConfirmStatus(null)}
       />
     </AdminShell>
   );

@@ -20,6 +20,7 @@ interface AdminTableProps {
   isLoading?: boolean;
   entityName?: string;
   onAddFirst?: () => void;
+  renderActions?: (row: any) => React.ReactNode;
 }
 
 const AdminTable: React.FC<AdminTableProps> = ({
@@ -116,10 +117,14 @@ const AdminTable: React.FC<AdminTableProps> = ({
                 ))}
                 <td className="px-6 py-2 text-right" onClick={(e) => e.stopPropagation()}>
                   <div className="flex justify-end">
-                    <RowActionMenu
-                      onEdit={() => onEdit(row)}
-                      onDelete={() => onDelete(row)}
-                    />
+                    {renderActions ? (
+                      renderActions(row)
+                    ) : (
+                      <RowActionMenu
+                        onEdit={() => onEdit(row)}
+                        onDelete={() => onDelete(row)}
+                      />
+                    )}
                   </div>
                 </td>
               </tr>
@@ -157,10 +162,14 @@ const AdminTable: React.FC<AdminTableProps> = ({
               className="absolute top-1 right-1"
               onClick={(e) => e.stopPropagation()}
             >
-              <RowActionMenu
-                onEdit={() => onEdit(row)}
-                onDelete={() => onDelete(row)}
-              />
+              {renderActions ? (
+                renderActions(row)
+              ) : (
+                <RowActionMenu
+                  onEdit={() => onEdit(row)}
+                  onDelete={() => onDelete(row)}
+                />
+              )}
             </div>
           </div>
         ))}

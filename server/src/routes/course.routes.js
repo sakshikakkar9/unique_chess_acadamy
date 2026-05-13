@@ -9,6 +9,7 @@ import {
   createCourse,
   updateCourse,
   deleteCourse,
+  updateCourseStatus,
   enrollInCourse,
   getAllEnrollments,
   updateEnrollmentStatus, // Matches the renamed function in your controller
@@ -92,5 +93,6 @@ router.post('/:id/enroll', handleEnrollmentUpload, enrollInCourse);
 router.post('/', verifyAdmin, handleCourseUpload, createCourse);
 router.put('/:id', verifyAdmin, handleCourseUpload, updateCourse);
 router.delete('/:id', verifyAdmin, deleteCourse);
+router.patch('/status/:id', verifyAdmin, updateCourseStatus);
 
 export default router;
