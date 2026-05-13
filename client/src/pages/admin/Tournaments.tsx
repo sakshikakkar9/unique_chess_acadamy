@@ -162,7 +162,7 @@ const AdminTournaments: React.FC = () => {
     const statusToSave = newStatus === 'restore' ? null : newStatus;
 
     try {
-      const response = await fetch(`/api/admin/tournaments/admin/status/${tournament.id}`, {
+      const response = await fetch(`/api/tournaments/admin/status/${tournament.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: statusToSave }),

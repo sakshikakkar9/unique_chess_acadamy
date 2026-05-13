@@ -258,7 +258,7 @@ const AdminCourses = () => {
     const statusToSave = newStatus === 'restore' ? null : newStatus;
 
     try {
-      const response = await fetch(`/api/admin/courses/status/${course.id}`, {
+      const response = await fetch(`/api/courses/status/${course.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: statusToSave }),
