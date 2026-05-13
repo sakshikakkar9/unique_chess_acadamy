@@ -72,7 +72,7 @@ export default function StudentDetailPage() {
           {/* Left Column: Personal Info */}
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-uca-bg-surface border border-uca-border rounded-2xl overflow-hidden shadow-sm">
-              <div className="h-24 bg-uca-navy relative border-b border-uca-border">
+              <div className="h-24 bg-uca-sidebar-bg relative border-b border-uca-border">
                 <div className="absolute -bottom-10 left-6 size-20 rounded-2xl bg-uca-bg-surface p-1 shadow-xl border border-uca-border">
                   <div className="size-full rounded-xl bg-uca-accent-blue/10 flex items-center justify-center">
                     <User className="size-10 text-uca-accent-blue" />

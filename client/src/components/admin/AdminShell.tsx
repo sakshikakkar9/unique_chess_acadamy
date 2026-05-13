@@ -77,7 +77,7 @@ const AdminShell: React.FC<AdminShellProps> = ({
               isSidebarOpen ? "opacity-100" : "opacity-0 group-hover/sidebar:opacity-100 lg:opacity-100"
             )}>
               <span className="text-sm font-bold leading-none">UCA Admin</span>
-              <span className="text-[10px] text-uca-text-muted uppercase tracking-wider">Command Center</span>
+              <span className="text-[10px] text-uca-sidebar-text uppercase tracking-wider">Command Center</span>
             </div>
           </div>
 

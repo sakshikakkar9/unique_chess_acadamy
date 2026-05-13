@@ -562,7 +562,7 @@ export default function RegistrationsPage() {
               <div className="p-6 bg-uca-bg-surface border-t border-uca-border flex gap-3 shrink-0">
                 {selectedItem.status === "PENDING" && (
                   <Button
-                    className="flex-1 h-12 bg-uca-navy hover:bg-uca-navy-hover text-uca-text-primary rounded-lg font-bold text-xs uppercase tracking-widest"
+                    className="flex-1 h-12 bg-uca-navy hover:bg-uca-navy-hover text-white rounded-lg font-bold text-xs uppercase tracking-widest"
                     onClick={() => handleAction(selectedItem.id, selectedItem.type, 'status', selectedItem.type === 'course' ? 'CONFIRMED' : 'APPROVED')}
                   >
                     Approve Entry

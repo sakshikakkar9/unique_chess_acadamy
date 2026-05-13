@@ -156,7 +156,7 @@ export const getAllRegistrations = async (req, res) => {
   try {
     const registrations = await prisma.registration.findMany({
       include: {
-        tournament: { select: { title: true } },
+        tournament: { select: { title: true, entryFee: true } },
         student: true
       },
       orderBy: { createdAt: 'desc' }

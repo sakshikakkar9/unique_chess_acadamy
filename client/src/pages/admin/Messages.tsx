@@ -259,7 +259,7 @@ export default function MessagesPage() {
               <div className="p-6 bg-uca-bg-surface border-t border-uca-border flex gap-3 shrink-0">
                 {selectedMessage.status === 'unread' && (
                   <Button
-                    className="flex-1 h-12 bg-uca-navy hover:bg-uca-navy-hover text-uca-text-primary rounded-lg font-bold text-xs uppercase tracking-widest"
+                    className="flex-1 h-12 bg-uca-navy hover:bg-uca-navy-hover text-white rounded-lg font-bold text-xs uppercase tracking-widest"
                     onClick={() => handleMarkAsRead(selectedMessage.id)}
                   >
                     <Check className="size-4 mr-2" />
