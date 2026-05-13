@@ -163,13 +163,13 @@ export default function MessagesPage() {
       subtitle="View and manage inquiries from the contact form."
     >
       <div className="space-y-6">
-        <div className="flex flex-col lg:flex-row justify-between items-center gap-4 bg-uca-bg-surface border border-uca-border p-4 rounded-xl">
+        <div className="flex flex-col lg:flex-row justify-between items-center gap-4 bg-uca-bg-surface border border-uca-border p-4 rounded-xl mb-6">
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto flex-1">
             <div className="relative flex-1 w-full lg:max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-uca-text-muted" />
               <Input
                 placeholder="Search messages..."
-                className="pl-10 h-10 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg"
+                className="w-full h-10 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg pl-10 pr-4 outline-none"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -215,7 +215,7 @@ export default function MessagesPage() {
         <SheetContent className="sm:max-w-xl rounded-l-[2rem] p-0 border-uca-border bg-uca-bg-base shadow-2xl overflow-y-auto">
           {selectedMessage && (
             <div className="h-full flex flex-col">
-              <div className="bg-uca-bg-surface p-8 text-white relative overflow-hidden shrink-0 border-b border-uca-border">
+              <div className="bg-uca-navy p-8 text-white relative overflow-hidden shrink-0 border-b border-uca-border">
                 <SheetHeader className="mb-6 relative z-10 text-left">
                   <div className="flex items-center gap-3 mb-4">
                     <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.2em] rounded border ${

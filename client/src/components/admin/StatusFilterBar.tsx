@@ -36,63 +36,62 @@ export default function StatusFilterBar({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-start
-                    sm:items-center justify-between gap-3 mb-5">
-
-      {/* Filter tabs */}
-      <div className="flex gap-1.5 flex-wrap">
-        {FILTER_TABS.map(tab => {
-          const n = count(tab.value);
-          const isActive = activeFilter === tab.value;
-          return (
-            <button
-              key={tab.value}
-              onClick={() => onFilterChange(tab.value)}
-              className={`flex items-center gap-1.5 px-3 py-1.5
-                          rounded-lg text-xs font-semibold
-                          border transition-all duration-150
-                          ${isActive
-                            ? 'bg-slate-900 text-white border-slate-900'
-                            : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400 hover:text-slate-700'
-                          }`}
+    <div className="flex flex-col lg:flex-row justify-between items-center gap-4 bg-uca-bg-surface border border-uca-border p-4 rounded-xl mb-6">
+      <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto flex-1">
+        {onSearchChange && (
+          <div className="relative flex-1 w-full lg:max-w-xs">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-uca-text-muted"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              {tab.label}
-              <span className={`text-[10px] font-bold px-1.5 py-0.5
-                                rounded-full min-w-[18px] text-center
-                                ${isActive
-                                  ? 'bg-white/20 text-white'
-                                  : 'bg-slate-100 text-slate-400'
-                                }`}>
-                {n}
-              </span>
-            </button>
-          );
-        })}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <input
+              type="text"
+              value={searchValue}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder={searchPlaceholder}
+              className="w-full h-10 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg pl-10 pr-4 outline-none"
+            />
+          </div>
+        )}
       </div>
 
-      {/* Search */}
-      {onSearchChange && (
-        <div className="relative w-full sm:w-60">
-          <input
-            type="text"
-            value={searchValue}
-            onChange={e => onSearchChange(e.target.value)}
-            placeholder={searchPlaceholder}
-            className="w-full border border-slate-200 rounded-xl
-                       pl-9 pr-4 py-2 text-sm bg-white
-                       focus:outline-none focus:ring-2
-                       focus:ring-blue-500/20 focus:border-blue-500
-                       placeholder:text-slate-300"
-          />
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2
-                          size-4 text-slate-400"
-               fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+      <div className="flex gap-1.5 flex-wrap w-full lg:w-auto justify-center lg:justify-end">
+        <div className="flex bg-uca-bg-base p-1 rounded-lg h-10 border border-uca-border">
+          {FILTER_TABS.map((tab) => {
+            const n = count(tab.value);
+            const isActive = activeFilter === tab.value;
+            return (
+              <button
+                key={tab.value}
+                onClick={() => onFilterChange(tab.value)}
+                className={`rounded-md px-3 sm:px-4 text-[10px] font-black uppercase tracking-widest h-8 flex items-center gap-2 transition-all ${
+                  isActive
+                    ? "bg-uca-navy text-white"
+                    : "text-uca-text-muted hover:text-uca-text-primary"
+                }`}
+              >
+                {tab.label}
+                <span
+                  className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center ${
+                    isActive ? "bg-white/20 text-white" : "bg-uca-bg-elevated text-uca-text-muted"
+                  }`}
+                >
+                  {n}
+                </span>
+              </button>
+            );
+          })}
         </div>
-      )}
+      </div>
     </div>
   );
 }

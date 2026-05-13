@@ -17,6 +17,7 @@ const AdminGallery: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [orientations, setOrientations] = useState<Record<string, 'landscape' | 'portrait' | 'square'>>({});
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -89,6 +90,33 @@ const AdminGallery: React.FC = () => {
       onAction={handleAdd}
     >
       <div className="space-y-6">
+        <div className="flex flex-col lg:flex-row justify-between items-center gap-4 bg-uca-bg-surface border border-uca-border p-4 rounded-xl mb-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto flex-1">
+            <div className="relative flex-1 w-full lg:max-w-xs">
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-uca-text-muted"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search gallery..."
+                className="w-full h-10 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg pl-10 pr-4 outline-none"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
         {isLoading ? (
           <div className="grid gap-3" style={getGridStyle()}>
             {['landscape', 'portrait', 'square', 'square', 'landscape', 'portrait', 'portrait', 'square', 'landscape'].map((o, i) => (
