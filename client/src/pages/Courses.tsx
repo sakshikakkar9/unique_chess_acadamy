@@ -3,12 +3,12 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
 import { AgeGroup, AGE_GROUP_LABELS } from "@/types";
-import { GraduationCap, BarChart3, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { GraduationCap } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 import { stagger, fadeLeft, fadeIn } from "@/components/shared/motion";
+import CourseCard from "@/features/courses/components/CourseCard";
 
 const AGE_GROUP_ORDER: AgeGroup[] = ["CHILDREN", "TEENAGERS", "ADULTS"];
 const ITEMS_PER_PAGE = 6;
@@ -116,48 +116,13 @@ export default function CoursesPage() {
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-                {paginatedCourses.map((course) => (
-                  <motion.div
+                {paginatedCourses.map((course, idx) => (
+                  <CourseCard
                     key={course.id}
-                    variants={fadeIn}
-                    initial="hidden"
-                    animate="visible"
-                    className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col h-full"
-                  >
-                    <div className="relative aspect-video bg-slate-100 overflow-hidden">
-                      <img
-                        src={course.custom_banner_url || HERO_IMAGE}
-                        alt={course.title}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-
-                    <div className="p-5 flex flex-col flex-1">
-                      <div className="flex items-center gap-4 mb-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        <span className="flex items-center gap-1"><BarChart3 className="size-3.5" /> {course.skillLevel}</span>
-                        <span className="flex items-center gap-1"><Clock className="size-3.5" /> {course.duration}</span>
-                      </div>
-
-                      <h3 className="text-lg font-bold text-slate-900 mb-2 leading-snug">
-                        {course.title}
-                      </h3>
-
-                      <p className="text-sm font-normal text-slate-500 mb-6 flex-1 line-clamp-2 leading-relaxed">
-                        {course.contactDetails}
-                      </p>
-
-                      <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <div className="text-lg font-bold text-slate-900">₹{course.fee.toLocaleString()}</div>
-                        <Button
-                          onClick={() => navigate(`/courses/${course.id}/enroll`)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg h-10 px-4 font-bold text-xs uppercase tracking-wider"
-                        >
-                          Enroll Now
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
+                    course={course}
+                    delay={idx * 0.1}
+                    onEnroll={() => navigate(`/courses/${course.id}/enroll`)}
+                  />
                 ))}
               </div>
 

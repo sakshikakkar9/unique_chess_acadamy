@@ -15,18 +15,20 @@ const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1529699211952-734e80c4d
 const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
   const status = resolveStatus(course.startDate, course.endDate, course.status);
   const statusConfig = STATUS_CONFIG[status];
-  const isInactive = status === 'cancelled' || status === 'rejected' || status === 'completed';
-  const isGated = isInactive || status === 'completed'; // For courses, completed might also gate enrollment
+  const isActive = ['upcoming', 'ongoing'].includes(status);
+
+  const overlayConfig = {
+    upcoming: { label: null, color: '' },
+    ongoing: { label: 'Live Now', color: 'bg-green-500' },
+    completed: { label: 'Completed', color: 'bg-slate-500' },
+    rejected: { label: 'Unavailable', color: 'bg-red-500' },
+    cancelled: { label: 'Cancelled', color: 'bg-orange-500' },
+  }[status];
 
   const ageRange =
     course.minAge && course.maxAge
       ? `Ages ${course.minAge}–${course.maxAge}`
       : AGE_GROUP_RANGES[course.ageGroup];
-
-  const getFullImageUrl = (path?: string) => {
-    if (!path) return DEFAULT_IMAGE;
-    return path;
-  };
 
   const getAccentColor = () => {
     switch (course.ageGroup) {
@@ -49,11 +51,25 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
   return (
     <ScrollReveal delay={delay}>
       <div className={cn(
-        "card-pro overflow-hidden p-0 flex flex-col h-full border-[#e2e8f0] transition-all duration-300",
-        (status === 'cancelled' || status === 'rejected') && "grayscale opacity-50 pointer-events-none"
+        "card-pro group relative overflow-hidden p-0 flex flex-col h-full border-[#e2e8f0] transition-all duration-300",
+        !isActive
+          ? "opacity-50 grayscale pointer-events-none"
+          : "hover:shadow-lg hover:-translate-y-1"
       )}>
+        {/* Status overlay badge — top of card */}
+        {overlayConfig?.label && (
+          <div className={cn(
+            "absolute top-0 left-0 right-0 z-20 flex items-center justify-center py-1.5",
+            overlayConfig.color
+          )}>
+            <span className="text-[10px] font-bold text-white uppercase tracking-widest">
+              {overlayConfig.label}
+            </span>
+          </div>
+        )}
+
         {/* Top accent bar */}
-        <div className={cn("w-full h-1", getAccentColor())} />
+        <div className={cn("w-full h-1", getAccentColor(), !isActive && "mt-6")} />
         
         {/* IMAGE SECTION */}
         <div className="relative aspect-[16/9] overflow-hidden">
@@ -77,6 +93,14 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
               {statusConfig.label}
             </span>
           </div>
+
+          {/* Ongoing pulsing dot badge */}
+          {status === 'ongoing' && (
+            <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 bg-green-500 text-white text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              Live Now
+            </div>
+          )}
         </div>
 
         {/* CONTENT SECTION */}
@@ -107,12 +131,15 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
             <Button
               className={cn(
                 "bg-[#2563eb] text-white font-semibold rounded-full px-8 py-2 h-auto hover:bg-[#1d4ed8] transition-all",
-                isInactive && "bg-slate-400 hover:bg-slate-400 cursor-not-allowed"
+                !isActive && "bg-slate-200 text-slate-400 cursor-not-allowed hover:bg-slate-200"
               )}
-              onClick={() => !isInactive && onEnroll?.(course)}
-              disabled={isInactive}
+              onClick={() => isActive && onEnroll?.(course)}
+              disabled={!isActive}
             >
-              {status === 'completed' ? 'Finished' : status === 'cancelled' ? 'Cancelled' : 'Enroll'}
+              {status === 'completed' ? 'Program Ended'
+                : status === 'cancelled' ? 'Program Cancelled'
+                : status === 'rejected' ? 'Not Available'
+                : 'Enroll'}
             </Button>
           </div>
         </div>
