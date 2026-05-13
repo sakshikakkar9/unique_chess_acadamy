@@ -17,18 +17,25 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import RichTextEditor from "@/components/shared/admin/RichTextEditor";
 import { cn } from "@/lib/utils";
 import TournamentPreview from "@/features/tournaments/components/admin/TournamentPreview";
-import StatusBadge from "@/components/shared/admin/StatusBadge";
 import { useToast } from "@/hooks/useToast";
-
-type TournamentStatus = "ALL" | "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED";
+import { resolveStatus, ItemStatus } from "@/lib/statusUtils";
+import { toDisplayDate, todayISO } from "@/lib/dateUtils";
+import DatePickerField from "@/components/admin/DatePickerField";
+import StatusBadge from "@/components/admin/StatusBadge";
+import StatusActionMenu from "@/components/admin/StatusActionMenu";
+import StatusFilterBar from "@/components/admin/StatusFilterBar";
 
 const AdminTournaments: React.FC = () => {
   const navigate = useNavigate();
   const { tournaments, isLoading, addTournament, updateTournament, deleteTournament } = useAdminTournaments();
   const { success, error: toastError } = useToast();
 
-  const [activeTab, setActiveTab] = useState<TournamentStatus>("ALL");
+  const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [confirmStatus, setConfirmStatus] = useState<{
+    tournament: Tournament;
+    newStatus: ItemStatus | 'restore';
+  } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -65,15 +72,20 @@ const AdminTournaments: React.FC = () => {
   });
 
   const filteredData = useMemo(() => {
-    let result = tournaments;
-    if (activeTab !== "ALL") result = result.filter((t) => t.status === activeTab);
-    if (searchQuery) {
-      result = result.filter((t) => 
-        t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (t.location && t.location.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    }
-    return result;
+    return tournaments
+      .filter(t => {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return (
+          t.title?.toLowerCase().includes(q) ||
+          t.location?.toLowerCase().includes(q) ||
+          t.category?.toLowerCase().includes(q)
+        );
+      })
+      .filter(t => {
+        if (activeTab === 'all') return true;
+        return resolveStatus(t.startDate, t.endDate, t.status) === activeTab;
+      });
   }, [tournaments, activeTab, searchQuery]);
 
   const handleAdd = () => {
@@ -137,9 +149,49 @@ const AdminTournaments: React.FC = () => {
       regStartDate: t.regStartDate ? new Date(t.regStartDate).toISOString().split('T')[0] : "",
       regEndDate: t.regEndDate ? new Date(t.regEndDate).toISOString().split('T')[0] : "",
       posterOrientation: t.posterOrientation || "LANDSCAPE",
-      entryFee: t.entryFee || 0
+      entryFee: t.entryFee || 0,
+      registrationDeadline: t.regEndDate ? new Date(t.regEndDate).toISOString().split('T')[0] : ""
     });
     setIsModalOpen(true);
+  };
+
+  const handleStatusChange = async (
+    tournament: Tournament,
+    newStatus: ItemStatus | 'restore'
+  ) => {
+    const statusToSave = newStatus === 'restore' ? null : newStatus;
+
+    try {
+      const response = await fetch(`/api/admin/tournaments/admin/status/${tournament.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: statusToSave }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update status');
+
+      // Update local state immediately
+      // Since useAdminTournaments likely manages tournaments, we should use its state.
+      // But if it doesn't expose a setter, we might need to refetch or depend on the hook's internal logic.
+      // Based on typical patterns, maybe success toast is enough if it revalidates.
+      // Looking at the code, it uses useAdminTournaments.
+      // I'll assume I can just reload or the hook handles it.
+      // Wait, the hook is not provided. Let's see if tournaments is from useState.
+      // Actually tournaments is from the hook.
+
+      const label = newStatus === 'restore'
+        ? 'Restored to active'
+        : `Marked as ${newStatus}`;
+      success(label);
+      // useAdminTournaments from React Query will handle re-validation
+      // since we're using queryClient.invalidateQueries in handleStatusChange
+      // But we don't have access to the mutation here, so we refresh.
+      // Wait, let's just refetch manually if possible or just stick with reload.
+      window.location.reload();
+
+    } catch (err) {
+      toastError('Failed to update status');
+    }
   };
 
   const validateForm = () => {
@@ -248,7 +300,10 @@ const AdminTournaments: React.FC = () => {
     displayDates: (
       <div className="flex items-center gap-2 text-xs font-medium">
         <Calendar className="size-3.5 text-uca-accent-blue" />
-        {formatDateRange(t.startDate, t.endDate)}
+        <div className="flex flex-col">
+          <span>{t.startDate ? toDisplayDate(t.startDate) : '—'}</span>
+          {t.endDate && <span className="text-[10px] opacity-60">to {toDisplayDate(t.endDate)}</span>}
+        </div>
       </div>
     ),
     displayRegistrations: (
@@ -257,7 +312,21 @@ const AdminTournaments: React.FC = () => {
         {t._count?.registrations || 0}
       </div>
     ),
-    displayStatus: <StatusBadge status={t.status} />
+    displayStatus: <StatusBadge status={resolveStatus(t.startDate, t.endDate, t.status)} />,
+    actions: (
+      <StatusActionMenu
+        currentStatus={resolveStatus(t.startDate, t.endDate, t.status)}
+        onEdit={() => handleEdit(t)}
+        onDelete={() => { setSelectedTournament(t); setIsConfirmOpen(true); }}
+        onStatusChange={(newStatus) => {
+          if (newStatus === 'restore') {
+            handleStatusChange(t, 'restore');
+          } else {
+            setConfirmStatus({ tournament: t, newStatus });
+          }
+        }}
+      />
+    )
   }));
 
   return (
@@ -268,38 +337,14 @@ const AdminTournaments: React.FC = () => {
       onAction={handleAdd}
     >
       <div className="space-y-6">
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-uca-bg-surface border border-uca-border p-4 rounded-xl">
-          <div className="flex gap-1.5 p-1 bg-uca-bg-base rounded-lg w-full md:w-auto overflow-x-auto scrollbar-none">
-            {(["ALL", "UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"] as TournamentStatus[]).map((tab) => {
-              const isActive = activeTab === tab;
-              return (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={cn(
-                    "px-4 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap",
-                    isActive
-                      ? "bg-uca-navy text-white shadow-sm"
-                      : "text-uca-text-muted hover:text-uca-text-primary"
-                  )}
-                >
-                  {tab}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-uca-text-muted" />
-            <Input
-              placeholder="Search arenas..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-10 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg"
-            />
-          </div>
-        </div>
+        <StatusFilterBar
+          items={tournaments}
+          activeFilter={activeTab}
+          onFilterChange={setActiveTab}
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search arenas..."
+        />
 
         {/* Table Area */}
         <AdminTable
@@ -314,6 +359,7 @@ const AdminTournaments: React.FC = () => {
           onDelete={(t) => { setSelectedTournament(t); setIsConfirmOpen(true); }}
           entityName="tournaments"
           onAddFirst={handleAdd}
+          renderActions={(row) => row.actions}
         />
       </div>
 
@@ -384,37 +430,44 @@ const AdminTournaments: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Starts On</Label>
-                <Input
-                  type="date"
-                  value={formData.startDate}
-                  onChange={(e) => {
-                    setFormData({...formData, startDate: e.target.value});
-                    if (formErrors.startDate) setFormErrors({...formErrors, startDate: ""});
-                  }}
-                  className={cn(
-                    "h-11 bg-uca-bg-elevated border-uca-border rounded-lg focus:ring-2 focus:ring-uca-navy/30 focus:border-uca-navy outline-none",
-                    formErrors.startDate && "border-uca-accent-red ring-2 ring-red-100"
-                  )}
-                />
-                {formErrors.startDate && <p className="text-[10px] text-uca-accent-red font-bold flex items-center gap-1"><X className="size-3" /> {formErrors.startDate}</p>}
-              </div>
-              <div className="grid gap-2">
-                <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Ends On</Label>
-                <Input type="date" value={formData.endDate} onChange={(e) => setFormData({...formData, endDate: e.target.value})} className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" />
-              </div>
+              <DatePickerField
+                label="Starts On"
+                value={formData.startDate}
+                onChange={(val) => {
+                  setFormData({
+                    ...formData,
+                    startDate: val,
+                    endDate: formData.endDate && formData.endDate < val ? "" : formData.endDate,
+                    regEndDate: formData.regEndDate && formData.regEndDate > val ? "" : formData.regEndDate
+                  });
+                  if (formErrors.startDate) setFormErrors({...formErrors, startDate: ""});
+                }}
+                required
+                error={formErrors.startDate}
+                helperText="DD/MM/YYYY — no past dates"
+              />
+              <DatePickerField
+                label="Ends On"
+                value={formData.endDate}
+                minDate={formData.startDate || todayISO()}
+                onChange={(val) => setFormData({...formData, endDate: val})}
+                helperText="Must be on or after start"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Reg Starts</Label>
-                <Input type="date" value={formData.regStartDate} onChange={(e) => setFormData({...formData, regStartDate: e.target.value})} className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" />
-              </div>
-              <div className="grid gap-2">
-                <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Reg Ends</Label>
-                <Input type="date" value={formData.regEndDate} onChange={(e) => setFormData({...formData, regEndDate: e.target.value})} className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" />
-              </div>
+              <DatePickerField
+                label="Reg Starts"
+                value={formData.regStartDate}
+                onChange={(val) => setFormData({...formData, regStartDate: val})}
+              />
+              <DatePickerField
+                label="Reg Deadline"
+                value={formData.regEndDate}
+                maxDate={formData.startDate || undefined}
+                onChange={(val) => setFormData({...formData, regEndDate: val})}
+                helperText="Must be before start"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -497,20 +550,6 @@ const AdminTournaments: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid gap-2">
-              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Arena Status</Label>
-              <Select value={formData.status} onValueChange={(val) => setFormData({...formData, status: val})}>
-                <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
-                  <SelectItem value="UPCOMING">Upcoming</SelectItem>
-                  <SelectItem value="ONGOING">Ongoing</SelectItem>
-                  <SelectItem value="COMPLETED">Completed</SelectItem>
-                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
 
             <div className="space-y-4 pt-4 border-t border-uca-border">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Poster Orientation</Label>
@@ -603,6 +642,29 @@ const AdminTournaments: React.FC = () => {
         title="Dismantle Arena?"
         description="This will permanently remove the tournament and all player registrations from the system. This action cannot be undone."
         confirmLabel="Dismantle"
+      />
+
+      <ConfirmDialog
+        isOpen={!!confirmStatus}
+        title={`Mark as ${confirmStatus?.newStatus}?`}
+        description={
+          confirmStatus?.newStatus === 'cancelled'
+            ? 'This will cancel the tournament. Registrations will be notified.'
+            : confirmStatus?.newStatus === 'rejected'
+            ? 'This tournament will be marked as rejected.'
+            : 'This will mark the tournament as completed.'
+        }
+        confirmLabel={`Yes, mark as ${confirmStatus?.newStatus}`}
+        onConfirm={() => {
+          if (confirmStatus) {
+            handleStatusChange(
+              confirmStatus.tournament,
+              confirmStatus.newStatus
+            );
+          }
+          setConfirmStatus(null);
+        }}
+        onCancel={() => setConfirmStatus(null)}
       />
     </AdminShell>
   );

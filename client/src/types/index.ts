@@ -22,6 +22,9 @@ export interface Course {
   maxAge?: number | null;
   skillLevel: string; // Renamed from level to match schema
   duration: string;
+  startDate?: string;
+  endDate?: string;
+  status?: string | null;
   description?: string;
   custom_banner_url?: string;
   brochureUrl?: string;
@@ -54,7 +57,7 @@ export interface Tournament {
   brochureUrl?: string;
   otherDetails?: string;
   contactDetails?: string;
-  status: "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED";
+  status?: string | null;
   imageUrl?: string;
   scannerUrl?: string;
   results?: TournamentResult[];

@@ -53,6 +53,8 @@ export const createCourse = async (req, res) => {
       ageGroup,
       contactDetails,
       classTime,
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
       duration,
       // 1. Force Float for Fee with fallback
       fee: parseFloat(fee) || 0,
@@ -116,6 +118,26 @@ export const deleteCourse = async (req, res) => {
   } catch (error) {
     console.error('DELETE_COURSE_ERROR:', error);
     res.status(500).json({ error: 'Failed to delete course' });
+  }
+};
+
+export const updateCourseStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    // status can be null (restore) or a valid string
+    const validValues = [
+      null, 'completed', 'rejected', 'cancelled'
+    ];
+    if (!validValues.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const updated = await courseService.updateCourse(req.params.id, { status });
+
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: 'Update failed' });
   }
 };
 

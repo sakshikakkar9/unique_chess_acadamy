@@ -11,6 +11,26 @@ export const getAllTournaments = async (req, res) => {
   }
 };
 
+export const updateTournamentStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    // status can be null (restore) or a valid string
+    const validValues = [
+      null, 'completed', 'rejected', 'cancelled'
+    ];
+    if (!validValues.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const updated = await tournamentService.updateTournament(req.params.id, { status });
+
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: 'Update failed' });
+  }
+};
+
 export const getTournamentById = async (req, res) => {
   try {
     const data = await tournamentService.getTournamentById(req.params.id);

@@ -48,7 +48,7 @@ model Tournament {
   regStartDate      DateTime?
   regEndDate        DateTime?
   posterOrientation PosterOrientation  @default(LANDSCAPE)
-  status            TournamentStatus   @default(UPCOMING)
+  status            String?
   imageUrl          String?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
@@ -143,6 +143,9 @@ model Course {
   days              String[]
   contactDetails    String
   mode              ClassMode          @default(ONLINE)
+  startDate         DateTime?
+  endDate           DateTime?
+  status            String?
   custom_banner_url String?
   brochureUrl       String?
   posterOrientation PosterOrientation  @default(LANDSCAPE)
