@@ -22,9 +22,13 @@ export default function ContactPage() {
     const data = Object.fromEntries(formData.entries());
 
     try {
-      await api.post("/contact", data);
-      toast.success("Message sent! We'll get back to you within 24 hours.");
-      form.reset();
+      const response = await api.post("/contact", data);
+      if (response.status === 201 || response.status === 200) {
+        toast.success("Message sent! We'll get back to you within 24 hours.");
+        form.reset();
+      } else {
+        throw new Error("Unexpected response status");
+      }
     } catch (error) {
       toast.error("Failed to send message. Please try again later.");
     } finally {

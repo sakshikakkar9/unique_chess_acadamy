@@ -13,6 +13,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 // Layouts
 import UserLayout from "@/components/layout/UserLayout";
 import AdminLayout from "@/components/layout/AdminLayout";
+import ScrollToTop from "@/components/layout/ScrollToTop";
 
 // Public Pages
 const Index = lazy(() => import("./pages/Index.tsx"));
@@ -61,6 +62,7 @@ const App = () => (
         <Sonner />
         <ToastContainer />
         <BrowserRouter>
+          <ScrollToTop />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* Public Routes */}
