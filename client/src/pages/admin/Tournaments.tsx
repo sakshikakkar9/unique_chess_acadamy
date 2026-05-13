@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
 import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
 import AdminShell from "@/components/admin/AdminShell";
 import AdminModal from "@/components/admin/AdminModal";
@@ -27,6 +29,7 @@ import StatusFilterBar from "@/components/admin/StatusFilterBar";
 
 const AdminTournaments: React.FC = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { tournaments, isLoading, addTournament, updateTournament, deleteTournament } = useAdminTournaments();
   const { success, error: toastError } = useToast();
 
@@ -162,32 +165,17 @@ const AdminTournaments: React.FC = () => {
     const statusToSave = newStatus === 'restore' ? null : newStatus;
 
     try {
-      const response = await fetch(`/api/admin/tournaments/admin/status/${tournament.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: statusToSave }),
+      const response = await api.patch(`/tournaments/admin/status/${tournament.id}`, {
+        status: statusToSave
       });
 
-      if (!response.ok) throw new Error('Failed to update status');
-
-      // Update local state immediately
-      // Since useAdminTournaments likely manages tournaments, we should use its state.
-      // But if it doesn't expose a setter, we might need to refetch or depend on the hook's internal logic.
-      // Based on typical patterns, maybe success toast is enough if it revalidates.
-      // Looking at the code, it uses useAdminTournaments.
-      // I'll assume I can just reload or the hook handles it.
-      // Wait, the hook is not provided. Let's see if tournaments is from useState.
-      // Actually tournaments is from the hook.
+      if (!response.data) throw new Error('Failed to update status');
 
       const label = newStatus === 'restore'
         ? 'Restored to active'
         : `Marked as ${newStatus}`;
       success(label);
-      // useAdminTournaments from React Query will handle re-validation
-      // since we're using queryClient.invalidateQueries in handleStatusChange
-      // But we don't have access to the mutation here, so we refresh.
-      // Wait, let's just refetch manually if possible or just stick with reload.
-      window.location.reload();
+      queryClient.invalidateQueries({ queryKey: ["tournaments"] });
 
     } catch (err) {
       toastError('Failed to update status');
