@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +20,6 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { useDemoAdmin } from "@/features/demo/hooks/useDemoRegistration";
-import { Label } from "@/components/ui/label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { format } from "date-fns";
@@ -30,6 +28,7 @@ import { cn, getAvatarStyles } from "@/lib/utils";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import { useToast } from "@/hooks/useToast";
 import { Loader2, Check } from "lucide-react";
+import RowActionMenu from "@/components/admin/RowActionMenu";
 
 type RegistrationTab = 'course' | 'tournament' | 'demo';
 
@@ -231,13 +230,13 @@ export default function RegistrationsPage() {
     >
       <div className="space-y-6">
         {/* Filter Bar */}
-        <div className="flex flex-col lg:flex-row justify-between items-center gap-4 bg-uca-bg-surface border border-uca-border p-4 rounded-xl">
+        <div className="flex flex-col lg:flex-row justify-between items-center gap-4 bg-uca-bg-surface border border-uca-border p-4 rounded-xl mb-6">
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto flex-1">
             <div className="relative flex-1 w-full lg:max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-uca-text-muted" />
               <Input
                 placeholder="Search entries..."
-                className="pl-10 h-10 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg"
+                className="w-full h-10 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg pl-10 pr-4 outline-none"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -278,19 +277,40 @@ export default function RegistrationsPage() {
             )}
           </div>
 
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as RegistrationTab)} className="w-full lg:w-auto">
-            <TabsList className="bg-uca-bg-base p-1 rounded-lg h-10 border border-uca-border w-full lg:w-auto">
-              <TabsTrigger value="tournament" className="rounded-md px-4 text-[10px] font-black uppercase tracking-widest h-8 data-[state=active]:bg-uca-navy data-[state=active]:text-white">
+          <div className="flex gap-1.5 flex-wrap w-full lg:w-auto justify-center lg:justify-end">
+            <div className="flex bg-uca-bg-base p-1 rounded-lg h-10 border border-uca-border">
+              <button
+                onClick={() => setActiveTab("tournament")}
+                className={`rounded-md px-3 sm:px-4 text-[10px] font-black uppercase tracking-widest h-8 transition-all ${
+                  activeTab === "tournament"
+                    ? "bg-uca-navy text-white"
+                    : "text-uca-text-muted hover:text-uca-text-primary"
+                }`}
+              >
                 Tournaments
-              </TabsTrigger>
-              <TabsTrigger value="course" className="rounded-md px-4 text-[10px] font-black uppercase tracking-widest h-8 data-[state=active]:bg-uca-navy data-[state=active]:text-white">
+              </button>
+              <button
+                onClick={() => setActiveTab("course")}
+                className={`rounded-md px-3 sm:px-4 text-[10px] font-black uppercase tracking-widest h-8 transition-all ${
+                  activeTab === "course"
+                    ? "bg-uca-navy text-white"
+                    : "text-uca-text-muted hover:text-uca-text-primary"
+                }`}
+              >
                 Courses
-              </TabsTrigger>
-              <TabsTrigger value="demo" className="rounded-md px-4 text-[10px] font-black uppercase tracking-widest h-8 data-[state=active]:bg-uca-navy data-[state=active]:text-white">
+              </button>
+              <button
+                onClick={() => setActiveTab("demo")}
+                className={`rounded-md px-3 sm:px-4 text-[10px] font-black uppercase tracking-widest h-8 transition-all ${
+                  activeTab === "demo"
+                    ? "bg-uca-navy text-white"
+                    : "text-uca-text-muted hover:text-uca-text-primary"
+                }`}
+              >
                 Demos
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Table Area */}
@@ -406,10 +426,10 @@ export default function RegistrationsPage() {
         <SheetContent className="sm:max-w-xl rounded-l-[2rem] p-0 border-uca-border bg-uca-bg-base shadow-2xl overflow-y-auto">
           {selectedItem && (
             <div className="h-full flex flex-col">
-              <div className="bg-uca-bg-surface p-8 text-white relative overflow-hidden shrink-0 border-b border-uca-border">
+              <div className="bg-uca-navy p-8 text-white relative overflow-hidden shrink-0 border-b border-uca-border">
                 <SheetHeader className="mb-6 relative z-10 text-left">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="px-2.5 py-1 bg-uca-navy text-[9px] font-black uppercase tracking-[0.2em] rounded border border-uca-border">
+                    <span className="px-2.5 py-1 bg-white/10 text-[9px] font-black uppercase tracking-[0.2em] rounded border border-white/20">
                       {selectedItem.type}
                     </span>
                     <StatusBadge status={selectedItem.status} />

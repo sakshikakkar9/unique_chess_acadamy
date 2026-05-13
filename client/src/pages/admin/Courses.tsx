@@ -218,6 +218,7 @@ const AdminCourses = () => {
 
   const columns: AdminTableColumn[] = [
     { key: 'displayTitle', label: 'Course Info', className: 'min-w-[200px]' },
+    { key: 'displayStatus', label: 'Status' },
     { key: 'displayDays', label: 'Schedule', hiddenOn: 'mobile' },
     { key: 'displayFee', label: 'Course Fee', align: 'right' }
   ];
@@ -306,11 +307,11 @@ const AdminCourses = () => {
             <span className={cn("text-[9px] font-black uppercase px-1.5 py-0.5 rounded", getLevelPillStyles(c.skillLevel))}>
               {c.skillLevel}
             </span>
-            <StatusBadge status={resolveStatus(c.startDate, c.endDate, c.status)} />
           </div>
         </div>
       </div>
     ),
+    displayStatus: <StatusBadge status={resolveStatus(c.startDate, c.endDate, c.status)} />,
     displayDays: (
       <div className="flex flex-wrap gap-1">
         {c.days?.slice(0, 3).map((day: string) => (
