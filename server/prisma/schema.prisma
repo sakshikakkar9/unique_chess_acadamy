@@ -109,6 +109,10 @@ model Registration {
   id              String        @id @default(uuid())
   referenceId     String        @unique @default(cuid())
   studentId       String
+  email           String?
+  fideId          String?
+  fideRating      Int?
+  discoverySource String?
   category        String?
   ageProofUrl     String
   paymentProofUrl String
@@ -160,6 +164,7 @@ model CourseEnrollment {
   id              String        @id @default(uuid())
   referenceId     String        @unique @default(cuid())
   studentId       String
+  discoverySource String?
   category        String?
   ageProofUrl     String
   paymentProofUrl String

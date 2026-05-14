@@ -151,6 +151,10 @@ export const registerForTournament = async (tournamentId, registrationData) => {
         student: {
           connect: { id: student.id }
         },
+        email: registrationData.email || null,
+        fideId: registrationData.fideId || "NA",
+        fideRating: parseIntSafe(registrationData.fideRating),
+        discoverySource: registrationData.discoverySource || null,
         category: registrationData.category || null,
         transactionId: registrationData.transactionId || null,
         ageProofUrl: registrationData.ageProofUrl || "",

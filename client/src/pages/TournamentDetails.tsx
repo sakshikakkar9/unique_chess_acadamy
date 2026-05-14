@@ -48,8 +48,8 @@ export default function TournamentDetails() {
     dob: "",
     email: "",
     phone: "",
-    fideId: "0",
-    fideRating: "0",
+    fideId: "",
+    fideRating: "",
     address: "",
     discoverySource: "Social Media",
     category: ""
@@ -316,6 +316,43 @@ export default function TournamentDetails() {
                   </div>
 
                   <div className="space-y-1.5">
+                    <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 required-field">Email Address</Label>
+                    <Input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => set("email", e.target.value)}
+                      required
+                      disabled={isRegistrationDisabled}
+                      placeholder="email@example.com"
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 placeholder:text-slate-300 h-auto"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">FIDE ID</Label>
+                      <Input
+                        value={form.fideId}
+                        onChange={(e) => set("fideId", e.target.value)}
+                        disabled={isRegistrationDisabled}
+                        placeholder="Optional"
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 placeholder:text-slate-300 h-auto"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">FIDE Rating</Label>
+                      <Input
+                        type="number"
+                        value={form.fideRating}
+                        onChange={(e) => set("fideRating", e.target.value)}
+                        disabled={isRegistrationDisabled}
+                        placeholder="0"
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 placeholder:text-slate-300 h-auto"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
                     <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 required-field">Address</Label>
                     <Textarea
                       value={form.address}
@@ -325,6 +362,25 @@ export default function TournamentDetails() {
                       placeholder="Full residential address"
                       className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 placeholder:text-slate-300 min-h-[80px] resize-none"
                     />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 required-field">How did you get the tournament info?</Label>
+                    <div className="relative">
+                      <select
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 appearance-none h-[42px]"
+                        value={form.discoverySource}
+                        onChange={(e) => set("discoverySource", e.target.value)}
+                        required
+                        disabled={isRegistrationDisabled}
+                      >
+                        <option value="Social Media">Social Media</option>
+                        <option value="Through Academy">Through Academy</option>
+                        <option value="Through Coaches">Through Coaches</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
