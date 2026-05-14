@@ -14,7 +14,7 @@ const instructors = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white selection:bg-blue-600/30 selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/50 to-white selection:bg-blue-600/30 selection:text-white overflow-x-hidden">
       <Navbar />
 
       {/* HERO SECTION */}
@@ -64,7 +64,7 @@ export default function AboutPage() {
       </section>
 
       {/* MISSION / VALUES SECTION */}
-      <section className="py-14 sm:py-16 bg-white">
+      <section className="py-14 sm:py-16 bg-gradient-to-b from-white via-slate-50/50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Section heading block */}

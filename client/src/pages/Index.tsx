@@ -58,7 +58,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white selection:bg-blue-600/30 selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/50 to-white selection:bg-blue-600/30 selection:text-white overflow-x-hidden">
       <Navbar />
 
       {/* HERO SECTION */}
@@ -149,7 +149,7 @@ export default function HomePage() {
       </section>
 
       {/* FEATURES SECTION */}
-      <section className="py-14 sm:py-16 bg-white relative">
+      <section className="py-14 sm:py-16 bg-gradient-to-b from-white via-slate-50/50 to-white relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-10">
             <p className="text-xs font-bold text-blue-600 uppercase tracking-[0.15em] mb-2">

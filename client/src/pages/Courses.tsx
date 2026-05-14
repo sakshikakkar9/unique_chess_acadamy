@@ -34,7 +34,7 @@ export default function CoursesPage() {
   const totalPages = Math.max(1, Math.ceil(filteredCourses.length / ITEMS_PER_PAGE));
 
   return (
-    <div className="min-h-screen bg-white selection:bg-blue-600/30 selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/50 to-white selection:bg-blue-600/30 selection:text-white overflow-x-hidden">
       <Navbar />
 
       {/* HERO SECTION */}
@@ -104,7 +104,7 @@ export default function CoursesPage() {
         </div>
       </div>
 
-      <section className="py-14 sm:py-16 bg-white min-h-[600px]">
+      <section className="py-14 sm:py-16 bg-gradient-to-b from-white via-slate-50/50 to-white min-h-[600px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {isLoading ? (
             <div className="flex justify-center py-40"><div className="h-10 w-10 border-4 border-blue-600/10 border-t-blue-600 rounded-full animate-spin" /></div>
