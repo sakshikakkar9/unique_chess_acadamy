@@ -75,19 +75,6 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Desktop CTA */}
-          <Link
-            to="/tournaments"
-            className={cn(
-              "hidden md:flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-150",
-              isScrolled
-                ? 'bg-slate-900 text-white hover:bg-slate-700'
-                : 'bg-white/15 text-white border border-white/30 hover:bg-white/25'
-            )}
-          >
-            Enroll Now
-          </Link>
-
           {/* Mobile hamburger */}
           <button
             onClick={() => setIsOpen(true)}
@@ -132,16 +119,6 @@ const Navbar = () => {
           ))}
         </nav>
 
-        {/* CTA at bottom of mobile menu */}
-        <div className="mt-auto px-6 pb-10">
-          <Link to="/tournaments"
-             onClick={() => setIsOpen(false)}
-             className="flex items-center justify-center gap-2 w-full
-                        bg-blue-600 hover:bg-blue-500 text-white
-                        font-semibold py-3.5 rounded-xl transition-colors duration-150">
-            Enroll Now
-          </Link>
-        </div>
       </div>
     </>
   );

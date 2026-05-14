@@ -69,14 +69,14 @@ const AdminShell: React.FC<AdminShellProps> = ({
         {/* Logo block */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-uca-border overflow-hidden shrink-0">
           <div className="flex items-center gap-3 min-w-max">
-            <div className="size-8 rounded-lg bg-uca-navy flex items-center justify-center text-white font-black text-xs shrink-0 border border-uca-border">
+            <div className="size-8 rounded-lg bg-white flex items-center justify-center text-uca-navy font-black text-xs shrink-0 border border-uca-border">
               UCA
             </div>
             <div className={cn(
               "flex flex-col transition-opacity duration-200",
               isSidebarOpen ? "opacity-100" : "opacity-0 group-hover/sidebar:opacity-100 lg:opacity-100"
             )}>
-              <span className="text-sm font-bold leading-none">UCA Admin</span>
+              <span className="text-sm font-bold leading-none text-white">UCA Admin</span>
               <span className="text-[10px] text-uca-sidebar-text uppercase tracking-wider">Command Center</span>
             </div>
           </div>
