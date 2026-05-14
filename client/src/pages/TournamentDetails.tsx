@@ -201,12 +201,12 @@ export default function TournamentDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/50 to-white">
       <Navbar />
 
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* LEFT COLUMN: Scrollable Info */}
-        <div className="flex-1 lg:h-screen lg:overflow-y-auto bg-slate-50">
+        <div className="lg:w-1/2 lg:h-screen lg:overflow-y-auto bg-transparent">
           <div className="max-w-3xl ml-auto mr-0 px-6 sm:px-10 lg:px-16 pt-24 pb-20">
             {/* Back link */}
             <Link to="/tournaments" className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-blue-600 transition-colors mb-10">
@@ -326,7 +326,7 @@ export default function TournamentDetails() {
         </div>
 
         {/* RIGHT COLUMN: Sticky Form */}
-        <div className="lg:w-1/2 lg:h-screen lg:sticky lg:top-0 bg-white flex items-center justify-center p-6 sm:p-10 lg:p-16">
+        <div className="lg:w-1/2 lg:h-screen lg:sticky lg:top-0 bg-transparent flex items-center justify-center p-6 sm:p-10 lg:p-16">
           <div className="w-full max-w-lg">
             <div className="bg-white border border-slate-100 rounded-[3rem] shadow-2xl shadow-slate-200/50 p-8 sm:p-10">
               <div className="flex items-center justify-between mb-8">
@@ -348,7 +348,7 @@ export default function TournamentDetails() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className={cn("space-y-4 transition-all", isRegistrationDisabled && "opacity-40 grayscale pointer-events-none")}>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Player Name</Label>
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Player Name</Label>
                     <Input
                       value={form.studentName}
                       onChange={(e) => set("studentName", e.target.value)}
@@ -361,7 +361,7 @@ export default function TournamentDetails() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Gender</Label>
+                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Gender</Label>
                       <div className="relative">
                         <select
                           className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-5 text-xs appearance-none focus:bg-white transition-all"
@@ -378,7 +378,7 @@ export default function TournamentDetails() {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</Label>
+                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Category</Label>
                       <div className="relative">
                         <select
                           className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-5 text-xs appearance-none focus:bg-white transition-all"
@@ -404,7 +404,7 @@ export default function TournamentDetails() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">DOB</Label>
+                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">DOB</Label>
                       <Input
                         type="date"
                         value={form.dob}
@@ -415,7 +415,7 @@ export default function TournamentDetails() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone</Label>
+                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Phone</Label>
                       <Input
                         type="tel"
                         value={form.phone}
@@ -429,7 +429,7 @@ export default function TournamentDetails() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Address</Label>
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Address</Label>
                     <Textarea
                       value={form.address}
                       onChange={(e) => set("address", e.target.value)}
@@ -442,7 +442,7 @@ export default function TournamentDetails() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Age Proof</Label>
+                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Age Proof</Label>
                       <div className="relative group/file">
                         <input type="file" onChange={(e) => handleFileChange(e, 'payment1')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required disabled={isRegistrationDisabled} />
                         <div className={cn("h-12 border border-dashed rounded-xl flex items-center justify-center gap-2 transition-all px-4", files.payment1 ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-slate-50 border-slate-200 text-slate-400")}>
@@ -452,7 +452,7 @@ export default function TournamentDetails() {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Payment Proof</Label>
+                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Payment Proof</Label>
                       <div className="relative group/file">
                         <input type="file" onChange={(e) => handleFileChange(e, 'payment2')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required disabled={isRegistrationDisabled} />
                         <div className={cn("h-12 border border-dashed rounded-xl flex items-center justify-center gap-2 transition-all px-4", files.payment2 ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-slate-50 border-slate-200 text-slate-400")}>

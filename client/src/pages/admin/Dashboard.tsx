@@ -88,17 +88,29 @@ const AdminDashboard: React.FC = () => {
 
   const stats = [
     {
-      title: "Enrollments",
+      title: "Course Students",
       value: enrollLoading ? "…" : enrollments.length.toString(),
       icon: GraduationCap,
       accent: "text-amber-500",
       bg: "bg-amber-500/10",
       numColor: "text-amber-500",
       status: pendingEnrollments.length > 0 ? "PENDING" : "LIVE",
+      subtitle: `Active: ${enrollments.filter(e => e.status === 'APPROVED').length} | New: ${pendingEnrollments.length}`,
       path: "/admin/registrations"
     },
     {
-      title: "Investment",
+      title: "Arena Students",
+      value: tournamentLoading ? "…" : registrations.length.toString(),
+      icon: Trophy,
+      accent: "text-blue-500",
+      bg: "bg-blue-500/10",
+      numColor: "text-blue-500",
+      status: "LIVE",
+      subtitle: `Verified: ${registrations.filter(r => r.paymentStatus === 'VERIFIED').length} | Unpaid: ${registrations.filter(r => r.paymentStatus === 'PENDING').length}`,
+      path: "/admin/registrations"
+    },
+    {
+      title: "Collected Amount",
       value: tournamentLoading || enrollLoading ? "…" : `₹${totalInvestment.toLocaleString()}`,
       icon: TrendingUp,
       accent: "text-emerald-500",
@@ -127,7 +139,7 @@ const AdminDashboard: React.FC = () => {
     >
       <div className="space-y-6">
         {/* Stats Grid */}
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, i) => (
             <div
               key={i}

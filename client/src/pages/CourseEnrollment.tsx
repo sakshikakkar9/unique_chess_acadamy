@@ -166,12 +166,12 @@ export default function CourseEnrollmentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/50 to-white">
       <Navbar />
 
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* LEFT COLUMN: Scrollable Info */}
-        <div className="flex-1 lg:h-screen lg:overflow-y-auto bg-slate-50">
+        <div className="lg:w-1/2 lg:h-screen lg:overflow-y-auto bg-transparent">
           <div className="max-w-3xl ml-auto mr-0 px-6 sm:px-10 lg:px-16 pt-24 pb-20">
             {/* Back link */}
             <Link to="/courses" className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-blue-600 transition-colors mb-10">
@@ -285,7 +285,7 @@ export default function CourseEnrollmentPage() {
         </div>
 
         {/* RIGHT COLUMN: Sticky Form */}
-        <div className="lg:w-1/2 lg:h-screen lg:sticky lg:top-0 bg-white flex items-center justify-center p-6 sm:p-10 lg:p-16">
+        <div className="lg:w-1/2 lg:h-screen lg:sticky lg:top-0 bg-transparent flex items-center justify-center p-6 sm:p-10 lg:p-16">
           <div className="w-full max-w-lg">
             <div className="bg-white border border-slate-100 rounded-[3rem] shadow-2xl shadow-slate-200/50 p-8 sm:p-10">
               <div className="flex items-center gap-4 mb-10">
@@ -300,7 +300,7 @@ export default function CourseEnrollmentPage() {
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Student Full Name</Label>
+                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Student Full Name</Label>
                   <Input
                     value={form.studentName}
                     onChange={(e) => set("studentName", e.target.value)}
@@ -312,7 +312,7 @@ export default function CourseEnrollmentPage() {
 
                 <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Gender</Label>
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Gender</Label>
                     <div className="relative">
                       <select
                         className="w-full h-14 rounded-2xl border border-slate-200 bg-slate-50 px-6 text-sm appearance-none focus:bg-white transition-all"
@@ -328,7 +328,7 @@ export default function CourseEnrollmentPage() {
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</Label>
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Category</Label>
                     <div className="relative">
                       <select
                         className="w-full h-14 rounded-2xl border border-slate-200 bg-slate-50 px-6 text-sm appearance-none focus:bg-white transition-all"
@@ -349,7 +349,7 @@ export default function CourseEnrollmentPage() {
 
                 <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Date of Birth</Label>
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Date of Birth</Label>
                     <Input
                       type="date"
                       value={form.dob}
@@ -359,7 +359,7 @@ export default function CourseEnrollmentPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</Label>
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Phone Number</Label>
                     <Input
                       type="tel"
                       value={form.phone}
@@ -372,7 +372,7 @@ export default function CourseEnrollmentPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Address</Label>
+                  <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Address</Label>
                   <Textarea
                     value={form.address}
                     onChange={(e) => set("address", e.target.value)}
@@ -384,7 +384,7 @@ export default function CourseEnrollmentPage() {
 
                 <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Age Proof</Label>
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Age Proof</Label>
                     <div className="relative group/file">
                       <input type="file" onChange={(e) => handleFileChange(e, 'age')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required />
                       <div className={cn("h-14 border border-dashed rounded-2xl flex items-center justify-center gap-2 transition-all px-4", files.age ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-slate-50 border-slate-200 text-slate-400 group-hover/file:border-blue-400")}>
@@ -394,7 +394,7 @@ export default function CourseEnrollmentPage() {
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Payment Proof</Label>
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 required-field">Payment Proof</Label>
                     <div className="relative group/file">
                       <input type="file" onChange={(e) => handleFileChange(e, 'payment')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required />
                       <div className={cn("h-14 border border-dashed rounded-2xl flex items-center justify-center gap-2 transition-all px-4", files.payment ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-slate-50 border-slate-200 text-slate-400 group-hover/file:border-blue-400")}>
