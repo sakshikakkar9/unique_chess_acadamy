@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, matchPath } from "react-router-dom";
 import { Menu, X as XMarkIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +10,11 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+
+  // Check if current page is an enrollment/registration page
+  const isEnrollmentPage =
+    !!matchPath({ path: "/courses/:id/enroll" }, location.pathname) ||
+    !!matchPath({ path: "/tournaments/:id" }, location.pathname);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -29,13 +34,19 @@ const Navbar = () => {
   const isActive = (path: string) =>
     location.pathname === path || (path !== '/' && location.pathname.startsWith(path + '/'));
 
+  // Define navbar visibility
+  // If enrollment page, hidden by default, visible on scroll.
+  // Otherwise, always visible.
+  const isNavbarVisible = !isEnrollmentPage || isScrolled;
+
   return (
     <>
       <nav className={cn(
-        "fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-500",
         isScrolled
           ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100'
-          : 'bg-transparent border-b border-transparent'
+          : 'bg-transparent border-b border-transparent',
+        !isNavbarVisible && "-translate-y-full opacity-0"
       )}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
 
