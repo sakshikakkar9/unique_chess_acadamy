@@ -83,7 +83,7 @@ export default function TournamentsPage() {
               <p className="text-sm font-medium">No active tournaments found.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 max-w-7xl mx-auto pb-16 px-4 sm:px-6 lg:px-8">
               {tournaments.map((t, idx) => (
                 <TournamentCard
                   key={t.id}

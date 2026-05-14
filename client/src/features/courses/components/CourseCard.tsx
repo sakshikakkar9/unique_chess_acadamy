@@ -1,10 +1,8 @@
-import { format } from "date-fns";
-import { Calendar, Globe } from "lucide-react";
+import { Calendar, Globe, Clock } from "lucide-react";
 import { AGE_GROUP_RANGES, Course } from "@/types";
-import { cn } from "@/lib/utils";
-import { resolveStatus, STATUS_CONFIG } from "@/lib/statusUtils";
-import { Button } from "@/components/ui/button";
+import { resolveStatus } from "@/lib/statusUtils";
 import ScrollReveal from "@/components/shared/ScrollReveal";
+import { formatINR, formatTime, formatDateRange } from "@/lib/formatUtils";
 
 interface CourseCardProps {
   course: Course;
@@ -12,11 +10,8 @@ interface CourseCardProps {
   onEnroll?: (course: Course) => void;
 }
 
-const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&q=80&w=800";
-
 const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
   const status = resolveStatus(course.startDate, course.endDate, course.status);
-  const statusConfig = STATUS_CONFIG[status];
   const isActive = ['upcoming', 'ongoing'].includes(status);
 
   const ageRange =
@@ -26,87 +21,135 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
 
   return (
     <ScrollReveal delay={delay}>
-      <div className={cn(
-        "group relative overflow-hidden flex flex-col h-full bg-white rounded-2xl border border-slate-100 transition-all duration-300",
-        !isActive
-          ? "opacity-50 grayscale pointer-events-none"
-          : "hover:shadow-xl hover:-translate-y-1 border-slate-200"
-      )}>
-        {/* HEADER: IMAGE + BADGE */}
-        <div className="relative aspect-[16/10] overflow-hidden">
-          <img
-            src={course.custom_banner_url || DEFAULT_IMAGE}
-            alt={course.title}
-            loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          />
+      <div className="flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200 h-full">
+        {/* COURSE IMAGE */}
+        <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-slate-800 to-blue-900">
+          {/* Only show image if it's a real course image URL */}
+          {course.custom_banner_url && !course.custom_banner_url.includes('tournament') && (
+            <img
+              src={course.custom_banner_url}
+              alt={course.title}
+              className="w-full h-full object-cover opacity-80"
+              loading="lazy"
+            />
+          )}
 
-          <div className="absolute top-4 right-4 z-10">
-            <span className={cn(
-              "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm",
-              statusConfig.badge
-            )}>
-              {statusConfig.label}
-            </span>
+          {/* Fallback — chess piece pattern */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-5xl opacity-20 select-none">♟</span>
           </div>
 
-          {status === 'ongoing' && (
-            <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 bg-green-500 text-white text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              Live Now
+          {/* Status badge — bottom left of image */}
+          <div className="absolute bottom-3 left-3">
+            {(() => {
+              const cfg = {
+                upcoming: { label: 'Upcoming', cls: 'bg-blue-600' },
+                ongoing: { label: '● Enrolling', cls: 'bg-green-500' },
+                completed: { label: 'Ended', cls: 'bg-slate-600' },
+                rejected: { label: 'Unavailable', cls: 'bg-red-600' },
+                cancelled: { label: 'Cancelled', cls: 'bg-orange-600' },
+              }[status];
+              return (
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full text-white ${cfg.cls}`}>
+                  {cfg.label}
+                </span>
+              );
+            })()}
+          </div>
+
+          {/* Level badge — top right */}
+          {course.skillLevel && (
+            <div className="absolute top-3 right-3">
+              <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm">
+                {course.skillLevel}
+              </span>
             </div>
           )}
         </div>
 
-        {/* CONTENT */}
-        <div className="p-5 flex flex-col flex-grow">
-          {/* DATE INFO */}
-          <div className="flex items-center gap-2 mb-3 text-[#64748b]">
-            <Calendar className="size-3.5" />
-            <span className="text-xs font-semibold">
-              {course.startDate ? format(new Date(course.startDate), "MMM d, yyyy") : "TBA"}
-              {course.endDate && ` - ${format(new Date(course.endDate), "MMM d, yyyy")}`}
-            </span>
+        {/* CARD BODY */}
+        <div className="p-4 flex flex-col flex-1">
+          {/* Date range */}
+          {(course.startDate || course.endDate) && (
+            <p className="text-xs text-slate-400 mb-1.5 flex items-center gap-1.5">
+              <Calendar className="size-3.5" />
+              {formatDateRange(course.startDate, course.endDate)}
+            </p>
+          )}
+
+          {/* Course title */}
+          <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-2">
+            {course.title}
+          </h3>
+
+          {/* Mode + Schedule */}
+          <div className="flex items-center gap-3 mb-3">
+            {course.mode && (
+              <span className="text-xs text-slate-500 flex items-center gap-1">
+                <Globe className="size-3.5 text-blue-500" />
+                {course.mode}
+              </span>
+            )}
+            {course.classTime && (
+              <span className="text-xs text-slate-500 flex items-center gap-1">
+                <Clock className="size-3.5 text-blue-500" />
+                {formatTime(course.classTime)}
+              </span>
+            )}
           </div>
 
-          {/* CORE INFO */}
-          <div className="mb-4">
-            <h3 className="text-lg font-bold text-slate-900 mb-1 line-clamp-1">
-              {course.title}
-            </h3>
-            <div className="flex items-center gap-1.5 text-blue-600">
-              <Globe className="size-3.5" />
-              <span className="text-[11px] font-bold uppercase tracking-wider">{course.mode}</span>
+          {/* Age tag — clean pill */}
+          {ageRange && (
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              <span className="text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">
+                {ageRange}
+              </span>
             </div>
-          </div>
+          )}
 
-          {/* EXTRA INFO */}
-          <div className="flex flex-wrap gap-2 mb-4">
-             <span className="bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border border-slate-100">
-              {ageRange}
-            </span>
-            <span className="bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border border-slate-100">
-              {course.skillLevel}
-            </span>
-          </div>
-
-          {/* CTA */}
-          <div className="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between gap-4">
-            <div className="flex flex-col">
-              <span className="text-[9px] uppercase tracking-widest text-slate-400 font-bold">Fee</span>
-              <span className="text-lg font-black text-slate-900">₹{course.fee?.toLocaleString()}</span>
-            </div>
-            
-            <Button
-              className={cn(
-                "bg-blue-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl px-5 py-2.5 h-auto hover:bg-blue-700 transition-all",
-                !isActive && "bg-slate-200 text-slate-400 cursor-not-allowed"
+          {/* Training days */}
+          {course.days && course.days.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-3">
+              {course.days.slice(0, 3).map((day: string) => (
+                <span key={day} className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md uppercase">
+                  {day.slice(0, 3)}
+                </span>
+              ))}
+              {course.days.length > 3 && (
+                <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md">
+                  +{course.days.length - 3}
+                </span>
               )}
-              onClick={() => isActive && onEnroll?.(course)}
-              disabled={!isActive}
-            >
-              {status === 'completed' ? 'Ended' : 'Enroll'}
-            </Button>
+            </div>
+          )}
+
+          {/* Fee + Enroll — bottom */}
+          <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto">
+            <div>
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Fee</p>
+              <p className="text-base font-black text-slate-900">
+                {formatINR(course.fee ?? 0)}
+              </p>
+            </div>
+
+            {(() => {
+              if (!isActive) return (
+                <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-3 py-2 rounded-lg">
+                  {status === 'completed' ? 'Ended'
+                    : status === 'cancelled' ? 'Cancelled'
+                    : 'Unavailable'}
+                </span>
+              );
+
+              return (
+                <button
+                  onClick={() => onEnroll?.(course)}
+                  className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors duration-150"
+                >
+                  Enroll
+                </button>
+              );
+            })()}
           </div>
         </div>
       </div>
