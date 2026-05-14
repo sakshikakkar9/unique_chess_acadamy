@@ -193,6 +193,7 @@ export const createEnrollment = async (courseId, data, proofs) => {
           student: {
             connect: { id: student.id }
           },
+          discoverySource: data.discoverySource || null,
           category: data.category || "General",
           ageProofUrl: ageProofUrl,
           paymentProofUrl: paymentProofUrl,
