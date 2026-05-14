@@ -203,6 +203,20 @@ const AdminTournaments: React.FC = () => {
     if (!formData.location) errors.location = "Venue is required";
     if (!formData.category) errors.category = "Category is required";
 
+    // Date sequence validation
+    if (formData.regStartDate && formData.regEndDate && formData.regStartDate > formData.regEndDate) {
+      errors.regStartDate = "Registration must start before it ends";
+    }
+    if (formData.regEndDate && formData.startDate && formData.regEndDate > formData.startDate) {
+      errors.regEndDate = "Registration must end before tournament starts";
+    }
+    if (formData.regStartDate && formData.startDate && formData.regStartDate > formData.startDate) {
+      errors.regStartDate = "Registration must start before tournament starts";
+    }
+    if (formData.startDate && formData.endDate && formData.startDate > formData.endDate) {
+      errors.endDate = "Tournament must end after it starts";
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -437,12 +451,14 @@ const AdminTournaments: React.FC = () => {
               <DatePickerField
                 label="Starts On"
                 value={formData.startDate}
+                minDate={formData.regEndDate || todayISO()}
                 onChange={(val) => {
                   setFormData({
                     ...formData,
                     startDate: val,
                     endDate: formData.endDate && formData.endDate < val ? "" : formData.endDate,
-                    regEndDate: formData.regEndDate && formData.regEndDate > val ? "" : formData.regEndDate
+                    regEndDate: formData.regEndDate && formData.regEndDate > val ? "" : formData.regEndDate,
+                    regStartDate: formData.regStartDate && formData.regStartDate > val ? "" : formData.regStartDate
                   });
                   if (formErrors.startDate) setFormErrors({...formErrors, startDate: ""});
                 }}
@@ -454,7 +470,11 @@ const AdminTournaments: React.FC = () => {
                 label="Ends On"
                 value={formData.endDate}
                 minDate={formData.startDate || todayISO()}
-                onChange={(val) => setFormData({...formData, endDate: val})}
+                error={formErrors.endDate}
+                onChange={(val) => {
+                  setFormData({...formData, endDate: val});
+                  if (formErrors.endDate) setFormErrors({...formErrors, endDate: ""});
+                }}
                 helperText="Must be on or after start"
               />
             </div>
@@ -463,13 +483,31 @@ const AdminTournaments: React.FC = () => {
               <DatePickerField
                 label="Reg Starts"
                 value={formData.regStartDate}
-                onChange={(val) => setFormData({...formData, regStartDate: val})}
+                maxDate={formData.regEndDate || formData.startDate || undefined}
+                error={formErrors.regStartDate}
+                onChange={(val) => {
+                  setFormData({
+                    ...formData,
+                    regStartDate: val,
+                    regEndDate: formData.regEndDate && formData.regEndDate < val ? "" : formData.regEndDate,
+                  });
+                  if (formErrors.regStartDate) setFormErrors({...formErrors, regStartDate: ""});
+                }}
               />
               <DatePickerField
                 label="Reg Deadline"
                 value={formData.regEndDate}
+                minDate={formData.regStartDate}
                 maxDate={formData.startDate || undefined}
-                onChange={(val) => setFormData({...formData, regEndDate: val})}
+                error={formErrors.regEndDate}
+                onChange={(val) => {
+                  setFormData({
+                    ...formData,
+                    regEndDate: val,
+                    regStartDate: formData.regStartDate && formData.regStartDate > val ? "" : formData.regStartDate,
+                  });
+                  if (formErrors.regEndDate) setFormErrors({...formErrors, regEndDate: ""});
+                }}
                 helperText="Must be before start"
               />
             </div>
