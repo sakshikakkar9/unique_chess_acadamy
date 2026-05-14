@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { Calendar, Globe } from "lucide-react";
 import { AGE_GROUP_RANGES, Course } from "@/types";
-import ScrollReveal from "@/components/shared/ScrollReveal";
 import { cn } from "@/lib/utils";
 import { resolveStatus, STATUS_CONFIG } from "@/lib/statusUtils";
-import { Calendar, Clock, MapPin, Globe } from "lucide-react";
-import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import ScrollReveal from "@/components/shared/ScrollReveal";
 
 interface CourseCardProps {
   course: Course;
@@ -14,7 +14,7 @@ interface CourseCardProps {
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&q=80&w=800";
 
-const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
+const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
   const status = resolveStatus(course.startDate, course.endDate, course.status);
   const statusConfig = STATUS_CONFIG[status];
   const isActive = ['upcoming', 'ongoing'].includes(status);
@@ -80,6 +80,7 @@ const CourseCard = ({ course, delay, onEnroll }: CourseCardProps) => {
             </div>
           </div>
 
+          {/* EXTRA INFO */}
           <div className="flex flex-wrap gap-2 mb-4">
              <span className="bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border border-slate-100">
               {ageRange}

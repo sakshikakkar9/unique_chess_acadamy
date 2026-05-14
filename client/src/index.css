@@ -286,3 +286,12 @@
     animation-fill-mode: both;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REQUIRED FIELD UTILITY
+   ───────────────────────────────────────────────────────────────────────────── */
+.required-field::after {
+  content: " *";
+  color: #ef4444; /* Professional Red */
+  font-weight: bold;
+}
