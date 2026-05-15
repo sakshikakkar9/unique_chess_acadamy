@@ -7,12 +7,14 @@ import {
   Trophy,
   BookOpen,
   Phone,
-  X
+  X,
+  Plus
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import AddStudentModal from "@/components/shared/admin/AddStudentModal";
+import StudentImportModal from "@/components/admin/StudentImportModal";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -23,10 +25,12 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/useToast";
 import { getAvatarStyles, cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { format } from "date-fns";
 import {
-  User, Calendar, MapPin, ShieldCheck, Zap, Info, Clock, Mail, Copy, ArrowRight
+  User, Calendar, MapPin, ShieldCheck, Zap, Info, Clock, Mail, Copy, ArrowRight,
+  Upload
 } from "lucide-react";
 
 export default function StudentsPage() {
@@ -36,6 +40,7 @@ export default function StudentsPage() {
   const [tournamentFilter, setTournamentFilter] = useState("ALL");
   const [courseFilter, setCourseFilter] = useState("ALL");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
@@ -176,9 +181,28 @@ export default function StudentsPage() {
     <AdminShell
       title="Student Management"
       subtitle="Centralized directory of all academy students and their progress."
-      actionLabel="Add Student"
-      onAction={handleAdd}
     >
+      {/* Header with Import and Add buttons */}
+      <div className="flex justify-end items-center mb-6">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <Button
+            variant="outline"
+            onClick={() => setIsImportModalOpen(true)}
+            className="flex-1 sm:flex-none h-10 px-4 rounded-lg border-uca-border bg-uca-bg-surface text-uca-text-primary font-bold text-xs uppercase tracking-widest hover:bg-uca-bg-elevated transition-colors gap-2"
+          >
+            <Upload className="size-4" />
+            Import
+          </Button>
+          <Button
+            onClick={handleAdd}
+            className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-uca-navy hover:bg-uca-navy-hover text-white font-bold text-xs uppercase tracking-widest transition-colors gap-2"
+          >
+            <Plus className="size-4" />
+            Add Student
+          </Button>
+        </div>
+      </div>
+
       <div className="space-y-6">
         {/* Standardized Filter Bar */}
         <div className="flex flex-col lg:flex-row justify-between items-center gap-4 bg-uca-bg-surface border border-uca-border p-4 rounded-xl mb-6">
@@ -252,6 +276,15 @@ export default function StudentsPage() {
           success(editingRecord ? "Student updated" : "Student added");
         }}
         editingRecord={editingRecord}
+      />
+
+      <StudentImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImportComplete={(count) => {
+          refetch();
+          success(`${count} student${count !== 1 ? 's' : ''} imported successfully`);
+        }}
       />
 
       <ConfirmDialog
