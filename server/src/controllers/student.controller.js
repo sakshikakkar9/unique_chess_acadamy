@@ -38,6 +38,58 @@ export const getAllStudents = async (req, res) => {
   }
 };
 
+export const bulkImportStudents = async (req, res) => {
+  try {
+    const { students } = req.body;
+
+    if (!Array.isArray(students) || students.length === 0) {
+      return res.status(400).json({ error: 'No students provided' });
+    }
+
+    if (students.length > 100) {
+      return res.status(400).json({ error: 'Maximum 100 students per batch' });
+    }
+
+    let created = 0;
+    const errors = [];
+
+    for (const student of students) {
+      try {
+        await prisma.student.create({
+          data: {
+            fullName: student.fullName,
+            email: student.email || null,
+            phone: student.phone,
+            gender: student.gender || 'Male',
+            dob: student.dob ? new Date(student.dob) : new Date(),
+            address: student.address || '',
+            fideId: student.fideId || "NA",
+            fideRating: parseInt(student.fideRating) || 0,
+            clubAffiliation: student.clubAffiliation || null,
+            experienceLevel: student.experienceLevel || "BEGINNER",
+            preferredBatch: student.preferredBatch || null,
+            discoverySource: student.discoverySource || "Social Media",
+            accountStatus: "ACTIVE"
+          }
+        });
+        created++;
+      } catch (rowError) {
+        errors.push(`Row ${students.indexOf(student) + 1}: ${rowError.message}`);
+      }
+    }
+
+    res.json({
+      created,
+      errors,
+      message: `Successfully imported ${created} students`
+    });
+
+  } catch (error) {
+    console.error('Bulk import error:', error);
+    res.status(500).json({ error: 'Import failed: ' + error.message });
+  }
+};
+
 export const getStudentById = async (req, res) => {
   try {
     const student = await prisma.student.findUnique({

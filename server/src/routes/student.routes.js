@@ -7,6 +7,7 @@ const router = express.Router();
 router.get('/', verifyAdmin, studentController.getAllStudents);
 router.get('/:id', verifyAdmin, studentController.getStudentById);
 router.post('/', verifyAdmin, studentController.createStudent);
+router.post('/bulk', verifyAdmin, studentController.bulkImportStudents);
 router.patch('/:id', verifyAdmin, studentController.updateStudent);
 router.delete('/:id', verifyAdmin, studentController.deleteStudent);
 
