@@ -1,7 +1,7 @@
 'use client';
 import { Calendar as CalendarIcon, CircleAlert as ExclamationCircleIcon }
   from 'lucide-react';
-import { toDisplayDate, todayISO } from '@/lib/dateUtils';
+import { toDisplayDate, todayISO } from '../../lib/dateUtils';
 
 interface Props {
   label: string;

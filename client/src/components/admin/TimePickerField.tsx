@@ -1,5 +1,5 @@
 'use client';
-import { Clock as ClockIcon, AlertCircle as ExclamationCircleIcon }
+import { Clock as ClockIcon, CircleAlert as ExclamationCircleIcon }
   from 'lucide-react';
 
 // Format "HH:MM" → "hh:MM AM/PM"

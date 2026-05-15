@@ -11,7 +11,7 @@ import { Loader2, UserPlus, Shield, Zap, Info, Check, Plus, X } from "lucide-rea
 import api from "@/lib/api";
 import { useToast } from "@/hooks/useToast";
 import AdminModal from "@/components/admin/AdminModal";
-import DatePickerField from "@/components/admin/DatePickerField";
+import DatePickerField from "../../admin/DatePickerField";
 import { cn } from "@/lib/utils";
 
 interface AddStudentModalProps {

@@ -1,4 +1,4 @@
-import { STATUS_CONFIG, ItemStatus } from '@/lib/statusUtils';
+import { STATUS_CONFIG, ItemStatus } from '../../lib/statusUtils';
 
 export default function StatusBadge({
   status

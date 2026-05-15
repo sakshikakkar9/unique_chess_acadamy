@@ -10,7 +10,7 @@ import {
   Slash as NoSymbolIcon,
   RotateCcw as ArrowPathIcon,
 } from 'lucide-react';
-import { ItemStatus, MANUAL_STATUSES } from '@/lib/statusUtils';
+import { ItemStatus, MANUAL_STATUSES } from '../../lib/statusUtils';
 
 interface Props {
   currentStatus: ItemStatus;

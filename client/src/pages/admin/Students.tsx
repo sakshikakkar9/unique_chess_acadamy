@@ -14,7 +14,7 @@ import AdminShell from "@/components/admin/AdminShell";
 import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import AddStudentModal from "@/components/shared/admin/AddStudentModal";
-import StudentImportModal from "@/components/admin/StudentImportModal";
+import StudentImportModal from "../../components/admin/StudentImportModal";
 import { Input } from "@/components/ui/input";
 import {
   Select,

@@ -20,12 +20,12 @@ import RichTextEditor from "@/components/shared/admin/RichTextEditor";
 import { cn } from "@/lib/utils";
 import TournamentPreview from "@/features/tournaments/components/admin/TournamentPreview";
 import { useToast } from "@/hooks/useToast";
-import { resolveStatus, ItemStatus } from "@/lib/statusUtils";
-import { toDisplayDate, todayISO } from "@/lib/dateUtils";
-import DatePickerField from "@/components/admin/DatePickerField";
-import StatusBadge from "@/components/admin/StatusBadge";
-import StatusActionMenu from "@/components/admin/StatusActionMenu";
-import StatusFilterBar from "@/components/admin/StatusFilterBar";
+import { resolveStatus, ItemStatus } from "../../lib/statusUtils";
+import { toDisplayDate, todayISO } from "../../lib/dateUtils";
+import DatePickerField from "../../components/admin/DatePickerField";
+import StatusBadge from "../../components/admin/StatusBadge";
+import StatusActionMenu from "../../components/admin/StatusActionMenu";
+import StatusFilterBar from "../../components/admin/StatusFilterBar";
 
 const AdminTournaments: React.FC = () => {
   const navigate = useNavigate();

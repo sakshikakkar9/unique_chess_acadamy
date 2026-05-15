@@ -1,6 +1,6 @@
 'use client';
 import { FILTER_TABS, ItemStatus, resolveStatus }
-  from '@/lib/statusUtils';
+  from '../../lib/statusUtils';
 
 interface Item {
   startDate?: string;

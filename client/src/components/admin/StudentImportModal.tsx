@@ -17,8 +17,8 @@ import {
   generateTemplate,
   ParsedStudent,
   ParseResult,
-} from '@/lib/studentImportParser';
-import { STUDENT_IMPORT_COLUMNS } from '@/lib/studentImportMap';
+} from '../../lib/studentImportParser';
+import { STUDENT_IMPORT_COLUMNS } from '../../lib/studentImportMap';
 import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
