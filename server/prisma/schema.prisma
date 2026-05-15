@@ -45,8 +45,8 @@ model Tournament {
   brochureUrl       String?
   otherDetails      String?
   contactDetails    String?
-  regStartDate      DateTime?
-  regEndDate        DateTime?
+  registrationStart    DateTime?
+  registrationDeadline DateTime?
   posterOrientation PosterOrientation  @default(LANDSCAPE)
   status            String?
   imageUrl          String?
@@ -149,6 +149,8 @@ model Course {
   mode              ClassMode          @default(ONLINE)
   startDate         DateTime?
   endDate           DateTime?
+  enrollmentStart   DateTime?
+  enrollmentEnd     DateTime?
   status            String?
   custom_banner_url String?
   brochureUrl       String?

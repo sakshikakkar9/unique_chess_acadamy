@@ -63,6 +63,8 @@ const AdminCourses = () => {
     classTime: "",
     startDate: "",
     endDate: "",
+    enrollmentStart: "",
+    enrollmentEnd: "",
     duration: "",
     contactDetails: "",
     posterOrientation: "LANDSCAPE",
@@ -105,6 +107,45 @@ const AdminCourses = () => {
     if (!formData.title) errors.title = "Course title is required";
     if (formData.fee === undefined || formData.fee === "") errors.fee = "Course fee is required";
 
+    const today = todayISO();
+
+    // startDate required and not past:
+    if (!formData.startDate) {
+      errors.startDate = 'Start date is required';
+    } else if (formData.startDate < today) {
+      errors.startDate = 'Start date cannot be in the past';
+    }
+
+    // endDate required and not before startDate:
+    if (!formData.endDate) {
+      errors.endDate = 'End date is required';
+    } else if (
+      formData.startDate &&
+      formData.endDate < formData.startDate
+    ) {
+      errors.endDate = 'End date must be on or after start date';
+    }
+
+    // enrollmentEnd must be before startDate:
+    if (
+      formData.enrollmentEnd &&
+      formData.startDate &&
+      formData.enrollmentEnd > formData.startDate
+    ) {
+      errors.enrollmentEnd =
+        'Enrollment must end before the course start date';
+    }
+
+    // enrollmentStart must be before enrollmentEnd:
+    if (
+      formData.enrollmentStart &&
+      formData.enrollmentEnd &&
+      formData.enrollmentStart > formData.enrollmentEnd
+    ) {
+      errors.enrollmentStart =
+        'Enrollment open date must be before the deadline';
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -122,6 +163,8 @@ const AdminCourses = () => {
       data.append("classTime", formData.classTime);
       if (formData.startDate) data.append("startDate", new Date(formData.startDate).toISOString());
       if (formData.endDate) data.append("endDate", new Date(formData.endDate).toISOString());
+      if (formData.enrollmentStart) data.append("enrollmentStart", new Date(formData.enrollmentStart).toISOString());
+      if (formData.enrollmentEnd) data.append("enrollmentEnd", new Date(formData.enrollmentEnd).toISOString());
       data.append("duration", formData.duration);
       data.append("fee", String(formData.fee));
       data.append("mode", formData.mode);
@@ -183,6 +226,8 @@ const AdminCourses = () => {
       classTime: "",
       startDate: "",
       endDate: "",
+      enrollmentStart: "",
+      enrollmentEnd: "",
       duration: "",
       contactDetails: "",
       posterOrientation: "LANDSCAPE",
@@ -241,6 +286,8 @@ const AdminCourses = () => {
       classTime: "",
       startDate: "",
       endDate: "",
+      enrollmentStart: "",
+      enrollmentEnd: "",
       duration: "",
       contactDetails: "",
       posterOrientation: "LANDSCAPE",
@@ -255,8 +302,10 @@ const AdminCourses = () => {
     setFormData({
       ...course,
       posterOrientation: course.posterOrientation || "LANDSCAPE",
-      startDate: course.startDate ? new Date(course.startDate).toISOString().split('T')[0] : "",
-      endDate: course.endDate ? new Date(course.endDate).toISOString().split('T')[0] : ""
+      startDate: dbDateToISO(course.startDate),
+      endDate: dbDateToISO(course.endDate),
+      enrollmentStart: dbDateToISO(course.enrollmentStart),
+      enrollmentEnd: dbDateToISO(course.enrollmentEnd),
     });
     setPreviewUrl(course.custom_banner_url);
     setIsModalOpen(true); // open modal AFTER
@@ -437,17 +486,62 @@ const AdminCourses = () => {
         <div className="space-y-6 py-2" key={editingCourse?.id ?? 'new'}>
           <div className="grid grid-cols-2 gap-4">
             <DatePickerField
-              label="Start Date"
+              label="Starts On"
               value={formData.startDate || ""}
-              onChange={(val) => setFormData({...formData, startDate: val})}
-              helperText="Optional"
+              onChange={(val) => setFormData({
+                ...formData,
+                startDate: val,
+                endDate: formData.endDate && formData.endDate < val ? "" : formData.endDate,
+                enrollmentEnd: formData.enrollmentEnd && formData.enrollmentEnd > val ? "" : formData.enrollmentEnd,
+              })}
+              minDate={todayISO()}
+              required
+              error={formErrors.startDate}
+              helperText="Course event start date"
             />
             <DatePickerField
-              label="End Date"
+              label="Ends On"
               value={formData.endDate || ""}
-              minDate={formData.startDate || todayISO()}
               onChange={(val) => setFormData({...formData, endDate: val})}
-              helperText="Optional"
+              minDate={formData.startDate || todayISO()}
+              required
+              error={formErrors.endDate}
+              helperText="Must be on or after start date"
+            />
+          </div>
+
+          <div className="col-span-2">
+            <p className="text-[10px] font-bold text-slate-400
+                          uppercase tracking-widest mb-3 mt-2
+                          flex items-center gap-2">
+              <span className="w-4 h-px bg-slate-300" />
+              Enrollment Window
+              <span className="w-4 h-px bg-slate-300" />
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <DatePickerField
+              label="Enrollment Opens"
+              value={formData.enrollmentStart}
+              onChange={(val) => setFormData({
+                ...formData,
+                enrollmentStart: val,
+                enrollmentEnd: formData.enrollmentEnd && formData.enrollmentEnd < val ? "" : formData.enrollmentEnd,
+              })}
+              minDate={todayISO()}
+              maxDate={formData.startDate || undefined}
+              error={formErrors.enrollmentStart}
+              helperText="When students can begin enrolling"
+            />
+            <DatePickerField
+              label="Enrollment Closes"
+              value={formData.enrollmentEnd}
+              onChange={(val) => setFormData({...formData, enrollmentEnd: val})}
+              minDate={formData.enrollmentStart || todayISO()}
+              maxDate={formData.startDate || undefined}
+              error={formErrors.enrollmentEnd}
+              helperText="Last day to enroll — before course starts"
             />
           </div>
 

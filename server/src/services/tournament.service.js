@@ -61,8 +61,8 @@ export const createTournament = async (data) => {
       // Mapped new schema fields
       startDate: parseDate(data.startDate) || new Date(),
       endDate: parseDate(data.endDate),
-      regStartDate: parseDate(data.regStartDate),
-      regEndDate: parseDate(data.regEndDate),
+      registrationStart: parseDate(data.registrationStart),
+      registrationDeadline: parseDate(data.registrationDeadline),
       posterOrientation: data.posterOrientation || 'LANDSCAPE',
       category: data.category || null,
       totalPrizePool: data.totalPrizePool || null,
@@ -100,8 +100,8 @@ export const updateTournament = async (id, data) => {
       // Fixed field names for update logic
       startDate: (data.startDate !== undefined && data.startDate !== "") ? parseDate(data.startDate) : undefined,
       endDate: (data.endDate !== undefined && data.endDate !== "") ? parseDate(data.endDate) : undefined,
-      regStartDate: (data.regStartDate !== undefined && data.regStartDate !== "") ? parseDate(data.regStartDate) : undefined,
-      regEndDate: (data.regEndDate !== undefined && data.regEndDate !== "") ? parseDate(data.regEndDate) : undefined,
+      registrationStart: (data.registrationStart !== undefined && data.registrationStart !== "") ? parseDate(data.registrationStart) : undefined,
+      registrationDeadline: (data.registrationDeadline !== undefined && data.registrationDeadline !== "") ? parseDate(data.registrationDeadline) : undefined,
       posterOrientation: data.posterOrientation || undefined,
     }
   });

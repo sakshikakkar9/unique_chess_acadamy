@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import PaymentDisplay from "@/components/shared/PaymentDisplay";
 import 'react-quill/dist/quill.snow.css';
 import { formatINR, formatDateRange } from "@/lib/formatUtils";
+import { toDisplayDate, todayISO, daysUntil } from "@/lib/dateUtils";
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2000&auto=format&fit=crop";
 
@@ -59,16 +60,12 @@ export default function TournamentDetails() {
 
   const registrationStatus = useMemo(() => {
     if (!tournament) return "OPEN";
-    const now = new Date();
-    const start = tournament.regStartDate ? new Date(tournament.regStartDate) : null;
-    const end = tournament.regEndDate ? new Date(tournament.regEndDate) : null;
+    const today = todayISO();
+    const start = tournament.registrationStart?.split('T')[0];
+    const end = tournament.registrationDeadline?.split('T')[0];
 
-    if (start && now < start) return "NOT_STARTED";
-    if (end) {
-      const closingTime = new Date(end);
-      closingTime.setHours(23, 59, 59, 999);
-      if (now > closingTime) return "CLOSED";
-    }
+    if (start && today < start) return "NOT_STARTED";
+    if (end && today > end) return "CLOSED";
     return "OPEN";
   }, [tournament]);
 
@@ -407,13 +404,35 @@ export default function TournamentDetails() {
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  disabled={isPending || isRegistrationDisabled}
-                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm py-3.5 rounded-xl transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed h-auto mt-4"
-                >
-                  {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Register Now <ArrowRight className="size-4" /></>}
-                </Button>
+                {(() => {
+                  const today = todayISO();
+                  const regStart = tournament.registrationStart?.split('T')[0];
+                  const regEnd = tournament.registrationDeadline?.split('T')[0];
+
+                  if (regStart && today < regStart) return (
+                    <Button disabled
+                      className="w-full py-3.5 rounded-xl font-bold text-sm bg-slate-100 text-slate-400 cursor-not-allowed h-auto mt-4">
+                      Registration Opens {toDisplayDate(regStart)}
+                    </Button>
+                  );
+
+                  if (regEnd && today > regEnd) return (
+                    <Button disabled
+                      className="w-full py-3.5 rounded-xl font-bold text-sm bg-slate-100 text-slate-400 cursor-not-allowed h-auto mt-4">
+                      Registration Closed
+                    </Button>
+                  );
+
+                  return (
+                    <Button
+                      type="submit"
+                      disabled={isPending}
+                      className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm py-3.5 rounded-xl transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed h-auto mt-4"
+                    >
+                      {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Register Now <ArrowRight className="size-4" /></>}
+                    </Button>
+                  );
+                })()}
               </form>
             </div>
           </div>
@@ -434,6 +453,37 @@ export default function TournamentDetails() {
                 <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-4">
                   {tournament.title}
                 </h1>
+
+                {/* Registration Window info pills */}
+                {(tournament.registrationStart || tournament.registrationDeadline) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                    {tournament.registrationStart && (
+                      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                        <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-1">Registration Opens</p>
+                        <p className="text-sm font-bold text-slate-900">{toDisplayDate(tournament.registrationStart)}</p>
+                        {(() => {
+                          const days = daysUntil(tournament.registrationStart);
+                          if (days === null) return null;
+                          if (days > 0) return <p className="text-xs text-blue-600 mt-1">Opens in {days} day{days !== 1 ? 's' : ''}</p>;
+                          return <p className="text-xs text-green-600 font-bold mt-1">Now Open</p>;
+                        })()}
+                      </div>
+                    )}
+                    {tournament.registrationDeadline && (
+                      <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                        <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1">Registration Closes</p>
+                        <p className="text-sm font-bold text-slate-900">{toDisplayDate(tournament.registrationDeadline)}</p>
+                        {(() => {
+                          const days = daysUntil(tournament.registrationDeadline);
+                          if (days === null) return null;
+                          if (days > 0) return <p className="text-xs text-red-600 font-semibold mt-1">{days} day{days !== 1 ? 's' : ''} left to register</p>;
+                          if (days === 0) return <p className="text-xs text-red-700 font-black mt-1">Last day to register!</p>;
+                          return <p className="text-xs text-slate-500 mt-1">Registration closed</p>;
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Info pills grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

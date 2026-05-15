@@ -69,6 +69,8 @@ export const createCourse = async (data) => {
       ageGroup: data.ageGroup || 'ADULTS',
       startDate: parseDate(data.startDate),
       endDate: parseDate(data.endDate),
+      enrollmentStart: parseDate(data.enrollmentStart),
+      enrollmentEnd: parseDate(data.enrollmentEnd),
       // Force Uppercase to match Prisma SkillLevel Enum
       skillLevel: (data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
       duration: data.duration || "N/A",
@@ -122,6 +124,8 @@ export const updateCourse = async (id, data) => {
   if (data.contactDetails) updatePayload.contactDetails = data.contactDetails;
   if (data.startDate !== undefined) updatePayload.startDate = parseDate(data.startDate);
   if (data.endDate !== undefined) updatePayload.endDate = parseDate(data.endDate);
+  if (data.enrollmentStart !== undefined) updatePayload.enrollmentStart = parseDate(data.enrollmentStart);
+  if (data.enrollmentEnd !== undefined) updatePayload.enrollmentEnd = parseDate(data.enrollmentEnd);
   if (data.status !== undefined) updatePayload.status = data.status;
 
   return await prisma.course.update({

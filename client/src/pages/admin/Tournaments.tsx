@@ -64,8 +64,8 @@ const AdminTournaments: React.FC = () => {
     description: "",
     startDate: new Date().toISOString().split('T')[0],
     endDate: "",
-    regStartDate: "",
-    regEndDate: "",
+    registrationStart: "",
+    registrationDeadline: "",
     location: "",
     category: "",
     totalPrizePool: "",
@@ -107,8 +107,8 @@ const AdminTournaments: React.FC = () => {
       description: "",
       startDate: new Date().toISOString().split('T')[0],
       endDate: "",
-      regStartDate: "",
-      regEndDate: "",
+      registrationStart: "",
+      registrationDeadline: "",
       location: "", 
       category: "",
       totalPrizePool: "",
@@ -152,13 +152,12 @@ const AdminTournaments: React.FC = () => {
     setPreviewUrl(tournament.imageUrl || "");
     setFormData({ 
       ...tournament,
-      startDate: tournament.startDate ? new Date(tournament.startDate).toISOString().split('T')[0] : "",
-      endDate: tournament.endDate ? new Date(tournament.endDate).toISOString().split('T')[0] : "",
-      regStartDate: tournament.regStartDate ? new Date(tournament.regStartDate).toISOString().split('T')[0] : "",
-      regEndDate: tournament.regEndDate ? new Date(tournament.regEndDate).toISOString().split('T')[0] : "",
+      startDate: dbDateToISO(tournament.startDate),
+      endDate: dbDateToISO(tournament.endDate),
+      registrationStart: dbDateToISO(tournament.registrationStart),
+      registrationDeadline: dbDateToISO(tournament.registrationDeadline),
       posterOrientation: tournament.posterOrientation || "LANDSCAPE",
       entryFee: tournament.entryFee || 0,
-      registrationDeadline: tournament.regEndDate ? new Date(tournament.regEndDate).toISOString().split('T')[0] : ""
     });
     setIsModalOpen(true); // open modal AFTER
   };
@@ -203,18 +202,43 @@ const AdminTournaments: React.FC = () => {
     if (!formData.location) errors.location = "Venue is required";
     if (!formData.category) errors.category = "Category is required";
 
-    // Date sequence validation
-    if (formData.regStartDate && formData.regEndDate && formData.regStartDate > formData.regEndDate) {
-      errors.regStartDate = "Registration must start before it ends";
+    const today = todayISO();
+
+    // startDate required and not past:
+    if (!formData.startDate) {
+      errors.startDate = 'Start date is required';
+    } else if (formData.startDate < today) {
+      errors.startDate = 'Start date cannot be in the past';
     }
-    if (formData.regEndDate && formData.startDate && formData.regEndDate > formData.startDate) {
-      errors.regEndDate = "Registration must end before tournament starts";
+
+    // endDate required and not before startDate:
+    if (!formData.endDate) {
+      errors.endDate = 'End date is required';
+    } else if (
+      formData.startDate &&
+      formData.endDate < formData.startDate
+    ) {
+      errors.endDate = 'End date must be on or after start date';
     }
-    if (formData.regStartDate && formData.startDate && formData.regStartDate > formData.startDate) {
-      errors.regStartDate = "Registration must start before tournament starts";
+
+    // registrationDeadline must be before startDate:
+    if (
+      formData.registrationDeadline &&
+      formData.startDate &&
+      formData.registrationDeadline > formData.startDate
+    ) {
+      errors.registrationDeadline =
+        'Deadline must be before the tournament start date';
     }
-    if (formData.startDate && formData.endDate && formData.startDate > formData.endDate) {
-      errors.endDate = "Tournament must end after it starts";
+
+    // registrationStart must be before registrationDeadline:
+    if (
+      formData.registrationStart &&
+      formData.registrationDeadline &&
+      formData.registrationStart > formData.registrationDeadline
+    ) {
+      errors.registrationStart =
+        'Registration open date must be before the deadline';
     }
 
     setFormErrors(errors);
@@ -228,7 +252,7 @@ const AdminTournaments: React.FC = () => {
     const data = new FormData();
     Object.keys(formData).forEach(key => {
       if (formData[key] !== null && formData[key] !== undefined) {
-        if (['startDate', 'endDate', 'regStartDate', 'regEndDate'].includes(key)) {
+        if (['startDate', 'endDate', 'registrationStart', 'registrationDeadline'].includes(key)) {
           if (formData[key]) data.append(key, new Date(formData[key]).toISOString());
         } else if (key !== 'imageUrl' && key !== 'brochureUrl') {
           data.append(key, String(formData[key]));
@@ -451,64 +475,72 @@ const AdminTournaments: React.FC = () => {
               <DatePickerField
                 label="Starts On"
                 value={formData.startDate}
-                minDate={formData.regEndDate || todayISO()}
                 onChange={(val) => {
                   setFormData({
                     ...formData,
                     startDate: val,
                     endDate: formData.endDate && formData.endDate < val ? "" : formData.endDate,
-                    regEndDate: formData.regEndDate && formData.regEndDate > val ? "" : formData.regEndDate,
-                    regStartDate: formData.regStartDate && formData.regStartDate > val ? "" : formData.regStartDate
+                    registrationDeadline: formData.registrationDeadline && formData.registrationDeadline > val ? "" : formData.registrationDeadline,
                   });
                   if (formErrors.startDate) setFormErrors({...formErrors, startDate: ""});
                 }}
+                minDate={todayISO()}
                 required
                 error={formErrors.startDate}
-                helperText="DD/MM/YYYY — no past dates"
+                helperText="Tournament event start date"
               />
               <DatePickerField
                 label="Ends On"
                 value={formData.endDate}
-                minDate={formData.startDate || todayISO()}
-                error={formErrors.endDate}
                 onChange={(val) => {
                   setFormData({...formData, endDate: val});
                   if (formErrors.endDate) setFormErrors({...formErrors, endDate: ""});
                 }}
-                helperText="Must be on or after start"
+                minDate={formData.startDate || todayISO()}
+                required
+                error={formErrors.endDate}
+                helperText="Must be on or after start date"
               />
+            </div>
+
+            <div className="col-span-2">
+              <p className="text-[10px] font-bold text-slate-400
+                            uppercase tracking-widest mb-3 mt-2
+                            flex items-center gap-2">
+                <span className="w-4 h-px bg-slate-300" />
+                Registration Window
+                <span className="w-4 h-px bg-slate-300" />
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <DatePickerField
-                label="Reg Starts"
-                value={formData.regStartDate}
-                maxDate={formData.regEndDate || formData.startDate || undefined}
-                error={formErrors.regStartDate}
+                label="Registration Opens"
+                value={formData.registrationStart}
                 onChange={(val) => {
                   setFormData({
                     ...formData,
-                    regStartDate: val,
-                    regEndDate: formData.regEndDate && formData.regEndDate < val ? "" : formData.regEndDate,
+                    registrationStart: val,
+                    registrationDeadline: formData.registrationDeadline && formData.registrationDeadline < val ? "" : formData.registrationDeadline,
                   });
-                  if (formErrors.regStartDate) setFormErrors({...formErrors, regStartDate: ""});
+                  if (formErrors.registrationStart) setFormErrors({...formErrors, registrationStart: ""});
                 }}
+                minDate={todayISO()}
+                maxDate={formData.startDate || undefined}
+                error={formErrors.registrationStart}
+                helperText="When public can start registering"
               />
               <DatePickerField
-                label="Reg Deadline"
-                value={formData.regEndDate}
-                minDate={formData.regStartDate}
-                maxDate={formData.startDate || undefined}
-                error={formErrors.regEndDate}
+                label="Registration Closes"
+                value={formData.registrationDeadline}
                 onChange={(val) => {
-                  setFormData({
-                    ...formData,
-                    regEndDate: val,
-                    regStartDate: formData.regStartDate && formData.regStartDate > val ? "" : formData.regStartDate,
-                  });
-                  if (formErrors.regEndDate) setFormErrors({...formErrors, regEndDate: ""});
+                  setFormData({...formData, registrationDeadline: val});
+                  if (formErrors.registrationDeadline) setFormErrors({...formErrors, registrationDeadline: ""});
                 }}
-                helperText="Must be before start"
+                minDate={formData.registrationStart || todayISO()}
+                maxDate={formData.startDate || undefined}
+                error={formErrors.registrationDeadline}
+                helperText="Last day to register — before tournament starts"
               />
             </div>
 

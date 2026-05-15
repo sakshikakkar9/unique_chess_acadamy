@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import PaymentDisplay from "@/components/shared/PaymentDisplay";
 import 'react-quill/dist/quill.snow.css';
 import { formatINR, formatTime } from "@/lib/formatUtils";
+import { toDisplayDate, todayISO, daysUntil } from "@/lib/dateUtils";
 
 const DEFAULT_BANNER = "https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2000&auto=format&fit=crop";
 
@@ -316,13 +317,35 @@ export default function CourseEnrollmentPage() {
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm py-3.5 rounded-xl transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed h-auto mt-4"
-                >
-                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Enroll Now <ArrowRight className="size-4" /></>}
-                </Button>
+                {(() => {
+                  const today = todayISO();
+                  const enStart = course.enrollmentStart?.split('T')[0];
+                  const enEnd   = course.enrollmentEnd?.split('T')[0];
+
+                  if (enStart && today < enStart) return (
+                    <Button disabled
+                      className="w-full py-3.5 rounded-xl font-bold text-sm bg-slate-100 text-slate-400 cursor-not-allowed h-auto mt-4">
+                      Enrollment Opens {toDisplayDate(enStart)}
+                    </Button>
+                  );
+
+                  if (enEnd && today > enEnd) return (
+                    <Button disabled
+                      className="w-full py-3.5 rounded-xl font-bold text-sm bg-slate-100 text-slate-400 cursor-not-allowed h-auto mt-4">
+                      Enrollment Closed
+                    </Button>
+                  );
+
+                  return (
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm py-3.5 rounded-xl transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed h-auto mt-4"
+                    >
+                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Enroll Now <ArrowRight className="size-4" /></>}
+                    </Button>
+                  );
+                })()}
               </form>
             </div>
           </div>
@@ -343,6 +366,37 @@ export default function CourseEnrollmentPage() {
                 <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-4">
                   {course.title}
                 </h1>
+
+                {/* Enrollment Window pills */}
+                {(course.enrollmentStart || course.enrollmentEnd) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                    {course.enrollmentStart && (
+                      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                        <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-1">Enrollment Opens</p>
+                        <p className="text-sm font-bold text-slate-900">{toDisplayDate(course.enrollmentStart)}</p>
+                        {(() => {
+                          const days = daysUntil(course.enrollmentStart);
+                          if (days === null) return null;
+                          if (days > 0) return <p className="text-xs text-blue-600 mt-1">Opens in {days} day{days !== 1 ? 's' : ''}</p>;
+                          return <p className="text-xs text-green-600 font-bold mt-1">Now Enrolling</p>;
+                        })()}
+                      </div>
+                    )}
+                    {course.enrollmentEnd && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                        <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Enrollment Closes</p>
+                        <p className="text-sm font-bold text-slate-900">{toDisplayDate(course.enrollmentEnd)}</p>
+                        {(() => {
+                          const days = daysUntil(course.enrollmentEnd);
+                          if (days === null) return null;
+                          if (days > 0) return <p className="text-xs text-amber-700 font-semibold mt-1">{days} day{days !== 1 ? 's' : ''} left to enroll</p>;
+                          if (days === 0) return <p className="text-xs text-red-700 font-black mt-1">Last day to enroll!</p>;
+                          return <p className="text-xs text-slate-500 mt-1">Enrollment closed</p>;
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Info pills grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

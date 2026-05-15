@@ -24,6 +24,8 @@ export interface Course {
   duration: string;
   startDate?: string;
   endDate?: string;
+  enrollmentStart?: string;
+  enrollmentEnd?: string;
   status?: string | null;
   description?: string;
   custom_banner_url?: string;
@@ -46,8 +48,8 @@ export interface Tournament {
   description?: string;
   startDate: string;
   endDate?: string;
-  regStartDate?: string;
-  regEndDate?: string;
+  registrationStart?: string;
+  registrationDeadline?: string;
   posterOrientation?: "LANDSCAPE" | "PORTRAIT";
   location?: string;
   category?: string;

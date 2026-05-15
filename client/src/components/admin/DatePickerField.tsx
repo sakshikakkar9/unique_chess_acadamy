@@ -3,12 +3,12 @@ import { Calendar as CalendarIcon, CircleAlert as ExclamationCircleIcon }
   from 'lucide-react';
 import { toDisplayDate, todayISO } from '@/lib/dateUtils';
 
-interface Props {
+interface DatePickerFieldProps {
   label: string;
-  value: string;          // ISO "YYYY-MM-DD" in state
+  value: string;         // ISO "YYYY-MM-DD" in state
   onChange: (iso: string) => void;
-  minDate?: string;       // ISO
-  maxDate?: string;       // ISO
+  minDate?: string;      // ISO "YYYY-MM-DD" — blocks earlier dates
+  maxDate?: string;      // ISO "YYYY-MM-DD" — blocks later dates
   required?: boolean;
   disabled?: boolean;
   error?: string;
@@ -20,13 +20,14 @@ export default function DatePickerField({
   minDate, maxDate,
   required, disabled,
   error, helperText,
-}: Props) {
-  const min = minDate ?? todayISO();
+}: DatePickerFieldProps) {
+
+  const effectiveMin = minDate ?? todayISO();
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1">
 
-      {/* Label row with DD/MM/YYYY display */}
+      {/* Label row */}
       <div className="flex items-center justify-between">
         <label className="text-[10px] font-bold text-slate-500
                           uppercase tracking-widest">
@@ -35,31 +36,32 @@ export default function DatePickerField({
             <span className="text-red-500 ml-0.5">*</span>
           )}
         </label>
-        {/* DD/MM/YYYY shown clearly next to label */}
+        {/* DD/MM/YYYY badge — always shows selected date */}
         {value && (
-          <span className="text-xs font-bold text-blue-600
-                           bg-blue-50 px-2 py-0.5 rounded-lg">
-            📅 {toDisplayDate(value)}
+          <span className="text-[10px] font-bold text-blue-600
+                           bg-blue-50 px-2 py-0.5 rounded-md">
+            {toDisplayDate(value)}
           </span>
         )}
       </div>
 
+      {/* Native date input */}
       <div className="relative">
         <input
           type="date"
-          value={value}
-          min={min}
+          value={value}          // always ISO for input[type=date]
+          min={effectiveMin}     // blocks past dates
           max={maxDate}
           disabled={disabled}
           required={required}
           onChange={(e) => onChange(e.target.value)}
-          onKeyDown={(e) => e.preventDefault()}
+          onKeyDown={(e) => e.preventDefault()} // no manual typing
           className={`w-full border rounded-xl px-3 py-2.5
                       text-sm bg-white cursor-pointer
                       [color-scheme:light]
-                      transition-colors duration-150
                       focus:outline-none focus:ring-2
                       focus:ring-blue-500/20 focus:border-blue-500
+                      transition-colors duration-150
                       disabled:bg-slate-50 disabled:cursor-not-allowed
                       ${error
                         ? 'border-red-400 ring-2 ring-red-100'
@@ -72,13 +74,14 @@ export default function DatePickerField({
         />
       </div>
 
+      {/* Error or helper */}
       {error ? (
-        <p className="text-xs text-red-500 flex items-center gap-1 mt-0.5">
+        <p className="text-xs text-red-500 flex items-center gap-1">
           <ExclamationCircleIcon className="size-3.5 flex-shrink-0" />
           {error}
         </p>
       ) : helperText ? (
-        <p className="text-xs text-slate-400 mt-0.5">{helperText}</p>
+        <p className="text-xs text-slate-400">{helperText}</p>
       ) : null}
     </div>
   );
