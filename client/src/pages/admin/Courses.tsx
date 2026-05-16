@@ -32,12 +32,7 @@ const AdminCourses = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { courses: fetchedCourses, isLoading, addCourse, updateCourse, deleteCourse } = useAdminCourses();
-  const [courses, setCourses] = useState<any[]>([]);
   const { success, error: toastError } = useToast();
-
-  useEffect(() => {
-    if (fetchedCourses) setCourses(fetchedCourses);
-  }, [fetchedCourses]);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
@@ -85,14 +80,14 @@ const AdminCourses = () => {
   }, [searchTerm, levelFilter, activeFilter]);
 
   const filteredCourses = useMemo(() => {
-    if (!courses || !Array.isArray(courses)) return [];
-    return courses.filter((course: any) => {
+    if (!fetchedCourses || !Array.isArray(fetchedCourses)) return [];
+    return fetchedCourses.filter((course: any) => {
         const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesLevel = levelFilter === "ALL" || course.skillLevel === levelFilter;
         const matchesStatus = activeFilter === 'all' || resolveStatus(course.startDate, course.endDate, course.status) === activeFilter;
         return matchesSearch && matchesLevel && matchesStatus;
     });
-  }, [courses, searchTerm, levelFilter, activeFilter]);
+  }, [fetchedCourses, searchTerm, levelFilter, activeFilter]);
 
   const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
   const paginatedCourses = useMemo(() => {
@@ -151,8 +146,6 @@ const AdminCourses = () => {
     setIsDeleting(true);
     try {
       await api.delete(`/courses/${course.id}`);
-      // Remove from local state:
-      setCourses(prev => prev.filter(c => c.id !== course.id));
       setConfirmDelete(null);
       success('Course deleted');
       queryClient.invalidateQueries({ queryKey: ["courses"] });
@@ -275,13 +268,6 @@ const AdminCourses = () => {
 
       if (!response.data) throw new Error('Failed to update status');
 
-      // Update local state immediately:
-      setCourses(prev => prev.map(c =>
-        c.id === course.id
-          ? { ...c, status: statusToSave }
-          : c
-      ));
-
       setConfirmStatus(null);
       const label = newStatus === 'restore'
         ? 'Restored to active'
@@ -352,7 +338,7 @@ const AdminCourses = () => {
     >
       <div className="space-y-6">
         <StatusFilterBar
-          items={courses}
+          items={fetchedCourses || []}
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
           searchValue={searchTerm}
@@ -367,7 +353,7 @@ const AdminCourses = () => {
           isLoading={isLoading}
           onRowClick={(c) => navigate(`/admin/courses/${c.id}/portal`)}
           onEdit={(row) => {
-            const original = courses.find((c: any) => c.id === row.id);
+            const original = fetchedCourses?.find((c: any) => c.id === row.id);
             if (original) handleEdit(original);
           }}
           onDelete={(c) => setConfirmDelete(c)}
