@@ -26,7 +26,7 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
         {/* IMAGE AREA - Reverted to match exact tournament height container ratio */}
         <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 flex items-center justify-center border-b border-slate-100">
           {/* Real course banner image or custom placeholder layout match */}
-          {course.custom_banner_url && !course.custom_banner_url.includes('tournament') ? (
+          {course.custom_banner_url ? (
             <img
               src={course.custom_banner_url}
               alt={course.title}
@@ -43,7 +43,7 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
           )}
 
           {/* Chess piece pattern context mark overlay */}
-          {!course.custom_banner_url || course.custom_banner_url.includes('tournament') ? (
+          {!course.custom_banner_url ? (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <span className="text-6xl opacity-[0.04] select-none">♟</span>
             </div>
