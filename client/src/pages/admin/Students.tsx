@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
+import api from "../../lib/api";
 import {
   Search,
   Trophy,
@@ -10,23 +10,23 @@ import {
   X,
   Plus
 } from "lucide-react";
-import AdminShell from "@/components/admin/AdminShell";
-import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
-import ConfirmDialog from "@/components/admin/ConfirmDialog";
-import AddStudentModal from "@/components/shared/admin/AddStudentModal";
-import StudentImportModal from "@/components/admin/StudentImportModal";
-import { Input } from "@/components/ui/input";
+import AdminShell from "../../components/admin/AdminShell";
+import AdminTable, { AdminTableColumn } from "../../components/admin/AdminTable";
+import ConfirmDialog from "../../components/admin/ConfirmDialog";
+import AddStudentModal from "../../components/shared/admin/AddStudentModal";
+import StudentImportModal from "../../components/admin/StudentImportModal";
+import { Input } from "../../components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select";
-import { useToast } from "@/hooks/useToast";
-import { getAvatarStyles, cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+} from "../../components/ui/select";
+import { useToast } from "../../hooks/useToast";
+import { getAvatarStyles, cn } from "../../lib/utils";
+import { Button } from "../../components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../components/ui/sheet";
 import { format } from "date-fns";
 import {
   User, Calendar, MapPin, ShieldCheck, Zap, Info, Clock, Mail, Copy, ArrowRight,

@@ -109,8 +109,8 @@ export default function StudentImportModal({
   };
 
   // ── Template download ───────────────────────────────────────
-  const downloadTemplate = () => {
-    const blob = generateTemplate();
+  const downloadTemplate = async () => {
+    const blob = await generateTemplate();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

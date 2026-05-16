@@ -1,4 +1,3 @@
-import * as XLSX from 'xlsx';
 import { STUDENT_IMPORT_COLUMNS, StudentImportColumn } from './studentImportMap';
 
 export interface ParsedStudent {
@@ -32,6 +31,9 @@ export async function parseStudentFile(
   const warnings: string[] = [];
 
   try {
+    // Dynamic import to prevent module-level failure
+    const XLSX = await import('xlsx');
+
     // Read file as ArrayBuffer:
     const buffer = await file.arrayBuffer();
     const workbook = XLSX.read(buffer, { type: 'array' });
@@ -100,7 +102,7 @@ export async function parseStudentFile(
           : '';
 
         const processed = processValue(
-          rawValue, col.type, col.field, rowNum, warnings
+          rawValue, col.type, col.field, rowNum, warnings, XLSX
         );
         parsed[col.field] = processed;
       });
@@ -174,7 +176,8 @@ function processValue(
   type: StudentImportColumn['type'],
   field: string,
   rowNum: number,
-  warnings: string[]
+  warnings: string[],
+  XLSX: any
 ): string | number | null {
   if (!raw || raw.trim() === '') return null;
 
@@ -203,7 +206,7 @@ function processValue(
     case 'date':
       // Handle multiple date formats:
       // DD/MM/YYYY, MM/DD/YYYY, YYYY-MM-DD, DD-MM-YYYY
-      const parsed = parseDateString(val);
+      const parsed = parseDateString(val, XLSX);
       if (!parsed) {
         warnings.push(
           `Row ${rowNum}: "${val}" is not a recognized date format`
@@ -228,7 +231,7 @@ function processValue(
 /**
  * Parse various date string formats to ISO YYYY-MM-DD
  */
-function parseDateString(val: string): string | null {
+function parseDateString(val: string, XLSX: any): string | null {
   // Try DD/MM/YYYY or DD-MM-YYYY:
   const ddmm = val.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
   if (ddmm) {
@@ -281,7 +284,8 @@ export function validateRow(
 /**
  * Generate a downloadable template file
  */
-export function generateTemplate(): Blob {
+export async function generateTemplate(): Promise<Blob> {
+  const XLSX = await import('xlsx');
   const ws = XLSX.utils.aoa_to_sheet([
     // Header row:
     STUDENT_IMPORT_COLUMNS.map(c => c.label),
