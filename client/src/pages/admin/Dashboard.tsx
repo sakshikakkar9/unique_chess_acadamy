@@ -5,19 +5,20 @@ import {
   BookOpen, Trophy, Image as PhotoIcon, Users,
   TrendingUp, Calendar, UserCheck, ArrowUpRight, GraduationCap
 } from "lucide-react";
-import { useAdminCourses } from "@/features/courses/hooks/useAdminCourses";
-import { useAdminTournaments } from "@/features/tournaments/hooks/useAdminTournaments";
-import { useAdminGallery } from "@/features/gallery/hooks/useAdminGallery";
+import { useAdminCourses } from "../../features/courses/hooks/useAdminCourses";
+import { useAdminTournaments } from "../../features/tournaments/hooks/useAdminTournaments";
+import { useAdminGallery } from "../../features/gallery/hooks/useAdminGallery";
 import { useDemoAdmin } from "../../features/demo/hooks/useDemoRegistration";
 import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { CourseEnrollment } from "@/types";
-import { AGE_GROUP_LABELS } from "@/types";
-import AdminShell from "@/components/admin/AdminShell";
-import StatusBadge from "@/components/shared/admin/StatusBadge";
-import { cn, getAvatarStyles } from "@/lib/utils";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Pagination from "@/components/shared/admin/Pagination";
+import api from "../../lib/api";
+import { formatINR } from "../../lib/formatUtils";
+import { CourseEnrollment } from "../../types";
+import { AGE_GROUP_LABELS } from "../../types";
+import AdminShell from "../../components/admin/AdminShell";
+import StatusBadge from "../../components/shared/admin/StatusBadge";
+import { cn, getAvatarStyles } from "../../lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import Pagination from "../../components/shared/admin/Pagination";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -74,13 +75,13 @@ const AdminDashboard: React.FC = () => {
   // Calculate Collections
   const totalCourseCollections = useMemo(() => {
     return enrollments
-      .filter(e => e.paymentStatus === 'VERIFIED')
+      .filter(e => e.status !== 'REJECTED')
       .reduce((sum, e) => sum + (e.course?.fee || 0), 0);
   }, [enrollments]);
 
   const totalTournamentCollections = useMemo(() => {
     return registrations
-      .filter(r => r.paymentStatus === 'VERIFIED')
+      .filter(r => r.status !== 'CANCELLED' && r.status !== 'REJECTED')
       .reduce((sum, r) => sum + (r.tournament?.entryFee || 0), 0);
   }, [registrations]);
 
@@ -100,13 +101,13 @@ const AdminDashboard: React.FC = () => {
     },
     {
       title: "Collected Amount",
-      value: tournamentLoading || enrollLoading ? "…" : `₹${totalInvestment.toLocaleString()}`,
+      value: tournamentLoading || enrollLoading ? "…" : formatINR(totalInvestment),
       icon: TrendingUp,
       accent: "text-emerald-500",
       bg: "bg-emerald-500/10",
       numColor: "text-emerald-500",
       status: "PROFITS",
-      subtitle: `Courses: ₹${totalCourseCollections.toLocaleString()} | Tournaments: ₹${totalTournamentCollections.toLocaleString()}`,
+      subtitle: `Courses: ${formatINR(totalCourseCollections)} | Tournaments: ${formatINR(totalTournamentCollections)}`,
       path: "/admin/registrations"
     },
     {

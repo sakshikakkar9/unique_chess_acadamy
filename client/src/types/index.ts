@@ -87,6 +87,7 @@ export interface Registration {
   transactionId?: string;
   tournamentId: number;
   status: 'PENDING' | 'APPROVED' | 'CANCELLED' | 'COMPLETED' | 'CONFIRMED' | 'REJECTED';
+  paymentStatus?: PaymentStatus;
   createdAt: string;
 
   student?: {
@@ -104,10 +105,12 @@ export interface Registration {
   tournament?: {
     id: number;
     title: string;
+    entryFee: number;
   };
 }
 
 export type EnrollmentStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "REJECTED";
+export type PaymentStatus = "PENDING" | "VERIFIED" | "FAILED";
 
 export interface CourseEnrollment {
   id: string;
@@ -117,8 +120,9 @@ export interface CourseEnrollment {
   paymentProofUrl: string;
   transactionId?: string;
   status: EnrollmentStatus;
+  paymentStatus?: PaymentStatus;
   courseId: string;
-  course?: { id: string; title: string; ageGroup: AgeGroup };
+  course?: { id: string; title: string; ageGroup: AgeGroup; fee: number };
   student?: {
     fullName: string;
     email?: string;
@@ -141,6 +145,7 @@ export interface DemoRegistration {
   phone: string;
   scheduledAt: string;
   status: "PENDING" | "CONFIRMED" | "COMPLETED";
+  paymentStatus?: PaymentStatus;
   createdAt?: string;
 }
 
