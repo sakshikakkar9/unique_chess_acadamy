@@ -67,7 +67,7 @@ export const createCourse = async (req, res) => {
       posterOrientation: posterOrientation || "LANDSCAPE",
       // 4. Image handling (checks both 'image' and 'banner' fields)
       custom_banner_url: (req.files?.image?.[0] || req.files?.banner?.[0])
-        ? await uploadToCloudinary((req.files.image || req.files.banner)[0].buffer)
+        ? await uploadToCloudinary((req.files?.image?.[0] || req.files?.banner?.[0]).buffer, "courses")
         : null,
       brochureUrl: req.files?.brochure?.[0]
         ? await uploadToCloudinary(req.files.brochure[0].buffer, "brochures")
@@ -95,7 +95,7 @@ export const updateCourse = async (req, res) => {
       // Pass raw days
       days: req.body.days,
       custom_banner_url: (req.files?.image?.[0] || req.files?.banner?.[0])
-        ? await uploadToCloudinary((req.files.image || req.files.banner)[0].buffer)
+        ? await uploadToCloudinary((req.files?.image?.[0] || req.files?.banner?.[0]).buffer, "courses")
         : undefined,
       brochureUrl: req.files?.brochure?.[0]
         ? await uploadToCloudinary(req.files.brochure[0].buffer, "brochures")
