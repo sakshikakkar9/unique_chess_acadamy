@@ -107,7 +107,7 @@ export const updateCourse = async (id, data) => {
   if (data.ageGroup) updatePayload.ageGroup = data.ageGroup;
   if (data.skillLevel) updatePayload.skillLevel = data.skillLevel.toUpperCase();
   if (data.duration) updatePayload.duration = data.duration;
-  if (data.custom_banner_url) updatePayload.custom_banner_url = data.custom_banner_url;
+  if (data.custom_banner_url !== undefined) updatePayload.custom_banner_url = data.custom_banner_url;
   if (data.brochureUrl !== undefined) updatePayload.brochureUrl = data.brochureUrl;
   
   // Explicitly check for fee to allow updating to 0 but avoiding 'undefined'
