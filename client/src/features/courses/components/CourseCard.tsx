@@ -26,12 +26,15 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
         {/* IMAGE AREA - Reverted to match exact tournament height container ratio */}
         <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 flex items-center justify-center border-b border-slate-100">
           {/* Real course banner image or custom placeholder layout match */}
-          {course.custom_banner_url ? (
+          {course.custom_banner_url && course.custom_banner_url !== 'null' && course.custom_banner_url !== 'undefined' ? (
             <img
               src={course.custom_banner_url}
               alt={course.title}
               className="w-full h-full object-cover"
               loading="lazy"
+              onError={(e) => {
+                e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiB2aWV3Qm94PSIwIDAgNDAwIDMwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNGMUY1RjkiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iI0Q5Nzc0OSIgZm9udC1mYW1pbHk9InNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LWl0YWxpYz0iaXRhbGljIiBmb250LXNpemU9IjY0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjM1ZW0iPlNLPC90ZXh0Pjwvc3ZnPg==';
+              }}
             />
           ) : (
             /* Branding fallback matching Tournament style structure perfectly */

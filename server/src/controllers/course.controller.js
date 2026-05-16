@@ -74,6 +74,11 @@ export const createCourse = async (req, res) => {
         : null,
     };
 
+    // Safety: Only include banner if it was successfully uploaded
+    if (courseData.custom_banner_url === null && (req.files?.image?.[0] || req.files?.banner?.[0])) {
+      delete courseData.custom_banner_url;
+    }
+
     const newCourse = await courseService.createCourse(courseData);
     res.status(201).json(newCourse);
   } catch (error) {
@@ -101,6 +106,11 @@ export const updateCourse = async (req, res) => {
         ? await uploadToCloudinary(req.files.brochure[0].buffer, "brochures")
         : undefined,
     };
+
+    // Safety: Only set banner if it was successfully uploaded to avoid overwriting with null
+    if (updateData.custom_banner_url === null && (req.files?.image?.[0] || req.files?.banner?.[0])) {
+      delete updateData.custom_banner_url;
+    }
 
     // Clean up undefined so we don't accidentally overwrite with undefined
     Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);

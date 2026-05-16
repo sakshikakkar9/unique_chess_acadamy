@@ -284,8 +284,18 @@ const AdminCourses = () => {
     ...c,
     displayTitle: (
       <div className="flex items-center gap-3">
-        <div className="size-10 rounded-lg bg-uca-bg-elevated overflow-hidden shrink-0 border border-uca-border">
-          <img src={c.custom_banner_url || "/placeholder.jpg"} className="size-full object-cover" />
+        <div className="size-10 rounded-lg bg-uca-bg-elevated overflow-hidden shrink-0 border border-uca-border flex items-center justify-center">
+          {c.custom_banner_url && c.custom_banner_url !== 'null' && c.custom_banner_url !== 'undefined' ? (
+            <img
+              src={c.custom_banner_url}
+              className="size-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIGZpbGw9IiNGMUY1RjkiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iI0Q5Nzc0OSIgZm9udC1mYW1pbHk9InNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LWl0YWxpYz0iaXRhbGljIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjM1ZW0iPlNLPC90ZXh0Pjwvc3ZnPg==';
+              }}
+            />
+          ) : (
+            <span className="text-xs font-serif italic font-black text-amber-600">SK</span>
+          )}
         </div>
         <div className="flex flex-col min-w-0">
           <span className="font-bold text-uca-text-primary truncate">{c.title}</span>

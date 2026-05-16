@@ -4,9 +4,6 @@ import axios from 'axios';
 // In production, this will typically be: https://unique-chess-acadamy.onrender.com/api
 const api = axios.create({
   baseURL: (import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
   withCredentials: true,
 });
 
