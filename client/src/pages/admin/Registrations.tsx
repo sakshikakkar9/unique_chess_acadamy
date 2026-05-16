@@ -38,6 +38,7 @@ export default function RegistrationsPage() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [pendingChanges, setPendingChanges] = useState<{ status?: string; paymentStatus?: string }>({});
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -99,7 +100,7 @@ export default function RegistrationsPage() {
     });
   }, [demos, searchTerm, statusFilter]);
 
-  const handleAction = async (id: string | number, type: string, action: 'status' | 'delete' | 'paymentStatus', value?: string) => {
+  const handleAction = async (id: string | number, type: string, action: 'status' | 'delete' | 'paymentStatus' | 'bulk', payload?: any) => {
     const isDelete = action === 'delete';
     if (isDelete) setIsDeleting(true);
     else setIsSubmitting(true);
@@ -114,37 +115,50 @@ export default function RegistrationsPage() {
       if (action === 'delete') {
         await api.delete(paths[type]);
       } else if (action === 'paymentStatus') {
-        await api.patch(paths[type], { paymentStatus: value });
-      } else {
-        await api.patch(paths[type], { status: value });
+        await api.patch(paths[type], { paymentStatus: payload });
+      } else if (action === 'status') {
+        await api.patch(paths[type], { status: payload });
+      } else if (action === 'bulk') {
+        await api.patch(paths[type], payload);
       }
       
       const queryKey = type === 'tournament' ? "registrations" : type === 'course' ? "course-enrollments" : type;
       qc.invalidateQueries({ queryKey: [queryKey] });
       if (type === 'demo') refreshDemos();
 
+      // Update Detail Sheet if open
       if (selectedItem && selectedItem.id === id) {
         if (action === 'delete') setSelectedItem(null);
-        else if (action === 'paymentStatus') setSelectedItem({ ...selectedItem, paymentStatus: value });
-        else setSelectedItem({ ...selectedItem, status: value });
-      }
-
-      if (editingRecord && editingRecord.id === id) {
-        if (action === 'paymentStatus') setEditingRecord({ ...editingRecord, paymentStatus: value });
-        else setEditingRecord({ ...editingRecord, status: value });
+        else if (action === 'bulk') setSelectedItem({ ...selectedItem, ...payload });
+        else if (action === 'paymentStatus') setSelectedItem({ ...selectedItem, paymentStatus: payload });
+        else setSelectedItem({ ...selectedItem, status: payload });
       }
 
       success(`${action === 'delete' ? 'Deleted' : 'Updated'} successfully`);
+
       if (isDelete) {
         setIsConfirmOpen(false);
         setRecordToDelete(null);
       }
-    } catch (err) {
+      return true;
+    } catch (err: any) {
       console.error(err);
-      toastError("Operation failed");
+      toastError(err.response?.data?.error || "Operation failed");
+      return false;
     } finally {
       if (isDelete) setIsDeleting(false);
       else setIsSubmitting(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!editingRecord) return;
+
+    const success = await handleAction(editingRecord.id, editingRecord.type, 'bulk', pendingChanges);
+    if (success) {
+      setIsEditModalOpen(false);
+      setEditingRecord(null);
+      setPendingChanges({});
     }
   };
 
@@ -166,6 +180,10 @@ export default function RegistrationsPage() {
 
   const handleEdit = (item: any) => {
     setEditingRecord({ ...item, type: currentType });
+    setPendingChanges({
+      status: item.status,
+      paymentStatus: item.paymentStatus
+    });
     setIsEditModalOpen(true);
   };
 
@@ -173,6 +191,7 @@ export default function RegistrationsPage() {
     if (isSubmitting) return;
     setIsEditModalOpen(false);
     setEditingRecord(null);
+    setPendingChanges({});
   };
 
   const rows = (currentData || []).map((item: any) => {
@@ -353,7 +372,7 @@ export default function RegistrationsPage() {
           <>
             <Button variant="ghost" disabled={isSubmitting} onClick={handleClose} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
             <Button
-              onClick={handleClose}
+              onClick={handleSave}
               disabled={isSubmitting}
               className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
             >
@@ -376,8 +395,8 @@ export default function RegistrationsPage() {
           <div className="grid gap-2">
             <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Registration Status</Label>
             <Select
-              value={editingRecord?.status}
-              onValueChange={(val) => handleAction(editingRecord.id, editingRecord.type, 'status', val)}
+              value={pendingChanges.status}
+              onValueChange={(val) => setPendingChanges(prev => ({ ...prev, status: val }))}
             >
               <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
                 <SelectValue />
@@ -395,8 +414,8 @@ export default function RegistrationsPage() {
             <div className="grid gap-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Payment Status</Label>
               <Select
-                value={editingRecord?.paymentStatus}
-                onValueChange={(val) => handleAction(editingRecord.id, editingRecord.type, 'paymentStatus', val)}
+                value={pendingChanges.paymentStatus}
+                onValueChange={(val) => setPendingChanges(prev => ({ ...prev, paymentStatus: val }))}
               >
                 <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
                   <SelectValue />

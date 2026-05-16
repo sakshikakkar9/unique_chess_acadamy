@@ -31,7 +31,7 @@ export const updateDemoStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const allowed = ['PENDING', 'CONFIRMED', 'COMPLETED'];
+    const allowed = ['PENDING', 'APPROVED', 'CONFIRMED', 'COMPLETED', 'REJECTED', 'CANCELLED'];
     if (!allowed.includes(status)) {
       return res.status(400).json({ error: `Invalid status. Must be one of: ${allowed.join(', ')}` });
     }

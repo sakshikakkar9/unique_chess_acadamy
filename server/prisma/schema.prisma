@@ -196,6 +196,7 @@ enum ClassMode {
 enum PaymentStatus {
   PENDING
   VERIFIED
+  FAILED
 }
 
 enum TournamentStatus {
