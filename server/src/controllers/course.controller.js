@@ -66,10 +66,10 @@ export const createCourse = async (req, res) => {
       mode: mode ? mode.toUpperCase() : "ONLINE",
       posterOrientation: posterOrientation || "LANDSCAPE",
       // 4. Image handling (checks both 'image' and 'banner' fields)
-      custom_banner_url: (req.files?.image || req.files?.banner)
+      custom_banner_url: (req.files?.image?.[0] || req.files?.banner?.[0])
         ? await uploadToCloudinary((req.files.image || req.files.banner)[0].buffer)
         : null,
-      brochureUrl: req.files?.brochure
+      brochureUrl: req.files?.brochure?.[0]
         ? await uploadToCloudinary(req.files.brochure[0].buffer, "brochures")
         : null,
     };
@@ -94,10 +94,10 @@ export const updateCourse = async (req, res) => {
       mode: req.body.mode ? req.body.mode.toUpperCase() : undefined,
       // Pass raw days
       days: req.body.days,
-      custom_banner_url: (req.files?.image || req.files?.banner)
+      custom_banner_url: (req.files?.image?.[0] || req.files?.banner?.[0])
         ? await uploadToCloudinary((req.files.image || req.files.banner)[0].buffer)
         : undefined,
-      brochureUrl: req.files?.brochure
+      brochureUrl: req.files?.brochure?.[0]
         ? await uploadToCloudinary(req.files.brochure[0].buffer, "brochures")
         : undefined,
     };

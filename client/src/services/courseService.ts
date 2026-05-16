@@ -43,9 +43,7 @@ export const courseService = {
       }
     }
 
-    const res = await api.post("/courses", payload, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const res = await api.post("/courses", payload);
     return res.data;
   },
 
@@ -85,9 +83,7 @@ export const courseService = {
       }
     }
 
-    const res = await api.put(`/courses/${id}`, payload, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const res = await api.put(`/courses/${id}`, payload);
     return res.data;
   },
 

@@ -1,7 +1,7 @@
 import prisma from '../../lib/prisma.js';
 
 const parseDate = (date) => {
-  if (!date || date === "null" || date === "undefined" || date === "") return null;
+  if (!date || typeof date !== 'string' || date === "null" || date === "undefined" || date === "") return null;
   const d = new Date(date);
   return isNaN(d.getTime()) ? null : d;
 };
@@ -70,7 +70,7 @@ export const createCourse = async (data) => {
       startDate: parseDate(data.startDate),
       endDate: parseDate(data.endDate),
       // Force Uppercase to match Prisma SkillLevel Enum
-      skillLevel: (data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
+      skillLevel: (data.skillLevel || "BEGINNER").toUpperCase(),
       duration: data.duration || "N/A",
       custom_banner_url: data.custom_banner_url || null,
       brochureUrl: data.brochureUrl || null,
@@ -105,7 +105,7 @@ export const updateCourse = async (id, data) => {
   if (data.title) updatePayload.title = data.title;
   if (data.description !== undefined) updatePayload.description = data.description;
   if (data.ageGroup) updatePayload.ageGroup = data.ageGroup;
-  if (data.skillLevel) updatePayload.skillLevel = data.skillLevel.toUpperCase().replace(/\s+/g, '_');
+  if (data.skillLevel) updatePayload.skillLevel = data.skillLevel.toUpperCase();
   if (data.duration) updatePayload.duration = data.duration;
   if (data.custom_banner_url) updatePayload.custom_banner_url = data.custom_banner_url;
   if (data.brochureUrl !== undefined) updatePayload.brochureUrl = data.brochureUrl;

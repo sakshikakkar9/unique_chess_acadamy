@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Course } from "@/types";
-import { courseService } from "@/services/courseService";
-import { useToast } from "@/hooks/use-toast";
+import { Course } from "../../../types";
+import { courseService } from "../../../services/courseService";
+import { useToast } from "../../../hooks/use-toast";
 
 export const useAdminCourses = () => {
   const queryClient = useQueryClient();
