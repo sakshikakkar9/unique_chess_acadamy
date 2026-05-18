@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+import { EllipsisVertical, Pencil, Trash2, Eye, Check } from "lucide-react";
 
 interface RowActionMenuProps {
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onView?: () => void;
+  onConfirm?: () => void;
 }
 
-const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
+const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete, onView, onConfirm }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -22,7 +24,7 @@ const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
     e.stopPropagation();
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
-      const dropH = 110; // Approx height for 2 items
+      const dropH = 160; // Approx height for items
       const spaceBelow = window.innerHeight - rect.bottom;
       const shouldFlip = spaceBelow < dropH;
 
@@ -91,28 +93,58 @@ const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete }) => {
             }}
             className="z-[100] bg-uca-bg-surface border border-uca-border rounded-xl shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150 ease-out"
           >
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsOpen(false);
-                onEdit();
-              }}
-              className="w-full flex items-center gap-2 px-4 py-3 text-sm text-uca-accent-blue hover:bg-uca-bg-elevated transition-colors text-left"
-            >
-              <Pencil className="size-4 text-uca-accent-blue" />
-              <span>Edit Record</span>
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsOpen(false);
-                onDelete();
-              }}
-              className="w-full flex items-center gap-2 px-4 py-3 text-sm text-uca-accent-red hover:bg-uca-bg-elevated transition-colors text-left"
-            >
-              <Trash2 className="size-4 text-uca-accent-red" />
-              <span>Delete Record</span>
-            </button>
+            {onView && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen(false);
+                  onView();
+                }}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-uca-text-primary hover:bg-uca-bg-elevated transition-colors text-left"
+              >
+                <Eye className="size-4 text-uca-text-muted" />
+                <span>View</span>
+              </button>
+            )}
+            {onEdit && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen(false);
+                  onEdit();
+                }}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-uca-accent-blue hover:bg-uca-bg-elevated transition-colors text-left"
+              >
+                <Pencil className="size-4 text-uca-accent-blue" />
+                <span>Edit</span>
+              </button>
+            )}
+            {onConfirm && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen(false);
+                  onConfirm();
+                }}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-emerald-500 hover:bg-uca-bg-elevated transition-colors text-left"
+              >
+                <Check className="size-4 text-emerald-500" />
+                <span>Confirm</span>
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen(false);
+                  onDelete();
+                }}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-uca-accent-red hover:bg-uca-bg-elevated transition-colors text-left"
+              >
+                <Trash2 className="size-4 text-uca-accent-red" />
+                <span>Delete</span>
+              </button>
+            )}
           </div>,
           document.body
         )}

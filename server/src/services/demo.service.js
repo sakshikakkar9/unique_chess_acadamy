@@ -6,6 +6,7 @@ export const createDemoRegistration = async (data) => {
       studentName: data.studentName,
       email: data.email,
       phone: data.phone,
+      city: data.city,
       scheduledAt: new Date(data.scheduledAt),
       status: 'PENDING',
     },
