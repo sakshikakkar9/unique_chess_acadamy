@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Link,useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import {
   BookOpen, Trophy, Image as PhotoIcon, Users,
   TrendingUp, Calendar, UserCheck, ArrowUpRight, GraduationCap
@@ -19,6 +19,7 @@ import StatusBadge from "../../components/shared/admin/StatusBadge";
 import { cn, getAvatarStyles } from "../../lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import Pagination from "../../components/shared/admin/Pagination";
+import { RowActionMenu } from "../../components/admin/RowActionMenu";
 
 const ITEMS_PER_PAGE = 6;
 

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
+import api from "../../lib/api";
 import {
   ArrowLeft,
   User,
@@ -14,11 +14,11 @@ import {
   Info,
   Clock
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import { format } from "date-fns";
-import StatusBadge from "@/components/shared/admin/StatusBadge";
-import { Skeleton } from "@/components/ui/skeleton";
-import AdminShell from "@/components/admin/AdminShell";
+import StatusBadge from "../../components/shared/admin/StatusBadge";
+import { Skeleton } from "../../components/ui/skeleton";
+import AdminShell from "../../components/admin/AdminShell";
 
 export default function StudentDetailPage() {
   const { id } = useParams();

@@ -3,26 +3,26 @@ import {
   Mail, Trash2, Search, Filter,
   Check, Loader2
 } from "lucide-react";
-import AdminShell from "@/components/admin/AdminShell";
-import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
-import StatusBadge from "@/components/shared/admin/StatusBadge";
+import AdminShell from "../../components/admin/AdminShell";
+import AdminTable, { AdminTableColumn } from "../../components/admin/AdminTable";
+import StatusBadge from "../../components/shared/admin/StatusBadge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "../../components/ui/select";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
+import api from "../../lib/api";
 import { format } from "date-fns";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import ConfirmDialog from "@/components/admin/ConfirmDialog";
-import { useToast } from "@/hooks/useToast";
-import { getAvatarStyles } from "@/lib/utils";
-import RowActionMenu from "@/components/admin/RowActionMenu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../components/ui/sheet";
+import ConfirmDialog from "../../components/admin/ConfirmDialog";
+import { useToast } from "../../hooks/useToast";
+import { getAvatarStyles } from "../../lib/utils";
+import { RowActionMenu } from "../../components/admin/RowActionMenu";
 import { useEffect } from "react";
 
 interface Message {

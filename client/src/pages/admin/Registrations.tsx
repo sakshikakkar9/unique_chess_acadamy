@@ -1,34 +1,34 @@
 import { useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
 import { 
   Trophy, RefreshCw,
   Trash2, Mail, Phone, Eye, BookOpen, Copy,
   Search, Filter, ExternalLink, ShieldCheck, CreditCard, Image as PhotoIcon,
   User, UserCheck
 } from "lucide-react";
-import AdminShell from "@/components/admin/AdminShell";
-import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
-import AdminModal from "@/components/admin/AdminModal";
-import StatusBadge from "@/components/shared/admin/StatusBadge";
+import AdminShell from "../../components/admin/AdminShell";
+import AdminTable, { AdminTableColumn } from "../../components/admin/AdminTable";
+import AdminModal from "../../components/admin/AdminModal";
+import StatusBadge from "../../components/shared/admin/StatusBadge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select";
-import { useDemoAdmin } from "@/features/demo/hooks/useDemoRegistration";
+} from "../../components/ui/select";
+import { useDemoAdmin } from "../../features/demo/hooks/useDemoRegistration";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
+import api from "../../lib/api";
 import { format } from "date-fns";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { cn, getAvatarStyles } from "@/lib/utils";
-import ConfirmDialog from "@/components/admin/ConfirmDialog";
-import { useToast } from "@/hooks/useToast";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../components/ui/sheet";
+import { cn, getAvatarStyles } from "../../lib/utils";
+import ConfirmDialog from "../../components/admin/ConfirmDialog";
+import { useToast } from "../../hooks/useToast";
 import { Loader2, Check } from "lucide-react";
-import RowActionMenu from "@/components/admin/RowActionMenu";
+import { RowActionMenu } from "../../components/admin/RowActionMenu";
 
 type RegistrationTab = 'course' | 'tournament' | 'demo';
 

@@ -9,7 +9,7 @@ interface RowActionMenuProps {
   onConfirm?: () => void;
 }
 
-const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete, onView, onConfirm }) => {
+export const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete, onView, onConfirm }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -152,4 +152,3 @@ const RowActionMenu: React.FC<RowActionMenuProps> = ({ onEdit, onDelete, onView,
   );
 };
 
-export default RowActionMenu;

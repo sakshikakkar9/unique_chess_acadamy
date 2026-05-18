@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Mock dependencies
-vi.mock('@/features/tournaments/hooks/useAdminTournaments', () => ({
+vi.mock('../../features/tournaments/hooks/useAdminTournaments', () => ({
   useAdminTournaments: () => ({
     tournaments: [],
     isLoading: false,
@@ -15,7 +15,7 @@ vi.mock('@/features/tournaments/hooks/useAdminTournaments', () => ({
   }),
 }));
 
-vi.mock('@/lib/api', () => ({
+vi.mock('../../lib/api', () => ({
   default: {
     get: vi.fn(),
     post: vi.fn(),
@@ -24,7 +24,7 @@ vi.mock('@/lib/api', () => ({
   },
 }));
 
-vi.mock('@/hooks/useToast', () => ({
+vi.mock('../../hooks/useToast', () => ({
   useToast: () => ({
     success: vi.fn(),
     error: vi.fn(),
@@ -32,7 +32,7 @@ vi.mock('@/hooks/useToast', () => ({
 }));
 
 // Mock RichTextEditor as it might be complex to render in JSDOM
-vi.mock('@/components/shared/admin/RichTextEditor', () => ({
+vi.mock('../../components/shared/admin/RichTextEditor', () => ({
   default: ({ value, onChange }: any) => (
     <textarea value={value} onChange={(e) => onChange(e.target.value)} data-testid="rich-text-editor" />
   ),

@@ -1,6 +1,6 @@
 import React from "react";
-import RowActionMenu from "./RowActionMenu";
-import { cn } from "@/lib/utils";
+import { RowActionMenu } from "./RowActionMenu";
+import { cn } from "../../lib/utils";
 import { Inbox, ChevronsUpDown } from "lucide-react";
 
 export interface AdminTableColumn {

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useGallery } from "@/features/gallery/hooks/useGallery";
-import AdminShell from "@/components/admin/AdminShell";
-import ConfirmDialog from "@/components/admin/ConfirmDialog";
-import GalleryGrid from "@/components/admin/GalleryGrid";
-import GalleryUploadModal from "@/components/admin/GalleryUploadModal";
-import { GalleryImage } from "@/types";
-import { useToast } from "@/hooks/useToast";
+import { useGallery } from "../../features/gallery/hooks/useGallery";
+import AdminShell from "../../components/admin/AdminShell";
+import ConfirmDialog from "../../components/admin/ConfirmDialog";
+import GalleryGrid from "../../components/admin/GalleryGrid";
+import GalleryUploadModal from "../../components/admin/GalleryUploadModal";
+import { GalleryImage } from "../../types";
+import { useToast } from "../../hooks/useToast";
 
 const AdminGallery: React.FC = () => {
   const { images, isLoading, uploadImage, deleteImage } = useGallery();
