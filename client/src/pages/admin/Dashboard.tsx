@@ -223,17 +223,15 @@ const AdminDashboard: React.FC = () => {
                       <thead>
                         <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Student</th>
-                          <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">
-                            {tab === 'demos' ? 'City' : 'Selection'}
-                          </th>
-                          <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted hidden sm:table-cell text-right">Date</th>
+                          <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">City</th>
+                          <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted hidden sm:table-cell">State</th>
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Status</th>
-                          {tab === 'demos' && <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Actions</th>}
+                          <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-uca-border">
                         {loading ? (
-                          <tr><td colSpan={tab === 'demos' ? 5 : 4} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading...</td></tr>
+                          <tr><td colSpan={5} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading...</td></tr>
                         ) : data.length > 0 ? (
                           data.map((item: any) => {
                             const name = item?.student?.fullName || item?.studentName || "N/A";
@@ -257,42 +255,51 @@ const AdminDashboard: React.FC = () => {
                                 </td>
                                 <td className="px-6 py-3">
                                   <span className="text-xs text-uca-text-muted font-medium">
-                                    {tab === 'demos' ? (item.city || 'N/A') : (item.tournament?.title || item.course?.title || 'N/A')}
+                                    {item.city || 'N/A'}
                                   </span>
                                 </td>
-                                <td className="px-6 py-3 text-right hidden sm:table-cell">
-                                  <span className="text-[10px] text-uca-text-muted font-bold">
-                                    {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : (item.scheduledAt ? new Date(item.scheduledAt).toLocaleDateString() : 'TBD')}
+                                <td className="px-6 py-3 hidden sm:table-cell">
+                                  <span className="text-xs text-uca-text-muted font-medium">
+                                    N/A
                                   </span>
                                 </td>
                                 <td className="px-6 py-3 text-right">
                                   <StatusBadge status={item.status} />
                                 </td>
-                                {tab === 'demos' && (
-                                  <td className="px-6 py-3 text-right">
-                                    <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
-                                      <RowActionMenu
-                                        onView={() => navigate("/admin/registrations")}
-                                        onEdit={() => navigate("/admin/registrations")}
-                                        onConfirm={async () => {
-                                          await api.patch(`/demo/admin/${item.id}`, { status: 'COMPLETED' });
+                                <td className="px-6 py-3 text-right">
+                                  <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
+                                    <RowActionMenu
+                                      onView={() => navigate("/admin/registrations")}
+                                      onEdit={() => navigate("/admin/registrations")}
+                                      onConfirm={async () => {
+                                        const paths: any = {
+                                          demos: `/demo/admin/${item.id}`,
+                                          courses: `/courses/enrollments/${item.id}`,
+                                          tournaments: `/tournaments/admin/registrations/${item.id}`
+                                        };
+                                        const status = tab === 'demos' ? 'COMPLETED' : (tab === 'courses' ? 'CONFIRMED' : 'APPROVED');
+                                        await api.patch(paths[tab], { status });
+                                        window.location.reload();
+                                      }}
+                                      onDelete={async () => {
+                                        if (confirm(`Delete this ${tab.slice(0, -1)}?`)) {
+                                          const paths: any = {
+                                            demos: `/demo/admin/${item.id}`,
+                                            courses: `/courses/enrollments/${item.id}`,
+                                            tournaments: `/tournaments/admin/registrations/${item.id}`
+                                          };
+                                          await api.delete(paths[tab]);
                                           window.location.reload();
-                                        }}
-                                        onDelete={async () => {
-                                          if (confirm("Delete this demo lead?")) {
-                                            await api.delete(`/demo/admin/${item.id}`);
-                                            window.location.reload();
-                                          }
-                                        }}
-                                      />
-                                    </div>
-                                  </td>
-                                )}
+                                        }
+                                      }}
+                                    />
+                                  </div>
+                                </td>
                               </tr>
                             );
                           })
                         ) : (
-                          <tr><td colSpan={tab === 'demos' ? 5 : 4} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No records found</td></tr>
+                          <tr><td colSpan={5} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No records found</td></tr>
                         )}
                       </tbody>
                     </table>

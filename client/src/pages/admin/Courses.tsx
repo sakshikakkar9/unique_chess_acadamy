@@ -328,6 +328,7 @@ const AdminCourses = () => {
         currentStatus={resolveStatus(c.startDate, c.endDate, c.status)}
         onEdit={() => handleEdit(c)}
         onDelete={() => setConfirmDelete(c)}
+        hideRejected={true}
         onStatusChange={(newStatus) => {
           if (newStatus === 'restore') {
             handleStatusChange(c, 'restore');
@@ -354,6 +355,7 @@ const AdminCourses = () => {
           searchValue={searchTerm}
           onSearchChange={setSearchTerm}
           searchPlaceholder="Search courses..."
+          excludeStatuses={['rejected']}
         />
 
         {/* Table Area */}
