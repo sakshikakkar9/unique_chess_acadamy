@@ -19,7 +19,7 @@ import StatusBadge from "../../components/shared/admin/StatusBadge";
 import { cn, getAvatarStyles } from "../../lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import Pagination from "../../components/shared/admin/Pagination";
-import RowActionMenu from "../../components/admin/RowActionMenu";
+import { RowActionMenu } from "../../components/admin/RowActionMenu";
 
 const ITEMS_PER_PAGE = 6;
 

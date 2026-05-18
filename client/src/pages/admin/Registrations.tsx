@@ -28,7 +28,7 @@ import { cn, getAvatarStyles } from "../../lib/utils";
 import ConfirmDialog from "../../components/admin/ConfirmDialog";
 import { useToast } from "../../hooks/useToast";
 import { Loader2, Check } from "lucide-react";
-import RowActionMenu from "../../components/admin/RowActionMenu";
+import { RowActionMenu } from "../../components/admin/RowActionMenu";
 
 type RegistrationTab = 'course' | 'tournament' | 'demo';
 

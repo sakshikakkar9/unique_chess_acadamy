@@ -1,8 +1,8 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { Course, CourseEnrollment } from "@/types";
+import api from "../../lib/api";
+import { Course, CourseEnrollment } from "../../types";
 import {
   ArrowLeft,
   Users,
@@ -14,13 +14,13 @@ import {
   Phone,
   Mail
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Skeleton } from "../../components/ui/skeleton";
 import { format } from "date-fns";
-import StatusBadge from "@/components/shared/admin/StatusBadge";
-import { getAvatarStyles, cn } from "@/lib/utils";
-import AdminShell from "@/components/admin/AdminShell";
+import StatusBadge from "../../components/shared/admin/StatusBadge";
+import { getAvatarStyles, cn } from "../../lib/utils";
+import AdminShell from "../../components/admin/AdminShell";
 
 const CourseStudents: React.FC = () => {
   const { id } = useParams();
