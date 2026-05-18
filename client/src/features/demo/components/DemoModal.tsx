@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Loader2, CheckCircle } from 'lucide-react';
-import api from '@/lib/api';
+import api from '../../../lib/api';
 
 interface DemoModalProps {
   isOpen: boolean;
