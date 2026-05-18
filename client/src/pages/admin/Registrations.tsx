@@ -170,13 +170,16 @@ export default function RegistrationsPage() {
 
   const { data: currentData, loading: currentLoading, type: currentType } = getActiveData();
 
-  const columns: AdminTableColumn[] = [
-    { key: 'displayProfile', label: 'Student Profile', className: 'min-w-[200px]' },
-    { key: 'displayProgram', label: 'Program', hiddenOn: 'mobile' },
-    { key: 'displayDate', label: 'Submission', hiddenOn: 'tablet' },
-    { key: 'displayContact', label: 'Contact', hiddenOn: 'mobile' },
-    { key: 'displayStatus', label: 'Status', align: 'right' }
-  ];
+  const columns: AdminTableColumn[] = useMemo(() => {
+    const base = [
+      { key: 'displayProfile', label: 'Student Profile', className: 'min-w-[200px]' },
+      { key: 'displayProgram', label: activeTab === 'demo' ? 'City' : 'Program', hiddenOn: 'mobile' },
+      { key: 'displayDate', label: activeTab === 'demo' ? 'Date of Submission' : 'Submission', hiddenOn: 'tablet' },
+      { key: 'displayContact', label: 'Contact', hiddenOn: 'mobile' },
+      { key: 'displayStatus', label: 'Status', align: 'right' }
+    ];
+    return base;
+  }, [activeTab]);
 
   const handleEdit = (item: any) => {
     setEditingRecord({ ...item, type: currentType });
@@ -216,10 +219,18 @@ export default function RegistrationsPage() {
       ),
       displayProgram: (
         <div className="flex items-center gap-2">
-          {currentType === 'tournament' ? <Trophy className="size-3.5 text-amber-500" /> : <BookOpen className="size-3.5 text-uca-accent-blue" />}
-          <span className="text-xs font-semibold text-uca-text-primary truncate max-w-[150px]">
-            {item.tournament?.title || item.course?.title || 'Demo Class'}
-          </span>
+          {currentType === 'demo' ? (
+            <span className="text-xs font-semibold text-uca-text-primary truncate max-w-[150px]">
+              {item.city || 'N/A'}
+            </span>
+          ) : (
+            <>
+              {currentType === 'tournament' ? <Trophy className="size-3.5 text-amber-500" /> : <BookOpen className="size-3.5 text-uca-accent-blue" />}
+              <span className="text-xs font-semibold text-uca-text-primary truncate max-w-[150px]">
+                {item.tournament?.title || item.course?.title || 'Demo Class'}
+              </span>
+            </>
+          )}
         </div>
       ),
       displayDate: (
@@ -235,7 +246,9 @@ export default function RegistrationsPage() {
       displayStatus: <StatusBadge status={item.status} />,
       actions: (
         <RowActionMenu
+          onView={() => setSelectedItem({ ...item, type: currentType })}
           onEdit={() => handleEdit(item)}
+          onConfirm={currentType === 'demo' ? () => handleAction(item.id, 'demo', 'status', 'COMPLETED') : undefined}
           onDelete={() => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
         />
       )
@@ -273,6 +286,7 @@ export default function RegistrationsPage() {
                 <SelectItem value="PENDING">Pending</SelectItem>
                 <SelectItem value="APPROVED">Approved</SelectItem>
                 <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                <SelectItem value="COMPLETED">Completed</SelectItem>
                 <SelectItem value="REJECTED">Rejected</SelectItem>
                 <SelectItem value="CANCELLED">Cancelled</SelectItem>
               </SelectContent>
@@ -405,6 +419,7 @@ export default function RegistrationsPage() {
                 <SelectItem value="PENDING">Pending</SelectItem>
                 <SelectItem value="APPROVED">Approved</SelectItem>
                 <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                <SelectItem value="COMPLETED">Completed</SelectItem>
                 <SelectItem value="REJECTED">Rejected</SelectItem>
                 <SelectItem value="CANCELLED">Cancelled</SelectItem>
               </SelectContent>

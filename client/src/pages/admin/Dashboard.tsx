@@ -62,9 +62,8 @@ const AdminDashboard: React.FC = () => {
   }, [enrollments, coursePage]);
 
   const paginatedDemos = useMemo(() => {
-    const start = (demoPage - 1) * ITEMS_PER_PAGE;
-    return demos.slice(start, start + ITEMS_PER_PAGE);
-  }, [demos, demoPage]);
+    return demos.slice(0, 10);
+  }, [demos]);
 
   const tournamentTotalPages = Math.ceil(registrations.length / ITEMS_PER_PAGE);
   const courseTotalPages = Math.ceil(enrollments.length / ITEMS_PER_PAGE);
@@ -87,10 +86,26 @@ const AdminDashboard: React.FC = () => {
 
   const totalInvestment = totalCourseCollections + totalTournamentCollections;
 
+  const uniqueStudentCount = useMemo(() => {
+    const studentIds = new Set();
+    enrollments.forEach(e => studentIds.add(e.studentId));
+    registrations.forEach(r => studentIds.add(r.studentId));
+    return studentIds.size;
+  }, [enrollments, registrations]);
+
+  const demoStatus = useMemo(() => {
+    if (demos.length === 0) return "NO LEAD";
+    const hasActive = demos.some((d: any) => ["PENDING", "APPROVED", "CONFIRMED"].includes(d.status));
+    if (hasActive) return "PENDING";
+    const allCompleted = demos.every((d: any) => d.status === "COMPLETED");
+    if (allCompleted) return "DONE";
+    return "LIVE";
+  }, [demos]);
+
   const stats = [
     {
       title: "Enrollments",
-      value: enrollLoading || tournamentLoading ? "…" : (enrollments.length + registrations.length).toString(),
+      value: enrollLoading || tournamentLoading ? "…" : uniqueStudentCount.toString(),
       icon: GraduationCap,
       accent: "text-amber-500",
       bg: "bg-amber-500/10",
@@ -117,7 +132,7 @@ const AdminDashboard: React.FC = () => {
       accent: "text-uca-accent-blue",
       bg: "bg-uca-accent-blue/10",
       numColor: "text-uca-accent-blue",
-      status: "LIVE",
+      status: demoStatus,
       path: "/admin/registrations"
     },
   ];
@@ -207,14 +222,17 @@ const AdminDashboard: React.FC = () => {
                       <thead>
                         <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Student</th>
-                          <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Selection</th>
+                          <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">
+                            {tab === 'demos' ? 'City' : 'Selection'}
+                          </th>
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted hidden sm:table-cell text-right">Date</th>
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Status</th>
+                          {tab === 'demos' && <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Actions</th>}
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-uca-border">
                         {loading ? (
-                          <tr><td colSpan={4} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading...</td></tr>
+                          <tr><td colSpan={tab === 'demos' ? 5 : 4} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading...</td></tr>
                         ) : data.length > 0 ? (
                           data.map((item: any) => {
                             const name = item?.student?.fullName || item?.studentName || "N/A";
@@ -238,7 +256,7 @@ const AdminDashboard: React.FC = () => {
                                 </td>
                                 <td className="px-6 py-3">
                                   <span className="text-xs text-uca-text-muted font-medium">
-                                    {item.tournament?.title || item.course?.title || (tab === 'demos' ? 'Initial Demo' : 'N/A')}
+                                    {tab === 'demos' ? (item.city || 'N/A') : (item.tournament?.title || item.course?.title || 'N/A')}
                                   </span>
                                 </td>
                                 <td className="px-6 py-3 text-right hidden sm:table-cell">
@@ -249,16 +267,36 @@ const AdminDashboard: React.FC = () => {
                                 <td className="px-6 py-3 text-right">
                                   <StatusBadge status={item.status} />
                                 </td>
+                                {tab === 'demos' && (
+                                  <td className="px-6 py-3 text-right">
+                                    <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
+                                      <RowActionMenu
+                                        onView={() => navigate("/admin/registrations")}
+                                        onEdit={() => navigate("/admin/registrations")}
+                                        onConfirm={async () => {
+                                          await api.patch(`/demo/admin/${item.id}`, { status: 'COMPLETED' });
+                                          window.location.reload();
+                                        }}
+                                        onDelete={async () => {
+                                          if (confirm("Delete this demo lead?")) {
+                                            await api.delete(`/demo/admin/${item.id}`);
+                                            window.location.reload();
+                                          }
+                                        }}
+                                      />
+                                    </div>
+                                  </td>
+                                )}
                               </tr>
                             );
                           })
                         ) : (
-                          <tr><td colSpan={4} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No records found</td></tr>
+                          <tr><td colSpan={tab === 'demos' ? 5 : 4} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No records found</td></tr>
                         )}
                       </tbody>
                     </table>
                   </div>
-                  {totalPages > 1 && (
+                  {tab !== 'demos' && totalPages > 1 && (
                     <div className="px-6 py-4 border-t border-uca-border">
                       <Pagination
                         currentPage={currentPage}

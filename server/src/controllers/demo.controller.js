@@ -2,7 +2,7 @@ import * as demoService from '../services/demo.service.js';
 
 export const createDemoRegistration = async (req, res) => {
   try {
-    const { studentName, email, phone, scheduledAt } = req.body;
+    const { studentName, email, phone, city, scheduledAt } = req.body;
 
     if (!studentName || !email || !phone || !scheduledAt) {
       return res.status(400).json({ error: 'All fields are required.' });
