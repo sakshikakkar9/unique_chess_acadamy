@@ -15,6 +15,7 @@ interface Props {
   searchValue?: string;
   onSearchChange?: (val: string) => void;
   searchPlaceholder?: string;
+  excludeStatuses?: string[];
 }
 
 export default function StatusFilterBar({
@@ -24,6 +25,7 @@ export default function StatusFilterBar({
   searchValue,
   onSearchChange,
   searchPlaceholder = 'Search...',
+  excludeStatuses = [],
 }: Props) {
 
   // Count per tab
@@ -66,7 +68,7 @@ export default function StatusFilterBar({
 
       <div className="flex gap-1.5 flex-wrap w-full lg:w-auto justify-center lg:justify-end">
         <div className="flex bg-uca-bg-base p-1 rounded-lg h-10 border border-uca-border">
-          {FILTER_TABS.map((tab) => {
+          {FILTER_TABS.filter(tab => !excludeStatuses.includes(tab.value)).map((tab) => {
             const n = count(tab.value);
             const isActive = activeFilter === tab.value;
             return (

@@ -17,6 +17,7 @@ interface Props {
   onEdit: () => void;
   onDelete: () => void;
   onStatusChange: (newStatus: ItemStatus | 'restore') => void;
+  hideRejected?: boolean;
 }
 
 export default function StatusActionMenu({
@@ -24,6 +25,7 @@ export default function StatusActionMenu({
   onEdit,
   onDelete,
   onStatusChange,
+  hideRejected = false,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -119,7 +121,7 @@ export default function StatusActionMenu({
         onStatusChange('rejected');
         setOpen(false);
       },
-      show: currentStatus !== 'rejected',
+      show: !hideRejected && currentStatus !== 'rejected',
       dividerAfter: false,
     },
 

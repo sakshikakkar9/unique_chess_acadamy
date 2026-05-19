@@ -279,7 +279,7 @@ const AdminTournaments: React.FC = () => {
     },
     {
       key: 'category',
-      label: 'Division',
+      label: 'Category',
       hiddenOn: 'mobile'
     },
     {
@@ -336,6 +336,7 @@ const AdminTournaments: React.FC = () => {
         currentStatus={resolveStatus(t.startDate, t.endDate, t.status)}
         onEdit={() => handleEdit(t)}
         onDelete={() => setConfirmDelete(t)}
+        hideRejected={true}
         onStatusChange={(newStatus) => {
           if (newStatus === 'restore') {
             handleStatusChange(t, 'restore');
@@ -362,6 +363,7 @@ const AdminTournaments: React.FC = () => {
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
           searchPlaceholder="Search arenas..."
+          excludeStatuses={['rejected']}
         />
 
         {/* Table Area */}
