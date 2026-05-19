@@ -25,7 +25,7 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
 
   return (
     <ScrollReveal delay={delay}>
-      <div className="flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer h-full">
+      <div className="flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200 h-full w-full">
         {/* IMAGE AREA */}
         <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
           <img

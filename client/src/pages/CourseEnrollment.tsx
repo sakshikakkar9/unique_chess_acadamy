@@ -177,7 +177,7 @@ export default function CourseEnrollmentPage() {
           Back to Programs
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* RIGHT COLUMN: Sticky Form (Shown first on mobile) */}
           <div className="lg:sticky lg:top-24 lg:order-2">
             <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
