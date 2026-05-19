@@ -2,7 +2,7 @@ import prisma from '../../lib/prisma.js';
 import * as courseService from '../services/course.service.js';
 
 const VALID_AGE_GROUPS = ['CHILDREN', 'TEENAGERS', 'ADULTS'];
-const VALID_ENROLLMENT_STATUSES = ['PENDING', 'CONFIRMED', 'COMPLETED', 'REJECTED'];
+const VALID_ENROLLMENT_STATUSES = ['PENDING', 'APPROVED', 'CONFIRMED', 'COMPLETED', 'REJECTED', 'CANCELLED'];
 import { uploadToCloudinary } from '../utils/cloudinary.js';
 // ── Courses ───────────────────────────────────────────────────────────────────
 

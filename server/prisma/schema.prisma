@@ -126,10 +126,11 @@ model Registration {
 }
 
 model DemoRegistration {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   studentName String
   email       String
   phone       String
+  city        String?
   scheduledAt DateTime
   status      String   @default("PENDING")
   createdAt   DateTime @default(now())
@@ -196,6 +197,7 @@ enum ClassMode {
 enum PaymentStatus {
   PENDING
   VERIFIED
+  FAILED
 }
 
 enum TournamentStatus {

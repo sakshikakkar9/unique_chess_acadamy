@@ -1,20 +1,20 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { Tournament } from "@/types";
+import api from "../../lib/api";
+import { Tournament } from "../../types";
 import { ArrowLeft, LayoutDashboard, CreditCard, Users, TrendingUp, Wallet, Award, Percent, Search, Filter, Download, FileText, Phone, Mail, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "@/components/ui/input";
-import TournamentPreview from "@/features/tournaments/components/admin/TournamentPreview";
-import { Registration } from "@/types";
+import { Button } from "../../components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Skeleton } from "../../components/ui/skeleton";
+import { Input } from "../../components/ui/input";
+import TournamentPreview from "../../features/tournaments/components/admin/TournamentPreview";
+import { Registration } from "../../types";
 import { format } from "date-fns";
-import StatusBadge from "@/components/shared/admin/StatusBadge";
-import AdminShell from "@/components/admin/AdminShell";
-import Pagination from "@/components/shared/admin/Pagination";
-import { getAvatarStyles, cn } from "@/lib/utils";
+import StatusBadge from "../../components/shared/admin/StatusBadge";
+import AdminShell from "../../components/admin/AdminShell";
+import Pagination from "../../components/shared/admin/Pagination";
+import { getAvatarStyles, cn } from "../../lib/utils";
 
 const ITEMS_PER_PAGE = 8;
 

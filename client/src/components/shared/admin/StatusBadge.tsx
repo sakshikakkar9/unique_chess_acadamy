@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../../lib/utils";
 
 export type StatusType =
   | "PENDING"
@@ -11,7 +11,9 @@ export type StatusType =
   | "COMPLETED"
   | "UPCOMING"
   | "ONGOING"
-  | "LIVE";
+  | "LIVE"
+  | "DONE"
+  | "NO LEAD";
 
 interface StatusBadgeProps {
   status: StatusType | string;
@@ -29,6 +31,8 @@ const statusStyles: Record<string, string> = {
   VERIFIED:  "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
   CONFIRMED: "bg-uca-accent-blue/10 text-uca-accent-blue border-uca-accent-blue/20",
   ONGOING:   "bg-uca-accent-blue/10 text-uca-accent-blue border-uca-accent-blue/20",
+  DONE:      "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  "NO LEAD": "bg-uca-bg-elevated text-uca-text-muted border-uca-border",
 };
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) => {

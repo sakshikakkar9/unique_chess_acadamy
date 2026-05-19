@@ -1,34 +1,34 @@
 import { useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
 import { 
   Trophy, RefreshCw,
   Trash2, Mail, Phone, Eye, BookOpen, Copy,
   Search, Filter, ExternalLink, ShieldCheck, CreditCard, Image as PhotoIcon,
   User, UserCheck
 } from "lucide-react";
-import AdminShell from "@/components/admin/AdminShell";
-import AdminTable, { AdminTableColumn } from "@/components/admin/AdminTable";
-import AdminModal from "@/components/admin/AdminModal";
-import StatusBadge from "@/components/shared/admin/StatusBadge";
+import AdminShell from "../../components/admin/AdminShell";
+import AdminTable, { AdminTableColumn } from "../../components/admin/AdminTable";
+import AdminModal from "../../components/admin/AdminModal";
+import StatusBadge from "../../components/shared/admin/StatusBadge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select";
-import { useDemoAdmin } from "@/features/demo/hooks/useDemoRegistration";
+} from "../../components/ui/select";
+import { useDemoAdmin } from "../../features/demo/hooks/useDemoRegistration";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
+import api from "../../lib/api";
 import { format } from "date-fns";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { cn, getAvatarStyles } from "@/lib/utils";
-import ConfirmDialog from "@/components/admin/ConfirmDialog";
-import { useToast } from "@/hooks/useToast";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../components/ui/sheet";
+import { cn, getAvatarStyles } from "../../lib/utils";
+import ConfirmDialog from "../../components/admin/ConfirmDialog";
+import { useToast } from "../../hooks/useToast";
 import { Loader2, Check } from "lucide-react";
-import RowActionMenu from "@/components/admin/RowActionMenu";
+import { RowActionMenu } from "../../components/admin/RowActionMenu";
 
 type RegistrationTab = 'course' | 'tournament' | 'demo';
 
@@ -38,6 +38,7 @@ export default function RegistrationsPage() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [pendingChanges, setPendingChanges] = useState<{ status?: string; paymentStatus?: string }>({});
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -68,10 +69,7 @@ export default function RegistrationsPage() {
   const filteredEnrollments = useMemo(() => {
     return enrollments.filter((item: any) => {
       const studentName = item.student?.fullName || item.studentName || "";
-      const phone = item.student?.phone || item.phone || "";
-      const matchesSearch = (studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            phone.includes(searchTerm) ||
-                            item.referenceId?.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesSearch = studentName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "ALL" || item.status === statusFilter;
       const matchesCourse = courseFilter === "ALL" || item.course?.title === courseFilter;
       return matchesSearch && matchesStatus && matchesCourse;
@@ -81,10 +79,7 @@ export default function RegistrationsPage() {
   const filteredRegistrations = useMemo(() => {
     return registrations.filter((item: any) => {
       const studentName = item.student?.fullName || item.studentName || "";
-      const phone = item.student?.phone || item.phone || "";
-      const matchesSearch = (studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            phone.includes(searchTerm) ||
-                            item.referenceId?.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesSearch = studentName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "ALL" || item.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
@@ -92,14 +87,14 @@ export default function RegistrationsPage() {
 
   const filteredDemos = useMemo(() => {
     return (demos || []).filter((item: any) => {
-      const matchesSearch = (item.studentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            item.phone?.includes(searchTerm));
+      const studentName = item.studentName || "";
+      const matchesSearch = studentName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "ALL" || item.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
   }, [demos, searchTerm, statusFilter]);
 
-  const handleAction = async (id: string | number, type: string, action: 'status' | 'delete' | 'paymentStatus', value?: string) => {
+  const handleAction = async (id: string | number, type: string, action: 'status' | 'delete' | 'paymentStatus' | 'bulk', payload?: any) => {
     const isDelete = action === 'delete';
     if (isDelete) setIsDeleting(true);
     else setIsSubmitting(true);
@@ -114,37 +109,50 @@ export default function RegistrationsPage() {
       if (action === 'delete') {
         await api.delete(paths[type]);
       } else if (action === 'paymentStatus') {
-        await api.patch(paths[type], { paymentStatus: value });
-      } else {
-        await api.patch(paths[type], { status: value });
+        await api.patch(paths[type], { paymentStatus: payload });
+      } else if (action === 'status') {
+        await api.patch(paths[type], { status: payload });
+      } else if (action === 'bulk') {
+        await api.patch(paths[type], payload);
       }
       
       const queryKey = type === 'tournament' ? "registrations" : type === 'course' ? "course-enrollments" : type;
       qc.invalidateQueries({ queryKey: [queryKey] });
       if (type === 'demo') refreshDemos();
 
+      // Update Detail Sheet if open
       if (selectedItem && selectedItem.id === id) {
         if (action === 'delete') setSelectedItem(null);
-        else if (action === 'paymentStatus') setSelectedItem({ ...selectedItem, paymentStatus: value });
-        else setSelectedItem({ ...selectedItem, status: value });
-      }
-
-      if (editingRecord && editingRecord.id === id) {
-        if (action === 'paymentStatus') setEditingRecord({ ...editingRecord, paymentStatus: value });
-        else setEditingRecord({ ...editingRecord, status: value });
+        else if (action === 'bulk') setSelectedItem({ ...selectedItem, ...payload });
+        else if (action === 'paymentStatus') setSelectedItem({ ...selectedItem, paymentStatus: payload });
+        else setSelectedItem({ ...selectedItem, status: payload });
       }
 
       success(`${action === 'delete' ? 'Deleted' : 'Updated'} successfully`);
+
       if (isDelete) {
         setIsConfirmOpen(false);
         setRecordToDelete(null);
       }
-    } catch (err) {
+      return true;
+    } catch (err: any) {
       console.error(err);
-      toastError("Operation failed");
+      toastError(err.response?.data?.error || "Operation failed");
+      return false;
     } finally {
       if (isDelete) setIsDeleting(false);
       else setIsSubmitting(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!editingRecord) return;
+
+    const success = await handleAction(editingRecord.id, editingRecord.type, 'bulk', pendingChanges);
+    if (success) {
+      setIsEditModalOpen(false);
+      setEditingRecord(null);
+      setPendingChanges({});
     }
   };
 
@@ -156,16 +164,23 @@ export default function RegistrationsPage() {
 
   const { data: currentData, loading: currentLoading, type: currentType } = getActiveData();
 
-  const columns: AdminTableColumn[] = [
-    { key: 'displayProfile', label: 'Student Profile', className: 'min-w-[200px]' },
-    { key: 'displayProgram', label: 'Program', hiddenOn: 'mobile' },
-    { key: 'displayDate', label: 'Submission', hiddenOn: 'tablet' },
-    { key: 'displayContact', label: 'Contact', hiddenOn: 'mobile' },
-    { key: 'displayStatus', label: 'Status', align: 'right' }
-  ];
+  const columns: AdminTableColumn[] = useMemo(() => {
+    const base = [
+      { key: 'displayProfile', label: 'Student Profile', className: 'min-w-[200px]' },
+      { key: 'displayProgram', label: activeTab === 'demo' ? 'City' : 'Program', hiddenOn: 'mobile' },
+      { key: 'displayDate', label: activeTab === 'demo' ? 'Date of Submission' : 'Submission', hiddenOn: 'tablet' },
+      { key: 'displayContact', label: 'Contact', hiddenOn: 'mobile' },
+      { key: 'displayStatus', label: 'Status', align: 'right' }
+    ];
+    return base;
+  }, [activeTab]);
 
   const handleEdit = (item: any) => {
     setEditingRecord({ ...item, type: currentType });
+    setPendingChanges({
+      status: item.status,
+      paymentStatus: item.paymentStatus
+    });
     setIsEditModalOpen(true);
   };
 
@@ -173,6 +188,7 @@ export default function RegistrationsPage() {
     if (isSubmitting) return;
     setIsEditModalOpen(false);
     setEditingRecord(null);
+    setPendingChanges({});
   };
 
   const rows = (currentData || []).map((item: any) => {
@@ -197,10 +213,18 @@ export default function RegistrationsPage() {
       ),
       displayProgram: (
         <div className="flex items-center gap-2">
-          {currentType === 'tournament' ? <Trophy className="size-3.5 text-amber-500" /> : <BookOpen className="size-3.5 text-uca-accent-blue" />}
-          <span className="text-xs font-semibold text-uca-text-primary truncate max-w-[150px]">
-            {item.tournament?.title || item.course?.title || 'Demo Class'}
-          </span>
+          {currentType === 'demo' ? (
+            <span className="text-xs font-semibold text-uca-text-primary truncate max-w-[150px]">
+              {item.city || 'N/A'}
+            </span>
+          ) : (
+            <>
+              {currentType === 'tournament' ? <Trophy className="size-3.5 text-amber-500" /> : <BookOpen className="size-3.5 text-uca-accent-blue" />}
+              <span className="text-xs font-semibold text-uca-text-primary truncate max-w-[150px]">
+                {item.tournament?.title || item.course?.title || 'Demo Class'}
+              </span>
+            </>
+          )}
         </div>
       ),
       displayDate: (
@@ -216,7 +240,12 @@ export default function RegistrationsPage() {
       displayStatus: <StatusBadge status={item.status} />,
       actions: (
         <RowActionMenu
+          onView={() => setSelectedItem({ ...item, type: currentType })}
           onEdit={() => handleEdit(item)}
+          onConfirm={() => {
+            const status = currentType === 'course' ? 'CONFIRMED' : (currentType === 'tournament' ? 'APPROVED' : 'COMPLETED');
+            handleAction(item.id, currentType, 'status', status);
+          }}
           onDelete={() => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
         />
       )
@@ -254,6 +283,7 @@ export default function RegistrationsPage() {
                 <SelectItem value="PENDING">Pending</SelectItem>
                 <SelectItem value="APPROVED">Approved</SelectItem>
                 <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                <SelectItem value="COMPLETED">Completed</SelectItem>
                 <SelectItem value="REJECTED">Rejected</SelectItem>
                 <SelectItem value="CANCELLED">Cancelled</SelectItem>
               </SelectContent>
@@ -353,7 +383,7 @@ export default function RegistrationsPage() {
           <>
             <Button variant="ghost" disabled={isSubmitting} onClick={handleClose} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
             <Button
-              onClick={handleClose}
+              onClick={handleSave}
               disabled={isSubmitting}
               className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
             >
@@ -376,8 +406,8 @@ export default function RegistrationsPage() {
           <div className="grid gap-2">
             <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Registration Status</Label>
             <Select
-              value={editingRecord?.status}
-              onValueChange={(val) => handleAction(editingRecord.id, editingRecord.type, 'status', val)}
+              value={pendingChanges.status}
+              onValueChange={(val) => setPendingChanges(prev => ({ ...prev, status: val }))}
             >
               <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
                 <SelectValue />
@@ -386,6 +416,7 @@ export default function RegistrationsPage() {
                 <SelectItem value="PENDING">Pending</SelectItem>
                 <SelectItem value="APPROVED">Approved</SelectItem>
                 <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                <SelectItem value="COMPLETED">Completed</SelectItem>
                 <SelectItem value="REJECTED">Rejected</SelectItem>
                 <SelectItem value="CANCELLED">Cancelled</SelectItem>
               </SelectContent>
@@ -395,8 +426,8 @@ export default function RegistrationsPage() {
             <div className="grid gap-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Payment Status</Label>
               <Select
-                value={editingRecord?.paymentStatus}
-                onValueChange={(val) => handleAction(editingRecord.id, editingRecord.type, 'paymentStatus', val)}
+                value={pendingChanges.paymentStatus}
+                onValueChange={(val) => setPendingChanges(prev => ({ ...prev, paymentStatus: val }))}
               >
                 <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
                   <SelectValue />

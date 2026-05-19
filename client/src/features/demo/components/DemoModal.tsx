@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Loader2, CheckCircle } from 'lucide-react';
-import api from '@/lib/api';
+import api from '../../../lib/api';
 
 interface DemoModalProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
     studentName: '',
     email: '',
     phone: '',
+    city: '',
     scheduledAt: '',
   });
 
@@ -37,7 +38,7 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
 
   const handleClose = () => {
     setSuccess(false);
-    setFormData({ studentName: '', email: '', phone: '', scheduledAt: '' });
+    setFormData({ studentName: '', email: '', phone: '', city: '', scheduledAt: '' });
     onClose();
   };
 
@@ -110,6 +111,14 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
                   value={formData.phone}
                   className={inputCls}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                />
+                <input
+                  type="text"
+                  placeholder="City"
+                  required
+                  value={formData.city}
+                  className={inputCls}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 />
                 <div>
                   <label className="text-xs text-muted-foreground ml-1 block mb-1">

@@ -173,8 +173,8 @@ export default function ContactPage() {
                         label="Academy Location"
                         value="Andheri West, Mumbai, India"
                       />
-                      <ContactInfoItem icon={Phone} label="Direct Line" value="+91 98765 43210" />
-                      <ContactInfoItem icon={Mail} label="Official Support" value="info@uniquechess.in" />
+                      <ContactInfoItem icon={Phone} label="Direct Line" value="+91 8882801378 | +91 7734834416" />
+                      <ContactInfoItem icon={Mail} label="Official Support" value="uca.chessindia@gmail.com" />
                     </div>
                   </div>
 

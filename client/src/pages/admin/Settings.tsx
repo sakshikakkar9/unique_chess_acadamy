@@ -1,13 +1,13 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/useToast";
+import api from "../../lib/api";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Label } from "../../components/ui/label";
+import { useToast } from "../../hooks/useToast";
 import { Upload, RefreshCw, CheckCircle2, AlertCircle, Eye, Settings, Loader2 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import AdminShell from "@/components/admin/AdminShell";
+import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
+import AdminShell from "../../components/admin/AdminShell";
 
 export default function AdminSettings() {
   const { success, error: toastError } = useToast();
