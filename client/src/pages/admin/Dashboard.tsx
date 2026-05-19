@@ -3,15 +3,13 @@ import { Link,useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import {
   BookOpen, Trophy, Image as PhotoIcon, Users,
-  TrendingUp, Calendar, UserCheck, ArrowUpRight, GraduationCap,
-  Loader2, Check, User, ShieldCheck, Copy, Mail, Phone, Eye, Trash2,
-  RefreshCw, Filter, ExternalLink, CreditCard, UserCheck as UserCheckIcon
+  TrendingUp, Calendar, UserCheck, ArrowUpRight, GraduationCap
 } from "lucide-react";
 import { useAdminCourses } from "../../features/courses/hooks/useAdminCourses";
 import { useAdminTournaments } from "../../features/tournaments/hooks/useAdminTournaments";
 import { useAdminGallery } from "../../features/gallery/hooks/useAdminGallery";
 import { useDemoAdmin } from "../../features/demo/hooks/useDemoRegistration";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import api from "../../lib/api";
 import { formatINR } from "../../lib/formatUtils";
 import { CourseEnrollment } from "../../types";
@@ -22,31 +20,15 @@ import { cn, getAvatarStyles } from "../../lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import Pagination from "../../components/shared/admin/Pagination";
 import { RowActionMenu } from "../../components/admin/RowActionMenu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../components/ui/sheet";
-import { format } from "date-fns";
-import { useToast } from "../../hooks/useToast";
-import AdminModal from "../../components/admin/AdminModal";
-import { Label } from "../../components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "../../components/ui/select";
-import { Button } from "../../components/ui/button";
-import ConfirmDialog from "../../components/admin/ConfirmDialog";
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 6;
 
 const AdminDashboard: React.FC = () => {
   const navigate          = useNavigate();
-  const { success, error: toastError } = useToast();
-  const qc = useQueryClient();
   const { courses }       = useAdminCourses();
   const { tournaments }   = useAdminTournaments();
   const { images }        = useAdminGallery();
-  const { demos, isLoading: demosLoading, refresh: refreshDemos } = useDemoAdmin();
+  const { demos, isLoading: demosLoading } = useDemoAdmin();
 
   const { data: messages = [], isLoading: messagesLoading } = useQuery<any[]>({
     queryKey: ["admin-messages"],
@@ -70,108 +52,19 @@ const AdminDashboard: React.FC = () => {
   const [coursePage, setCoursePage] = useState(1);
   const [demoPage, setDemoPage] = useState(1);
 
-  const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingRecord, setEditingRecord] = useState<any>(null);
-  const [pendingChanges, setPendingChanges] = useState<{ status?: string; paymentStatus?: string }>({});
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [recordToDelete, setRecordToDelete] = useState<any>(null);
-
   const paginatedTournaments = useMemo(() => {
     const start = (tournamentPage - 1) * ITEMS_PER_PAGE;
-    return [...registrations].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(start, start + ITEMS_PER_PAGE);
+    return registrations.slice(start, start + ITEMS_PER_PAGE);
   }, [registrations, tournamentPage]);
 
   const paginatedCourses = useMemo(() => {
     const start = (coursePage - 1) * ITEMS_PER_PAGE;
-    return [...enrollments].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(start, start + ITEMS_PER_PAGE);
+    return enrollments.slice(start, start + ITEMS_PER_PAGE);
   }, [enrollments, coursePage]);
 
   const paginatedDemos = useMemo(() => {
-    const start = (demoPage - 1) * ITEMS_PER_PAGE;
-    return [...demos].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(start, start + ITEMS_PER_PAGE);
-  }, [demos, demoPage]);
-
-  const handleAction = async (id: string | number, type: string, action: 'status' | 'delete' | 'paymentStatus' | 'bulk', payload?: any) => {
-    const isDelete = action === 'delete';
-    if (isDelete) setIsDeleting(true);
-    else setIsSubmitting(true);
-
-    const typeKey = type === 'tournaments' ? 'tournament' : type === 'courses' ? 'course' : 'demo';
-    const paths: any = {
-      demo: `/demo/admin/${id}`,
-      course: `/courses/enrollments/${id}`,
-      tournament: `/tournaments/admin/registrations/${id}`
-    };
-
-    try {
-      if (action === 'delete') {
-        await api.delete(paths[typeKey]);
-      } else if (action === 'paymentStatus') {
-        await api.patch(paths[typeKey], { paymentStatus: payload });
-      } else if (action === 'status') {
-        await api.patch(paths[typeKey], { status: payload });
-      } else if (action === 'bulk') {
-        await api.patch(paths[typeKey], payload);
-      }
-
-      const queryKey = typeKey === 'tournament' ? "registrations" : typeKey === 'course' ? "course-enrollments" : typeKey === 'demo' ? "admin-demos" : type;
-      qc.invalidateQueries({ queryKey: [queryKey] });
-      if (typeKey === 'demo') refreshDemos();
-
-      // Update Detail Sheet if open
-      if (selectedItem && selectedItem.id === id) {
-        if (action === 'delete') setSelectedItem(null);
-        else if (action === 'bulk') setSelectedItem({ ...selectedItem, ...payload });
-        else if (action === 'paymentStatus') setSelectedItem({ ...selectedItem, paymentStatus: payload });
-        else setSelectedItem({ ...selectedItem, status: payload });
-      }
-
-      success(`${action === 'delete' ? 'Deleted' : 'Updated'} successfully`);
-
-      if (isDelete) {
-        setIsConfirmOpen(false);
-        setRecordToDelete(null);
-      }
-      return true;
-    } catch (err: any) {
-      console.error(err);
-      toastError(err.response?.data?.error || "Operation failed");
-      return false;
-    } finally {
-      if (isDelete) setIsDeleting(false);
-      else setIsSubmitting(false);
-    }
-  };
-
-  const handleEdit = (item: any, type: string) => {
-    const typeKey = type === 'tournaments' ? 'tournament' : type === 'courses' ? 'course' : 'demo';
-    setEditingRecord({ ...item, type: typeKey });
-    setPendingChanges({
-      status: item.status,
-      paymentStatus: item.paymentStatus
-    });
-    setIsEditModalOpen(true);
-  };
-
-  const handleSave = async () => {
-    if (!editingRecord) return;
-    const success = await handleAction(editingRecord.id, editingRecord.type, 'bulk', pendingChanges);
-    if (success) {
-      setIsEditModalOpen(false);
-      setEditingRecord(null);
-      setPendingChanges({});
-    }
-  };
-
-  const handleClose = () => {
-    if (isSubmitting) return;
-    setIsEditModalOpen(false);
-    setEditingRecord(null);
-    setPendingChanges({});
-  };
+    return demos.slice(0, 10);
+  }, [demos]);
 
   const tournamentTotalPages = Math.ceil(registrations.length / ITEMS_PER_PAGE);
   const courseTotalPages = Math.ceil(enrollments.length / ITEMS_PER_PAGE);
@@ -246,7 +139,6 @@ const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <>
     <AdminShell
       title="Dashboard Overview"
       subtitle="Monitoring growth at Unique Chess Academy."
@@ -348,10 +240,7 @@ const AdminDashboard: React.FC = () => {
                               <tr
                                 key={item.id}
                                 className="hover:bg-uca-bg-elevated/30 transition-colors cursor-pointer"
-                                onClick={() => {
-                                  const typeKey = tab === 'tournaments' ? 'tournament' : tab === 'courses' ? 'course' : 'demo';
-                                  setSelectedItem({ ...item, type: typeKey });
-                                }}
+                                onClick={() => navigate("/admin/registrations")}
                               >
                                 <td className="px-6 py-3">
                                   <div className="flex items-center gap-3">
@@ -380,20 +269,28 @@ const AdminDashboard: React.FC = () => {
                                 <td className="px-6 py-3 text-right">
                                   <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
                                     <RowActionMenu
-                                      onView={() => {
-                                        const typeKey = tab === 'tournaments' ? 'tournament' : tab === 'courses' ? 'course' : 'demo';
-                                        setSelectedItem({ ...item, type: typeKey });
+                                      onView={() => navigate("/admin/registrations")}
+                                      onEdit={() => navigate("/admin/registrations")}
+                                      onConfirm={async () => {
+                                        const paths: any = {
+                                          demos: `/demo/admin/${item.id}`,
+                                          courses: `/courses/enrollments/${item.id}`,
+                                          tournaments: `/tournaments/admin/registrations/${item.id}`
+                                        };
+                                        const status = tab === 'demos' ? 'COMPLETED' : (tab === 'courses' ? 'CONFIRMED' : 'APPROVED');
+                                        await api.patch(paths[tab], { status });
+                                        window.location.reload();
                                       }}
-                                      onEdit={() => handleEdit(item, tab)}
-                                      onConfirm={() => {
-                                        const typeKey = tab === 'tournaments' ? 'tournament' : tab === 'courses' ? 'course' : 'demo';
-                                        const status = typeKey === 'course' ? 'CONFIRMED' : (typeKey === 'tournament' ? 'APPROVED' : 'COMPLETED');
-                                        handleAction(item.id, typeKey, 'status', status);
-                                      }}
-                                      onDelete={() => {
-                                        const typeKey = tab === 'tournaments' ? 'tournament' : tab === 'courses' ? 'course' : 'demo';
-                                        setRecordToDelete({ ...item, type: typeKey });
-                                        setIsConfirmOpen(true);
+                                      onDelete={async () => {
+                                        if (confirm(`Delete this ${tab.slice(0, -1)}?`)) {
+                                          const paths: any = {
+                                            demos: `/demo/admin/${item.id}`,
+                                            courses: `/courses/enrollments/${item.id}`,
+                                            tournaments: `/tournaments/admin/registrations/${item.id}`
+                                          };
+                                          await api.delete(paths[tab]);
+                                          window.location.reload();
+                                        }
                                       }}
                                     />
                                   </div>
@@ -423,244 +320,6 @@ const AdminDashboard: React.FC = () => {
         </div>
       </div>
     </AdminShell>
-
-    <AdminModal
-        isOpen={isEditModalOpen}
-        onClose={handleClose}
-        title={`Edit ${editingRecord?.type === 'tournament' ? 'Tournament' : editingRecord?.type === 'course' ? 'Course' : 'Demo'} Registration`}
-        footer={
-          <>
-            <Button variant="ghost" disabled={isSubmitting} onClick={handleClose} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
-            <Button
-              onClick={handleSave}
-              disabled={isSubmitting}
-              className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Check className="size-4" />
-                  Save Changes
-                </>
-              )}
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-4 py-2" key={editingRecord?.id ?? 'new'}>
-          <div className="grid gap-2">
-            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Registration Status</Label>
-            <Select
-              value={pendingChanges.status}
-              onValueChange={(val) => setPendingChanges(prev => ({ ...prev, status: val }))}
-            >
-              <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
-                <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="APPROVED">Approved</SelectItem>
-                <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-                <SelectItem value="COMPLETED">Completed</SelectItem>
-                <SelectItem value="REJECTED">Rejected</SelectItem>
-                <SelectItem value="CANCELLED">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {editingRecord?.type !== 'demo' && (
-            <div className="grid gap-2">
-              <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Payment Status</Label>
-              <Select
-                value={pendingChanges.paymentStatus}
-                onValueChange={(val) => setPendingChanges(prev => ({ ...prev, paymentStatus: val }))}
-              >
-                <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
-                  <SelectItem value="PENDING">Pending</SelectItem>
-                  <SelectItem value="VERIFIED">Verified</SelectItem>
-                  <SelectItem value="FAILED">Failed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-        </div>
-      </AdminModal>
-
-      <ConfirmDialog
-        isOpen={isConfirmOpen}
-        onCancel={() => { setIsConfirmOpen(false); setRecordToDelete(null); }}
-        onConfirm={() => handleAction(recordToDelete.id, recordToDelete.type, 'delete')}
-        isLoading={isDeleting}
-        title="Permanent Delete?"
-        description="This action cannot be undone. The registration and associated student link will be removed."
-      />
-
-      {/* Details Sheet */}
-      <Sheet open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
-        <SheetContent className="sm:max-w-xl rounded-l-[2rem] p-0 border-uca-border bg-uca-bg-base shadow-2xl overflow-y-auto">
-          {selectedItem && (
-            <div className="h-full flex flex-col">
-              <div className="bg-uca-navy p-8 text-white relative overflow-hidden shrink-0 border-b border-uca-border">
-                <SheetHeader className="mb-6 relative z-10 text-left">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="px-2.5 py-1 bg-white/10 text-[9px] font-black uppercase tracking-[0.2em] rounded border border-white/20">
-                      {selectedItem.type}
-                    </span>
-                    <StatusBadge status={selectedItem.status} />
-                  </div>
-                  <SheetTitle className="text-3xl font-black text-white leading-tight tracking-tight">
-                    {selectedItem.student?.fullName || selectedItem.studentName}
-                  </SheetTitle>
-                  <p className="text-uca-text-muted font-bold text-sm mt-1 flex items-center gap-2">
-                    {selectedItem.type === 'tournament' ? <Trophy className="size-4 text-amber-500" /> : <BookOpen className="size-4 text-uca-accent-blue" />}
-                    {selectedItem.tournament?.title || selectedItem.course?.title || 'Initial Demo Session'}
-                  </p>
-                </SheetHeader>
-
-                <div className="flex flex-wrap gap-3 relative z-10">
-                  <div className="bg-uca-bg-elevated px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5">
-                    <p className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">Reference ID</p>
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs font-mono font-bold tracking-wider text-uca-accent-blue">
-                        {selectedItem.referenceId || selectedItem.id.toString().slice(-8).toUpperCase()}
-                      </p>
-                      <button onClick={() => {
-                        navigator.clipboard.writeText(selectedItem.referenceId || selectedItem.id);
-                        success("Ref ID Copied");
-                      }} className="text-uca-text-muted hover:text-uca-text-primary transition-colors">
-                        <Copy className="size-3" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="bg-uca-bg-elevated px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5">
-                    <p className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">Submission Date</p>
-                    <p className="text-xs font-bold">{selectedItem.createdAt ? format(new Date(selectedItem.createdAt), "PPP") : 'N/A'}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex-1 p-8 space-y-10 bg-uca-bg-base">
-                <section>
-                  <div className="flex items-center gap-3 mb-5 text-uca-text-primary">
-                    <User className="size-4 text-uca-accent-blue" />
-                    <h4 className="text-xs font-black uppercase tracking-widest">Student Profile</h4>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Gender</p>
-                      <p className="font-bold text-uca-text-primary">{selectedItem.student?.gender || selectedItem.gender || 'N/A'}</p>
-                    </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Birth Date</p>
-                      <p className="font-bold text-uca-text-primary">{(selectedItem.student?.dob || selectedItem.dob) ? format(new Date(selectedItem.student?.dob || selectedItem.dob), "PPP") : 'N/A'}</p>
-                    </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Phone</p>
-                      <p className="font-bold text-uca-text-primary text-sm">{selectedItem.student?.phone || selectedItem.phone || 'N/A'}</p>
-                    </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Email</p>
-                      <p className="font-bold text-uca-text-primary text-xs truncate">{selectedItem.student?.email || selectedItem.email || 'N/A'}</p>
-                    </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border col-span-2">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Address</p>
-                      <p className="font-bold text-uca-text-primary text-xs leading-relaxed">{selectedItem.student?.address || selectedItem.address || 'N/A'}</p>
-                    </div>
-                  </div>
-                </section>
-
-                {(selectedItem.type === 'tournament' || selectedItem.type === 'course') && (
-                  <section>
-                    <div className="flex items-center gap-3 mb-5 text-uca-text-primary">
-                      <ShieldCheck className="size-4 text-uca-accent-blue" />
-                      <h4 className="text-xs font-black uppercase tracking-widest">Entry Details</h4>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                        <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">FIDE ID</p>
-                        <p className="text-lg font-black text-uca-text-primary">{selectedItem.student?.fideId || selectedItem.fideId || 'N/A'}</p>
-                      </div>
-                      <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                        <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Rating</p>
-                        <p className="text-lg font-black text-uca-accent-blue">{selectedItem.student?.fideRating || selectedItem.fideRating || '0'}</p>
-                      </div>
-                      <div className="bg-uca-bg-elevated p-4 rounded-xl border border-uca-border col-span-2">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Transaction ID</p>
-                            <p className="font-mono font-bold text-white text-sm">{selectedItem.transactionId || 'N/A'}</p>
-                          </div>
-                          <div className="text-right">
-                             <StatusBadge status={selectedItem.paymentStatus || 'PENDING'} />
-                             {selectedItem.paymentStatus !== 'VERIFIED' && (
-                                <button
-                                  className="block mt-1 text-[9px] font-black text-uca-accent-blue uppercase hover:underline"
-                                  onClick={() => handleAction(selectedItem.id, selectedItem.type, 'paymentStatus', 'VERIFIED')}
-                                >
-                                  Verify Payment
-                                </button>
-                             )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-                )}
-
-                {selectedItem.type !== 'demo' && (
-                  <section className="pb-8">
-                    <div className="flex items-center gap-3 mb-5 text-uca-text-primary">
-                      <PhotoIcon className="size-4 text-uca-accent-blue" />
-                      <h4 className="text-xs font-black uppercase tracking-widest">Documents</h4>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <button
-                        onClick={() => window.open(selectedItem.ageProofUrl)}
-                        className="group relative aspect-video bg-uca-bg-surface rounded-xl overflow-hidden border border-uca-border hover:border-uca-accent-blue/50 transition-colors"
-                      >
-                        <img src={selectedItem.ageProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
-                        <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-uca-text-primary bg-black/40">View Age Proof</span>
-                      </button>
-                      <button
-                        onClick={() => window.open(selectedItem.paymentProofUrl)}
-                        className="group relative aspect-video bg-uca-bg-surface rounded-xl overflow-hidden border border-uca-border hover:border-uca-accent-blue/50 transition-colors"
-                      >
-                        <img src={selectedItem.paymentProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
-                        <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-uca-text-primary bg-black/40">View Payment Proof</span>
-                      </button>
-                    </div>
-                  </section>
-                )}
-              </div>
-
-              <div className="p-6 bg-uca-bg-surface border-t border-uca-border flex gap-3 shrink-0">
-                {selectedItem.status === "PENDING" && (
-                  <Button
-                    className="flex-1 h-12 bg-uca-navy hover:bg-uca-navy-hover text-white rounded-lg font-bold text-xs uppercase tracking-widest"
-                    onClick={() => handleAction(selectedItem.id, selectedItem.type, 'status', selectedItem.type === 'course' ? 'CONFIRMED' : 'APPROVED')}
-                  >
-                    Approve Entry
-                  </Button>
-                )}
-                <Button
-                  variant="outline"
-                  className="flex-1 h-12 rounded-lg font-bold text-xs uppercase tracking-widest border-uca-border bg-uca-bg-base text-uca-text-muted hover:text-uca-text-primary"
-                  onClick={() => handleAction(selectedItem.id, selectedItem.type, 'status', selectedItem.type === 'course' ? 'REJECTED' : 'CANCELLED')}
-                >
-                  {selectedItem.type === 'course' ? 'Reject' : 'Cancel'}
-                </Button>
-              </div>
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
-    </>
   );
 };
 
