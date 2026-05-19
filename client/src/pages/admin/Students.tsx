@@ -71,9 +71,7 @@ export default function StudentsPage() {
 
   const filteredStudents = useMemo(() => {
     return students.filter((s: any) =>
-      s.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.phone.includes(searchTerm) ||
-      s.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      s.fullName.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [students, searchTerm]);
 
@@ -133,15 +131,16 @@ export default function StudentsPage() {
         </div>
       ),
       displayContact: (
-        <div className="flex flex-col gap-0.5">
+        <div className="flex flex-col gap-1 text-left">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-uca-text-primary">
-            <Phone className="size-3 text-uca-accent-blue" />
-            {student.phone}
+            <Phone className="size-3 text-uca-accent-blue shrink-0" />
+            <span>{student.phone}</span>
           </div>
           {student.email && (
-            <span className="text-[10px] text-uca-text-muted truncate max-w-[150px]">
-              {student.email}
-            </span>
+            <div className="flex items-center gap-1.5 text-[10px] text-uca-text-muted">
+              <Mail className="size-3 text-uca-text-muted shrink-0" />
+              <span className="truncate max-w-[150px]">{student.email}</span>
+            </div>
           )}
         </div>
       ),
