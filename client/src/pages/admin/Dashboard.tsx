@@ -245,16 +245,6 @@ const AdminDashboard: React.FC = () => {
       subtitle: `Courses: ₹${totalCourseCollections.toLocaleString()} | Tournaments: ₹${totalTournamentCollections.toLocaleString()}`,
       path: "/admin/registrations"
     },
-    {
-      title: "Demo Leads",
-      value: demosLoading ? "…" : demos.length.toString(),
-      icon: Users,
-      accent: "text-uca-accent-blue",
-      bg: "bg-uca-accent-blue/10",
-      numColor: "text-uca-accent-blue",
-      status: demoStatus,
-      path: "/admin/registrations"
-    },
   ];
 
   return (

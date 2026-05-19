@@ -310,6 +310,16 @@ export default function RegistrationsPage() {
           <div className="flex gap-1.5 flex-wrap w-full lg:w-auto justify-center lg:justify-end">
             <div className="flex bg-uca-bg-base p-1 rounded-lg h-10 border border-uca-border">
               <button
+                onClick={() => setActiveTab("demo")}
+                className={`rounded-md px-3 sm:px-4 text-[10px] font-black uppercase tracking-widest h-8 transition-all ${
+                  activeTab === "demo"
+                    ? "bg-uca-navy text-white"
+                    : "text-uca-text-muted hover:text-uca-text-primary"
+                }`}
+              >
+                Demos
+              </button>
+              <button
                 onClick={() => setActiveTab("tournament")}
                 className={`rounded-md px-3 sm:px-4 text-[10px] font-black uppercase tracking-widest h-8 transition-all ${
                   activeTab === "tournament"
@@ -329,7 +339,7 @@ export default function RegistrationsPage() {
               >
                 Courses
               </button>
-              <button
+              {/* <button
                 onClick={() => setActiveTab("demo")}
                 className={`rounded-md px-3 sm:px-4 text-[10px] font-black uppercase tracking-widest h-8 transition-all ${
                   activeTab === "demo"
@@ -338,7 +348,7 @@ export default function RegistrationsPage() {
                 }`}
               >
                 Demos
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
