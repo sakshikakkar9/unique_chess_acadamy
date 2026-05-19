@@ -88,7 +88,17 @@ const AdminDashboard: React.FC = () => {
 
   const stats = [
     {
-      title: "Enrollments",
+      title: "Demo Leads",
+      value: demosLoading ? "…" : demos.length.toString(),
+      icon: Users,
+      accent: "text-uca-accent-blue",
+      bg: "bg-uca-accent-blue/10",
+      numColor: "text-uca-accent-blue",
+      status: "LIVE",
+      path: "/admin/registrations"
+    },
+    {
+      title: "Active Users",
       value: enrollLoading || tournamentLoading ? "…" : (enrollments.length + registrations.length).toString(),
       icon: GraduationCap,
       accent: "text-amber-500",
@@ -99,24 +109,14 @@ const AdminDashboard: React.FC = () => {
       path: "/admin/registrations"
     },
     {
-      title: "Collected Amount",
+      title: "Payment Received",
       value: tournamentLoading || enrollLoading ? "…" : `₹${totalInvestment.toLocaleString()}`,
       icon: TrendingUp,
       accent: "text-emerald-500",
       bg: "bg-emerald-500/10",
       numColor: "text-emerald-500",
-      status: "PROFITS",
+      status: "REVENUE",
       subtitle: `Courses: ₹${totalCourseCollections.toLocaleString()} | Tournaments: ₹${totalTournamentCollections.toLocaleString()}`,
-      path: "/admin/registrations"
-    },
-    {
-      title: "Demo Leads",
-      value: demosLoading ? "…" : demos.length.toString(),
-      icon: Users,
-      accent: "text-uca-accent-blue",
-      bg: "bg-uca-accent-blue/10",
-      numColor: "text-uca-accent-blue",
-      status: "LIVE",
       path: "/admin/registrations"
     },
   ];
@@ -165,6 +165,12 @@ const AdminDashboard: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-4 sm:px-6 border-b border-uca-border bg-uca-bg-elevated/30 gap-4">
               <TabsList className="bg-uca-bg-base p-1 rounded-lg border border-uca-border h-10">
                 <TabsTrigger
+                  value="demos"
+                  className="rounded-md px-4 text-[10px] font-black uppercase tracking-widest h-8 data-[state=active]:bg-uca-navy data-[state=active]:text-white"
+                >
+                  Demos
+                </TabsTrigger>
+                <TabsTrigger
                   value="tournaments"
                   className="rounded-md px-4 text-[10px] font-black uppercase tracking-widest h-8 data-[state=active]:bg-uca-navy data-[state=active]:text-white"
                 >
@@ -176,12 +182,12 @@ const AdminDashboard: React.FC = () => {
                 >
                   Courses
                 </TabsTrigger>
-                <TabsTrigger
+                {/* <TabsTrigger
                   value="demos"
                   className="rounded-md px-4 text-[10px] font-black uppercase tracking-widest h-8 data-[state=active]:bg-uca-navy data-[state=active]:text-white"
                 >
                   Demos
-                </TabsTrigger>
+                </TabsTrigger> */}
               </TabsList>
 
               <Link
