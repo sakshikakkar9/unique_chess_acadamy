@@ -78,20 +78,59 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
           </h3>
 
           {/* Mode + Schedule metadata parameters */}
-          <div className="flex items-center gap-3 mb-3">
+          {/* <div className="flex items-center gap-3 mb-3">
             {course.mode && (
               <span className="text-xs text-slate-500 flex items-center gap-1">
                 <Globe className="size-3.5 text-blue-500" />
                 {course.mode}
               </span>
             )}
+            <br></br>
             {course.classTime && (
               <span className="text-xs text-slate-500 flex items-center gap-1">
                 <Clock className="size-3.5 text-blue-500" />
                 {formatTime(course.classTime)}
               </span>
             )}
-          </div>
+          </div> */}
+<div className="flex flex-col gap-2 mb-3">
+  {/* First Line: Mode */}
+  {course.mode && (
+    <span className="text-xs text-slate-500 flex items-center gap-1">
+      <Globe className="size-3.5 text-blue-500" />
+      {course.mode}
+    </span>
+  )}
+  
+  {/* Second Line: Time and Days grouped together */}
+  {(course.classTime || (course.days && course.days.length > 0)) && (
+    <div className="flex flex-wrap items-center gap-3">
+      {/* Time */}
+      {course.classTime && (
+        <span className="text-xs text-slate-500 flex items-center gap-1">
+          <Clock className="size-3.5 text-blue-500" />
+          {formatTime(course.classTime)}
+        </span>
+      )}
+
+      {/* Days */}
+      {course.days && course.days.length > 0 && (
+        <div className="flex items-center gap-1">
+          {course.days.slice(0, 3).map((day: string) => (
+            <span key={day} className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md uppercase">
+              {day.slice(0, 3)}
+            </span>
+          ))}
+          {course.days.length > 3 && (
+            <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md">
+              +{course.days.length - 3}
+            </span>
+          )}
+        </div>
+      )}
+    </div>
+  )}
+</div> 
 
           {/* Info pill status tags row stack parameters */}
           <div className="flex flex-wrap items-center gap-1.5 mb-4">
@@ -119,7 +158,7 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
             )}
 
             {/* Active Training Program Days parameters layout rendering stack */}
-            {course.days && course.days.length > 0 && (
+            {/* {course.days && course.days.length > 0 && (
               <>
                 {course.days.slice(0, 3).map((day: string) => (
                   <span key={day} className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md uppercase">
@@ -132,7 +171,7 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
                   </span>
                 )}
               </>
-            )}
+            )} */}
           </div>
 
           {/* BOTTOM ROW ACTION PANEL - Exact structure match to Tournament card footer template */}
