@@ -99,7 +99,8 @@ const AdminDashboard: React.FC = () => {
     if (isDelete) setIsDeleting(true);
     else setIsSubmitting(true);
 
-    const typeKey = type === 'tournaments' ? 'tournament' : type === 'courses' ? 'course' : 'demo';
+    const typeKey = (type === 'tournaments' || type === 'tournament') ? 'tournament' :
+                   (type === 'courses' || type === 'course') ? 'course' : 'demo';
     const paths: any = {
       demo: `/demo/admin/${id}`,
       course: `/courses/enrollments/${id}`,
@@ -117,7 +118,7 @@ const AdminDashboard: React.FC = () => {
         await api.patch(paths[typeKey], payload);
       }
 
-      const queryKey = typeKey === 'tournament' ? "registrations" : typeKey === 'course' ? "course-enrollments" : typeKey === 'demo' ? "admin-demos" : type;
+      const queryKey = typeKey === 'tournament' ? "registrations" : typeKey === 'course' ? "course-enrollments" : "admin-demos";
       qc.invalidateQueries({ queryKey: [queryKey] });
       if (typeKey === 'demo') refreshDemos();
 
@@ -332,14 +333,13 @@ const AdminDashboard: React.FC = () => {
                         <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Student</th>
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">City</th>
-                          <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted hidden sm:table-cell">State</th>
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Status</th>
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-uca-border">
                         {loading ? (
-                          <tr><td colSpan={5} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading...</td></tr>
+                          <tr><td colSpan={4} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading...</td></tr>
                         ) : data.length > 0 ? (
                           data.map((item: any) => {
                             const name = item?.student?.fullName || item?.studentName || "N/A";
@@ -367,11 +367,6 @@ const AdminDashboard: React.FC = () => {
                                 <td className="px-6 py-3">
                                   <span className="text-xs text-uca-text-muted font-medium">
                                     {item.city || 'N/A'}
-                                  </span>
-                                </td>
-                                <td className="px-6 py-3 hidden sm:table-cell">
-                                  <span className="text-xs text-uca-text-muted font-medium">
-                                    N/A
                                   </span>
                                 </td>
                                 <td className="px-6 py-3 text-right">
@@ -402,7 +397,7 @@ const AdminDashboard: React.FC = () => {
                             );
                           })
                         ) : (
-                          <tr><td colSpan={5} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No records found</td></tr>
+                          <tr><td colSpan={4} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No records found</td></tr>
                         )}
                       </tbody>
                     </table>
@@ -503,7 +498,7 @@ const AdminDashboard: React.FC = () => {
 
       {/* Details Sheet */}
       <Sheet open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
-        <SheetContent className="sm:max-w-xl rounded-l-[2rem] p-0 border-uca-border bg-uca-bg-base shadow-2xl overflow-y-auto">
+        <SheetContent aria-describedby={undefined} className="sm:max-w-xl rounded-l-[2rem] p-0 border-uca-border bg-uca-bg-base shadow-2xl overflow-y-auto">
           {selectedItem && (
             <div className="h-full flex flex-col">
               <div className="bg-uca-navy p-8 text-white relative overflow-hidden shrink-0 border-b border-uca-border">
