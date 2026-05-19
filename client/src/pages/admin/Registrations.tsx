@@ -69,10 +69,7 @@ export default function RegistrationsPage() {
   const filteredEnrollments = useMemo(() => {
     return enrollments.filter((item: any) => {
       const studentName = item.student?.fullName || item.studentName || "";
-      const phone = item.student?.phone || item.phone || "";
-      const matchesSearch = (studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            phone.includes(searchTerm) ||
-                            item.referenceId?.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesSearch = studentName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "ALL" || item.status === statusFilter;
       const matchesCourse = courseFilter === "ALL" || item.course?.title === courseFilter;
       return matchesSearch && matchesStatus && matchesCourse;
@@ -82,10 +79,7 @@ export default function RegistrationsPage() {
   const filteredRegistrations = useMemo(() => {
     return registrations.filter((item: any) => {
       const studentName = item.student?.fullName || item.studentName || "";
-      const phone = item.student?.phone || item.phone || "";
-      const matchesSearch = (studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            phone.includes(searchTerm) ||
-                            item.referenceId?.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesSearch = studentName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "ALL" || item.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
@@ -93,8 +87,8 @@ export default function RegistrationsPage() {
 
   const filteredDemos = useMemo(() => {
     return (demos || []).filter((item: any) => {
-      const matchesSearch = (item.studentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            item.phone?.includes(searchTerm));
+      const studentName = item.studentName || "";
+      const matchesSearch = studentName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "ALL" || item.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
@@ -248,7 +242,10 @@ export default function RegistrationsPage() {
         <RowActionMenu
           onView={() => setSelectedItem({ ...item, type: currentType })}
           onEdit={() => handleEdit(item)}
-          onConfirm={currentType === 'demo' ? () => handleAction(item.id, 'demo', 'status', 'COMPLETED') : undefined}
+          onConfirm={() => {
+            const status = currentType === 'course' ? 'CONFIRMED' : (currentType === 'tournament' ? 'APPROVED' : 'COMPLETED');
+            handleAction(item.id, currentType, 'status', status);
+          }}
           onDelete={() => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
         />
       )
