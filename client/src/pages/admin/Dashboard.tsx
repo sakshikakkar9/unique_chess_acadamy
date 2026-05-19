@@ -99,7 +99,8 @@ const AdminDashboard: React.FC = () => {
     if (isDelete) setIsDeleting(true);
     else setIsSubmitting(true);
 
-    const typeKey = type === 'tournaments' ? 'tournament' : type === 'courses' ? 'course' : 'demo';
+    const typeKey = (type === 'tournaments' || type === 'tournament') ? 'tournament' :
+                   (type === 'courses' || type === 'course') ? 'course' : 'demo';
     const paths: any = {
       demo: `/demo/admin/${id}`,
       course: `/courses/enrollments/${id}`,
