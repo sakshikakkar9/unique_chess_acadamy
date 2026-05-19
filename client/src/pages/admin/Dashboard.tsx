@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 import {
   BookOpen, Trophy, Image as PhotoIcon, Users,
   TrendingUp, Calendar, UserCheck, ArrowUpRight, GraduationCap,
-  Loader2, Check, User, ShieldCheck, Copy, PhotoIcon as Photo, Mail, Phone, Eye, Trash2,
+  Loader2, Check, User, ShieldCheck, Copy, Mail, Phone, Eye, Trash2,
   RefreshCw, Filter, ExternalLink, CreditCard, UserCheck as UserCheckIcon
 } from "lucide-react";
 import { useAdminCourses } from "../../features/courses/hooks/useAdminCourses";
@@ -616,7 +616,7 @@ const AdminDashboard: React.FC = () => {
                 {selectedItem.type !== 'demo' && (
                   <section className="pb-8">
                     <div className="flex items-center gap-3 mb-5 text-uca-text-primary">
-                      <Photo className="size-4 text-uca-accent-blue" />
+                      <PhotoIcon className="size-4 text-uca-accent-blue" />
                       <h4 className="text-xs font-black uppercase tracking-widest">Documents</h4>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
