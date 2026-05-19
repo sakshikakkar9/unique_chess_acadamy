@@ -1,4 +1,5 @@
 import prisma from '../../lib/prisma.js';
+import * as studentSharedService from './student.shared.service.js';
 
 // --- GET ALL TOURNAMENTS ---
 export const getAllTournaments = async () => {
@@ -120,30 +121,18 @@ export const registerForTournament = async (tournamentId, registrationData) => {
   if (isNaN(id)) throw new Error("Invalid Tournament ID");
 
   return await prisma.$transaction(async (tx) => {
-    // Smart Sync: Create or Update Student
-    const student = await tx.student.upsert({
-      where: { phone: registrationData.phone },
-      update: {
-        fullName: registrationData.studentName,
-        gender: registrationData.gender,
-        dob: parseDate(registrationData.dob) || new Date(),
-        email: registrationData.email || null,
-        address: registrationData.address,
-        fideId: registrationData.fideId || "NA",
-        fideRating: parseIntSafe(registrationData.fideRating),
-        discoverySource: registrationData.discoverySource,
-      },
-      create: {
-        fullName: registrationData.studentName,
-        phone: registrationData.phone,
-        gender: registrationData.gender,
-        dob: parseDate(registrationData.dob) || new Date(),
-        email: registrationData.email || null,
-        address: registrationData.address,
-        fideId: registrationData.fideId || "NA",
-        fideRating: parseIntSafe(registrationData.fideRating),
-        discoverySource: registrationData.discoverySource,
-      }
+    // Smart Sync: Create or Update Student via shared service
+    const student = await studentSharedService.getOrCreateStudent(tx, {
+      fullName: registrationData.studentName,
+      studentName: registrationData.studentName,
+      phone: registrationData.phone,
+      gender: registrationData.gender,
+      dob: parseDate(registrationData.dob) || new Date(),
+      email: registrationData.email || null,
+      address: registrationData.address,
+      fideId: registrationData.fideId || "NA",
+      fideRating: registrationData.fideRating,
+      discoverySource: registrationData.discoverySource,
     });
 
     return await tx.registration.create({

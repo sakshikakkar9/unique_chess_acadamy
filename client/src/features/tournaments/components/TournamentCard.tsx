@@ -26,15 +26,15 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
   return (
     <ScrollReveal delay={delay}>
       <div className="flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200 h-full w-full">
-        {/* IMAGE AREA */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
+        {/* IMAGE AREA - Reverted to match exact tournament height container ratio */}
+        <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 flex items-center justify-center border-b border-slate-100">
           <img
             src={tournament.imageUrl || DEFAULT_IMAGE}
             alt={tournament.title}
             className="w-full h-full object-cover"
             loading="lazy"
             onError={(e) => {
-              e.currentTarget.style.display = 'none';
+              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiB2aWV3Qm94PSIwIDAgNDAwIDMwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNGMUY1RjkiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iI0Q5Nzc0OSIgZm9udC1mYW1pbHk9InNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LWl0YWxpYz0iaXRhbGljIiBmb250LXNpemU9IjY0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjM1ZW0iPlNLPC90ZXh0Pjwvc3ZnPg==';
             }}
           />
 
@@ -86,7 +86,7 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
           </h3>
 
           {/* Venue */}
-          <p className="text-xs text-slate-500 mb-3 flex items-center gap-1.5">
+          <p className="text-xs text-slate-500 mb-3 flex items-center gap-1.5 truncate">
             <MapPin className="size-3.5 flex-shrink-0 text-blue-500" />
             {tournament.location || "Main Academy Hall"}
           </p>
