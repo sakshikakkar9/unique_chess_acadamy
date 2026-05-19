@@ -22,7 +22,7 @@ export default function GalleryPage() {
   const handleImageLoad = (id: string, e: React.SyntheticEvent<HTMLImageElement>) => {
     const el = e.currentTarget;
     const ratio = el.naturalWidth / el.naturalHeight;
-    const o = ratio > 1.2 ? 'landscape' : ratio < 0.85 ? 'portrait' : 'square';
+    const o = ratio > 1.3 ? 'landscape' : ratio < 0.9 ? 'portrait' : 'square';
     setOrientations(prev => ({ ...prev, [id]: o }));
   };
 
