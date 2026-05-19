@@ -167,7 +167,7 @@ export default function RegistrationsPage() {
   const columns: AdminTableColumn[] = useMemo(() => {
     const base = [
       { key: 'displayProfile', label: 'Student Profile', className: 'min-w-[200px]' },
-      { key: 'displayProgram', label: activeTab === 'demo' ? 'City' : 'Program', hiddenOn: 'mobile' },
+      { key: 'displayProgram', label: activeTab === 'demo' ? 'City' : 'Address', hiddenOn: 'mobile' },
       { key: 'displayDate', label: activeTab === 'demo' ? 'Date of Submission' : 'Submission', hiddenOn: 'tablet' },
       { key: 'displayContact', label: 'Contact', hiddenOn: 'mobile' },
       { key: 'displayStatus', label: 'Status', align: 'right' }
@@ -218,12 +218,9 @@ export default function RegistrationsPage() {
               {item.city || 'N/A'}
             </span>
           ) : (
-            <>
-              {currentType === 'tournament' ? <Trophy className="size-3.5 text-amber-500" /> : <BookOpen className="size-3.5 text-uca-accent-blue" />}
-              <span className="text-xs font-semibold text-uca-text-primary truncate max-w-[150px]">
-                {item.tournament?.title || item.course?.title || 'Demo Class'}
-              </span>
-            </>
+            <span className="text-xs font-semibold text-uca-text-primary truncate max-w-[200px]">
+              {item.student?.address || item.address || 'N/A'}
+            </span>
           )}
         </div>
       ),

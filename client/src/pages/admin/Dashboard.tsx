@@ -339,7 +339,7 @@ const AdminDashboard: React.FC = () => {
                       <thead>
                         <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Student</th>
-                          <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">City</th>
+                          <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Address</th>
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Status</th>
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Actions</th>
                         </tr>
@@ -372,8 +372,8 @@ const AdminDashboard: React.FC = () => {
                                   </div>
                                 </td>
                                 <td className="px-6 py-3">
-                                  <span className="text-xs text-uca-text-muted font-medium">
-                                    {item.city || 'N/A'}
+                                  <span className="text-xs text-uca-text-muted font-medium truncate max-w-[200px] block">
+                                    {item.student?.address || item.address || item.city || 'N/A'}
                                   </span>
                                 </td>
                                 <td className="px-6 py-3 text-right">
