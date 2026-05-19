@@ -14,7 +14,7 @@ import { Label } from "../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Plus, Upload, X, Search, Eye, Calendar, Users, Check, Loader2 } from "lucide-react";
 import { Tournament } from "../../types";
-import { Dialog, DialogContent, DialogTitle } from "../../components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../../components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
 import RichTextEditor from "../../components/shared/admin/RichTextEditor";
 import { cn } from "../../lib/utils";
@@ -662,6 +662,7 @@ const AdminTournaments: React.FC = () => {
       {/* Preview Modal */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
         <DialogContent className="max-w-[95vw] lg:max-w-7xl p-0 overflow-hidden rounded-2xl border-none shadow-2xl bg-uca-bg-base">
+          <DialogDescription className="sr-only">Preview the tournament arena layout.</DialogDescription>
           <div className="bg-uca-bg-surface text-uca-text-primary p-6 flex items-center justify-between border-b border-uca-border">
             <div className="space-y-1">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-uca-accent-blue">Arena Preview Mode</p>
