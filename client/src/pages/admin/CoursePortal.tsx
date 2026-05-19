@@ -71,7 +71,9 @@ const CoursePortal: React.FC = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/admin/courses")}
-            className="rounded-lg hover:bg-uca-bg-elevated text-uca-text-muted gap-2 px-3"
+            // {/* Highlight-start */}
+   className="rounded-lg hover:!bg-uca-navy  hover:text-white text-uca-text-muted gap-2 px-3 transition-colors"
+    // {/* Highlight-end */}
           >
             <ArrowLeft className="size-4" /> Back to Courses
           </Button>
