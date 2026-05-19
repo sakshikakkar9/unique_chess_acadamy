@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../ui/dialog";
 
 interface AdminModalProps {
   isOpen: boolean;
@@ -42,21 +43,11 @@ const AdminModal: React.FC<AdminModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-200"
-        onClick={onClose}
-      />
-
-      {/* Modal Container */}
-      <div
-        className={cn(
-          "relative z-50 bg-uca-bg-surface border border-uca-border shadow-2xl flex flex-col w-full sm:max-w-lg max-h-[92vh] sm:max-h-[90vh] overflow-hidden overscroll-contain transition-all",
-          "rounded-t-2xl sm:rounded-2xl",
-          "animate-in fade-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-250 ease-out"
-        )}
-      >
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className={cn(
+        "bg-uca-bg-surface border border-uca-border shadow-2xl flex flex-col w-full sm:max-w-lg max-h-[92vh] sm:max-h-[90vh] overflow-hidden p-0",
+        "rounded-t-2xl sm:rounded-2xl"
+      )}>
         {/* Mobile Swipe Indicator */}
         <div className="flex justify-center pt-3 pb-1 sm:hidden shrink-0">
           <div className="w-10 h-1 rounded-full bg-uca-bg-elevated" />
@@ -64,7 +55,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
 
         {/* Header */}
         <div className="flex justify-between items-center px-5 py-4 sm:px-6 sm:py-4 border-b border-uca-border bg-uca-bg-surface shadow-sm sticky top-0 z-10 shrink-0">
-          <h3 className="text-lg font-bold text-uca-text-primary">{title}</h3>
+          <DialogTitle className="text-lg font-bold text-uca-text-primary">{title}</DialogTitle>
           <Button
             variant="ghost"
             size="icon"
@@ -74,6 +65,10 @@ const AdminModal: React.FC<AdminModalProps> = ({
             <X className="size-5" />
           </Button>
         </div>
+
+        <DialogDescription className="sr-only">
+          Modal for {title}
+        </DialogDescription>
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-5 py-4 sm:px-6 sm:py-5">
@@ -86,8 +81,8 @@ const AdminModal: React.FC<AdminModalProps> = ({
             {footer}
           </div>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

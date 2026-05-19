@@ -126,7 +126,7 @@ model Registration {
 }
 
 model DemoRegistration {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   studentName String
   email       String
   phone       String

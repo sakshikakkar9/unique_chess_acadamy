@@ -20,18 +20,14 @@ export const getAllDemoRegistrations = async () => {
 };
 
 export const updateDemoStatus = async (id, status) => {
-  const numericId = parseInt(id);
-  if (isNaN(numericId)) throw new Error("Invalid Demo ID");
   return await prisma.demoRegistration.update({
-    where: { id: numericId },
+    where: { id },
     data: { status },
   });
 };
 
 export const deleteDemoRegistration = async (id) => {
-  const numericId = parseInt(id);
-  if (isNaN(numericId)) throw new Error("Invalid Demo ID");
   return await prisma.demoRegistration.delete({
-    where: { id: numericId },
+    where: { id },
   });
 };
