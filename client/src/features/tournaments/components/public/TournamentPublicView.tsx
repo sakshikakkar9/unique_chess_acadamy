@@ -48,8 +48,7 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
             <div className="flex items-center gap-3">
               <ShieldCheck className="size-5 text-blue-400" />
               <div>
-                <p className="text-sm font-bold text-white">Secure Register</p>
-                <p className="text-xs text-white/50 mt-0.5">Quick Checkout · SSL Protected</p>
+                <p className="text-sm font-bold text-white">Registration Form</p>
               </div>
             </div>
             {/* Status Badge */}
