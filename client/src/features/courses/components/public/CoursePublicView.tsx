@@ -43,7 +43,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
           <div className="bg-slate-900 px-5 py-4 flex items-center gap-3">
             <ShieldCheck className="size-5 text-blue-400" />
             <div>
-              <p className="text-sm font-bold text-white">Enrolllement Form</p>
+              <p className="text-sm font-bold text-white">Registration Form</p>
             </div>
           </div>
 
