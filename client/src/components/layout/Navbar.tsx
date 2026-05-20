@@ -35,18 +35,16 @@ const Navbar = () => {
     location.pathname === path || (path !== '/' && location.pathname.startsWith(path + '/'));
 
   // Define navbar visibility
-  // If enrollment page, hidden by default, visible on scroll.
-  // Otherwise, always visible.
-  const isNavbarVisible = !isEnrollmentPage || isScrolled;
+  // Always visible as per requirements
+  const isNavbarVisible = true;
 
   return (
     <>
       <nav className={cn(
         "fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-500",
-        isScrolled
+        (isScrolled || isEnrollmentPage)
           ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100'
-          : 'bg-transparent border-b border-transparent',
-        !isNavbarVisible && "-translate-y-full opacity-0"
+          : 'bg-transparent border-b border-transparent'
       )}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
 
@@ -65,7 +63,7 @@ const Navbar = () => {
                   "text-sm font-medium transition-colors duration-150",
                   isActive(link.href)
                     ? 'text-blue-600'
-                    : isScrolled
+                    : (isScrolled || isEnrollmentPage)
                       ? 'text-slate-600 hover:text-slate-900'
                       : 'text-white/80 hover:text-white'
                 )}
@@ -80,7 +78,7 @@ const Navbar = () => {
             onClick={() => setIsOpen(true)}
             className={cn(
               "md:hidden p-2 rounded-lg transition-colors",
-              isScrolled ? "text-slate-700" : "text-white"
+              (isScrolled || isEnrollmentPage) ? "text-slate-700" : "text-white"
             )}
           >
             <Menu className="size-5" />

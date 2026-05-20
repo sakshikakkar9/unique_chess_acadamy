@@ -30,7 +30,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../components/u
 import { format } from "date-fns";
 import {
   User, Calendar, MapPin, ShieldCheck, Zap, Info, Clock, Mail, Copy, ArrowRight,
-  Upload
+  Upload, Download
 } from "lucide-react";
 
 export default function StudentsPage() {
@@ -74,6 +74,32 @@ export default function StudentsPage() {
       s.fullName.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [students, searchTerm]);
+
+  const handleExport = async () => {
+    try {
+      const XLSX = await import("xlsx");
+      const dataToExport = filteredStudents.map((s: any) => ({
+        "Name": s.fullName,
+        "Student ID": s.id,
+        "Phone": s.phone,
+        "Email": s.email || "N/A",
+        "Gender": s.gender,
+        "DOB": s.dob ? format(new Date(s.dob), "dd/MM/yyyy") : "N/A",
+        "Address": s.address || "N/A",
+        "FIDE ID": s.fideId || "N/A",
+        "Rating": s.fideRating || "0"
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(dataToExport);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Students");
+      XLSX.writeFile(wb, "UCA_Students_Export.xlsx");
+      success("Students list exported successfully");
+    } catch (err) {
+      console.error("Export failed:", err);
+      toastError("Failed to export students list");
+    }
+  };
 
   const handleDelete = async () => {
     if (!selectedStudent) return;
@@ -181,23 +207,31 @@ export default function StudentsPage() {
       title="Student Management"
       subtitle="Centralized directory of all academy students and their progress."
     >
-      {/* Header with Import and Add buttons */}
+      {/* Header with Export, Import and Add buttons */}
       <div className="flex justify-end items-center mb-6">
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <Button
             variant="outline"
+            onClick={handleExport}
+            title="Export Students"
+            className="h-10 w-10 p-0 flex items-center justify-center rounded-lg border-uca-border bg-uca-bg-surface text-uca-text-primary hover:bg-uca-bg-elevated transition-colors"
+          >
+            <Download className="size-4" />
+          </Button>
+          <Button
+            variant="outline"
             onClick={() => setIsImportModalOpen(true)}
-            className="flex-1 sm:flex-none h-10 px-4 rounded-lg border-uca-border bg-uca-bg-surface text-uca-text-primary font-bold text-xs uppercase tracking-widest hover:bg-uca-bg-elevated transition-colors gap-2"
+            title="Import Students"
+            className="h-10 w-10 p-0 flex items-center justify-center rounded-lg border-uca-border bg-uca-bg-surface text-uca-text-primary hover:bg-uca-bg-elevated transition-colors"
           >
             <Upload className="size-4" />
-            Import
           </Button>
           <Button
             onClick={handleAdd}
-            className="flex-1 sm:flex-none h-10 px-4 rounded-lg bg-uca-navy hover:bg-uca-navy-hover text-white font-bold text-xs uppercase tracking-widest transition-colors gap-2"
+            title="Add Student"
+            className="h-10 w-10 p-0 flex items-center justify-center rounded-lg bg-uca-navy hover:bg-uca-navy-hover text-white transition-colors"
           >
             <Plus className="size-4" />
-            Add Student
           </Button>
         </div>
       </div>

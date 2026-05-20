@@ -203,12 +203,10 @@ const AdminDashboard: React.FC = () => {
   }, [enrollments, registrations]);
 
   const demoStatus = useMemo(() => {
-    if (demos.length === 0) return "NO LEAD";
-    const hasActive = demos.some((d: any) => ["PENDING", "APPROVED", "CONFIRMED"].includes(d.status));
-    if (hasActive) return "PENDING";
-    const allCompleted = demos.every((d: any) => d.status === "COMPLETED");
-    if (allCompleted) return "DONE";
-    return "LIVE";
+    if (demos.length === 0) return "NO LEADS";
+    const allDone = demos.every((d: any) => d.status === "CONFIRMED" || d.status === "COMPLETED");
+    if (allDone) return "DONE";
+    return "PENDING";
   }, [demos]);
 
   const stats = [
@@ -219,7 +217,7 @@ const AdminDashboard: React.FC = () => {
       accent: "text-uca-accent-blue",
       bg: "bg-uca-accent-blue/10",
       numColor: "text-uca-accent-blue",
-      status: "LIVE",
+      status: demoStatus,
       path: "/admin/registrations"
     },
     {

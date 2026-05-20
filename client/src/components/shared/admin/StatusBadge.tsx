@@ -13,7 +13,7 @@ export type StatusType =
   | "ONGOING"
   | "LIVE"
   | "DONE"
-  | "NO LEAD";
+  | "NO LEADS";
 
 interface StatusBadgeProps {
   status: StatusType | string;
@@ -32,7 +32,7 @@ const statusStyles: Record<string, string> = {
   CONFIRMED: "bg-uca-accent-blue/10 text-uca-accent-blue border-uca-accent-blue/20",
   ONGOING:   "bg-uca-accent-blue/10 text-uca-accent-blue border-uca-accent-blue/20",
   DONE:      "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
-  "NO LEAD": "bg-uca-bg-elevated text-uca-text-muted border-uca-border",
+  "NO LEADS": "bg-uca-bg-elevated text-uca-text-muted border-uca-border",
 };
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) => {
