@@ -238,7 +238,6 @@ const AdminDashboard: React.FC = () => {
       accent: "text-emerald-500",
       bg: "bg-emerald-500/10",
       numColor: "text-emerald-500",
-      // subtitle: `Courses: ${formatINR(totalCourseCollections)} | Tournaments: ${formatINR(totalTournamentCollections)}`,
       status: "REVENUE",
       subtitle: `Courses: ₹${totalCourseCollections.toLocaleString()} | Tournaments: ₹${totalTournamentCollections.toLocaleString()}`,
       path: "/admin/registrations"
