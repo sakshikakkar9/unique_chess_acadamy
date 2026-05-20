@@ -295,6 +295,7 @@ export default function StudentsPage() {
             const original = students.find((s: any) => s.id === row.id);
             if (original) handleEdit(original);
           }}
+          onView={(s) => navigate(`/admin/students/${s.id}`)}
           onDelete={(s) => { setSelectedStudent(s); setIsConfirmOpen(true); }}
           entityName="students"
           onAddFirst={handleAdd}
@@ -419,12 +420,12 @@ export default function StudentsPage() {
                       <Zap className="size-4 text-uca-accent-blue" />
                       <h4 className="text-xs font-black uppercase tracking-widest">Activity History</h4>
                     </div>
-                    {/* <button
+                    <button
                       onClick={() => navigate(`/admin/students/${selectedStudent.id}`)}
                       className="text-[10px] font-black text-uca-accent-blue uppercase hover:underline flex items-center gap-1"
                     >
-                      Full Details123 <ArrowRight className="size-3" />
-                    </button> */}
+                      Full Details <ArrowRight className="size-3" />
+                    </button>
                   </div>
                   <div className="space-y-3">
                     {[...(selectedStudent.registrations || []), ...(selectedStudent.enrollments || [])].slice(0, 3).map((item: any, idx: number) => {
