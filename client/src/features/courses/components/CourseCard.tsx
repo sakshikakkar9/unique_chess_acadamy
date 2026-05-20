@@ -64,6 +64,11 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
 
         {/* CARD BODY - Reverted back to p-4 match layout parameter */}
         <div className="p-4 flex flex-col flex-1">
+          {/* Title - Exact tournament match token scale size */}
+          <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-1">
+            {course.title}
+          </h3>
+          
           {/* Date range header line info wrapper */}
           {(course.startDate || course.endDate) && (
             <p className="text-xs text-slate-400 font-medium mb-1.5 flex items-center gap-1.5">
@@ -71,11 +76,6 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
               {formatDateRange(course.startDate, course.endDate)}
             </p>
           )}
-
-          {/* Title - Exact tournament match token scale size */}
-          <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-1">
-            {course.title}
-          </h3>
 
           {/* Mode + Schedule metadata parameters */}
           {/* <div className="flex items-center gap-3 mb-3">
@@ -106,12 +106,12 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
   {(course.classTime || (course.days && course.days.length > 0)) && (
     <div className="flex flex-wrap items-center gap-3">
       {/* Time */}
-      {course.classTime && (
+      /* {course.classTime && (
         <span className="text-xs text-slate-500 flex items-center gap-1">
           <Clock className="size-3.5 text-blue-500" />
           {formatTime(course.classTime)}
         </span>
-      )}
+      )} */
 
       {/* Days */}
       {course.days && course.days.length > 0 && (
@@ -126,6 +126,12 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
               +{course.days.length - 3}
             </span>
           )}
+          {course.classTime && (
+        <span className="text-xs text-slate-500 flex items-center gap-1">
+          <Clock className="size-3.5 text-blue-500" />
+          {formatTime(course.classTime)}
+        </span>
+      )}
         </div>
       )}
     </div>
