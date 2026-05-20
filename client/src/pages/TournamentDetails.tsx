@@ -200,7 +200,7 @@ export default function TournamentDetails() {
         {/* Back link */}
         <Link to="/tournaments" className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors mb-6">
           <ArrowLeft className="size-4" />
-          Back to Arenas
+          Back to Tournament
         </Link>
 
         <TournamentPublicView
