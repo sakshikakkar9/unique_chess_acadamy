@@ -74,16 +74,16 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
 
         {/* CARD BODY */}
         <div className="p-4 flex flex-col flex-1">
+          {/* Title */}
+          <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-1">
+            {tournament.title}
+          </h3>
+          
           {/* Date range */}
           <p className="text-xs text-slate-400 font-medium mb-1.5 flex items-center gap-1.5">
             <Calendar className="size-3.5 flex-shrink-0" />
             {formatDateRange(tournament.startDate, tournament.endDate)}
           </p>
-
-          {/* Title */}
-          <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-1">
-            {tournament.title}
-          </h3>
 
           {/* Venue */}
           <p className="text-xs text-slate-500 mb-3 flex items-center gap-1.5 truncate">
