@@ -16,6 +16,7 @@ interface AdminTableProps {
   rows: any[];
   onEdit: (row: any) => void;
   onDelete: (row: any) => void;
+  onView?: (row: any) => void;
   onRowClick?: (row: any) => void;
   isLoading?: boolean;
   entityName?: string;
@@ -124,6 +125,7 @@ const AdminTable: React.FC<AdminTableProps> = ({
                       <RowActionMenu
                         onEdit={() => onEdit(row)}
                         onDelete={() => onDelete(row)}
+                        onView={onView ? () => onView(row) : undefined}
                       />
                     )}
                   </div>
@@ -169,6 +171,7 @@ const AdminTable: React.FC<AdminTableProps> = ({
                 <RowActionMenu
                   onEdit={() => onEdit(row)}
                   onDelete={() => onDelete(row)}
+                  onView={onView ? () => onView(row) : undefined}
                 />
               )}
             </div>

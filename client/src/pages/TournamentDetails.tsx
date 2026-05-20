@@ -147,7 +147,7 @@ export default function TournamentDetails() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <h1 className="text-xl font-bold text-slate-900 tracking-tight">Tournament not found.</h1>
-        <Button onClick={() => navigate("/tournaments")} className="rounded-xl font-bold">Back to Arenas</Button>
+        <Button onClick={() => navigate("/tournaments")} className="rounded-xl font-bold">Back to Tournaments</Button>
       </div>
     );
   }
@@ -164,26 +164,8 @@ export default function TournamentDetails() {
             <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Registration Successful!</h1>
             <p className="text-slate-500 leading-relaxed">Your application has been submitted successfully.</p>
 
-            <div className="bg-slate-50 border border-slate-100 p-8 rounded-3xl space-y-2 relative group">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reference ID</p>
-              <div className="flex items-center justify-center gap-2">
-                <p className="text-2xl font-bold text-blue-600 tracking-tight">{refId}</p>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    navigator.clipboard.writeText(refId);
-                    toast({ title: "Copied!", description: "Reference ID copied." });
-                  }}
-                  className="h-8 w-8 text-slate-400 hover:text-blue-600 rounded-lg"
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
             <Button onClick={() => navigate("/tournaments")} className="w-full h-16 bg-slate-900 hover:bg-blue-600 rounded-2xl font-bold transition-all text-white text-xs tracking-widest uppercase shadow-lg">
-              Return to Arenas
+              Return to Tournaments
             </Button>
           </motion.div>
         </div>
