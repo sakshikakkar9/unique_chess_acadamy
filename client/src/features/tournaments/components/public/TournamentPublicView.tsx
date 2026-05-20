@@ -256,7 +256,7 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
             />
           </div>
           <div className="p-6">
-            <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Championship Details</p>
+            <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Tournament Details</p>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-4">
               {tournament.title}
             </h1>
