@@ -111,7 +111,7 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
           <Clock className="size-3.5 text-blue-500" />
           {formatTime(course.classTime)}
         </span>
-      )} */ */}
+      )} */ 
 
       {/* Days */}
       {course.days && course.days.length > 0 && (
