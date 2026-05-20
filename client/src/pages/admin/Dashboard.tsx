@@ -229,6 +229,7 @@ const AdminDashboard: React.FC = () => {
       accent: "text-amber-500",
       bg: "bg-amber-500/10",
       numColor: "text-amber-500",
+      status: "SYNCED",
       subtitle: `Courses: ${enrollments.length} | Tournaments: ${registrations.length}`,
       path: "/admin/registrations"
     },
