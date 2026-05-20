@@ -229,7 +229,6 @@ const AdminDashboard: React.FC = () => {
       accent: "text-amber-500",
       bg: "bg-amber-500/10",
       numColor: "text-amber-500",
-      status: (pendingEnrollments.length > 0 || registrations.some(r => r.paymentStatus === 'PENDING')) ? "PENDING" : "LIVE",
       subtitle: `Courses: ${enrollments.length} | Tournaments: ${registrations.length}`,
       path: "/admin/registrations"
     },
