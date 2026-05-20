@@ -158,8 +158,9 @@ const CoursePortal: React.FC = () => {
                 <Button
                   className="h-11 rounded-lg font-bold gap-2 bg-uca-navy hover:bg-uca-navy-hover text-white text-xs uppercase tracking-widest w-full md:w-auto"
                   onClick={() => {
-                    const headers = ["ID", "Student Name", "Category", "Skill Level", "Phone", "Status"];
+                    const headers = ["UCA ID", "ID", "Student Name", "Category", "Skill Level", "Phone", "Status"];
                     const rows = enrollments.map(r => [
+                      r?.ucaId || "—",
                       r?.id || "N/A",
                       r?.student?.fullName || "N/A",
                       r?.category || "N/A",
@@ -187,6 +188,7 @@ const CoursePortal: React.FC = () => {
                     <thead>
                       <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Student</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">UCA ID</th>
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Skill & Level</th>
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted hidden lg:table-cell">Contact</th>
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-center">Status</th>
@@ -226,6 +228,11 @@ const CoursePortal: React.FC = () => {
                                           <p className="text-[10px] text-uca-text-muted font-mono">{reg?.id?.substring(0, 8)}</p>
                                         </div>
                                       </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                      <span className="font-mono text-[11px] font-bold text-uca-text-primary bg-uca-bg-elevated px-2 py-1 rounded border border-uca-border">
+                                        {reg?.ucaId || '—'}
+                                      </span>
                                     </td>
                                     <td className="px-6 py-4">
                                       <div className="flex flex-col gap-0.5">

@@ -1,5 +1,7 @@
 import prisma from '../../lib/prisma.js';
 import * as studentSharedService from './student.shared.service.js';
+import { checkDuplicateStudent } from '../utils/checkDuplicateStudent.js';
+import { generateUcaId } from '../utils/generateUcaId.js';
 
 const parseDate = (date) => {
   if (!date || typeof date !== 'string' || date === "null" || date === "undefined" || date === "") return null;
@@ -158,20 +160,51 @@ export const createEnrollment = async (courseId, data, proofs) => {
 
   try {
     return await prisma.$transaction(async (tx) => {
-      // Smart Sync: Create or Update Student via shared service
-      const student = await studentSharedService.getOrCreateStudent(tx, {
-        studentName: data.studentName,
-        fullName: data.studentName,
-        phone: data.phone,
+      // STEP 1 — Duplicate check
+      const { isDuplicate, existingStudent } = await checkDuplicateStudent({
         email: data.email,
-        gender: data.gender,
-        dob: formattedDob,
-        address: data.address,
-        fideId: data.fideId,
-        fideRating: data.fideRating,
-        discoverySource: data.discoverySource,
-        experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
+        phone: data.phone,
+        fullName: data.studentName,
+        dob: formattedDob
       });
+
+      let student;
+      if (isDuplicate) {
+        student = await tx.student.update({
+          where: { id: existingStudent.id },
+          data: {
+            fullName: data.studentName || existingStudent.fullName,
+            gender: data.gender || existingStudent.gender,
+            dob: formattedDob || existingStudent.dob,
+            address: data.address || existingStudent.address,
+            fideId: data.fideId || existingStudent.fideId,
+            fideRating: data.fideRating !== undefined ? parseInt(data.fideRating) : existingStudent.fideRating,
+            discoverySource: data.discoverySource || existingStudent.discoverySource,
+            experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
+            email: data.email || existingStudent.email
+          }
+        });
+      } else {
+        // Smart Sync: Create or Update Student via shared service
+        student = await studentSharedService.getOrCreateStudent(tx, {
+          studentName: data.studentName,
+          fullName: data.studentName,
+          phone: data.phone,
+          email: data.email,
+          gender: data.gender,
+          dob: formattedDob,
+          address: data.address,
+          fideId: data.fideId,
+          fideRating: data.fideRating,
+          discoverySource: data.discoverySource,
+          experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
+        });
+      }
+
+      // STEP 2 — UCA-ID generation
+      // Count COURSE enrollments only
+      const courseEnrollmentCount = await tx.courseEnrollment.count();
+      const ucaId = generateUcaId(courseEnrollmentCount, new Date());
 
       return await tx.courseEnrollment.create({
         data: {
@@ -181,6 +214,7 @@ export const createEnrollment = async (courseId, data, proofs) => {
           student: {
             connect: { id: student.id }
           },
+          ucaId: ucaId,
           discoverySource: data.discoverySource || null,
           category: data.category || "General",
           ageProofUrl: ageProofUrl,

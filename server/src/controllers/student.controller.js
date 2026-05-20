@@ -1,4 +1,5 @@
 import prisma from '../../lib/prisma.js';
+import { checkDuplicateStudent } from '../utils/checkDuplicateStudent.js';
 
 export const getAllStudents = async (req, res) => {
   try {
@@ -55,6 +56,19 @@ export const bulkImportStudents = async (req, res) => {
 
     for (const student of students) {
       try {
+        // Duplicate check for bulk import
+        const { isDuplicate } = await checkDuplicateStudent({
+          email: student.email,
+          phone: student.phone,
+          fullName: student.fullName,
+          dob: student.dob
+        });
+
+        if (isDuplicate) {
+          errors.push(`Row ${students.indexOf(student) + 1}: Student already exists.`);
+          continue;
+        }
+
         await prisma.student.create({
           data: {
             fullName: student.fullName,
@@ -114,6 +128,23 @@ export const getStudentById = async (req, res) => {
 
 export const createStudent = async (req, res) => {
   try {
+    // Duplicate check
+    const { isDuplicate, existingStudent } = await checkDuplicateStudent(req.body);
+
+    if (isDuplicate) {
+      return res.status(409).json({
+        message: 'A student with this email/phone already exists in the database.',
+        existingStudentId: existingStudent.id,
+        // Return existing data so admin knows which record already exists:
+        existingRecord: {
+          id:       existingStudent.id,
+          fullName: existingStudent.fullName,
+          email:    existingStudent.email,
+          phone:    existingStudent.phone,
+        },
+      });
+    }
+
     const student = await prisma.student.create({
       data: {
         ...req.body,

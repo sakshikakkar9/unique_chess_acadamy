@@ -165,6 +165,7 @@ model Course {
 
 model CourseEnrollment {
   id              String        @id @default(uuid())
+  ucaId           String?       @unique @map("uca_id")
   referenceId     String        @unique @default(cuid())
   studentId       String
   discoverySource String?
