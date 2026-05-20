@@ -181,7 +181,7 @@ export default function HomePage() {
       <section className="py-14 sm:py-16 bg-[#070F1C] overflow-hidden border-y border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 flex items-center gap-4">
           <p className="text-xs font-bold text-blue-500 uppercase tracking-[0.15em]">
-            The Arena Gallery
+            The UCA Gallery
           </p>
           <div className="h-px flex-grow bg-white/10" />
           <Camera className="text-blue-500 h-4 w-4" />
