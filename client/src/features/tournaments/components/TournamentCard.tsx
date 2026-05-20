@@ -92,7 +92,7 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
           </p>
 
           {/* Prize pool pill */}
-          <div className="flex items-center gap-2 mb-4">
+          {/* <div className="flex items-center gap-2 mb-4">
             <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 flex-1">
               <Trophy className="size-3.5 text-amber-500 flex-shrink-0" />
               <div>
@@ -102,6 +102,13 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
                 </p>
               </div>
             </div>
+          </div> */}
+          <div className="flex items-center gap-1.5 text-lg font-bold text-amber-700 mb-4">
+            <Trophy className="size-6 text-amber-500 flex-shrink-0" />
+            <span>Prize Pool:</span>
+            <span className="font-black">
+              {formatINR(tournament.totalPrizePool ?? 0)}
+            </span>
           </div>
 
           {/* Bottom row - entry fee + register */}
