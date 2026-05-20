@@ -106,12 +106,12 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
   {(course.classTime || (course.days && course.days.length > 0)) && (
     <div className="flex flex-wrap items-center gap-3">
       {/* Time */}
-      /* {course.classTime && (
+      {/* /* {course.classTime && (
         <span className="text-xs text-slate-500 flex items-center gap-1">
           <Clock className="size-3.5 text-blue-500" />
           {formatTime(course.classTime)}
         </span>
-      )} */
+      )} */ */}
 
       {/* Days */}
       {course.days && course.days.length > 0 && (
