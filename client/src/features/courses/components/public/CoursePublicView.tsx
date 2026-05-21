@@ -183,7 +183,6 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                 </div>
               </div>
             </div>
-            </div>
 
             <button
               type="submit"
