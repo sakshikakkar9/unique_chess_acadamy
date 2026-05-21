@@ -161,50 +161,40 @@ export const createEnrollment = async (courseId, data, proofs) => {
   try {
     return await prisma.$transaction(async (tx) => {
       // STEP 1 — Duplicate check
-      const { isDuplicate, existingStudent } = await checkDuplicateStudent({
+      const { isDuplicate, existingStudent, existingUcaId } = await checkDuplicateStudent({
         email: data.email,
         phone: data.phone,
         fullName: data.studentName,
         dob: formattedDob
       });
 
-      let student;
       if (isDuplicate) {
-        student = await tx.student.update({
-          where: { id: existingStudent.id },
-          data: {
-            fullName: data.studentName || existingStudent.fullName,
-            gender: data.gender || existingStudent.gender,
-            dob: formattedDob || existingStudent.dob,
-            address: data.address || existingStudent.address,
-            fideId: data.fideId || existingStudent.fideId,
-            fideRating: data.fideRating !== undefined ? parseInt(data.fideRating) : existingStudent.fideRating,
-            discoverySource: data.discoverySource || existingStudent.discoverySource,
-            experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
-            email: data.email || existingStudent.email
-          }
-        });
-      } else {
-        // Smart Sync: Create or Update Student via shared service
-        student = await studentSharedService.getOrCreateStudent(tx, {
-          studentName: data.studentName,
-          fullName: data.studentName,
-          phone: data.phone,
-          email: data.email,
-          gender: data.gender,
-          dob: formattedDob,
-          address: data.address,
-          fideId: data.fideId,
-          fideRating: data.fideRating,
-          discoverySource: data.discoverySource,
-          experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
-        });
+        throw new Error(`A student with this info already exists${existingUcaId ? `. Student ID: ${existingUcaId}` : ''}`);
       }
 
-      // STEP 2 — UCA-ID generation
-      // Count COURSE enrollments only
-      const courseEnrollmentCount = await tx.courseEnrollment.count();
-      const ucaId = generateUcaId(courseEnrollmentCount, new Date());
+      // Smart Sync: Create Student via shared service (isDuplicate is false here)
+      let student = await studentSharedService.getOrCreateStudent(tx, {
+        studentName: data.studentName,
+        fullName: data.studentName,
+        phone: data.phone,
+        email: data.email,
+        gender: data.gender,
+        dob: formattedDob,
+        address: data.address,
+        fideId: data.fideId,
+        fideRating: data.fideRating,
+        discoverySource: data.discoverySource,
+        experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
+      });
+
+      // STEP 2 — UCA-ID assignment (only if NULL)
+      if (!student.ucaId) {
+        const ucaId = await generateUcaId(tx);
+        student = await tx.student.update({
+          where: { id: student.id },
+          data: { ucaId: ucaId }
+        });
+      }
 
       return await tx.courseEnrollment.create({
         data: {
@@ -214,7 +204,6 @@ export const createEnrollment = async (courseId, data, proofs) => {
           student: {
             connect: { id: student.id }
           },
-          ucaId: ucaId,
           discoverySource: data.discoverySource || null,
           category: data.category || "General",
           ageProofUrl: ageProofUrl,
@@ -222,6 +211,9 @@ export const createEnrollment = async (courseId, data, proofs) => {
           transactionId: data.transactionId || "",
           status: 'PENDING',
         },
+        include: {
+          student: true
+        }
       });
     });
   } catch (error) {

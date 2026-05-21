@@ -1,25 +1,48 @@
+import prisma from '../../lib/prisma.js';
+
 /**
  * generateUcaId
  *
- * Generates a unique, human-friendly Enrollment ID for Unique Chess Academy.
- * Format: UCA-DDMMYY-N
+ * Queries DB for the latest UCA ID of the current year,
+ * increments sequence, returns formatted string.
  *
- * ONLY called for COURSE enrollments. Never called for tournament enrollments.
+ * Format: UCA-{YEAR}-{5-digit sequence}, e.g. UCA-2025-00001
  *
- * @param {number} courseEnrollmentCount - COUNT of existing COURSE enrollments BEFORE
- *                                this one. Tournament enrollments are excluded
- *                                from this count entirely.
- * @param {Date} enrollmentDate        - Date of enrollment. Defaults to current UTC date.
- * @returns {string}                   - Formatted UCA-ID e.g. "UCA-070625-1"
+ * @param {Object} tx - Prisma transaction client (optional)
+ * @returns {Promise<string>} - Formatted UCA ID
  */
-export function generateUcaId(
-  courseEnrollmentCount,
-  enrollmentDate = new Date()
-) {
-  const dd = String(enrollmentDate.getUTCDate()).padStart(2, '0');
-  const mm = String(enrollmentDate.getUTCMonth() + 1).padStart(2, '0');
-  const yy = String(enrollmentDate.getUTCFullYear()).slice(-2);
-  const n  = courseEnrollmentCount + 1;
+export async function generateUcaId(tx = prisma) {
+  const currentYear = new Date().getFullYear();
+  const prefix = `UCA-${currentYear}-`;
 
-  return `UCA-${dd}${mm}${yy}-${n}`;
+  // Find the student with the highest sequence number for the current year
+  // We use findFirst with desc order on ucaId to get the latest sequence
+  const lastStudent = await tx.student.findFirst({
+    where: {
+      ucaId: {
+        startsWith: prefix,
+      },
+    },
+    orderBy: {
+      ucaId: 'desc',
+    },
+    select: {
+      ucaId: true,
+    },
+  });
+
+  let nextSequence = 1;
+
+  if (lastStudent && lastStudent.ucaId) {
+    const parts = lastStudent.ucaId.split('-');
+    if (parts.length === 3) {
+      const lastSequence = parseInt(parts[2], 10);
+      if (!isNaN(lastSequence)) {
+        nextSequence = lastSequence + 1;
+      }
+    }
+  }
+
+  const paddedSequence = String(nextSequence).padStart(5, '0');
+  return `${prefix}${paddedSequence}`;
 }

@@ -86,6 +86,7 @@ model Contact {
 
 model Student {
   id              String             @id @default(uuid())
+  ucaId           String?            @unique @map("uca_id")
   fullName        String
   email           String?
   phone           String             @unique

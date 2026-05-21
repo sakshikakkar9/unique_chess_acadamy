@@ -16,7 +16,7 @@ import prisma from '../../lib/prisma.js';
  *   3. Full name + date of birth match (fallback)
  *
  * @param {Object} studentData - The incoming student data from the form/request
- * @returns {Promise<Object>}  - { isDuplicate: boolean, existingStudent: Student | null }
+ * @returns {Promise<Object>}  - { isDuplicate: boolean, existingStudent: Student | null, existingId?: string, existingUcaId?: string }
  */
 export async function checkDuplicateStudent(studentData) {
   const { email, phone, fullName, dob } = studentData;
@@ -26,7 +26,12 @@ export async function checkDuplicateStudent(studentData) {
     const byEmail = await prisma.student.findFirst({
       where: { email: email }
     });
-    if (byEmail) return { isDuplicate: true, existingStudent: byEmail };
+    if (byEmail) return {
+      isDuplicate: true,
+      existingStudent: byEmail,
+      existingId: byEmail.id,
+      existingUcaId: byEmail.ucaId
+    };
   }
 
   // Priority 2: Phone number match
@@ -34,7 +39,12 @@ export async function checkDuplicateStudent(studentData) {
     const byPhone = await prisma.student.findUnique({
       where: { phone: phone }
     });
-    if (byPhone) return { isDuplicate: true, existingStudent: byPhone };
+    if (byPhone) return {
+      isDuplicate: true,
+      existingStudent: byPhone,
+      existingId: byPhone.id,
+      existingUcaId: byPhone.ucaId
+    };
   }
 
   // Priority 3: Full name + date of birth match
@@ -47,7 +57,12 @@ export async function checkDuplicateStudent(studentData) {
           dob: formattedDob
         }
       });
-      if (byNameDob) return { isDuplicate: true, existingStudent: byNameDob };
+      if (byNameDob) return {
+        isDuplicate: true,
+        existingStudent: byNameDob,
+        existingId: byNameDob.id,
+        existingUcaId: byNameDob.ucaId
+      };
     }
   }
 
