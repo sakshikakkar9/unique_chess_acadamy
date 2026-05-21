@@ -36,7 +36,8 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
   handleSubmit = (e) => e.preventDefault(),
   isPending = false,
   files = {},
-  isPreview = false
+  isPreview = false,
+  onBrochureDownload
 }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -262,7 +263,7 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
             </h1>
 
             {/* Info pills grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 {
                   icon: <Calendar className="size-4 text-blue-500" />,
@@ -297,7 +298,48 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
                   </p>
                 </div>
               ))}
-            </div>
+            </div> */}
+     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+  {[
+    {
+      icon: <Calendar className="size-4 text-blue-500" />,
+      label: 'Schedule',
+      value: formatDateRange(tournament.startDate, tournament.endDate)
+    },
+    {
+      icon: <MapPin className="size-4 text-blue-500" />,
+      label: 'Venue',
+      value: tournament.location || '—'
+    },
+    {
+      icon: <Trophy className="size-4 text-amber-500" />,
+      label: 'Prize Pool',
+      value: formatINR(tournament.totalPrizePool ?? 0)
+    },
+    {
+      icon: <FileText className="size-4 text-green-500" />,
+      label: 'Category',
+      value: tournament.category || '—'
+    },
+  ].map(info => (
+    <div key={info.label} className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center gap-2.5">
+      {/* Icon Wrapper */}
+      <div className="flex-shrink-0 flex items-center justify-center">
+        {info.icon}
+      </div>
+      
+      {/* Text Wrapper */}
+      <div className="min-w-0 flex-1 leading-tight">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">
+          {info.label}
+        </p>
+        <p className="text-sm font-bold text-slate-900 truncate block">
+          {info.value}
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
           </div>
         </div>
 
@@ -328,7 +370,7 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
         )}
 
         {/* Card 4 — Payment Portal */}
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        {/* <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="bg-slate-900 px-6 py-4 flex items-center justify-between">
             <div>
               <p className="text-xs text-white/50 font-medium mb-1">Entry Fee</p>
@@ -362,28 +404,78 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
               </div>
               <p className="text-[10px] text-slate-400 text-center uppercase font-bold tracking-widest">Scan to pay</p>
             </div>
-          </div>
-
-          {/* Help & Brochure */}
-          {(tournament.contactDetails || tournament.brochureUrl) && (
-            <div className="p-6 pt-0 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-              {tournament.contactDetails && (
-                <p className="text-slate-500 text-sm font-medium">Questions? Call <span className="text-slate-900 font-bold">{tournament.contactDetails}</span></p>
-              )}
-              {tournament.brochureUrl && (
-                <button
-                  onClick={(e) => onBrochureDownload?.(e, tournament.brochureUrl!)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all"
-                >
-                  <FileText className="size-3.5" />
-                  Download Brochure
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+          </div> */}
+          <div className="flex flex-col justify-between h-full bg-white rounded-2xl border border-slate-200 shadow-sm p-6 lg:p-8">
+  <div className="flex flex-col h-full space-y-6">
+    
+    {/* Clean, High-Contrast Fee Banner */}
+    <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center justify-between flex-shrink-0">
+      <div>
+        <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Entry Fee</p>
+        <p className="text-2xl font-black text-slate-900 tracking-tight">{formatINR(tournament.entryFee ?? 0)}</p>
+      </div>
+      <div className="text-[10px] bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border border-emerald-100">
+        Secure UPI
       </div>
     </div>
+
+    {/* Stacked Layout: Instructions First */}
+    <div className="w-full">
+      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">How to pay:</h4>
+      <ol className="space-y-3.5">
+        {[
+          'Scan the QR code with any UPI app',
+          'Enter the entry fee amount',
+          'Add your name in payment remarks',
+          'Upload payment screenshot in the form',
+        ].map((step, i) => (
+          <li key={i} className="flex items-start gap-3">
+            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 text-blue-600 text-[11px] font-bold flex items-center justify-center border border-blue-100 mt-0.5">
+              {i + 1}
+            </span>
+            <span className="text-sm text-slate-600 leading-relaxed font-medium">
+              {step}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    {/* Dedicated QR Display Container — Prevents scanner graphic overflow */}
+    <div className="w-full flex flex-col items-center justify-center bg-slate-50 border border-slate-100 rounded-xl p-6 gap-3 min-h-[240px]">
+      <div className="relative border border-slate-200/60 rounded-xl p-3 bg-white shadow-sm flex items-center justify-center overflow-visible">
+        <PaymentDisplay />
+      </div>
+      <div className="text-center mt-2">
+        <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Scan to pay</p>
+        <span className="text-[10px] text-slate-400 font-medium block">Accepts all major UPI apps</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+          {/* Card 5 — Help & Brochure (Wrapped in its own clean card container) */}
+        {(tournament.contactDetails || tournament.brochureUrl) && (
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            {tournament.contactDetails && (
+              <p className="text-slate-500 text-sm font-medium">
+                Questions? Call <span className="text-slate-900 font-bold">{tournament.contactDetails}</span>
+              </p>
+            )}
+            {tournament.brochureUrl && (
+              <button
+                type="button"
+                onClick={(e) => onBrochureDownload?.(e, tournament.brochureUrl!)}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm"
+              >
+                <FileText className="size-3.5" />
+                Download Brochure
+              </button>
+            )}
+          </div>
+        )}
+      </div> {/* Closes Left Column space-y-6 */}
+    </div> 
   );
 };
 

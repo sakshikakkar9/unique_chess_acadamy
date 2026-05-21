@@ -74,7 +74,7 @@ const TournamentPortal: React.FC = () => {
             onClick={() => navigate("/admin/tournaments")}
             className="rounded-lg hover:bg-uca-navy text-uca-text-muted gap-2 px-3"
           >
-            <ArrowLeft className="size-4" /> Back to Arenas
+            <ArrowLeft className="size-4" /> Back to Tournament
           </Button>
         </div>
 
