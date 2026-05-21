@@ -59,8 +59,11 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
           </div>
 
           {/* Form fields */}
-          <form onSubmit={handleSubmit} className="p-5 space-y-4">
-            <div className={cn("space-y-4 transition-all", isRegistrationDisabled && "opacity-40 grayscale pointer-events-none")}>
+          <form onSubmit={handleSubmit} className={cn("p-5 space-y-4", isPreview && "relative")}>
+            {isPreview && (
+              <div className="absolute inset-0 z-20 cursor-not-allowed" title="Preview Mode" />
+            )}
+            <div className={cn("space-y-4 transition-all", isRegistrationDisabled && "opacity-40 grayscale pointer-events-none", isPreview && "pointer-events-none")}>
               <div className="space-y-1.5">
                 <LabelItem label="Player Name" required />
                 <input
@@ -340,6 +343,18 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
     </div>
   ))}
 </div>
+            {tournament.brochureUrl && (
+              <div className="mt-6 pt-6 border-t border-slate-100 flex justify-end">
+                <button
+                  type="button"
+                  onClick={(e) => onBrochureDownload?.(e, tournament.brochureUrl!)}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm"
+                >
+                  <FileText className="size-3.5" />
+                  Download Brochure
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

@@ -32,7 +32,8 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
   handleSubmit = (e) => e.preventDefault(),
   loading = false,
   files = {},
-  isPreview = false
+  isPreview = false,
+  onBrochureDownload
 }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -48,8 +49,11 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
           </div>
 
           {/* Form fields */}
-          <form onSubmit={handleSubmit} className="p-5 space-y-4">
-            <div className="space-y-1.5">
+          <form onSubmit={handleSubmit} className={cn("p-5 space-y-4", isPreview && "relative")}>
+            {isPreview && (
+              <div className="absolute inset-0 z-20 cursor-not-allowed" title="Preview Mode" />
+            )}
+            <div className={cn("space-y-4 transition-all", isPreview && "pointer-events-none")}>
               <LabelItem label="Student Full Name" required />
               <input
                 value={form.studentName || ""}
@@ -178,6 +182,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                   </div>
                 </div>
               </div>
+            </div>
             </div>
 
             <button
@@ -429,15 +434,16 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
               {course.contactDetails && (
                 <p className="text-slate-500 text-sm font-medium">Questions? Call <span className="text-slate-900 font-bold">{course.contactDetails}</span></p>
               )}
-              {/* {course.brochureUrl && (
+              {course.brochureUrl && (
                 <button
+                  type="button"
                   onClick={(e) => onBrochureDownload?.(e, course.brochureUrl!)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm"
                 >
                   <FileText className="size-3.5" />
                   Download Brochure
                 </button>
-              )} */}
+              )}
             </div>
           )}
         </div>

@@ -8,19 +8,21 @@ import { Button } from "../../components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Skeleton } from "../../components/ui/skeleton";
 import { Input } from "../../components/ui/input";
-import CoursePreview from "../../features/courses/components/admin/CoursePreview";
+import { CoursePublicView } from "../../features/courses/components/public/CoursePublicView";
 import { format } from "date-fns";
 import StatusBadge from "../../components/shared/admin/StatusBadge";
 import AdminShell from "../../components/admin/AdminShell";
 import Pagination from "../../components/shared/admin/Pagination";
 import { getAvatarStyles, cn } from "../../lib/utils";
 import { RowActionMenu } from "../../components/admin/RowActionMenu";
+import { useToast } from "@/hooks/use-toast";
 
 const ITEMS_PER_PAGE = 8;
 
 const CoursePortal: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
 
@@ -41,6 +43,26 @@ const CoursePortal: React.FC = () => {
   });
 
   const totalCollections = enrollments.length * (course?.fee || 0);
+
+  const handleBrochureDownload = (e: React.MouseEvent, url: string) => {
+    e.preventDefault();
+    const downloadUrl = url.includes("cloudinary.com")
+      ? url.replace("/upload/", "/upload/fl_attachment/")
+      : url;
+
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.target = "_blank";
+    link.setAttribute("download", "");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Download Started",
+      description: "The course brochure is being downloaded.",
+    });
+  };
 
   if (isCourseLoading) {
     return (
@@ -105,8 +127,21 @@ const CoursePortal: React.FC = () => {
           </div>
 
           <TabsContent value="summary" className="mt-0 focus-visible:ring-0">
-             <div className="bg-uca-bg-surface rounded-2xl border border-uca-border p-6 md:p-10 shadow-sm overflow-hidden">
-               <CoursePreview course={course} />
+             <div className="bg-slate-50 rounded-[2rem] border border-slate-200 p-6 md:p-10 shadow-sm overflow-hidden">
+                <div className="max-w-6xl mx-auto">
+                    <div className="mb-8 flex items-center justify-between">
+                        <div>
+                            <h2 className="text-xl font-bold text-slate-900">Program Summary</h2>
+                            <p className="text-sm text-slate-500">Live preview of how students see this enrollment page.</p>
+                        </div>
+                        <span className="px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full">User View</span>
+                    </div>
+                    <CoursePublicView
+                        course={course}
+                        isPreview={true}
+                        onBrochureDownload={handleBrochureDownload}
+                    />
+                </div>
              </div>
           </TabsContent>
 
