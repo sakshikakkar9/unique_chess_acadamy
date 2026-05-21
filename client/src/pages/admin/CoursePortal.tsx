@@ -14,6 +14,7 @@ import StatusBadge from "../../components/shared/admin/StatusBadge";
 import AdminShell from "../../components/admin/AdminShell";
 import Pagination from "../../components/shared/admin/Pagination";
 import { getAvatarStyles, cn } from "../../lib/utils";
+import { RowActionMenu } from "../../components/admin/RowActionMenu";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -193,6 +194,7 @@ const CoursePortal: React.FC = () => {
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted hidden lg:table-cell">Contact</th>
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-center">Status</th>
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Enrolled</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-uca-border">
@@ -231,7 +233,7 @@ const CoursePortal: React.FC = () => {
                                     </td>
                                     <td className="px-6 py-4">
                                       <span className="font-mono text-[11px] font-bold text-uca-text-primary bg-uca-bg-elevated px-2 py-1 rounded border border-uca-border">
-                                        {reg?.ucaId || '—'}
+                                        {reg?.student?.ucaId || '—'}
                                       </span>
                                     </td>
                                     <td className="px-6 py-4">
@@ -253,6 +255,17 @@ const CoursePortal: React.FC = () => {
                                       <span className="text-[10px] text-uca-text-muted font-bold">
                                         {reg?.createdAt ? format(new Date(reg.createdAt), "MMM d, yyyy") : 'N/A'}
                                       </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                      <RowActionMenu
+                                        onView={() => navigate(`/admin/students/${reg.studentId}`)}
+                                        onEdit={() => {
+                                          // Navigate to students page with a state or just open the specific student edit if possible.
+                                          // Since Students.tsx handles edit via modal, we'll navigate and the user can find the student or we can improve this later.
+                                          // For now, let's navigate to the detail page which has an edit button.
+                                          navigate(`/admin/students/${reg.studentId}`);
+                                        }}
+                                      />
                                     </td>
                                   </tr>
                                 );

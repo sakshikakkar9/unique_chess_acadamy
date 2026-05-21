@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import StatusBadge from "../../components/shared/admin/StatusBadge";
 import { getAvatarStyles, cn } from "../../lib/utils";
 import AdminShell from "../../components/admin/AdminShell";
+import { RowActionMenu } from "../../components/admin/RowActionMenu";
 
 const CourseStudents: React.FC = () => {
   const { id } = useParams();
@@ -123,11 +124,13 @@ const CourseStudents: React.FC = () => {
               <thead>
                 <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">ID</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">UCA ID</th>
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Student</th>
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Skill & Level</th>
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Contact</th>
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-center">Status</th>
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Enrolled</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-uca-border">
@@ -147,6 +150,7 @@ const CourseStudents: React.FC = () => {
                     return (
                       <tr key={reg.id} className="hover:bg-uca-bg-elevated/30 transition-colors">
                         <td className="px-6 py-4 font-mono text-[10px] font-bold text-uca-accent-blue">{(reg.id || "").substring(0, 8)}</td>
+                        <td className="px-6 py-4 font-mono text-[10px] font-bold text-uca-accent-blue">{reg.student?.ucaId || "—"}</td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div
@@ -186,6 +190,12 @@ const CourseStudents: React.FC = () => {
                           <span className="text-[10px] text-uca-text-muted font-bold">
                             {reg.createdAt ? format(new Date(reg.createdAt), "MMM d, yyyy") : 'TBD'}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <RowActionMenu
+                            onView={() => navigate(`/admin/students/${reg.studentId}`)}
+                            onEdit={() => navigate(`/admin/students/${reg.studentId}`)}
+                          />
                         </td>
                       </tr>
                     );

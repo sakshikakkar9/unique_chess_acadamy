@@ -101,7 +101,7 @@ export default function CourseEnrollmentPage() {
       });
 
       setRefId(result.referenceId);
-      setUcaId(result.ucaId || result.data?.ucaId || "");
+      setUcaId(result.student?.ucaId || result.data?.student?.ucaId || result.ucaId || result.data?.ucaId || "");
       setSuccess(true);
       toast({ title: "Enrollment Successful!", description: "Your application has been received." });
     } catch (err: any) {
@@ -158,7 +158,7 @@ export default function CourseEnrollmentPage() {
               ">
                 <p className="text-xs text-amber-600 dark:text-amber-400 font-medium
                               uppercase tracking-wider mb-1">
-                  Your Enrollment ID
+                  Your Student ID
                 </p>
                 <p className="text-2xl font-bold text-amber-700 dark:text-amber-300
                               tracking-widest font-mono">

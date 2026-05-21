@@ -1,5 +1,6 @@
 import prisma from '../../lib/prisma.js';
 import { checkDuplicateStudent } from '../utils/checkDuplicateStudent.js';
+import { generateUcaId } from '../utils/generateUcaId.js';
 
 export const getAllStudents = async (req, res) => {
   try {
@@ -129,29 +130,41 @@ export const getStudentById = async (req, res) => {
 export const createStudent = async (req, res) => {
   try {
     // Duplicate check
-    const { isDuplicate, existingStudent } = await checkDuplicateStudent(req.body);
+    const { isDuplicate, existingStudent, existingUcaId } = await checkDuplicateStudent(req.body);
 
     if (isDuplicate) {
       return res.status(409).json({
-        message: 'A student with this email/phone already exists in the database.',
+        message: `A student with this info already exists: ${existingStudent.fullName}${existingUcaId ? ` (ID: ${existingUcaId})` : ''}`,
         existingStudentId: existingStudent.id,
-        // Return existing data so admin knows which record already exists:
         existingRecord: {
           id:       existingStudent.id,
           fullName: existingStudent.fullName,
           email:    existingStudent.email,
           phone:    existingStudent.phone,
+          ucaId:    existingUcaId
         },
       });
     }
 
-    const student = await prisma.student.create({
-      data: {
-        ...req.body,
-        dob: req.body.dob ? new Date(req.body.dob) : new Date(),
-        fideRating: parseInt(req.body.fideRating) || 0
+    const student = await prisma.$transaction(async (tx) => {
+      let newStudent = await tx.student.create({
+        data: {
+          ...req.body,
+          dob: req.body.dob ? new Date(req.body.dob) : new Date(),
+          fideRating: parseInt(req.body.fideRating) || 0
+        }
+      });
+
+      if (!newStudent.ucaId) {
+        const ucaId = await generateUcaId(tx);
+        newStudent = await tx.student.update({
+          where: { id: newStudent.id },
+          data: { ucaId: ucaId }
+        });
       }
+      return newStudent;
     });
+
     res.status(201).json(student);
   } catch (error) {
     res.status(500).json({ error: error.message });

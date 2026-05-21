@@ -167,6 +167,7 @@ export default function RegistrationsPage() {
   const columns: AdminTableColumn[] = useMemo(() => {
     const base = [
       { key: 'displayProfile', label: 'Student Profile', className: 'min-w-[200px]' },
+      { key: 'displayUcaId', label: 'UCA ID', hiddenOn: 'mobile' },
       { key: 'displayProgram', label: activeTab === 'demo' ? 'City' : 'Address', hiddenOn: 'mobile' },
       { key: 'displayDate', label: activeTab === 'demo' ? 'Date of Submission' : 'Submission', hiddenOn: 'tablet' },
       { key: 'displayContact', label: 'Contact', hiddenOn: 'mobile' },
@@ -210,6 +211,11 @@ export default function RegistrationsPage() {
             </span>
           </div>
         </div>
+      ),
+      displayUcaId: (
+        <span className="font-mono text-[10px] font-bold text-uca-accent-blue">
+          {item.student?.ucaId || "—"}
+        </span>
       ),
       displayProgram: (
         <div className="flex items-center gap-2">

@@ -127,23 +127,21 @@ export default function StudentDetailPage() {
                     </div>
                   </div>
 
-                  {(() => {
-                    const ucaEnrollment = student.enrollments?.find((e: any) => e.ucaId);
-                    if (!ucaEnrollment) return null;
-                    return (
-                      <div className="flex items-start gap-4">
-                        <div className="size-9 rounded-lg bg-uca-bg-elevated flex items-center justify-center shrink-0 border border-uca-border">
-                          <Zap className="size-4 text-uca-accent-blue" />
-                        </div>
-                        <div>
-                          <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-0.5">Enrollment ID</p>
-                          <p className="text-sm font-mono font-bold text-uca-text-primary bg-uca-bg-elevated px-2 py-0.5 rounded border border-uca-border w-fit">
-                            {ucaEnrollment.ucaId}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })()}
+                  <div className="flex items-start gap-4">
+                    <div className="size-9 rounded-lg bg-uca-bg-elevated flex items-center justify-center shrink-0 border border-uca-border">
+                      <Zap className="size-4 text-uca-accent-blue" />
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-0.5">UCA ID</p>
+                      {student.ucaId ? (
+                        <p className="text-sm font-mono font-bold text-uca-text-primary bg-uca-bg-elevated px-2 py-0.5 rounded border border-uca-border w-fit">
+                          {student.ucaId}
+                        </p>
+                      ) : (
+                        <p className="text-xs font-medium text-uca-text-muted italic">Not assigned</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
