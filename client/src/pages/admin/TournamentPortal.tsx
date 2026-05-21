@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/ta
 import { Skeleton } from "../../components/ui/skeleton";
 import { Input } from "../../components/ui/input";
 import TournamentPreview from "../../features/tournaments/components/admin/TournamentPreview";
+import { TournamentPublicView } from "../../features/tournaments/components/public/TournamentPublicView";
 import { Registration } from "../../types";
 import { format } from "date-fns";
 import StatusBadge from "../../components/shared/admin/StatusBadge";
@@ -40,7 +41,31 @@ const TournamentPortal: React.FC = () => {
     },
   });
 
+  const { data: tournament2 } = useQuery<Tournament>({
+    queryKey: ["tournament", "2"],
+    queryFn: async () => {
+      const res = await api.get(`/tournaments/2`);
+      return res.data;
+    },
+  });
+
+  const handleBrochureDownload = (e: React.MouseEvent, url: string) => {
+    e.preventDefault();
+    const downloadUrl = url.includes("cloudinary.com")
+      ? url.replace("/upload/", "/upload/fl_attachment/")
+      : url;
+
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.target = "_blank";
+    link.setAttribute("download", "");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const totalCollections = (registrations?.length || 0) * (tournament?.entryFee || 0);
+  const showPreview = id === "1";
 
   if (isTournamentLoading) {
     return (
@@ -78,8 +103,44 @@ const TournamentPortal: React.FC = () => {
           </Button>
         </div>
 
-        <Tabs defaultValue="summary" className="w-full">
-          <div className="overflow-x-auto pb-2 scrollbar-none">
+        <div className={cn("grid gap-8 items-start", showPreview ? "grid-cols-1 lg:grid-cols-12" : "grid-cols-1")}>
+          {/* Left Partition: Tournament 2 Preview */}
+          {showPreview && (
+            <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+              <div className="bg-uca-bg-surface rounded-2xl border border-uca-border p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center gap-2">
+                      <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <h3 className="text-[10px] font-black uppercase tracking-widest text-uca-text-primary">Tournament Preview</h3>
+                    </div>
+                    <span className="text-[9px] font-bold text-uca-text-muted px-2 py-0.5 bg-uca-bg-base rounded-full border border-uca-border">STATIC MODE</span>
+                </div>
+
+                <div className="rounded-xl overflow-hidden border border-uca-border/50 bg-white scale-[0.98] origin-top transition-transform hover:scale-100">
+                    {tournament2 ? (
+                      <div className="max-h-[600px] overflow-y-auto scrollbar-none pointer-events-auto">
+                        <TournamentPublicView
+                            tournament={tournament2}
+                            hideForm={true}
+                            isPreview={true}
+                            onBrochureDownload={handleBrochureDownload}
+                        />
+                      </div>
+                    ) : (
+                      <div className="py-20 flex flex-col items-center justify-center gap-3">
+                        <Skeleton className="size-12 rounded-full" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Loading Preview...</p>
+                      </div>
+                    )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Right Partition: Main Portal Content */}
+          <div className={cn(showPreview ? "lg:col-span-8" : "w-full")}>
+            <Tabs defaultValue="summary" className="w-full">
+              <div className="overflow-x-auto pb-2 scrollbar-none">
             <TabsList className="bg-uca-bg-surface border border-uca-border p-1.5 h-12 rounded-xl mb-6 inline-flex min-w-max">
               <TabsTrigger
                 value="summary"
@@ -266,7 +327,9 @@ const TournamentPortal: React.FC = () => {
                 </div>
              </div>
           </TabsContent>
-        </Tabs>
+            </Tabs>
+          </div>
+        </div>
       </div>
     </AdminShell>
   );
