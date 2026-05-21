@@ -74,16 +74,16 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
 
         {/* CARD BODY */}
         <div className="p-4 flex flex-col flex-1">
+          {/* Title */}
+          <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-1">
+            {tournament.title}
+          </h3>
+
           {/* Date range */}
           <p className="text-xs text-slate-400 font-medium mb-1.5 flex items-center gap-1.5">
             <Calendar className="size-3.5 flex-shrink-0" />
             {formatDateRange(tournament.startDate, tournament.endDate)}
           </p>
-
-          {/* Title */}
-          <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-1">
-            {tournament.title}
-          </h3>
 
           {/* Venue */}
           <p className="text-xs text-slate-500 mb-3 flex items-center gap-1.5 truncate">
@@ -92,7 +92,7 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
           </p>
 
           {/* Prize pool pill */}
-          <div className="flex items-center gap-2 mb-4">
+          {/* <div className="flex items-center gap-2 mb-4">
             <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 flex-1">
               <Trophy className="size-3.5 text-amber-500 flex-shrink-0" />
               <div>
@@ -102,7 +102,18 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
                 </p>
               </div>
             </div>
-          </div>
+          </div> */}
+<div className="flex items-center gap-2 mb-4">
+  <div className="flex items-center gap-1.5 bg-transparent rounded-lg px-1 py-1 flex-1">
+    <Trophy className="size-6 text-amber-600 flex-shrink-0" />
+    <div className="flex items-center gap-1.5 text-sm font-bold text-amber-600">
+      <span className="uppercase tracking-wide">Prize Pool:</span>
+      <span>
+        {formatINR(tournament.totalPrizePool ?? 0)}
+      </span>
+    </div>
+  </div>
+</div>
 
           {/* Bottom row - entry fee + register */}
           <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto">

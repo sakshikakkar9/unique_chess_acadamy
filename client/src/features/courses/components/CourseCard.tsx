@@ -64,6 +64,10 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
 
         {/* CARD BODY - Reverted back to p-4 match layout parameter */}
         <div className="p-4 flex flex-col flex-1">
+          {/* Title - Exact tournament match token scale size */}
+          <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-1">
+            {course.title}
+          </h3>
           {/* Date range header line info wrapper */}
           {(course.startDate || course.endDate) && (
             <p className="text-xs text-slate-400 font-medium mb-1.5 flex items-center gap-1.5">
@@ -72,10 +76,7 @@ const CourseCard = ({ course, delay = 0, onEnroll }: CourseCardProps) => {
             </p>
           )}
 
-          {/* Title - Exact tournament match token scale size */}
-          <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-1">
-            {course.title}
-          </h3>
+          
 
           {/* Mode + Schedule metadata parameters */}
           {/* <div className="flex items-center gap-3 mb-3">
