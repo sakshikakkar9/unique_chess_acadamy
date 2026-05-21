@@ -29,6 +29,7 @@ const AdminTable: React.FC<AdminTableProps> = ({
   rows,
   onEdit,
   onDelete,
+  onView,
   onRowClick,
   isLoading,
   entityName = "records",
