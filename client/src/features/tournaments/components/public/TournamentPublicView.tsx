@@ -21,6 +21,7 @@ interface TournamentPublicViewProps {
   isPending?: boolean;
   files?: any;
   isPreview?: boolean;
+  hideForm?: boolean;
   onBrochureDownload?: (e: React.MouseEvent, url: string) => void;
 }
 
@@ -37,12 +38,14 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
   isPending = false,
   files = {},
   isPreview = false,
+  hideForm = false,
   onBrochureDownload
 }) => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <div className={cn("grid gap-8 items-start", hideForm ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2")}>
       {/* RIGHT COLUMN: Sticky Form (Shown first on mobile) */}
-      <div className="lg:sticky lg:top-24 lg:order-2">
+      {!hideForm && (
+        <div className="lg:sticky lg:top-24 lg:order-2">
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
           {/* Form header */}
           <div className="bg-slate-900 px-5 py-4 flex items-center justify-between">
@@ -244,9 +247,10 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
           </form>
         </div>
       </div>
+      )}
 
       {/* LEFT COLUMN: Tournament Info */}
-      <div className="space-y-6 lg:order-1">
+      <div className={cn("space-y-6", !hideForm && "lg:order-1")}>
         {/* Card 1 — Tournament Header */}
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="relative aspect-video bg-slate-100">
@@ -454,25 +458,25 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
   </div>
 </div>
 
-          {/* Card 5 — Help & Brochure (Wrapped in its own clean card container) */}
-        {(tournament.contactDetails || tournament.brochureUrl) && (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            {tournament.contactDetails && (
-              <p className="text-slate-500 text-sm font-medium">
-                Questions? Call <span className="text-slate-900 font-bold">{tournament.contactDetails}</span>
-              </p>
-            )}
-            {tournament.brochureUrl && (
-              <button
-                type="button"
-                onClick={(e) => onBrochureDownload?.(e, tournament.brochureUrl!)}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm"
-              >
-                <FileText className="size-3.5" />
-                Download Brochure
-              </button>
-            )}
+        {/* Card 5 — Help */}
+        {tournament.contactDetails && (
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex items-center justify-between gap-4">
+            <p className="text-slate-500 text-sm font-medium">
+              Questions? Call <span className="text-slate-900 font-bold">{tournament.contactDetails}</span>
+            </p>
           </div>
+        )}
+
+        {/* Brochure Button — Placed at the very bottom of the left partition */}
+        {tournament.brochureUrl && (
+          <button
+            type="button"
+            onClick={(e) => onBrochureDownload?.(e, tournament.brochureUrl!)}
+            className="w-full flex items-center justify-center gap-2.5 px-6 py-4 bg-blue-600 text-white rounded-2xl font-bold text-[11px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg active:scale-[0.98]"
+          >
+            <FileText className="size-4" />
+            Download Brochure
+          </button>
         )}
       </div> {/* Closes Left Column space-y-6 */}
     </div> 
