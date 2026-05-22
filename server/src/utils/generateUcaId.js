@@ -3,46 +3,35 @@ import prisma from '../../lib/prisma.js';
 /**
  * generateUcaId
  *
- * Queries DB for the latest UCA ID of the current year,
+ * Queries DB for the count of UCA IDs of the current day,
  * increments sequence, returns formatted string.
  *
- * Format: UCA-{YEAR}-{5-digit sequence}, e.g. UCA-2025-00001
+ * New Format: UCA-{DD}{MM}{YY}-{2-digit counter}
+ * e.g. UCA-220525-01
  *
  * @param {Object} tx - Prisma transaction client (optional)
  * @returns {Promise<string>} - Formatted UCA ID
  */
 export async function generateUcaId(tx = prisma) {
-  const currentYear = new Date().getFullYear();
-  const prefix = `UCA-${currentYear}-`;
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, '0');
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const yy = String(now.getFullYear()).slice(-2);
 
-  // Find the student with the highest sequence number for the current year
-  // We use findFirst with desc order on ucaId to get the latest sequence
-  const lastStudent = await tx.student.findFirst({
+  const dateStr = `${dd}${mm}${yy}`;
+  const prefix = `UCA-${dateStr}-`;
+
+  // Count how many uca_id values already exist for today
+  const count = await tx.student.count({
     where: {
       ucaId: {
         startsWith: prefix,
       },
     },
-    orderBy: {
-      ucaId: 'desc',
-    },
-    select: {
-      ucaId: true,
-    },
   });
 
-  let nextSequence = 1;
+  const nextSequence = count + 1;
+  const paddedSequence = String(nextSequence).padStart(2, '0');
 
-  if (lastStudent && lastStudent.ucaId) {
-    const parts = lastStudent.ucaId.split('-');
-    if (parts.length === 3) {
-      const lastSequence = parseInt(parts[2], 10);
-      if (!isNaN(lastSequence)) {
-        nextSequence = lastSequence + 1;
-      }
-    }
-  }
-
-  const paddedSequence = String(nextSequence).padStart(5, '0');
   return `${prefix}${paddedSequence}`;
 }
