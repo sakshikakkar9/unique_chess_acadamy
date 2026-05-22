@@ -89,11 +89,15 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                     required
                     disabled={isPreview}
                   >
-                    <option value="">Select Level</option>
-                    <option value="Beginner">Beginner</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
-                    <option value="Professional">Professional</option>
+                    <option value="">Select Age</option>
+                    <option value="U-7">U-7</option>
+                    <option value="U-9">U-9</option>
+                    <option value="U-11">U-11</option>
+                    <option value="U-13">U-13</option>
+                    <option value="U-15">U-15</option>
+                    <option value="U-17">U-17</option>
+                    <option value="U-19">U-19</option>
+                    <option value="Open">Open</option>
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
                 </div>

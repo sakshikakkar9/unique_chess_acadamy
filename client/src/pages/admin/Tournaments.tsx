@@ -470,38 +470,6 @@ const AdminTournaments: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <DatePickerField
-                label="Starts On"
-                value={formData.startDate}
-                minDate={formData.regEndDate || todayISO()}
-                onChange={(val) => {
-                  setFormData({
-                    ...formData,
-                    startDate: val,
-                    endDate: formData.endDate && formData.endDate < val ? "" : formData.endDate,
-                    regEndDate: formData.regEndDate && formData.regEndDate > val ? "" : formData.regEndDate,
-                    regStartDate: formData.regStartDate && formData.regStartDate > val ? "" : formData.regStartDate
-                  });
-                  if (formErrors.startDate) setFormErrors({...formErrors, startDate: ""});
-                }}
-                required
-                error={formErrors.startDate}
-                helperText="DD/MM/YYYY — no past dates"
-              />
-              <DatePickerField
-                label="Ends On"
-                value={formData.endDate}
-                minDate={formData.startDate || todayISO()}
-                error={formErrors.endDate}
-                onChange={(val) => {
-                  setFormData({...formData, endDate: val});
-                  if (formErrors.endDate) setFormErrors({...formErrors, endDate: ""});
-                }}
-                helperText="Must be on or after start"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <DatePickerField
                 label="Reg Starts"
                 value={formData.regStartDate}
                 maxDate={formData.regEndDate || formData.startDate || undefined}
@@ -532,6 +500,71 @@ const AdminTournaments: React.FC = () => {
                 helperText="Must be before start"
               />
             </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <DatePickerField
+                label="Starts On"
+                value={formData.startDate}
+                minDate={formData.regEndDate || todayISO()}
+                onChange={(val) => {
+                  setFormData({
+                    ...formData,
+                    startDate: val,
+                    endDate: formData.endDate && formData.endDate < val ? "" : formData.endDate,
+                    regEndDate: formData.regEndDate && formData.regEndDate > val ? "" : formData.regEndDate,
+                    regStartDate: formData.regStartDate && formData.regStartDate > val ? "" : formData.regStartDate
+                  });
+                  if (formErrors.startDate) setFormErrors({...formErrors, startDate: ""});
+                }}
+                required
+                error={formErrors.startDate}
+                helperText="DD/MM/YYYY — no past dates"
+              />
+              <DatePickerField
+                label="Ends On"
+                value={formData.endDate}
+                minDate={formData.startDate || todayISO()}
+                error={formErrors.endDate}
+                onChange={(val) => {
+                  setFormData({...formData, endDate: val});
+                  if (formErrors.endDate) setFormErrors({...formErrors, endDate: ""});
+                }}
+                helperText="Must be on or after start"
+              />
+            </div>
+
+            {/* <div className="grid grid-cols-2 gap-4">
+              <DatePickerField
+                label="Reg Starts"
+                value={formData.regStartDate}
+                maxDate={formData.regEndDate || formData.startDate || undefined}
+                error={formErrors.regStartDate}
+                onChange={(val) => {
+                  setFormData({
+                    ...formData,
+                    regStartDate: val,
+                    regEndDate: formData.regEndDate && formData.regEndDate < val ? "" : formData.regEndDate,
+                  });
+                  if (formErrors.regStartDate) setFormErrors({...formErrors, regStartDate: ""});
+                }}
+              />
+              <DatePickerField
+                label="Reg Deadline"
+                value={formData.regEndDate}
+                minDate={formData.regStartDate}
+                maxDate={formData.startDate || undefined}
+                error={formErrors.regEndDate}
+                onChange={(val) => {
+                  setFormData({
+                    ...formData,
+                    regEndDate: val,
+                    regStartDate: formData.regStartDate && formData.regStartDate > val ? "" : formData.regStartDate,
+                  });
+                  if (formErrors.regEndDate) setFormErrors({...formErrors, regEndDate: ""});
+                }}
+                helperText="Must be before start"
+              />
+            </div> */}
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
