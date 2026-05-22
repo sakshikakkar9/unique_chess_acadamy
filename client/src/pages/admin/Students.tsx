@@ -118,6 +118,7 @@ export default function StudentsPage() {
 
   const columns: AdminTableColumn[] = [
     { key: 'displayFullName', label: 'Student', className: 'min-w-[200px]' },
+    { key: 'displayUcaId', label: 'UCA ID', className: 'min-w-[140px]' },
     { key: 'displayContact', label: 'Contact Info', hiddenOn: 'mobile' },
     { key: 'displayActivity', label: 'Last Activity', hiddenOn: 'tablet' },
     { key: 'displayStatus', label: 'Status', align: 'right' }
@@ -155,6 +156,11 @@ export default function StudentsPage() {
             </span>
           </div>
         </div>
+      ),
+      displayUcaId: (
+        <span className="text-xs font-bold text-uca-text-primary">
+          {student.ucaId || "—"}
+        </span>
       ),
       displayContact: (
         <div className="flex flex-col gap-1 text-left">
