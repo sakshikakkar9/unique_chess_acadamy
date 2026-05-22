@@ -30,14 +30,16 @@ export function resolveStatus(
   // Auto logic from dates
   if (!startDate) return 'upcoming';
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Use local current date for string comparison (YYYY-MM-DD)
+  // to ensure accuracy across timezones for status resolution.
+  const todayISO = new Date().toLocaleDateString('en-CA'); // 'YYYY-MM-DD'
 
-  const start = new Date(startDate);
-  const end = endDate ? new Date(endDate) : null;
+  // Normalize inputs to YYYY-MM-DD strings
+  const startStr = typeof startDate === 'string' ? startDate.split('T')[0] : new Date(startDate).toLocaleDateString('en-CA');
+  const endStr = endDate ? (typeof endDate === 'string' ? endDate.split('T')[0] : new Date(endDate).toLocaleDateString('en-CA')) : null;
 
-  if (end && end < today) return 'completed';   // auto-complete
-  if (start <= today && (!end || end >= today)) return 'ongoing';
+  if (endStr && endStr < todayISO) return 'completed';   // ended yesterday or earlier
+  if (startStr <= todayISO && (!endStr || endStr >= todayISO)) return 'ongoing';
   return 'upcoming';
 }
 

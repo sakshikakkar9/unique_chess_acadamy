@@ -453,14 +453,14 @@ const AdminTournaments: React.FC = () => {
               <DatePickerField
                 label="Starts On"
                 value={formData.startDate}
-                minDate={formData.regEndDate || todayISO()}
+                minDate={formData.regEndDate || (editingTournament ? undefined : todayISO())}
                 onChange={(val) => {
                   setFormData({
                     ...formData,
                     startDate: val,
-                    endDate: formData.endDate && formData.endDate < val ? "" : formData.endDate,
-                    regEndDate: formData.regEndDate && formData.regEndDate > val ? "" : formData.regEndDate,
-                    regStartDate: formData.regStartDate && formData.regStartDate > val ? "" : formData.regStartDate
+                    endDate: (formData.endDate && val && formData.endDate < val) ? "" : formData.endDate,
+                    regEndDate: (formData.regEndDate && val && formData.regEndDate > val) ? "" : formData.regEndDate,
+                    regStartDate: (formData.regStartDate && val && formData.regStartDate > val) ? "" : formData.regStartDate
                   });
                   if (formErrors.startDate) setFormErrors({...formErrors, startDate: ""});
                 }}
@@ -471,7 +471,7 @@ const AdminTournaments: React.FC = () => {
               <DatePickerField
                 label="Ends On"
                 value={formData.endDate}
-                minDate={formData.startDate || todayISO()}
+                minDate={formData.startDate || (editingTournament ? undefined : todayISO())}
                 error={formErrors.endDate}
                 onChange={(val) => {
                   setFormData({...formData, endDate: val});
@@ -485,13 +485,14 @@ const AdminTournaments: React.FC = () => {
               <DatePickerField
                 label="Reg Starts"
                 value={formData.regStartDate}
+                minDate={editingTournament ? undefined : todayISO()}
                 maxDate={formData.regEndDate || formData.startDate || undefined}
                 error={formErrors.regStartDate}
                 onChange={(val) => {
                   setFormData({
                     ...formData,
                     regStartDate: val,
-                    regEndDate: formData.regEndDate && formData.regEndDate < val ? "" : formData.regEndDate,
+                    regEndDate: (formData.regEndDate && val && formData.regEndDate < val) ? "" : formData.regEndDate,
                   });
                   if (formErrors.regStartDate) setFormErrors({...formErrors, regStartDate: ""});
                 }}
@@ -499,14 +500,14 @@ const AdminTournaments: React.FC = () => {
               <DatePickerField
                 label="Reg Deadline"
                 value={formData.regEndDate}
-                minDate={formData.regStartDate}
+                minDate={formData.regStartDate || (editingTournament ? undefined : todayISO())}
                 maxDate={formData.startDate || undefined}
                 error={formErrors.regEndDate}
                 onChange={(val) => {
                   setFormData({
                     ...formData,
                     regEndDate: val,
-                    regStartDate: formData.regStartDate && formData.regStartDate > val ? "" : formData.regStartDate,
+                    regStartDate: (formData.regStartDate && val && formData.regStartDate > val) ? "" : formData.regStartDate,
                   });
                   if (formErrors.regEndDate) setFormErrors({...formErrors, regEndDate: ""});
                 }}

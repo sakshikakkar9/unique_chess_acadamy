@@ -21,8 +21,6 @@ export default function DatePickerField({
   required, disabled,
   error, helperText,
 }: Props) {
-  const min = minDate ?? todayISO();
-
   return (
     <div className="flex flex-col gap-1.5">
 
@@ -48,7 +46,7 @@ export default function DatePickerField({
         <input
           type="date"
           value={value}
-          min={min}
+          min={minDate}
           max={maxDate}
           disabled={disabled}
           required={required}

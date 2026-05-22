@@ -437,13 +437,18 @@ const AdminCourses = () => {
             <DatePickerField
               label="Start Date"
               value={formData.startDate || ""}
-              onChange={(val) => setFormData({...formData, startDate: val})}
+              minDate={editingCourse ? undefined : todayISO()}
+              onChange={(val) => setFormData({
+                ...formData,
+                startDate: val,
+                endDate: (formData.endDate && val && formData.endDate < val) ? "" : formData.endDate
+              })}
               helperText="Optional"
             />
             <DatePickerField
               label="End Date"
               value={formData.endDate || ""}
-              minDate={formData.startDate || todayISO()}
+              minDate={formData.startDate || (editingCourse ? undefined : todayISO())}
               onChange={(val) => setFormData({...formData, endDate: val})}
               helperText="Optional"
             />
