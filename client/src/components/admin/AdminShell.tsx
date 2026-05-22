@@ -123,19 +123,19 @@ const AdminShell: React.FC<AdminShellProps> = ({
 
         {/* Sidebar Footer */}
         <div className="p-2 border-t border-uca-border shrink-0 overflow-hidden">
-          <Link
-            to="/"
-            className="flex items-center gap-3 px-3 py-2 text-uca-text-muted hover:text-uca-accent-blue transition-colors rounded-lg hover:bg-uca-bg-elevated group/back"
-          >
-            <ChevronLeft className="size-5 shrink-0" />
-            <span className={cn(
-              "text-xs font-semibold transition-opacity duration-200 whitespace-nowrap",
-              isSidebarOpen ? "opacity-100" : "opacity-0 group-hover/sidebar:opacity-100 lg:opacity-100"
-            )}>
-              Back to Website
-            </span>
-          </Link>
-        </div>
+  <Link
+    to="/"
+    className="group flex items-center gap-3 px-3 py-2 text-white transition-colors rounded-lg hover:bg-white"
+  >
+    <ChevronLeft className="size-5 shrink-0 transition-colors group-hover:text-black" />
+    <span className={cn(
+      "text-xs font-semibold transition-all duration-200 whitespace-nowrap group-hover:text-black",
+      isSidebarOpen ? "opacity-100" : "opacity-0 group-hover/sidebar:opacity-100 lg:opacity-100"
+    )}>
+      Back to Website
+    </span>
+  </Link>
+</div>
       </aside>
 
       {/* Main Content Area */}

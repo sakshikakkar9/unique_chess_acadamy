@@ -503,7 +503,7 @@ export default function RegistrationsPage() {
                     </div>
                   </div>
                   <div className="bg-uca-bg-elevated px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5">
-                    <p className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">Submission Date</p>
+                    <p className="text-[8px] font-black text-black uppercase tracking-widest">Submission Date</p>
                     <p className="text-xs font-bold">{selectedItem.createdAt ? format(new Date(selectedItem.createdAt), "PPP") : 'N/A'}</p>
                   </div>
                 </div>
@@ -558,7 +558,7 @@ export default function RegistrationsPage() {
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Transaction ID</p>
-                            <p className="font-mono font-bold text-white text-sm">{selectedItem.transactionId || 'N/A'}</p>
+                            <p className="font-mono font-bold text-black text-sm">{selectedItem.transactionId || 'N/A'}</p>
                           </div>
                           <div className="text-right">
                              <StatusBadge status={selectedItem.paymentStatus || 'PENDING'} />
