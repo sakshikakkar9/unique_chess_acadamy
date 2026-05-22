@@ -504,7 +504,7 @@ export default function RegistrationsPage() {
                   </div>
                   <div className="bg-uca-bg-elevated px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5">
                     <p className="text-[8px] font-black text-black uppercase tracking-widest">Submission Date</p>
-                    <p className="text-xs font-bold">{selectedItem.createdAt ? format(new Date(selectedItem.createdAt), "PPP") : 'N/A'}</p>
+                    <p className="text-xs text-black font-bold">{selectedItem.createdAt ? format(new Date(selectedItem.createdAt), "PPP") : 'N/A'}</p>
                   </div>
                 </div>
               </div>
