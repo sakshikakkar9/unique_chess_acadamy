@@ -1,13 +1,21 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../lib/api";
 import { Tournament } from "../../types";
-import { ArrowLeft, LayoutDashboard, CreditCard, Users, TrendingUp, Wallet, Award, Percent, Search, Filter, Download, FileText, Phone, Mail, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, LayoutDashboard, CreditCard, Users, TrendingUp, Wallet, Award, Percent, Search, Filter, Download, FileText, Phone, Mail, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Loader2, Check } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Skeleton } from "../../components/ui/skeleton";
 import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "../../components/ui/select";
 import TournamentPreview from "../../features/tournaments/components/admin/TournamentPreview";
 import { Registration } from "../../types";
 import { format } from "date-fns";
@@ -15,14 +23,28 @@ import StatusBadge from "../../components/shared/admin/StatusBadge";
 import AdminShell from "../../components/admin/AdminShell";
 import Pagination from "../../components/shared/admin/Pagination";
 import { getAvatarStyles, cn } from "../../lib/utils";
+import { RowActionMenu } from "../../components/admin/RowActionMenu";
+import AdminModal from "../../components/admin/AdminModal";
+import ConfirmDialog from "../../components/admin/ConfirmDialog";
+import { useToast } from "../../hooks/useToast";
 
 const ITEMS_PER_PAGE = 8;
 
 const TournamentPortal: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { success, error: toastError } = useToast();
+  const qc = useQueryClient();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
+
+  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+  const [editingRecord, setEditingRecord] = React.useState<any>(null);
+  const [pendingChanges, setPendingChanges] = React.useState<{ status?: string; paymentStatus?: string }>({});
+  const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
+  const [recordToDelete, setRecordToDelete] = React.useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const { data: tournament, isLoading: isTournamentLoading } = useQuery<Tournament>({
     queryKey: ["tournament", id],
@@ -39,6 +61,50 @@ const TournamentPortal: React.FC = () => {
       return res.data;
     },
   });
+
+  const handleAction = async (regId: string, action: 'status' | 'delete' | 'paymentStatus' | 'bulk', payload?: any) => {
+    const isDelete = action === 'delete';
+    if (isDelete) setIsDeleting(true);
+    else setIsSubmitting(true);
+
+    try {
+      if (action === 'delete') {
+        await api.delete(`/tournaments/admin/registrations/${regId}`);
+      } else if (action === 'paymentStatus') {
+        await api.patch(`/tournaments/admin/registrations/${regId}`, { paymentStatus: payload });
+      } else if (action === 'status') {
+        await api.patch(`/tournaments/admin/registrations/${regId}`, { status: payload });
+      } else if (action === 'bulk') {
+        await api.patch(`/tournaments/admin/registrations/${regId}`, payload);
+      }
+
+      qc.invalidateQueries({ queryKey: ["tournament-registrations", id] });
+      success(`${action === 'delete' ? 'Deleted' : 'Updated'} successfully`);
+
+      if (isDelete) {
+        setIsConfirmOpen(false);
+        setRecordToDelete(null);
+      }
+      return true;
+    } catch (err: any) {
+      console.error(err);
+      toastError(err.response?.data?.error || "Operation failed");
+      return false;
+    } finally {
+      if (isDelete) setIsDeleting(false);
+      else setIsSubmitting(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!editingRecord) return;
+    const ok = await handleAction(editingRecord.id, 'bulk', pendingChanges);
+    if (ok) {
+      setIsEditModalOpen(false);
+      setEditingRecord(null);
+      setPendingChanges({});
+    }
+  };
 
   const totalCollections = (registrations?.length || 0) * (tournament?.entryFee || 0);
 
@@ -191,11 +257,12 @@ const TournamentPortal: React.FC = () => {
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted hidden lg:table-cell">Contact</th>
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-center">Status</th>
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Registered</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-uca-border">
                       {isRegLoading ? (
-                        <tr><td colSpan={5} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading roster...</td></tr>
+                        <tr><td colSpan={6} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading roster...</td></tr>
                       ) : (
                         (() => {
                           const filtered = registrations.filter((reg) => {
@@ -207,7 +274,7 @@ const TournamentPortal: React.FC = () => {
                           const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
                           const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-                          if (paginated.length === 0) return <tr><td colSpan={5} className="py-20 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No players found</td></tr>;
+                          if (paginated.length === 0) return <tr><td colSpan={6} className="py-20 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No players found</td></tr>;
 
                           return (
                             <>
@@ -247,12 +314,29 @@ const TournamentPortal: React.FC = () => {
                                         {reg?.createdAt ? format(new Date(reg.createdAt), "MMM d, yyyy") : 'TBD'}
                                       </span>
                                     </td>
+                                    <td className="px-6 py-4 text-right">
+                                      <RowActionMenu
+                                        onView={() => navigate(`/admin/students/${reg.studentId}`)}
+                                        onEdit={() => {
+                                          setEditingRecord(reg);
+                                          setPendingChanges({
+                                            status: reg.status,
+                                            paymentStatus: reg.paymentStatus || 'PENDING'
+                                          });
+                                          setIsEditModalOpen(true);
+                                        }}
+                                        onDelete={() => {
+                                          setRecordToDelete(reg);
+                                          setIsConfirmOpen(true);
+                                        }}
+                                      />
+                                    </td>
                                   </tr>
                                 );
                               })}
                               {totalPages > 1 && (
                                 <tr>
-                                  <td colSpan={5} className="px-6 py-4 bg-uca-bg-elevated/20">
+                                  <td colSpan={6} className="px-6 py-4 bg-uca-bg-elevated/20">
                                     <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
                                   </td>
                                 </tr>
@@ -268,6 +352,81 @@ const TournamentPortal: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <AdminModal
+        isOpen={isEditModalOpen}
+        onClose={() => { if (!isSubmitting) { setIsEditModalOpen(false); setEditingRecord(null); } }}
+        title="Edit Tournament Registration"
+        footer={
+          <>
+            <Button variant="ghost" disabled={isSubmitting} onClick={() => setIsEditModalOpen(false)} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
+            <Button
+              onClick={handleSave}
+              disabled={isSubmitting}
+              className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Check className="size-4" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4 py-2">
+          <div className="grid gap-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Registration Status</Label>
+            <Select
+              value={pendingChanges.status}
+              onValueChange={(val) => setPendingChanges(prev => ({ ...prev, status: val }))}
+            >
+              <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="APPROVED">Approved</SelectItem>
+                <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                <SelectItem value="COMPLETED">Completed</SelectItem>
+                <SelectItem value="REJECTED">Rejected</SelectItem>
+                <SelectItem value="CANCELLED">Cancelled</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Payment Status</Label>
+            <Select
+              value={pendingChanges.paymentStatus}
+              onValueChange={(val) => setPendingChanges(prev => ({ ...prev, paymentStatus: val }))}
+            >
+              <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="VERIFIED">Verified</SelectItem>
+                <SelectItem value="FAILED">Failed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </AdminModal>
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        onCancel={() => { setIsConfirmOpen(false); setRecordToDelete(null); }}
+        onConfirm={() => handleAction(recordToDelete.id, 'delete')}
+        isLoading={isDeleting}
+        title="Permanent Delete?"
+        description="This action cannot be undone. The registration and associated student link will be removed."
+      />
     </AdminShell>
   );
 };
