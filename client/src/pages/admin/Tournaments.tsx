@@ -60,24 +60,24 @@ const AdminTournaments: React.FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<any>({
-    title: "",
-    description: "",
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: "",
-    regStartDate: "",
-    regEndDate: "",
-    location: "",
-    category: "",
-    totalPrizePool: "",
-    entryFee: 0,
-    discountDetails: "",
-    otherDetails: "",
-    brochureUrl: "",
-    contactDetails: "",
-    posterOrientation: "LANDSCAPE",
-    status: "UPCOMING",
-    imageUrl: ""
-  });
+  title: "",
+  description: "",
+  startDate: "", // Change from new Date().toISOString().split('T')[0] to ""
+  endDate: "",
+  regStartDate: "",
+  regEndDate: "",
+  location: "",
+  category: "",
+  totalPrizePool: "",
+  entryFee: 0,
+  discountDetails: "",
+  otherDetails: "",
+  brochureUrl: "",
+  contactDetails: "",
+  posterOrientation: "LANDSCAPE",
+  status: "UPCOMING",
+  imageUrl: ""
+});
 
   const filteredData = useMemo(() => {
     return tournaments
@@ -97,32 +97,32 @@ const AdminTournaments: React.FC = () => {
   }, [tournaments, activeTab, searchQuery]);
 
   const handleAdd = () => {
-    setEditingTournament(null);
-    setSelectedTournament(null);
-    setSelectedFile(null);
-    setSelectedBrochure(null);
-    setPreviewUrl("");
-    setFormData({ 
-      title: "", 
-      description: "",
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: "",
-      regStartDate: "",
-      regEndDate: "",
-      location: "", 
-      category: "",
-      totalPrizePool: "",
-      entryFee: 0,
-      discountDetails: "",
-      otherDetails: "",
-      brochureUrl: "",
-      contactDetails: "",
-      posterOrientation: "LANDSCAPE",
-      status: activeTab === "ALL" ? "UPCOMING" : activeTab,
-      imageUrl: ""
-    });
-    setIsModalOpen(true);
-  };
+  setEditingTournament(null);
+  setSelectedTournament(null);
+  setSelectedFile(null);
+  setSelectedBrochure(null);
+  setPreviewUrl("");
+  setFormData({ 
+    title: "", 
+    description: "",
+    startDate: "", // Change from new Date().toISOString().split('T')[0] to ""
+    endDate: "",
+    regStartDate: "",
+    regEndDate: "",
+    location: "", 
+    category: "",
+    totalPrizePool: "",
+    entryFee: 0,
+    discountDetails: "",
+    otherDetails: "",
+    brochureUrl: "",
+    contactDetails: "",
+    posterOrientation: "LANDSCAPE",
+    status: activeTab === "ALL" ? "UPCOMING" : activeTab,
+    imageUrl: ""
+  });
+  setIsModalOpen(true);
+};
 
   const handleModalClose = () => {
     if (isSubmitting) return;
@@ -132,17 +132,18 @@ const AdminTournaments: React.FC = () => {
   };
 
   const handleViewPreview = (t: any) => {
-    if (isModalOpen) {
-      setPreviewData({
-        ...t,
-        ...formData,
-        imageUrl: previewUrl || t.imageUrl
-      });
-    } else {
-      setPreviewData(t);
-    }
-    setIsPreviewOpen(true);
-  };
+  if (isModalOpen) {
+    setPreviewData({
+      ...t,
+      ...formData,
+      // Pass previewUrl directly — it holds either the blob, the existing URL, or an empty string if cleared
+      imageUrl: previewUrl 
+    });
+  } else {
+    setPreviewData(t);
+  }
+  setIsPreviewOpen(true);
+};
 
   const handleEdit = (tournament: Tournament) => {
     setEditingTournament(tournament); // set data FIRST
@@ -307,14 +308,32 @@ const AdminTournaments: React.FC = () => {
     return `${startStr} - ${format(new Date(end), "MMM d")}`;
   };
 
-  const rows = filteredData.map(t => ({
-    ...t,
-    displayTitle: (
-      <div className="flex flex-col">
-        <span className="font-bold text-uca-text-primary">{t.title}</span>
-        <span className="text-[10px] text-uca-text-muted uppercase tracking-tight">{t.location || "Online"}</span>
+ const rows = filteredData.map(t => ({
+  ...t,
+  displayTitle: (
+    <div className="flex items-center gap-3">
+      {/* Thumbnail Image with Online Fallback */}
+      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md border border-uca-border bg-uca-bg-elevated">
+        <img 
+          // If t.imageUrl exists, use it. Otherwise, use the Unsplash placeholder.
+          src={t.imageUrl || "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=100&q=80"} 
+          alt={t.title} 
+          className="h-full w-full object-cover" 
+          onError={(e) => {
+            // Absolute fallback if the Unsplash link ever breaks
+            (e.target as HTMLImageElement).src = "https://placehold.co/100x100/1e293b/ffffff?text=Arena";
+          }}
+        />
       </div>
-    ),
+      
+      {/* Title and Location */}
+      <div className="flex flex-col">
+        <span className="font-bold text-uca-text-primary line-clamp-1">{t.title}</span>
+        <span className="text-[10px] text-uca-text-muted uppercase tracking-tight line-clamp-1">{t.location || "Online"}</span>
+      </div>
+    </div>
+  ),
+  // ... keep displayDates, displayRegistrations, etc. exactly as they are
     displayDates: (
       <div className="flex items-center gap-2 text-xs font-medium">
         <Calendar className="size-3.5 text-uca-accent-blue" />
@@ -645,6 +664,7 @@ const AdminTournaments: React.FC = () => {
                   type="file"
                   className="hidden"
                   accept="image/*"
+                  onClick={(e) => e.stopPropagation()}
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
