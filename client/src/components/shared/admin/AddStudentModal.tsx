@@ -157,12 +157,25 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
               onChange={e => update("email", e.target.value)}
             />
           </div>
-          <DatePickerField
+          {/* <DatePickerField
             label="Date of Birth"
             value={form.dob}
             onChange={val => update("dob", val)}
             required
-          />
+          /> */}
+          <div className="space-y-2">
+  <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">
+    Date of Birth <span className="text-destructive">*</span>
+  </Label>
+  <Input
+    type="date"
+    className="h-11 w-full bg-uca-bg-elevated border-uca-border rounded-lg pr-4 [color-scheme:light]"
+    value={form.dob}
+    onChange={e => update("dob", e.target.value)}
+    required
+  />
+  <style>{`input[type="date"]::-webkit-calendar-picker-indicator { margin-left: auto; cursor: pointer; }`}</style>
+</div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -205,7 +218,7 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">FIDE ID</Label>
             <Input
@@ -223,14 +236,14 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
               onChange={e => update("fideRating", e.target.value)}
             />
           </div>
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Club Affiliation</Label>
+          {/* <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Club Affiliation123</Label>
             <Input
               className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg"
               value={form.clubAffiliation}
               onChange={e => update("clubAffiliation", e.target.value)}
             />
-          </div>
+          </div> */}
         </div>
 
         <div className="grid grid-cols-2 gap-4">

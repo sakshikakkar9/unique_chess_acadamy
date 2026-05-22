@@ -309,15 +309,36 @@ const AdminCourses = () => {
     ),
     displayStatus: <StatusBadge status={resolveStatus(c.startDate, c.endDate, c.status)} />,
     displayDays: (
-      <div className="flex flex-wrap gap-1">
-        {c.days?.slice(0, 3).map((day: string) => (
-          <span key={day} className="text-[10px] font-bold text-uca-text-muted bg-uca-bg-elevated px-1.5 py-0.5 rounded border border-uca-border">
-            {day.substring(0, 3)}
-          </span>
-        ))}
-        {c.days?.length > 3 && <span className="text-[10px] font-bold text-uca-text-muted">+{c.days.length - 3}</span>}
+  <div className="flex flex-col gap-2 py-1">
+    {/* Clean, high-contrast date layout with matching icon */}
+    {c.startDate && (
+      <div className="flex items-center gap-1.5 group">
+        <Calendar className="size-3.5 text-uca-navy opacity-70 group-hover:opacity-100 transition-opacity shrink-0" />
+        <span className="text-xs font-semibold text-uca-text-primary tracking-tight">
+          {toDisplayDate(c.startDate)}
+          {c.endDate ? ` — ${toDisplayDate(c.endDate)}` : " onwards"}
+        </span>
       </div>
-    ),
+    )}
+    
+    {/* Styled training day pill badges */}
+    <div className="flex flex-wrap gap-1.5">
+      {c.days?.slice(0, 3).map((day: string) => (
+        <span 
+          key={day} 
+          className="text-[9px] font-bold uppercase tracking-wider text-uca-text-muted bg-uca-bg-elevated hover:bg-uca-bg-base px-2 py-0.5 rounded-md border border-uca-border transition-colors shadow-sm"
+        >
+          {day.substring(0, 3)}
+        </span>
+      ))}
+      {c.days?.length > 3 && (
+        <span className="text-[9px] font-black text-uca-navy bg-uca-navy/5 border border-uca-navy/10 px-1.5 py-0.5 rounded-md shadow-sm">
+          +{c.days.length - 3}
+        </span>
+      )}
+    </div>
+  </div>
+),
     displayFee: (
       <div className="font-bold text-uca-accent-blue tabular-nums">
         ₹{c.fee.toLocaleString()}

@@ -430,7 +430,7 @@ const AdminTournaments: React.FC = () => {
               ) : (
                 <>
                   <Check className="size-4" />
-                  {editingTournament ? "Save Changes" : "Create Arena"}
+                  {editingTournament ? "Save Changes" : "Create Tournament"}
                 </>
               )}
             </Button>
