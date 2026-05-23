@@ -405,55 +405,66 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
               <p className="text-[10px] text-slate-400 text-center uppercase font-bold tracking-widest">Scan to pay</p>
             </div>
           </div> */}
-          <div className="flex flex-col justify-between h-full bg-white rounded-2xl border border-slate-200 shadow-sm p-6 lg:p-8">
-  <div className="flex flex-col h-full space-y-6">
+         {/* Card 4 — Payment Portal */}
+        <div className="flex flex-col justify-between h-full bg-white rounded-2xl border border-slate-200 shadow-sm p-6 lg:p-8">
+          <div className="flex flex-col h-full space-y-6">
+            
+            {/* Clean, High-Contrast Fee Banner */}
+            <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center justify-between flex-shrink-0">
+              <div>
+                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Entry Fee</p>
+                <p className="text-2xl font-black text-slate-900 tracking-tight">{formatINR(tournament.entryFee ?? 0)}</p>
+              </div>
+              <div className="text-[10px] bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border border-emerald-100">
+                Secure UPI
+              </div>
+            </div>
+
+            {/* Stacked Layout: Instructions First */}
+            <div className="w-full">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">How to pay:</h4>
+              <ol className="space-y-3.5">
+                {[
+                  'Scan the QR code with any UPI app',
+                  'Enter the entry fee amount',
+                  'Add your name in payment remarks',
+                  'Upload payment screenshot in the form',
+                ].map((step, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 text-blue-600 text-[11px] font-bold flex items-center justify-center border border-blue-100 mt-0.5">
+                      {i + 1}
+                    </span>
+                    <span className="text-sm text-slate-600 leading-relaxed font-medium">
+                      {step}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            {/* Responsive QR Display Container — Handles small mobile viewports flawlessly */}
+           <div className="w-full flex flex-col items-center justify-center bg-slate-50 border border-slate-100 rounded-2xl p-4">
+  
+  {/* 1. aspect-square w-full max-w-[240px]: Ensures a perfect square layout on mobile so the image cannot stretch vertically.
+    2. p-4: Adds a clean, uniform boundary around the native component layout.
+  */}
+  <div className="relative border border-slate-200/80 rounded-xl bg-white shadow-sm w-full max-w-[240px] aspect-square flex items-center justify-center p-4 overflow-hidden">
     
-    {/* Clean, High-Contrast Fee Banner */}
-    <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center justify-between flex-shrink-0">
-      <div>
-        <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Entry Fee</p>
-        <p className="text-2xl font-black text-slate-900 tracking-tight">{formatINR(tournament.entryFee ?? 0)}</p>
-      </div>
-      <div className="text-[10px] bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border border-emerald-100">
-        Secure UPI
-      </div>
+    {/* Ensures the nested canvas/image scales cleanly and stays dead-center in the square viewport */}
+    <div className="w-full h-full flex items-center justify-center [&_img]:max-w-full [&_img]:h-auto [&_img]:object-contain">
+      <PaymentDisplay />
     </div>
 
-    {/* Stacked Layout: Instructions First */}
-    <div className="w-full">
-      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">How to pay:</h4>
-      <ol className="space-y-3.5">
-        {[
-          'Scan the QR code with any UPI app',
-          'Enter the entry fee amount',
-          'Add your name in payment remarks',
-          'Upload payment screenshot in the form',
-        ].map((step, i) => (
-          <li key={i} className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 text-blue-600 text-[11px] font-bold flex items-center justify-center border border-blue-100 mt-0.5">
-              {i + 1}
-            </span>
-            <span className="text-sm text-slate-600 leading-relaxed font-medium">
-              {step}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </div>
-
-    {/* Dedicated QR Display Container — Prevents scanner graphic overflow */}
-    <div className="w-full flex flex-col items-center justify-center bg-slate-50 border border-slate-100 rounded-xl p-6 gap-3 min-h-[240px]">
-      <div className="relative border border-slate-200/60 rounded-xl p-3 bg-white shadow-sm flex items-center justify-center overflow-visible">
-        <PaymentDisplay />
-      </div>
-      <div className="text-center mt-2">
-        <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Scan to pay</p>
-        <span className="text-[10px] text-slate-400 font-medium block">Accepts all major UPI apps</span>
-      </div>
-    </div>
+  </div>
+  
+  {/* Subtext anchored neatly below the square scanner card */}
+  <div className="text-center mt-3">
+    <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Scan to pay</p>
+    <span className="text-[9px] text-slate-400 font-medium block">Accepts all major UPI apps</span>
   </div>
 </div>
-
+          </div>
+        </div>
           {/* Card 5 — Help & Brochure (Wrapped in its own clean card container) */}
         {(tournament.contactDetails || tournament.brochureUrl) && (
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row items-center justify-between gap-4">

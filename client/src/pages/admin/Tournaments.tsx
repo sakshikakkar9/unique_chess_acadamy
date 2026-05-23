@@ -60,24 +60,24 @@ const AdminTournaments: React.FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<any>({
-  title: "",
-  description: "",
-  startDate: "", // Change from new Date().toISOString().split('T')[0] to ""
-  endDate: "",
-  regStartDate: "",
-  regEndDate: "",
-  location: "",
-  category: "",
-  totalPrizePool: "",
-  entryFee: 0,
-  discountDetails: "",
-  otherDetails: "",
-  brochureUrl: "",
-  contactDetails: "",
-  posterOrientation: "LANDSCAPE",
-  status: "UPCOMING",
-  imageUrl: ""
-});
+    title: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+    regStartDate: "",
+    regEndDate: "",
+    location: "",
+    category: "",
+    totalPrizePool: "",
+    entryFee: 0,
+    discountDetails: "",
+    otherDetails: "",
+    brochureUrl: "",
+    contactDetails: "",
+    posterOrientation: "LANDSCAPE",
+    status: "UPCOMING",
+    imageUrl: ""
+  });
 
   const filteredData = useMemo(() => {
     return tournaments
@@ -97,32 +97,32 @@ const AdminTournaments: React.FC = () => {
   }, [tournaments, activeTab, searchQuery]);
 
   const handleAdd = () => {
-  setEditingTournament(null);
-  setSelectedTournament(null);
-  setSelectedFile(null);
-  setSelectedBrochure(null);
-  setPreviewUrl("");
-  setFormData({ 
-    title: "", 
-    description: "",
-    startDate: "", // Change from new Date().toISOString().split('T')[0] to ""
-    endDate: "",
-    regStartDate: "",
-    regEndDate: "",
-    location: "", 
-    category: "",
-    totalPrizePool: "",
-    entryFee: 0,
-    discountDetails: "",
-    otherDetails: "",
-    brochureUrl: "",
-    contactDetails: "",
-    posterOrientation: "LANDSCAPE",
-    status: activeTab === "ALL" ? "UPCOMING" : activeTab,
-    imageUrl: ""
-  });
-  setIsModalOpen(true);
-};
+    setEditingTournament(null);
+    setSelectedTournament(null);
+    setSelectedFile(null);
+    setSelectedBrochure(null);
+    setPreviewUrl("");
+    setFormData({ 
+      title: "", 
+      description: "",
+      startDate: "",
+      endDate: "",
+      regStartDate: "",
+      regEndDate: "",
+      location: "", 
+      category: "",
+      totalPrizePool: "",
+      entryFee: 0,
+      discountDetails: "",
+      otherDetails: "",
+      brochureUrl: "",
+      contactDetails: "",
+      posterOrientation: "LANDSCAPE",
+      status: activeTab === "ALL" ? "UPCOMING" : activeTab,
+      imageUrl: ""
+    });
+    setIsModalOpen(true);
+  };
 
   const handleModalClose = () => {
     if (isSubmitting) return;
@@ -132,21 +132,20 @@ const AdminTournaments: React.FC = () => {
   };
 
   const handleViewPreview = (t: any) => {
-  if (isModalOpen) {
-    setPreviewData({
-      ...t,
-      ...formData,
-      // Pass previewUrl directly — it holds either the blob, the existing URL, or an empty string if cleared
-      imageUrl: previewUrl 
-    });
-  } else {
-    setPreviewData(t);
-  }
-  setIsPreviewOpen(true);
-};
+    if (isModalOpen) {
+      setPreviewData({
+        ...t,
+        ...formData,
+        imageUrl: previewUrl 
+      });
+    } else {
+      setPreviewData(t);
+    }
+    setIsPreviewOpen(true);
+  };
 
   const handleEdit = (tournament: Tournament) => {
-    setEditingTournament(tournament); // set data FIRST
+    setEditingTournament(tournament);
     setSelectedTournament(tournament);
     setSelectedFile(null);
     setSelectedBrochure(null);
@@ -161,7 +160,7 @@ const AdminTournaments: React.FC = () => {
       entryFee: tournament.entryFee || 0,
       registrationDeadline: tournament.regEndDate ? new Date(tournament.regEndDate).toISOString().split('T')[0] : ""
     });
-    setIsModalOpen(true); // open modal AFTER
+    setIsModalOpen(true);
   };
 
   const handleStatusChange = async (
@@ -177,7 +176,6 @@ const AdminTournaments: React.FC = () => {
 
       if (!response.data) throw new Error('Failed to update status');
 
-      // Update local state immediately:
       setTournaments(prev => prev.map(t =>
         t.id === tournament.id
           ? { ...t, status: statusToSave }
@@ -204,7 +202,6 @@ const AdminTournaments: React.FC = () => {
     if (!formData.location) errors.location = "Venue is required";
     if (!formData.category) errors.category = "Category is required";
 
-    // Date sequence validation
     if (formData.regStartDate && formData.regEndDate && formData.regStartDate > formData.regEndDate) {
       errors.regStartDate = "Registration must start before it ends";
     }
@@ -260,7 +257,6 @@ const AdminTournaments: React.FC = () => {
     setIsDeleting(true);
     try {
       await api.delete(`/tournaments/admin/delete/${tournament.id}`);
-      // Remove from local state:
       setTournaments(prev => prev.filter(t => t.id !== tournament.id));
       setConfirmDelete(null);
       success('Tournament deleted');
@@ -301,39 +297,26 @@ const AdminTournaments: React.FC = () => {
     }
   ];
 
-  const formatDateRange = (start?: string, end?: string) => {
-    if (!start) return "N/A";
-    const startStr = format(new Date(start), "MMM d");
-    if (!end) return startStr;
-    return `${startStr} - ${format(new Date(end), "MMM d")}`;
-  };
-
- const rows = filteredData.map(t => ({
-  ...t,
-  displayTitle: (
-    <div className="flex items-center gap-3">
-      {/* Thumbnail Image with Online Fallback */}
-      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md border border-uca-border bg-uca-bg-elevated">
-        <img 
-          // If t.imageUrl exists, use it. Otherwise, use the Unsplash placeholder.
-          src={t.imageUrl || "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=100&q=80"} 
-          alt={t.title} 
-          className="h-full w-full object-cover" 
-          onError={(e) => {
-            // Absolute fallback if the Unsplash link ever breaks
-            (e.target as HTMLImageElement).src = "https://placehold.co/100x100/1e293b/ffffff?text=Arena";
-          }}
-        />
+  const rows = filteredData.map(t => ({
+    ...t,
+    displayTitle: (
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md border border-uca-border bg-uca-bg-elevated">
+          <img 
+            src={t.imageUrl || "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=100&q=80"} 
+            alt={t.title} 
+            className="h-full w-full object-cover" 
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "https://placehold.co/100x100/1e293b/ffffff?text=Arena";
+            }}
+          />
+        </div>
+        <div className="flex flex-col">
+          <span className="font-bold text-uca-text-primary line-clamp-1 text-sm md:text-base">{t.title}</span>
+          <span className="text-[10px] text-uca-text-muted uppercase tracking-tight line-clamp-1">{t.location || "Online"}</span>
+        </div>
       </div>
-      
-      {/* Title and Location */}
-      <div className="flex flex-col">
-        <span className="font-bold text-uca-text-primary line-clamp-1">{t.title}</span>
-        <span className="text-[10px] text-uca-text-muted uppercase tracking-tight line-clamp-1">{t.location || "Online"}</span>
-      </div>
-    </div>
-  ),
-  // ... keep displayDates, displayRegistrations, etc. exactly as they are
+    ),
     displayDates: (
       <div className="flex items-center gap-2 text-xs font-medium">
         <Calendar className="size-3.5 text-uca-accent-blue" />
@@ -374,53 +357,119 @@ const AdminTournaments: React.FC = () => {
       actionLabel="Add Tournament"
       onAction={handleAdd}
     >
-      <div className="space-y-6">
-        <StatusFilterBar
-          items={tournaments}
-          activeFilter={activeTab}
-          onFilterChange={setActiveTab}
-          searchValue={searchQuery}
-          onSearchChange={setSearchQuery}
-          searchPlaceholder="Search arenas..."
-          excludeStatuses={['rejected']}
-        />
+      <div className="space-y-4 md:space-y-6 max-w-full overflow-hidden px-1 md:px-0">
+        
+        {/* Responsive Wrap for the Top bar items to handle tight horizontal layouts */}
+        <div className="w-full overflow-x-auto scrollbar-none pb-1">
+          <div className="min-w-[340px] md:min-w-0">
+            <StatusFilterBar
+              items={tournaments}
+              activeFilter={activeTab}
+              onFilterChange={setActiveTab}
+              searchValue={searchQuery}
+              onSearchChange={setSearchQuery}
+              searchPlaceholder="Search arenas..."
+              excludeStatuses={['rejected']}
+            />
+          </div>
+        </div>
 
-        {/* Table Area */}
-        <AdminTable
-          columns={columns}
-          rows={rows}
-          isLoading={isLoading}
-          onRowClick={(t) => navigate(`/admin/tournaments/${t.id}/portal`)}
-          onEdit={(row) => {
-            const original = tournaments.find(t => t.id === row.id);
-            if (original) handleEdit(original);
-          }}
-          onDelete={(t) => setConfirmDelete(t)}
-          entityName="tournaments"
-          onAddFirst={handleAdd}
-          renderActions={(row) => row.actions}
-        />
+        {/* Desktop View Container: Visible from small screen breakpoint up */}
+        <div className="hidden sm:block">
+          <AdminTable
+            columns={columns}
+            rows={rows}
+            isLoading={isLoading}
+            onRowClick={(t) => navigate(`/admin/tournaments/${t.id}/portal`)}
+            onEdit={(row) => {
+              const original = tournaments.find(t => t.id === row.id);
+              if (original) handleEdit(original);
+            }}
+            onDelete={(t) => setConfirmDelete(t)}
+            entityName="tournaments"
+            onAddFirst={handleAdd}
+            renderActions={(row) => row.actions}
+          />
+        </div>
+
+        {/* Mobile View Layout Alternative: Triggers under 640px viewport seamlessly */}
+        <div className="block sm:hidden space-y-3">
+          {isLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <Loader2 className="size-6 animate-spin text-uca-accent-blue" />
+            </div>
+          ) : filteredData.length === 0 ? (
+            <div className="text-center py-8 border border-dashed border-uca-border rounded-xl bg-uca-bg-elevated">
+              <p className="text-xs text-uca-text-muted font-medium">No tournament configurations match your request.</p>
+              <Button size="sm" variant="link" onClick={handleAdd} className="mt-1 text-uca-accent-blue text-xs font-bold p-0">
+                Configure New Arena
+              </Button>
+            </div>
+          ) : (
+            filteredData.map((t, index) => {
+              const resolvedRow = rows[index];
+              return (
+                <div 
+                  key={t.id || index}
+                  onClick={() => navigate(`/admin/tournaments/${t.id}/portal`)}
+                  className="p-4 border border-uca-border bg-uca-bg-surface rounded-xl flex flex-col gap-3 transition-all active:scale-[0.99] active:bg-uca-bg-elevated cursor-pointer"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    {resolvedRow?.displayTitle}
+                    <div onClick={(e) => e.stopPropagation()} className="shrink-0 pt-0.5">
+                      {resolvedRow?.actions}
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-uca-border/60 w-full" />
+
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[9px] uppercase tracking-wider text-uca-text-muted font-bold">Category</span>
+                      <span className="font-semibold text-uca-text-primary truncate">{t.category || "Open"}</span>
+                    </div>
+                    <div className="flex flex-col gap-0.5 items-end">
+                      <span className="text-[9px] uppercase tracking-wider text-uca-text-muted font-bold">Registrations</span>
+                      <span className="font-black text-uca-accent-blue flex items-center gap-1">
+                        <Users className="size-3" />
+                        {t._count?.registrations || 0}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 bg-uca-bg-elevated/40 p-2 rounded-lg border border-uca-border/40">
+                    <div className="flex items-center gap-1.5 text-[11px] text-uca-text-primary font-medium">
+                      <Calendar className="size-3 text-uca-accent-blue shrink-0" />
+                      <span>{t.startDate ? toDisplayDate(t.startDate) : '—'}</span>
+                    </div>
+                    <StatusBadge status={resolveStatus(t.startDate, t.endDate, t.status)} />
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
 
-      {/* Form Modal */}
+      {/* Form Management Dialog Structure */}
       <AdminModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        title={editingTournament ? "Update Tournament Arena" : "Construct New Arena"}
+        title={editingTournament ? "Update Tournament Arena" : "Create New Tournament"}
         footer={
-          <>
+          <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
             <Button
               variant="ghost"
               disabled={isSubmitting}
               onClick={handleModalClose}
-              className="text-uca-text-muted hover:text-uca-text-primary"
+              className="text-uca-text-muted hover:text-uca-text-primary text-xs md:text-sm flex-1 sm:flex-initial"
             >
               Cancel
             </Button>
             <Button
               onClick={handleSave}
               disabled={isSubmitting}
-              className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2 disabled:opacity-70"
+              className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-6 md:px-8 h-10 gap-2 disabled:opacity-70 text-xs md:text-sm flex-1 sm:flex-initial"
             >
               {isSubmitting ? (
                 <>
@@ -430,27 +479,27 @@ const AdminTournaments: React.FC = () => {
               ) : (
                 <>
                   <Check className="size-4" />
-                  {editingTournament ? "Save Changes" : "Create Tournament"}
+                  {editingTournament ? "Save Changes" : "Create"}
                 </>
               )}
             </Button>
-          </>
+          </div>
         }
       >
-        <div className="space-y-6 py-2" key={editingTournament?.id ?? 'new'}>
+        <div className="space-y-4 md:space-y-6 py-2 px-1 max-h-[72vh] overflow-y-auto scrollbar-thin" key={editingTournament?.id ?? 'new'}>
           <div className="flex justify-end">
             <Button
               type="button"
               variant="outline"
               size="sm"
-              className="rounded-lg gap-2 text-xs h-9 border-uca-border hover:bg-uca-bg-elevated"
+              className="rounded-lg gap-2 text-xs h-9 border-uca-border hover:bg-uca-bg-elevated w-full sm:w-auto justify-center"
               onClick={() => handleViewPreview(selectedTournament || formData)}
             >
               <Eye className="size-3.5" /> Live Preview
             </Button>
           </div>
 
-          <div className="grid gap-5">
+          <div className="grid gap-4 md:gap-5">
             <div className="grid gap-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Arena Title</Label>
               <Input
@@ -468,7 +517,7 @@ const AdminTournaments: React.FC = () => {
               {formErrors.title && <p className="text-[10px] text-uca-accent-red font-bold flex items-center gap-1"><X className="size-3" /> {formErrors.title}</p>}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <DatePickerField
                 label="Reg Starts"
                 value={formData.regStartDate}
@@ -501,7 +550,7 @@ const AdminTournaments: React.FC = () => {
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <DatePickerField
                 label="Starts On"
                 value={formData.startDate}
@@ -533,40 +582,7 @@ const AdminTournaments: React.FC = () => {
               />
             </div>
 
-            {/* <div className="grid grid-cols-2 gap-4">
-              <DatePickerField
-                label="Reg Starts"
-                value={formData.regStartDate}
-                maxDate={formData.regEndDate || formData.startDate || undefined}
-                error={formErrors.regStartDate}
-                onChange={(val) => {
-                  setFormData({
-                    ...formData,
-                    regStartDate: val,
-                    regEndDate: formData.regEndDate && formData.regEndDate < val ? "" : formData.regEndDate,
-                  });
-                  if (formErrors.regStartDate) setFormErrors({...formErrors, regStartDate: ""});
-                }}
-              />
-              <DatePickerField
-                label="Reg Deadline"
-                value={formData.regEndDate}
-                minDate={formData.regStartDate}
-                maxDate={formData.startDate || undefined}
-                error={formErrors.regEndDate}
-                onChange={(val) => {
-                  setFormData({
-                    ...formData,
-                    regEndDate: val,
-                    regStartDate: formData.regStartDate && formData.regStartDate > val ? "" : formData.regStartDate,
-                  });
-                  if (formErrors.regEndDate) setFormErrors({...formErrors, regEndDate: ""});
-                }}
-                helperText="Must be before start"
-              />
-            </div> */}
-
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Venue</Label>
                 <Input
@@ -601,7 +617,7 @@ const AdminTournaments: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Prize Pool</Label>
                 <Input value={formData.totalPrizePool} onChange={(e) => setFormData({...formData, totalPrizePool: e.target.value})} placeholder="₹1,00,000" className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" />
@@ -612,7 +628,7 @@ const AdminTournaments: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid gap-2 overflow-hidden">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Description</Label>
               <RichTextEditor
                 value={formData.description || ""}
@@ -620,7 +636,7 @@ const AdminTournaments: React.FC = () => {
               />
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid gap-2 overflow-hidden">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Rules & Other Info</Label>
               <RichTextEditor
                 value={formData.otherDetails || ""}
@@ -646,28 +662,27 @@ const AdminTournaments: React.FC = () => {
               </div>
             </div>
 
-
             <div className="space-y-4 pt-4 border-t border-uca-border">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Poster Orientation</Label>
               <RadioGroup
                 value={formData.posterOrientation}
                 onValueChange={(val) => setFormData({...formData, posterOrientation: val})}
-                className="flex gap-4"
+                className="flex flex-col sm:flex-row gap-3"
               >
                 <div className="flex items-center space-x-2 bg-uca-bg-elevated px-4 py-3 rounded-lg border border-uca-border cursor-pointer flex-1">
                   <RadioGroupItem value="LANDSCAPE" id="landscape" />
-                  <Label htmlFor="landscape" className="font-bold text-xs cursor-pointer">Landscape</Label>
+                  <Label htmlFor="landscape" className="font-bold text-xs cursor-pointer w-full">Landscape</Label>
                 </div>
                 <div className="flex items-center space-x-2 bg-uca-bg-elevated px-4 py-3 rounded-lg border border-uca-border cursor-pointer flex-1">
                   <RadioGroupItem value="PORTRAIT" id="portrait" />
-                  <Label htmlFor="portrait" className="font-bold text-xs cursor-pointer">Portrait</Label>
+                  <Label htmlFor="portrait" className="font-bold text-xs cursor-pointer w-full">Portrait</Label>
                 </div>
               </RadioGroup>
 
               <div
                 className={cn(
-                  "relative rounded-xl border border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-uca-bg-elevated cursor-pointer transition-all border-uca-border bg-uca-bg-base",
-                  formData.posterOrientation === 'PORTRAIT' ? "aspect-[3/4] max-w-[200px] mx-auto" : "aspect-video"
+                  "relative rounded-xl border border-dashed flex flex-col items-center justify-center overflow-hidden hover:bg-uca-bg-elevated cursor-pointer transition-all border-uca-border bg-uca-bg-base w-full",
+                  formData.posterOrientation === 'PORTRAIT' ? "aspect-[3/4] max-w-[200px] mx-auto" : "aspect-video max-w-full sm:max-w-md mx-auto"
                 )}
                 onClick={() => fileInputRef.current?.click()}
               >
@@ -687,7 +702,7 @@ const AdminTournaments: React.FC = () => {
                     </button>
                   </>
                 ) : (
-                  <div className="text-center group">
+                  <div className="text-center group p-4">
                     <Upload className="size-6 text-uca-accent-blue mx-auto mb-2" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Upload {formData.posterOrientation}</span>
                   </div>
@@ -712,21 +727,21 @@ const AdminTournaments: React.FC = () => {
         </div>
       </AdminModal>
 
-      {/* Preview Modal */}
+      {/* User Flow Live Previews Layout */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
         <DialogContent className="max-w-[95vw] lg:max-w-7xl p-0 overflow-hidden rounded-2xl border-none shadow-2xl bg-uca-bg-base">
           <DialogDescription className="sr-only">Preview the tournament arena layout.</DialogDescription>
-          <div className="bg-uca-bg-surface text-uca-text-primary p-6 flex items-center justify-between border-b border-uca-border">
+          <div className="bg-uca-bg-surface text-uca-text-primary p-4 md:p-6 flex items-center justify-between border-b border-uca-border">
             <div className="space-y-1">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-uca-accent-blue">Arena Preview Mode</p>
-              <DialogTitle className="text-xl font-black">User Experience View</DialogTitle>
+              <DialogTitle className="text-base md:text-xl font-black">User Experience View</DialogTitle>
             </div>
-            <Button variant="ghost" onClick={() => setIsPreviewOpen(false)} className="text-uca-text-primary hover:bg-uca-bg-elevated rounded-lg">
-              <X className="size-6" />
+            <Button variant="ghost" onClick={() => setIsPreviewOpen(false)} className="text-uca-text-primary hover:bg-uca-bg-elevated rounded-lg p-1 h-auto">
+              <X className="size-5 md:size-6" />
             </Button>
           </div>
 
-          <div className="p-4 md:p-12 max-h-[85vh] overflow-y-auto scrollbar-thin">
+          <div className="p-3 md:p-12 max-h-[80vh] overflow-y-auto scrollbar-thin">
             {previewData && <TournamentPreview tournament={previewData} />}
           </div>
         </DialogContent>

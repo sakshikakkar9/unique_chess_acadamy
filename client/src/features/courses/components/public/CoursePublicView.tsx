@@ -212,90 +212,48 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
               {course.title}
             </h1>
 
-            {/* Info pills grid */}
-            {/* <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[
-                {
-                  icon: <Clock className="size-4 text-blue-500" />,
-                  label: 'Duration',
-                  value: course.duration ?? '—'
-                },
-                {
-                  icon: <Star className="size-4 text-amber-500" />,
-                  label: 'Level',
-                  value: course.skillLevel ?? '—'
-                },
-                {
-                  icon: <Globe className="size-4 text-green-500" />,
-                  label: 'Mode',
-                  value: course.mode ?? '—'
-                },
-                {
-                  icon: <Clock className="size-4 text-purple-500" />,
-                  label: 'Class Time',
-                  value: course.classTime ? formatTime(course.classTime) : '—'
-                },
-              ].map(info => (
-                <div key={info.label} className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    {info.icon}
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                      {info.label}
-                    </p>
+            <div className="w-full flex justify-start">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl lg:max-w-2xl">
+                {[
+                  {
+                    icon: <Clock className="size-4 text-blue-500 shrink-0" />,
+                    label: 'Duration',
+                    value: course.duration ?? '—'
+                  },
+                  {
+                    icon: <Star className="size-4 text-amber-500 shrink-0" />,
+                    label: 'Level',
+                    value: course.skillLevel ?? '—'
+                  },
+                  {
+                    icon: <Globe className="size-4 text-green-500 shrink-0" />,
+                    label: 'Mode',
+                    value: course.mode ?? '—'
+                  },
+                  {
+                    icon: <Clock className="size-4 text-purple-500 shrink-0" />,
+                    label: 'Class Time',
+                    value: course.classTime ? formatTime(course.classTime) : '—'
+                  },
+                ].map(info => (
+                  <div key={info.label} className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-left w-full flex items-center gap-3">
+                    <div className="flex items-center justify-center">
+                      {info.icon}
+                    </div>
+                    <div className="flex flex-col justify-center items-start min-w-0">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-left leading-none mb-1.5 truncate w-full">
+                        {info.label}
+                      </p>
+                      <p className="text-sm font-bold text-slate-900 text-left leading-none truncate w-full">
+                        {info.value}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-sm font-bold text-slate-900">
-                    {info.value}
-                  </p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div> */}
-        <div className="w-full flex justify-start">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl lg:max-w-2xl">
-            {[
-              {
-                icon: <Clock className="size-4 text-blue-500 shrink-0" />,
-                label: 'Duration',
-                value: course.duration ?? '—'
-              },
-              {
-                icon: <Star className="size-4 text-amber-500 shrink-0" />,
-                label: 'Level',
-                value: course.skillLevel ?? '—'
-              },
-              {
-                icon: <Globe className="size-4 text-green-500 shrink-0" />,
-                label: 'Mode',
-                value: course.mode ?? '—'
-              },
-              {
-                icon: <Clock className="size-4 text-purple-500 shrink-0" />,
-                label: 'Class Time',
-                value: course.classTime ? formatTime(course.classTime) : '—'
-              },
-            ].map(info => (
-              <div key={info.label} className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-left w-full flex items-center gap-3">
-                {/* Left Side: Icon container centered vertically */}
-                <div className="flex items-center justify-center">
-                  {info.icon}
-                </div>
-                
-                {/* Right Side: Text elements stacked with uniform spacing */}
-                <div className="flex flex-col justify-center items-start min-w-0">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-left leading-none mb-1.5 truncate w-full">
-                    {info.label}
-                  </p>
-                  <p className="text-sm font-bold text-slate-900 text-left leading-none truncate w-full">
-                    {info.value}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
-      </div>
-    </div>
 
         {/* Card 2 — Training Schedule */}
         {course.days && course.days.length > 0 && (
@@ -314,7 +272,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                     className={`px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-wide transition-colors ${isActive
                       ? 'bg-blue-600 text-white'
                       : 'bg-slate-100 text-slate-400'
-                      }`}>
+                    }`}>
                     {day.slice(0, 3)}
                   </div>
                 );
@@ -343,105 +301,60 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
         )}
 
         {/* Card 4 — Payment Portal */}
-        {/* <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="bg-slate-900 px-6 py-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs text-white/50 font-medium mb-1">Course Fee</p>
-              <p className="text-2xl font-black text-white">{formatINR(course.fee ?? 0)}</p>
+        <div className="flex flex-col justify-between h-full bg-white rounded-2xl border border-slate-200 shadow-sm p-6 lg:p-8">
+          <div className="flex flex-col h-full space-y-6">
+            
+            {/* Clean, High-Contrast Fee Banner */}
+            <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center justify-between flex-shrink-0">
+              <div>
+                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Course Fee</p>
+                <p className="text-2xl font-black text-slate-900 tracking-tight">{formatINR(course.fee ?? 0)}</p>
+              </div>
+              <div className="text-[10px] bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border border-emerald-100">
+                Secure UPI
+              </div>
             </div>
-            <div className="text-3xl opacity-20 select-none text-white font-bold">₹</div>
-          </div>
 
-          <div className="p-6 flex flex-col sm:flex-row gap-6">
-            <div className="flex-1">
-              <p className="text-sm font-bold text-slate-900 mb-3">How to pay:</p>
-              <ol className="space-y-2.5">
+            {/* Stacked Layout: Instructions First */}
+            <div className="w-full">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">How to pay:</h4>
+              <ol className="space-y-3.5">
                 {[
                   'Scan the QR code with any UPI app',
                   'Enter the course fee amount',
                   'Add your name in payment remarks',
-                  'Upload payment screenshot in the form',
+                  'Upload payment screenshot below',
                 ].map((step, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-[10px] font-bold flex items-center justify-center">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 text-blue-600 text-[11px] font-bold flex items-center justify-center border border-blue-100 mt-0.5">
                       {i + 1}
                     </span>
-                    <span className="text-sm text-slate-600">{step}</span>
+                    <span className="text-sm text-slate-600 leading-relaxed font-medium">
+                      {step}
+                    </span>
                   </li>
                 ))}
               </ol>
             </div>
-            <div className="flex-shrink-0 flex flex-col items-center gap-2">
-              <div className="border-2 border-slate-200 rounded-xl p-3 bg-white shadow-sm">
-                <PaymentDisplay />
+
+            {/* Mobile-Optimized QR Display Container */}
+            <div className="w-full flex flex-col items-center justify-center bg-slate-50 border border-slate-100 rounded-2xl p-4">
+              <div className="relative border border-slate-200/80 rounded-xl bg-white shadow-sm w-full max-w-[240px] aspect-square flex items-center justify-center p-4 overflow-hidden">
+                <div className="w-full h-full flex items-center justify-center [&_img]:max-w-full [&_img]:h-auto [&_img]:object-contain">
+                  <PaymentDisplay />
+                </div>
               </div>
-              <p className="text-[10px] text-slate-400 text-center uppercase font-bold tracking-widest">Scan to pay</p>
+              <div className="text-center mt-3">
+                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Scan to pay</p>
+                <span className="text-[9px] text-slate-400 font-medium block">Accepts all major UPI apps</span>
+              </div>
             </div>
-          </div> */}
-          
-{/* Left Column: Payment Portal & Guide */}
-<div className="flex flex-col justify-between h-full bg-white rounded-2xl border border-slate-200 shadow-sm p-6 lg:p-8">
-  <div className="flex flex-col h-full space-y-6">
-    
-    {/* Clean, High-Contrast Fee Banner */}
-    <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center justify-between flex-shrink-0">
-      <div>
-        <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Course Fee</p>
-        <p className="text-2xl font-black text-slate-900 tracking-tight">{formatINR(course.fee ?? 0)}</p>
-      </div>
-      <div className="text-[10px] bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border border-emerald-100">
-        Secure UPI
-      </div>
-    </div>
+          </div>
 
-    {/* Stacked Layout: Instructions First */}
-    <div className="w-full">
-      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">How to pay:</h4>
-      <ol className="space-y-3.5">
-        {[
-          'Scan the QR code with any UPI app',
-          'Enter the course fee amount',
-          'Add your name in payment remarks',
-          'Upload payment screenshot below',
-        ].map((step, i) => (
-          <li key={i} className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 text-blue-600 text-[11px] font-bold flex items-center justify-center border border-blue-100 mt-0.5">
-              {i + 1}
-            </span>
-            <span className="text-sm text-slate-600 leading-relaxed font-medium">
-              {step}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </div>
-
-    {/* Dedicated QR Display Container — Given its own full row width */}
-    <div className="w-full flex flex-col items-center justify-center bg-slate-50 border border-slate-100 rounded-xl p-6 gap-3 min-h-[240px]">
-      <div className="relative border border-slate-200/60 rounded-xl p-3 bg-white shadow-sm flex items-center justify-center overflow-visible">
-        <PaymentDisplay />
-      </div>
-      <div className="text-center mt-2">
-        <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Scan to pay</p>
-        <span className="text-[10px] text-slate-400 font-medium block">Accepts all major UPI apps</span>
-      </div>
-    </div>
-  </div>
-          {/* Help & Brochure */}
-          {(course.contactDetails || course.brochureUrl) && (
+          {/* Help & Contact */}
+          {course.contactDetails && (
             <div className="p-6 pt-0 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-              {course.contactDetails && (
-                <p className="text-slate-500 text-sm font-medium">Questions? Call <span className="text-slate-900 font-bold">{course.contactDetails}</span></p>
-              )}
-              {/* {course.brochureUrl && (
-                <button
-                  onClick={(e) => onBrochureDownload?.(e, course.brochureUrl!)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all"
-                >
-                  <FileText className="size-3.5" />
-                  Download Brochure
-                </button>
-              )} */}
+              <p className="text-slate-500 text-sm font-medium">Questions? Call <span className="text-slate-900 font-bold">{course.contactDetails}</span></p>
             </div>
           )}
         </div>
