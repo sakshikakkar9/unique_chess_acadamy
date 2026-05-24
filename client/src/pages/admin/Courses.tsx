@@ -522,7 +522,7 @@ const AdminCourses = () => {
       <AdminModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        title={editingCourse ? "Update Program" : "Create Program"}
+        title={editingCourse ? "Update Course" : "Create new Course"}
         footer={
           <>
             <Button variant="ghost" disabled={isSubmitting} onClick={handleModalClose} className="text-uca-text-muted hover:text-uca-text-primary">Cancel</Button>
