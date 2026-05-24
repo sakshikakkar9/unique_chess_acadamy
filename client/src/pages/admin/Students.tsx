@@ -161,16 +161,16 @@ const rows = filteredStudents.map((student: any) => {
       </div>
     ),
     displayUcaId: (
-      /* UX FIX: Changed text-right to text-left on mobile for perfect vertical grid stacking */
-      <div className="w-full text-left">
+      /* UX FIX: Set text-right explicitly to snap the ID text to the absolute right edge */
+      <div className="w-full text-right">
         <span className="text-sm font-black text-uca-text-primary tracking-mono">
           {student.ucaId || "—"}
         </span>
       </div>
     ),
     displayContact: (
-      /* UX FIX: Changed items-end to items-start for mobile mobile alignment consistency */
-      <div className="flex flex-col gap-1.5 items-start w-full">
+      /* UX FIX: Set items-end to ensure phone and email stack flush right */
+      <div className="flex flex-col gap-1.5 items-end w-full">
         <div className="flex items-center gap-1.5 text-xs font-bold text-uca-text-primary">
           <Phone className="size-3.5 text-uca-accent-blue shrink-0" />
           <span>{student.phone}</span>
@@ -184,8 +184,8 @@ const rows = filteredStudents.map((student: any) => {
       </div>
     ),
     displayActivity: (
-      /* UX FIX: Changed justify-end to justify-start on mobile so pills line up perfectly with ID and Status */
-      <div className="flex flex-wrap gap-1.5 justify-start w-full">
+      /* UX FIX: Set justify-end so the activity badges push completely against the right container wall */
+      <div className="flex flex-wrap gap-1.5 justify-end w-full">
         {lastTournament && (
           <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 max-w-full">
             <Trophy className="size-3 text-amber-500 shrink-0" />
@@ -212,8 +212,8 @@ const rows = filteredStudents.map((student: any) => {
       </div>
     ),
     displayStatus: (
-      /* UX FIX: Changed justify-end to justify-start to snap the status pill to the left side of the right column */
-      <div className="flex justify-start w-full">
+      /* UX FIX: Changed to justify-end to perfectly realign the active status pill to the right edge */
+      <div className="flex justify-end w-full">
         <span
           className={cn(
             "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm",
