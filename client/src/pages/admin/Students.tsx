@@ -134,7 +134,7 @@ export default function StudentsPage() {
     setIsAddModalOpen(true);
   };
 
-  // Improved presentation mapping block without hardcoded label duplications
+  // Improved presentation mapping block optimized for flawless mobile card rendering
   const rows = filteredStudents.map((student: any) => {
     const avatarStyles = getAvatarStyles(student.fullName);
     const lastTournament = student.registrations?.[0]?.tournament?.title;
@@ -161,15 +161,21 @@ export default function StudentsPage() {
         </div>
       ),
       displayUcaId: (
-        <div className="flex flex-col gap-0.5 justify-center">
-          {/* Removed duplicate static text labels that break mobile card layouts */}
+        <div className="flex flex-col gap-1 sm:justify-center">
+          {/* Mobile visible descriptive label */}
+          <span className="text-[9px] font-black tracking-widest text-uca-text-muted uppercase sm:hidden">
+            UCA ID
+          </span>
           <span className="text-sm font-black text-uca-text-primary tracking-mono">
             {student.ucaId || "—"}
           </span>
         </div>
       ),
       displayContact: (
-        <div className="flex flex-col gap-1 text-left">
+        <div className="flex flex-col gap-1.5 text-left">
+          <span className="text-[9px] font-black tracking-widest text-uca-text-muted uppercase sm:hidden">
+            Contact
+          </span>
           <div className="flex items-center gap-1.5 text-xs font-bold text-uca-text-primary">
             <Phone className="size-3.5 text-uca-accent-blue shrink-0" />
             <span>{student.phone}</span>
@@ -183,44 +189,54 @@ export default function StudentsPage() {
         </div>
       ),
       displayActivity: (
-        <div className="flex flex-wrap gap-1.5 items-center">
-          {lastTournament && (
-            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 w-fit">
-              <Trophy className="size-3 text-amber-500 shrink-0" />
-              <span className="text-[9px] font-black text-amber-600 uppercase tracking-wider truncate max-w-[120px]">
-                {lastTournament}
-              </span>
-            </div>
-          )}
-          {lastCourse && (
-            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-accent-blue/10 border border-uca-accent-blue/20 w-fit">
-              <BookOpen className="size-3 text-uca-accent-blue shrink-0" />
-              <span className="text-[9px] font-black text-uca-accent-blue uppercase tracking-wider truncate max-w-[120px]">
-                {lastCourse}
-              </span>
-            </div>
-          )}
-          {!lastTournament && !lastCourse && (
-            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-bg-base border border-uca-border w-fit">
-              <span className="text-[9px] font-bold tracking-widest text-uca-text-muted uppercase">
-                Grand Master
-              </span>
-            </div>
-          )}
+        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-1.5 sm:items-center">
+          <span className="text-[9px] font-black tracking-widest text-uca-text-muted uppercase sm:hidden mb-0.5">
+            Last Activity
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {lastTournament && (
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 w-fit">
+                <Trophy className="size-3 text-amber-500 shrink-0" />
+                <span className="text-[9px] font-black text-amber-600 uppercase tracking-wider truncate max-w-[120px]">
+                  {lastTournament}
+                </span>
+              </div>
+            )}
+            {lastCourse && (
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-accent-blue/10 border border-uca-accent-blue/20 w-fit">
+                <BookOpen className="size-3 text-uca-accent-blue shrink-0" />
+                <span className="text-[9px] font-black text-uca-accent-blue uppercase tracking-wider truncate max-w-[120px]">
+                  {lastCourse}
+                </span>
+              </div>
+            )}
+            {!lastTournament && !lastCourse && (
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-bg-base border border-uca-border w-fit">
+                <span className="text-[9px] font-bold tracking-widest text-uca-text-muted uppercase">
+                  Grand Master
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       ),
       displayStatus: (
-        <span
-          className={cn(
-            "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm w-fit",
-            student.accountStatus === 'ACTIVE'
-              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-              : 'bg-uca-accent-red/10 text-uca-accent-red border-uca-accent-red/20'
-          )}
-        >
-          <span className={cn("size-1.5 rounded-full mr-1.5 animate-pulse", student.accountStatus === 'ACTIVE' ? 'bg-emerald-500' : 'bg-uca-accent-red')} />
-          {student.accountStatus}
-        </span>
+        <div className="flex flex-col gap-1 items-end sm:justify-center">
+          <span className="text-[9px] font-black tracking-widest text-uca-text-muted uppercase sm:hidden">
+            Status
+          </span>
+          <span
+            className={cn(
+              "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm w-fit",
+              student.accountStatus === 'ACTIVE'
+                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                : 'bg-uca-accent-red/10 text-uca-accent-red border-uca-accent-red/20'
+            )}
+          >
+            <span className={cn("size-1.5 rounded-full mr-1.5", student.accountStatus === 'ACTIVE' ? 'bg-emerald-500' : 'bg-uca-accent-red')} />
+            {student.accountStatus}
+          </span>
+        </div>
       )
     };
   });
