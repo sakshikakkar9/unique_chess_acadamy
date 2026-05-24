@@ -134,97 +134,101 @@ export default function StudentsPage() {
     setIsAddModalOpen(true);
   };
 
-  // Fixed mapping block matching AdminTable's native mobile card grid split layout
-  const rows = filteredStudents.map((student: any) => {
-    const avatarStyles = getAvatarStyles(student.fullName);
-    const lastTournament = student.registrations?.[0]?.tournament?.title;
-    const lastCourse = student.enrollments?.[0]?.course?.title;
+// Fixed mapping block matching AdminTable's native mobile card grid split layout
+const rows = filteredStudents.map((student: any) => {
+  const avatarStyles = getAvatarStyles(student.fullName);
+  const lastTournament = student.registrations?.[0]?.tournament?.title;
+  const lastCourse = student.enrollments?.[0]?.course?.title;
 
-    return {
-      ...student,
-      displayFullName: (
-        <div className="flex items-center gap-3 w-full">
-          <div
-            className="size-10 rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-sm border border-black/5"
-            style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
-          >
-            {(student.fullName || "?").charAt(0).toUpperCase()}
-          </div>
-          <div className="flex flex-col min-w-0 gap-0.5">
-            <span className="font-bold text-base text-uca-text-primary tracking-tight truncate">
-              {student.fullName}
-            </span>
-            <span className="inline-flex items-center text-[10px] font-black tracking-widest text-uca-text-muted uppercase">
-              {student.gender} <span className="mx-1.5 text-uca-text-muted/40">•</span> {new Date().getFullYear() - new Date(student.dob).getFullYear()} Years
-            </span>
-          </div>
+  return {
+    ...student,
+    displayFullName: (
+      <div className="flex items-center gap-3 w-full">
+        <div
+          className="size-10 rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-sm border border-black/5"
+          style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
+        >
+          {(student.fullName || "?").charAt(0).toUpperCase()}
         </div>
-      ),
-      displayUcaId: (
-        <div className="w-full text-right sm:text-left">
-          <span className="text-sm font-black text-uca-text-primary tracking-mono">
-            {student.ucaId || "—"}
+        <div className="flex flex-col min-w-0 gap-0.5">
+          <span className="font-bold text-base text-uca-text-primary tracking-tight truncate">
+            {student.fullName}
+          </span>
+          <span className="inline-flex items-center text-[10px] font-black tracking-widest text-uca-text-muted uppercase">
+            {student.gender} <span className="mx-1.5 text-uca-text-muted/40">•</span> {new Date().getFullYear() - new Date(student.dob).getFullYear()} Years
           </span>
         </div>
-      ),
-      displayContact: (
-        <div className="flex flex-col gap-1.5 items-end sm:items-start w-full">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-uca-text-primary">
-            <Phone className="size-3.5 text-uca-accent-blue shrink-0" />
-            <span>{student.phone}</span>
+      </div>
+    ),
+    displayUcaId: (
+      /* UX FIX: Changed text-right to text-left on mobile for perfect vertical grid stacking */
+      <div className="w-full text-left">
+        <span className="text-sm font-black text-uca-text-primary tracking-mono">
+          {student.ucaId || "—"}
+        </span>
+      </div>
+    ),
+    displayContact: (
+      /* UX FIX: Changed items-end to items-start for mobile mobile alignment consistency */
+      <div className="flex flex-col gap-1.5 items-start w-full">
+        <div className="flex items-center gap-1.5 text-xs font-bold text-uca-text-primary">
+          <Phone className="size-3.5 text-uca-accent-blue shrink-0" />
+          <span>{student.phone}</span>
+        </div>
+        {student.email && (
+          <div className="flex items-center gap-1.5 text-[10px] font-medium text-uca-text-muted">
+            <Mail className="size-3 text-uca-text-muted/70 shrink-0" />
+            <span className="truncate max-w-[135px]">{student.email}</span>
           </div>
-          {student.email && (
-            <div className="flex items-center gap-1.5 text-[10px] font-medium text-uca-text-muted">
-              <Mail className="size-3 text-uca-text-muted/70 shrink-0" />
-              <span className="truncate max-w-[135px]">{student.email}</span>
-            </div>
+        )}
+      </div>
+    ),
+    displayActivity: (
+      /* UX FIX: Changed justify-end to justify-start on mobile so pills line up perfectly with ID and Status */
+      <div className="flex flex-wrap gap-1.5 justify-start w-full">
+        {lastTournament && (
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 max-w-full">
+            <Trophy className="size-3 text-amber-500 shrink-0" />
+            <span className="text-[9px] font-black text-amber-600 uppercase tracking-wider truncate max-w-[100px]">
+              {lastTournament}
+            </span>
+          </div>
+        )}
+        {lastCourse && (
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-accent-blue/10 border border-uca-accent-blue/20 max-w-full">
+            <BookOpen className="size-3 text-uca-accent-blue shrink-0" />
+            <span className="text-[9px] font-black text-uca-accent-blue uppercase tracking-wider truncate max-w-[100px]">
+              {lastCourse}
+            </span>
+          </div>
+        )}
+        {!lastTournament && !lastCourse && (
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-bg-base border border-uca-border">
+            <span className="text-[9px] font-bold tracking-widest text-uca-text-muted uppercase">
+              Grand Master
+            </span>
+          </div>
+        )}
+      </div>
+    ),
+    displayStatus: (
+      /* UX FIX: Changed justify-end to justify-start to snap the status pill to the left side of the right column */
+      <div className="flex justify-start w-full">
+        <span
+          className={cn(
+            "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm",
+            student.accountStatus === 'ACTIVE'
+              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+              : 'bg-uca-accent-red/10 text-uca-accent-red border-uca-accent-red/20'
           )}
-        </div>
-      ),
-      displayActivity: (
-        <div className="flex flex-wrap gap-1.5 justify-end sm:justify-start w-full">
-          {lastTournament && (
-            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 max-w-full">
-              <Trophy className="size-3 text-amber-500 shrink-0" />
-              <span className="text-[9px] font-black text-amber-600 uppercase tracking-wider truncate max-w-[100px]">
-                {lastTournament}
-              </span>
-            </div>
-          )}
-          {lastCourse && (
-            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-accent-blue/10 border border-uca-accent-blue/20 max-w-full">
-              <BookOpen className="size-3 text-uca-accent-blue shrink-0" />
-              <span className="text-[9px] font-black text-uca-accent-blue uppercase tracking-wider truncate max-w-[100px]">
-                {lastCourse}
-              </span>
-            </div>
-          )}
-          {!lastTournament && !lastCourse && (
-            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-bg-base border border-uca-border">
-              <span className="text-[9px] font-bold tracking-widest text-uca-text-muted uppercase">
-                Grand Master
-              </span>
-            </div>
-          )}
-        </div>
-      ),
-      displayStatus: (
-        <div className="flex justify-end sm:justify-start w-full">
-          <span
-            className={cn(
-              "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm",
-              student.accountStatus === 'ACTIVE'
-                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                : 'bg-uca-accent-red/10 text-uca-accent-red border-uca-accent-red/20'
-            )}
-          >
-            <span className={cn("size-1.5 rounded-full mr-1.5", student.accountStatus === 'ACTIVE' ? 'bg-emerald-500' : 'bg-uca-accent-red')} />
-            {student.accountStatus}
-          </span>
-        </div>
-      )
-    };
-  });
+        >
+          <span className={cn("size-1.5 rounded-full mr-1.5", student.accountStatus === 'ACTIVE' ? 'bg-emerald-500' : 'bg-uca-accent-red')} />
+          {student.accountStatus}
+        </span>
+      </div>
+    )
+  };
+});
 
   return (
     <AdminShell
