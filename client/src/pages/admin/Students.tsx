@@ -134,7 +134,7 @@ export default function StudentsPage() {
     setIsAddModalOpen(true);
   };
 
-  // Improved presentation mapping block
+  // Improved presentation mapping block without hardcoded label duplications
   const rows = filteredStudents.map((student: any) => {
     const avatarStyles = getAvatarStyles(student.fullName);
     const lastTournament = student.registrations?.[0]?.tournament?.title;
@@ -161,9 +161,9 @@ export default function StudentsPage() {
         </div>
       ),
       displayUcaId: (
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[10px] font-black text-uca-text-muted tracking-widest uppercase">UCA ID</span>
-          <span className="text-xs font-black text-uca-text-primary tracking-mono">
+        <div className="flex flex-col gap-0.5 justify-center">
+          {/* Removed duplicate static text labels that break mobile card layouts */}
+          <span className="text-sm font-black text-uca-text-primary tracking-mono">
             {student.ucaId || "—"}
           </span>
         </div>
@@ -183,7 +183,7 @@ export default function StudentsPage() {
         </div>
       ),
       displayActivity: (
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-wrap gap-1.5 items-center">
           {lastTournament && (
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 w-fit">
               <Trophy className="size-3 text-amber-500 shrink-0" />
@@ -212,7 +212,7 @@ export default function StudentsPage() {
       displayStatus: (
         <span
           className={cn(
-            "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm",
+            "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm w-fit",
             student.accountStatus === 'ACTIVE'
               ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
               : 'bg-uca-accent-red/10 text-uca-accent-red border-uca-accent-red/20'
@@ -232,7 +232,7 @@ export default function StudentsPage() {
     >
       {/* Header with Export, Import and Add buttons */}
       <div className="flex justify-end items-center mb-6">
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
           <Button
             variant="outline"
             onClick={handleExport}

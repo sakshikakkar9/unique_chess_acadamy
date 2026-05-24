@@ -6,7 +6,7 @@ import {
   Trophy, 
   Trash2, Mail, Phone, Eye, BookOpen, Copy,
   Search, Filter, ExternalLink, ShieldCheck, CreditCard, Image as PhotoIcon,
-  User, UserCheck
+  User, UserCheck, Loader2, Check
 } from "lucide-react";
 import AdminShell from "../../components/admin/AdminShell";
 import AdminTable, { AdminTableColumn } from "../../components/admin/AdminTable";
@@ -27,7 +27,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../components/u
 import { cn, getAvatarStyles } from "../../lib/utils";
 import ConfirmDialog from "../../components/admin/ConfirmDialog";
 import { useToast } from "../../hooks/useToast";
-import { Loader2, Check } from "lucide-react";
 import { RowActionMenu } from "../../components/admin/RowActionMenu";
 
 type RegistrationTab = 'course' | 'tournament' | 'demo';
@@ -365,15 +364,15 @@ export default function RegistrationsPage() {
             <div className="flex items-center gap-2">
                {row.status === 'PENDING' && (
                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAction(row.id, currentType, 'status', currentType === 'course' ? 'CONFIRMED' : 'APPROVED');
-                    }}
+                   size="sm"
+                   variant="ghost"
+                   className="h-8 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                   onClick={(e) => {
+                     e.stopPropagation();
+                     handleAction(row.id, currentType, 'status', currentType === 'course' ? 'CONFIRMED' : 'APPROVED');
+                   }}
                  >
-                    Approve
+                   Approve
                  </Button>
                )}
                {row.actions}

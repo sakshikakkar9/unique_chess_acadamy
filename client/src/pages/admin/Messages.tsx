@@ -110,7 +110,7 @@ export default function MessagesPage() {
     { key: "displayStatus", label: "Status", align: "right" }
   ];
 
-  // Map rows with clean structural memo parameters
+  // Map rows with clean structural rendering parameters
   const rows = useMemo(() => {
     return filteredMessages.map((msg) => {
       const avatarStyles = getAvatarStyles(msg.name);
@@ -228,6 +228,8 @@ export default function MessagesPage() {
           {selectedMessage && (
             <div className="h-full flex flex-col">
               <div className="bg-uca-navy p-8 text-white relative overflow-hidden shrink-0 border-b border-uca-border">
+                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+                
                 <SheetHeader className="mb-6 relative z-10 text-left">
                   <div className="flex items-center gap-3 mb-4">
                     <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.2em] rounded border ${
@@ -241,22 +243,22 @@ export default function MessagesPage() {
                   <SheetTitle className="text-3xl font-black text-white leading-tight tracking-tight">
                     {selectedMessage.name}
                   </SheetTitle>
-                  <p className="text-uca-text-muted font-bold text-sm mt-1 flex items-center gap-2">
+                  <p className="text-white/60 font-bold text-sm mt-1 flex items-center gap-2">
                     <Mail className="size-4 text-uca-accent-blue" />
                     {selectedMessage.email}
                   </p>
                 </SheetHeader>
 
                 <div className="flex flex-wrap gap-3 relative z-10">
-                  <div className="bg-uca-bg-elevated px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5">
-                    <p className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">Sent On</p>
+                  <div className="bg-white/5 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 flex flex-col gap-0.5">
+                    <p className="text-[8px] font-black text-white/40 uppercase tracking-widest">Sent On</p>
                     <p className="text-xs font-bold">
                       {selectedMessage.createdAt ? format(new Date(selectedMessage.createdAt), "PPP p") : "—"}
                     </p>
                   </div>
                   {selectedMessage.phone && (
-                    <div className="bg-uca-bg-elevated px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5">
-                      <p className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">Phone</p>
+                    <div className="bg-white/5 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 flex flex-col gap-0.5">
+                      <p className="text-[8px] font-black text-white/40 uppercase tracking-widest">Phone</p>
                       <p className="text-xs font-bold">{selectedMessage.phone}</p>
                     </div>
                   )}
