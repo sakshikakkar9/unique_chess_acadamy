@@ -3,7 +3,7 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { 
-  Trophy, RefreshCw,
+  Trophy, 
   Trash2, Mail, Phone, Eye, BookOpen, Copy,
   Search, Filter, ExternalLink, ShieldCheck, CreditCard, Image as PhotoIcon,
   User, UserCheck
@@ -120,12 +120,17 @@ export default function RegistrationsPage() {
       qc.invalidateQueries({ queryKey: [queryKey] });
       if (type === 'demo') refreshDemos();
 
-      // Update Detail Sheet if open
+      // Update Detail Sheet if open and maintain dynamic content type references
       if (selectedItem && selectedItem.id === id) {
-        if (action === 'delete') setSelectedItem(null);
-        else if (action === 'bulk') setSelectedItem({ ...selectedItem, ...payload });
-        else if (action === 'paymentStatus') setSelectedItem({ ...selectedItem, paymentStatus: payload });
-        else setSelectedItem({ ...selectedItem, status: payload });
+        if (action === 'delete') {
+          setSelectedItem(null);
+        } else if (action === 'bulk') {
+          setSelectedItem((prev: any) => ({ ...prev, ...payload, type }));
+        } else if (action === 'paymentStatus') {
+          setSelectedItem((prev: any) => ({ ...prev, paymentStatus: payload, type }));
+        } else {
+          setSelectedItem((prev: any) => ({ ...prev, status: payload, type }));
+        }
       }
 
       success(`${action === 'delete' ? 'Deleted' : 'Updated'} successfully`);
@@ -165,7 +170,7 @@ export default function RegistrationsPage() {
   const { data: currentData, loading: currentLoading, type: currentType } = getActiveData();
 
   const columns: AdminTableColumn[] = useMemo(() => {
-    const base = [
+    return [
       { key: 'displayProfile', label: 'Student Profile', className: 'min-w-[200px]' },
       { key: 'displayUcaId', label: 'UCA ID', hiddenOn: 'mobile' },
       { key: 'displayProgram', label: activeTab === 'demo' ? 'City' : 'Address', hiddenOn: 'mobile' },
@@ -173,7 +178,6 @@ export default function RegistrationsPage() {
       { key: 'displayContact', label: 'Contact', hiddenOn: 'mobile' },
       { key: 'displayStatus', label: 'Status', align: 'right' }
     ];
-    return base;
   }, [activeTab]);
 
   const handleEdit = (item: any) => {
@@ -342,16 +346,6 @@ export default function RegistrationsPage() {
               >
                 Courses
               </button>
-              {/* <button
-                onClick={() => setActiveTab("demo")}
-                className={`rounded-md px-3 sm:px-4 text-[10px] font-black uppercase tracking-widest h-8 transition-all ${
-                  activeTab === "demo"
-                    ? "bg-uca-navy text-white"
-                    : "text-uca-text-muted hover:text-uca-text-primary"
-                }`}
-              >
-                Demos
-              </button> */}
             </div>
           </div>
         </div>
@@ -379,7 +373,7 @@ export default function RegistrationsPage() {
                       handleAction(row.id, currentType, 'status', currentType === 'course' ? 'CONFIRMED' : 'APPROVED');
                     }}
                  >
-                   Approve
+                    Approve
                  </Button>
                )}
                {row.actions}
@@ -588,14 +582,14 @@ export default function RegistrationsPage() {
                         onClick={() => window.open(selectedItem.ageProofUrl)}
                         className="group relative aspect-video bg-uca-bg-surface rounded-xl overflow-hidden border border-uca-border hover:border-uca-accent-blue/50 transition-colors"
                       >
-                        <img src={selectedItem.ageProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
+                        <img src={selectedItem.ageProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" alt="Age proof" />
                         <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-uca-text-primary bg-black/40">View Age Proof</span>
                       </button>
                       <button
                         onClick={() => window.open(selectedItem.paymentProofUrl)}
                         className="group relative aspect-video bg-uca-bg-surface rounded-xl overflow-hidden border border-uca-border hover:border-uca-accent-blue/50 transition-colors"
                       >
-                        <img src={selectedItem.paymentProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
+                        <img src={selectedItem.paymentProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" alt="Payment proof" />
                         <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-uca-text-primary bg-black/40">View Payment Proof</span>
                       </button>
                     </div>

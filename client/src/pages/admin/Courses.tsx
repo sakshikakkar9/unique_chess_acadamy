@@ -11,7 +11,7 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
-import { Plus, Upload, Search, Calendar, BookOpen, X, Filter, ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
+import { Plus, Upload, Search, Calendar, BookOpen, X, Filter, ChevronLeft, ChevronRight, Check, Loader2, MoreVertical } from "lucide-react";
 import { AGE_GROUP_LABELS } from "../../types";
 import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
 import RichTextEditor from "../../components/shared/admin/RichTextEditor";
@@ -243,7 +243,7 @@ const AdminCourses = () => {
   };
 
   const handleEdit = (course: any) => {
-    setEditingCourse(course); // set data FIRST
+    setEditingCourse(course); 
     setSelectedCourse(course);
     setFormData({
       ...course,
@@ -252,7 +252,7 @@ const AdminCourses = () => {
       endDate: course.endDate ? new Date(course.endDate).toISOString().split('T')[0] : ""
     });
     setPreviewUrl(course.custom_banner_url);
-    setIsModalOpen(true); // open modal AFTER
+    setIsModalOpen(true); 
   };
 
   const handleStatusChange = async (
@@ -309,36 +309,34 @@ const AdminCourses = () => {
     ),
     displayStatus: <StatusBadge status={resolveStatus(c.startDate, c.endDate, c.status)} />,
     displayDays: (
-  <div className="flex flex-col gap-2 py-1">
-    {/* Clean, high-contrast date layout with matching icon */}
-    {c.startDate && (
-      <div className="flex items-center gap-1.5 group">
-        <Calendar className="size-3.5 text-uca-navy opacity-70 group-hover:opacity-100 transition-opacity shrink-0" />
-        <span className="text-xs font-semibold text-uca-text-primary tracking-tight">
-          {toDisplayDate(c.startDate)}
-          {c.endDate ? ` — ${toDisplayDate(c.endDate)}` : " onwards"}
-        </span>
+      <div className="flex flex-col gap-2 py-1">
+        {c.startDate && (
+          <div className="flex items-center gap-1.5 group">
+            <Calendar className="size-3.5 text-uca-navy opacity-70 group-hover:opacity-100 transition-opacity shrink-0" />
+            <span className="text-xs font-semibold text-uca-text-primary tracking-tight">
+              {toDisplayDate(c.startDate)}
+              {c.endDate ? ` — ${toDisplayDate(c.endDate)}` : " onwards"}
+            </span>
+          </div>
+        )}
+        
+        <div className="flex flex-wrap gap-1.5">
+          {c.days?.slice(0, 3).map((day: string) => (
+            <span 
+              key={day} 
+              className="text-[9px] font-bold uppercase tracking-wider text-uca-text-muted bg-uca-bg-elevated hover:bg-uca-bg-base px-2 py-0.5 rounded-md border border-uca-border transition-colors shadow-sm"
+            >
+              {day.substring(0, 3)}
+            </span>
+          ))}
+          {c.days?.length > 3 && (
+            <span className="text-[9px] font-black text-uca-navy bg-uca-navy/5 border border-uca-navy/10 px-1.5 py-0.5 rounded-md shadow-sm">
+              +{c.days.length - 3}
+            </span>
+          )}
+        </div>
       </div>
-    )}
-    
-    {/* Styled training day pill badges */}
-    <div className="flex flex-wrap gap-1.5">
-      {c.days?.slice(0, 3).map((day: string) => (
-        <span 
-          key={day} 
-          className="text-[9px] font-bold uppercase tracking-wider text-uca-text-muted bg-uca-bg-elevated hover:bg-uca-bg-base px-2 py-0.5 rounded-md border border-uca-border transition-colors shadow-sm"
-        >
-          {day.substring(0, 3)}
-        </span>
-      ))}
-      {c.days?.length > 3 && (
-        <span className="text-[9px] font-black text-uca-navy bg-uca-navy/5 border border-uca-navy/10 px-1.5 py-0.5 rounded-md shadow-sm">
-          +{c.days.length - 3}
-        </span>
-      )}
-    </div>
-  </div>
-),
+    ),
     displayFee: (
       <div className="font-bold text-uca-accent-blue tabular-nums">
         ₹{c.fee.toLocaleString()}
@@ -379,21 +377,116 @@ const AdminCourses = () => {
           excludeStatuses={['rejected']}
         />
 
-        {/* Table Area */}
-        <AdminTable
-          columns={columns}
-          rows={rows}
-          isLoading={isLoading}
-          onRowClick={(c) => navigate(`/admin/courses/${c.id}/portal`)}
-          onEdit={(row) => {
-            const original = fetchedCourses?.find((c: any) => c.id === row.id);
-            if (original) handleEdit(original);
-          }}
-          onDelete={(c) => setConfirmDelete(c)}
-          entityName="courses"
-          onAddFirst={handleAdd}
-          renderActions={(row) => row.actions}
-        />
+        {/* Unified Table view for Desktop & Match Card View for Mobile explicitly */}
+        <div className="block sm:hidden space-y-4">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="size-6 animate-spin text-uca-navy" />
+            </div>
+          ) : paginatedCourses.length === 0 ? (
+            <div className="text-center py-12 border border-dashed border-uca-border rounded-xl bg-uca-bg-surface">
+              <p className="text-sm text-uca-text-muted font-medium">No courses found</p>
+            </div>
+          ) : (
+            paginatedCourses.map((course) => {
+              const currentStatus = resolveStatus(course.startDate, course.endDate, course.status);
+              return (
+                <div 
+                  key={course.id} 
+                  className="bg-uca-bg-surface border border-uca-border rounded-xl p-4 shadow-sm hover:border-uca-navy/30 transition-all cursor-pointer relative"
+                  onClick={() => navigate(`/admin/courses/${course.id}/portal`)}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="size-12 rounded-xl bg-uca-bg-elevated overflow-hidden shrink-0 border border-uca-border flex items-center justify-center">
+                      {course.custom_banner_url && course.custom_banner_url !== 'null' && course.custom_banner_url !== 'undefined' ? (
+                        <img src={course.custom_banner_url} className="size-full object-cover" />
+                      ) : (
+                        <span className="text-sm font-serif italic font-black text-amber-600">SK</span>
+                      )}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0 pr-6">
+                      <h4 className="font-bold text-base text-uca-text-primary tracking-tight truncate">
+                        {course.title}
+                      </h4>
+                      <div className="flex gap-1.5 mt-1">
+                        <span className={cn("text-[9px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider shadow-sm", getLevelPillStyles(course.skillLevel))}>
+                          {course.skillLevel}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="absolute top-3 right-2" onClick={(e) => e.stopPropagation()}>
+                      <StatusActionMenu
+                        currentStatus={currentStatus}
+                        onEdit={() => handleEdit(course)}
+                        onDelete={() => setConfirmDelete(course)}
+                        hideRejected={true}
+                        onStatusChange={(newStatus) => {
+                          if (newStatus === 'restore') {
+                            handleStatusChange(course, 'restore');
+                          } else {
+                            setConfirmStatus({ item: course, newStatus });
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <hr className="border-uca-border/60 my-3.5" />
+
+                  <div className="grid grid-cols-2 gap-y-3 text-xs">
+                    <div>
+                      <span className="block text-[10px] font-black uppercase tracking-wider text-uca-text-muted mb-0.5">
+                        Status:
+                      </span>
+                      <StatusBadge status={currentStatus} />
+                    </div>
+
+                    <div className="text-right">
+                      <span className="block text-[10px] font-black uppercase tracking-wider text-uca-text-muted mb-0.5">
+                        Course Fee:
+                      </span>
+                      <span className="font-extrabold text-sm text-uca-accent-blue tabular-nums">
+                        ₹{course.fee?.toLocaleString()}
+                      </span>
+                    </div>
+
+                    {course.startDate && (
+                      <div className="col-span-2 pt-1">
+                        <div className="flex items-center gap-1.5 text-uca-text-muted">
+                          <Calendar className="size-3.5 text-uca-navy shrink-0" />
+                          <span className="font-medium tracking-tight">
+                            {toDisplayDate(course.startDate)}
+                            {course.endDate ? ` — ${toDisplayDate(course.endDate)}` : " onwards"}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Regular Table for wide view screens */}
+        <div className="hidden sm:block">
+          <AdminTable
+            columns={columns}
+            rows={rows}
+            isLoading={isLoading}
+            onRowClick={(c) => navigate(`/admin/courses/${c.id}/portal`)}
+            onEdit={(row) => {
+              const original = fetchedCourses?.find((c: any) => c.id === row.id);
+              if (original) handleEdit(original);
+            }}
+            onDelete={(c) => setConfirmDelete(c)}
+            entityName="courses"
+            onAddFirst={handleAdd}
+            renderActions={(row) => row.actions}
+          />
+        </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
@@ -601,10 +694,6 @@ const AdminCourses = () => {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 onChange={(e) => setSelectedBrochure(e.target.files?.[0] || null)}
               />
-              {/* <div className={`h-11 px-4 border border-dashed rounded-lg flex items-center gap-2 transition-all ${selectedBrochure ? 'border-emerald-500 bg-emerald-500/5 text-emerald-400' : 'border-uca-border bg-uca-bg-elevated text-uca-text-muted'}`}>
-                <Upload className="size-4" />
-                <span className="text-[10px] font-bold uppercase truncate">{selectedBrochure ? selectedBrochure.name : "Upload Brochure PDF"}</span>
-              </div> */}
             </div>
           </div>
 

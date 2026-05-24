@@ -352,7 +352,7 @@ const AdminTournaments: React.FC = () => {
 
   return (
     <AdminShell
-      title="Tournament Console"
+      title="Tournament Management"
       subtitle="Manage competitive tournaments and registrations window."
       actionLabel="Add Tournament"
       onAction={handleAdd}

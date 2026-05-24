@@ -134,6 +134,7 @@ export default function StudentsPage() {
     setIsAddModalOpen(true);
   };
 
+  // Improved presentation mapping block
   const rows = filteredStudents.map((student: any) => {
     const avatarStyles = getAvatarStyles(student.fullName);
     const lastTournament = student.registrations?.[0]?.tournament?.title;
@@ -144,64 +145,80 @@ export default function StudentsPage() {
       displayFullName: (
         <div className="flex items-center gap-3">
           <div
-            className="size-9 rounded-full flex items-center justify-center font-bold text-xs shrink-0"
+            className="size-10 rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-sm border border-black/5"
             style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
           >
             {(student.fullName || "?").charAt(0).toUpperCase()}
           </div>
-          <div className="flex flex-col min-w-0">
-            <span className="font-bold text-uca-text-primary truncate">{student.fullName}</span>
-            <span className="text-[10px] text-uca-text-muted">
-              {student.gender} • {new Date().getFullYear() - new Date(student.dob).getFullYear()} Years
+          <div className="flex flex-col min-w-0 gap-0.5">
+            <span className="font-bold text-base text-uca-text-primary tracking-tight truncate">
+              {student.fullName}
+            </span>
+            <span className="inline-flex items-center text-[10px] font-black tracking-widest text-uca-text-muted uppercase">
+              {student.gender} <span className="mx-1.5 text-uca-text-muted/40">•</span> {new Date().getFullYear() - new Date(student.dob).getFullYear()} Years
             </span>
           </div>
         </div>
       ),
       displayUcaId: (
-        <span className="text-xs font-bold text-uca-text-primary">
-          {student.ucaId || "—"}
-        </span>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[10px] font-black text-uca-text-muted tracking-widest uppercase">UCA ID</span>
+          <span className="text-xs font-black text-uca-text-primary tracking-mono">
+            {student.ucaId || "—"}
+          </span>
+        </div>
       ),
       displayContact: (
         <div className="flex flex-col gap-1 text-left">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-uca-text-primary">
-            <Phone className="size-3 text-uca-accent-blue shrink-0" />
+          <div className="flex items-center gap-1.5 text-xs font-bold text-uca-text-primary">
+            <Phone className="size-3.5 text-uca-accent-blue shrink-0" />
             <span>{student.phone}</span>
           </div>
           {student.email && (
-            <div className="flex items-center gap-1.5 text-[10px] text-uca-text-muted">
-              <Mail className="size-3 text-uca-text-muted shrink-0" />
+            <div className="flex items-center gap-1.5 text-[10px] font-medium text-uca-text-muted">
+              <Mail className="size-3 text-uca-text-muted/70 shrink-0" />
               <span className="truncate max-w-[150px]">{student.email}</span>
             </div>
           )}
         </div>
       ),
       displayActivity: (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           {lastTournament && (
-            <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-500 uppercase tracking-tight">
-              <Trophy className="size-3" /> {lastTournament}
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 w-fit">
+              <Trophy className="size-3 text-amber-500 shrink-0" />
+              <span className="text-[9px] font-black text-amber-600 uppercase tracking-wider truncate max-w-[120px]">
+                {lastTournament}
+              </span>
             </div>
           )}
           {lastCourse && (
-            <div className="flex items-center gap-1.5 text-[10px] font-bold text-uca-accent-blue uppercase tracking-tight">
-              <BookOpen className="size-3" /> {lastCourse}
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-accent-blue/10 border border-uca-accent-blue/20 w-fit">
+              <BookOpen className="size-3 text-uca-accent-blue shrink-0" />
+              <span className="text-[9px] font-black text-uca-accent-blue uppercase tracking-wider truncate max-w-[120px]">
+                {lastCourse}
+              </span>
             </div>
           )}
           {!lastTournament && !lastCourse && (
-            <span className="text-[10px] text-uca-text-muted font-bold uppercase tracking-widest">No Activity</span>
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-bg-base border border-uca-border w-fit">
+              <span className="text-[9px] font-bold tracking-widest text-uca-text-muted uppercase">
+                Grand Master
+              </span>
+            </div>
           )}
         </div>
       ),
       displayStatus: (
         <span
           className={cn(
-            "inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
+            "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm",
             student.accountStatus === 'ACTIVE'
               ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
               : 'bg-uca-accent-red/10 text-uca-accent-red border-uca-accent-red/20'
           )}
         >
+          <span className={cn("size-1.5 rounded-full mr-1.5 animate-pulse", student.accountStatus === 'ACTIVE' ? 'bg-emerald-500' : 'bg-uca-accent-red')} />
           {student.accountStatus}
         </span>
       )
