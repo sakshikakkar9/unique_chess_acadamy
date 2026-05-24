@@ -207,7 +207,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
             />
           </div>
           <div className="p-6">
-            <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Program Details</p>
+            <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Course Details</p>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-4">
               {course.title}
             </h1>
@@ -338,17 +338,14 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
             </div>
 
             {/* Mobile-Optimized QR Display Container */}
-            <div className="w-full flex flex-col items-center justify-center bg-slate-50 border border-slate-100 rounded-2xl p-4">
-              <div className="relative border border-slate-200/80 rounded-xl bg-white shadow-sm w-full max-w-[240px] aspect-square flex items-center justify-center p-4 overflow-hidden">
-                <div className="w-full h-full flex items-center justify-center [&_img]:max-w-full [&_img]:h-auto [&_img]:object-contain">
-                  <PaymentDisplay />
-                </div>
-              </div>
-              <div className="text-center mt-3">
-                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Scan to pay</p>
-                <span className="text-[9px] text-slate-400 font-medium block">Accepts all major UPI apps</span>
-              </div>
-            </div>
+            <div className="w-full max-w-[240px] aspect-square bg-white border border-slate-200/80 rounded-none overflow-hidden p-0 mx-auto flex items-center justify-center">
+  {/* Forces the QR code inside <PaymentDisplay /> to completely fill the square */}
+  <div className="w-full h-full flex items-center justify-center 
+    [&_img]:w-full [&_img]:h-full [&_img]:object-cover [&_img]:rounded-none
+    [&_p]:hidden [&_span]:hidden [&_div]:border-none [&_div]:bg-transparent [&_div]:p-0 [&_div]:rounded-none">
+    <PaymentDisplay />
+  </div>
+</div>
           </div>
 
           {/* Help & Contact */}

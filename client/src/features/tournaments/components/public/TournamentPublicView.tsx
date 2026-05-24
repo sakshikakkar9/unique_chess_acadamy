@@ -448,14 +448,17 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
   {/* 1. aspect-square w-full max-w-[240px]: Ensures a perfect square layout on mobile so the image cannot stretch vertically.
     2. p-4: Adds a clean, uniform boundary around the native component layout.
   */}
-  <div className="relative border border-slate-200/80 rounded-xl bg-white shadow-sm w-full max-w-[240px] aspect-square flex items-center justify-center p-4 overflow-hidden">
-    
-    {/* Ensures the nested canvas/image scales cleanly and stays dead-center in the square viewport */}
-    <div className="w-full h-full flex items-center justify-center [&_img]:max-w-full [&_img]:h-auto [&_img]:object-contain">
-      <PaymentDisplay />
-    </div>
-
+ <div className="relative border border-slate-200/80 rounded-none bg-white shadow-sm w-full max-w-[240px] aspect-square flex items-center justify-center p-0 overflow-hidden">
+  
+  {/* Aggressively flattens all internal wrapper spacing and expands the core image to 100% */}
+  <div className="w-full h-full flex items-center justify-center 
+    [&_*]:p-0 [&_*]:m-0 [&_*]:border-none [&_*]:bg-transparent [&_*]:rounded-none
+    [&_img]:w-full [&_img]:h-full [&_img]:object-cover
+    [&_p]:hidden [&_span]:hidden">
+    <PaymentDisplay />
   </div>
+
+</div>
   
   {/* Subtext anchored neatly below the square scanner card */}
   <div className="text-center mt-3">
