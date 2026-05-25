@@ -56,6 +56,8 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                 onChange={(e) => set("studentName", e.target.value)}
                 required
                 disabled={isPreview}
+                pattern="[A-Za-z\s]+"
+                title="Only letters and spaces are allowed"
                 placeholder="Enter full name"
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 placeholder:text-slate-300 h-auto"
               />
@@ -124,7 +126,10 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                   onChange={(e) => set("phone", e.target.value)}
                   required
                   disabled={isPreview}
-                  placeholder="+91"
+                  pattern="\d{10}"
+                  maxLength={10}
+                  title="Phone number must be exactly 10 digits"
+                  placeholder="10-digit number"
                   className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 placeholder:text-slate-300 h-auto"
                 />
               </div>
@@ -165,7 +170,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
               <div className="space-y-1.5">
                 <LabelItem label="Age Proof" required />
                 <div className="relative group/file">
-                  <input type="file" onChange={(e) => handleFileChange(e, 'age')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required={!isPreview} disabled={isPreview} />
+                  <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange(e, 'age')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required={!isPreview} disabled={isPreview} />
                   <div className={cn("h-[42px] border border-dashed rounded-xl flex items-center justify-center gap-2 transition-all px-4", files.age ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-slate-50 border-slate-200 text-slate-400 group-hover/file:border-blue-400")}>
                     {files.age ? <CheckCircle2 className="size-4" /> : <Upload className="size-4" />}
                     <span className="text-xs font-bold uppercase tracking-wider truncate">{files.age ? "Uploaded" : "Upload"}</span>
@@ -175,7 +180,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
               <div className="space-y-1.5">
                 <LabelItem label="Payment Proof" required />
                 <div className="relative group/file">
-                  <input type="file" onChange={(e) => handleFileChange(e, 'payment')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required={!isPreview} disabled={isPreview} />
+                  <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange(e, 'payment')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required={!isPreview} disabled={isPreview} />
                   <div className={cn("h-[42px] border border-dashed rounded-xl flex items-center justify-center gap-2 transition-all px-4", files.payment ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-slate-50 border-slate-200 text-slate-400 group-hover/file:border-blue-400")}>
                     {files.payment ? <CheckCircle2 className="size-4" /> : <Upload className="size-4" />}
                     <span className="text-xs font-bold uppercase tracking-wider truncate">{files.payment ? "Uploaded" : "Upload"}</span>
