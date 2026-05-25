@@ -124,10 +124,9 @@ export const registerForTournament = async (tournamentId, registrationData) => {
     // Smart Sync: Create or Update Student via shared service
     const student = await studentSharedService.getOrCreateStudent(tx, {
       fullName: registrationData.studentName,
-      studentName: registrationData.studentName,
       phone: registrationData.phone,
       gender: registrationData.gender,
-      dob: parseDate(registrationData.dob) || new Date(),
+      dob: registrationData.dob,
       email: registrationData.email || null,
       address: registrationData.address,
       fideId: registrationData.fideId || "NA",

@@ -240,7 +240,6 @@ const AdminDashboard: React.FC = () => {
       numColor: "text-emerald-500",
       subtitle: `Courses: ${formatINR(totalCourseCollections)} | Tournaments: ${formatINR(totalTournamentCollections)}`,
       status: "REVENUE",
-      subtitle: `Courses: ₹${totalCourseCollections.toLocaleString()} | Tournaments: ₹${totalTournamentCollections.toLocaleString()}`,
       path: "/admin/registrations"
     },
   ];
@@ -337,6 +336,7 @@ const AdminDashboard: React.FC = () => {
                       <thead>
                         <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Student</th>
+                          <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">UCA ID</th>
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Address</th>
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Status</th>
                           <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Actions</th>
@@ -368,6 +368,11 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <span className="text-sm font-bold text-uca-text-primary">{name}</span>
                                   </div>
+                                </td>
+                                <td className="px-6 py-3">
+                                  <span className="font-mono text-[10px] font-bold text-uca-accent-blue">
+                                    {item.student?.ucaId || "—"}
+                                  </span>
                                 </td>
                                 <td className="px-6 py-3">
                                   <span className="text-xs text-uca-text-muted font-medium truncate max-w-[200px] block">

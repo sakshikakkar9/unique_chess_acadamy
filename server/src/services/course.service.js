@@ -1,6 +1,5 @@
 import prisma from '../../lib/prisma.js';
 import * as studentSharedService from './student.shared.service.js';
-import { checkDuplicateStudent } from '../utils/checkDuplicateStudent.js';
 import { generateUcaId } from '../utils/generateUcaId.js';
 
 const parseDate = (date) => {
@@ -160,19 +159,7 @@ export const createEnrollment = async (courseId, data, proofs) => {
 
   try {
     return await prisma.$transaction(async (tx) => {
-      // STEP 1 — Duplicate check
-      const { isDuplicate, existingStudent, existingUcaId } = await checkDuplicateStudent({
-        email: data.email,
-        phone: data.phone,
-        fullName: data.studentName,
-        dob: formattedDob
-      });
-
-      if (isDuplicate) {
-        throw new Error(`A student with this info already exists${existingUcaId ? `. Student ID: ${existingUcaId}` : ''}`);
-      }
-
-      // Smart Sync: Create Student via shared service (isDuplicate is false here)
+      // Smart Sync: Create or update Student via shared service
       let student = await studentSharedService.getOrCreateStudent(tx, {
         studentName: data.studentName,
         fullName: data.studentName,
@@ -187,15 +174,6 @@ export const createEnrollment = async (courseId, data, proofs) => {
         experienceLevel: (data.experienceLevel || data.skillLevel || "BEGINNER").toUpperCase().replace(/\s+/g, '_'),
       });
 
-      // STEP 2 — UCA-ID assignment (only if NULL)
-      if (!student.ucaId) {
-        const ucaId = await generateUcaId(tx);
-        student = await tx.student.update({
-          where: { id: student.id },
-          data: { ucaId: ucaId }
-        });
-      }
-
       return await tx.courseEnrollment.create({
         data: {
           course: {
@@ -204,6 +182,7 @@ export const createEnrollment = async (courseId, data, proofs) => {
           student: {
             connect: { id: student.id }
           },
+          ucaId: student.ucaId, // redundant but kept for schema consistency
           discoverySource: data.discoverySource || null,
           category: data.category || "General",
           ageProofUrl: ageProofUrl,
