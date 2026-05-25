@@ -1,31 +1,51 @@
 import prisma from '../../lib/prisma.js';
 import { generateUniqueId } from '../utils/idGenerator.js';
+import { generateUcaId } from '../utils/generateUcaId.js';
 
 /**
- * Shared service to find an existing student by phone or email,
- * or create a new one with a unique 7-character alphanumeric ID.
+ * Shared service to find an existing student by Email, Phone, or Name+DOB,
+ * or create a new one with a unique 7-character alphanumeric ID and a UCA ID.
  */
 export const getOrCreateStudent = async (tx, studentData) => {
   const { phone, email, fullName, gender, dob, address, fideId, fideRating, discoverySource, experienceLevel } = studentData;
 
-  // 1. Try to find existing student by phone or email
-  let existingStudent = await tx.student.findFirst({
-    where: {
-      OR: [
-        { phone: phone },
-        ...(email ? [{ email: email }] : [])
-      ]
-    }
-  });
+  const formattedDob = dob ? new Date(dob) : null;
+
+  // 1. Try to find existing student by priority
+  let existingStudent = null;
+
+  // Priority 1: Email match
+  if (email) {
+    existingStudent = await tx.student.findFirst({
+      where: { email: email }
+    });
+  }
+
+  // Priority 2: Phone match
+  if (!existingStudent && phone) {
+    existingStudent = await tx.student.findUnique({
+      where: { phone: phone }
+    });
+  }
+
+  // Priority 3: Name + DOB match
+  if (!existingStudent && fullName && formattedDob && !isNaN(formattedDob.getTime())) {
+    existingStudent = await tx.student.findFirst({
+      where: {
+        fullName: fullName,
+        dob: formattedDob
+      }
+    });
+  }
 
   if (existingStudent) {
     // Update existing student with latest info
-    return await tx.student.update({
+    const updatedStudent = await tx.student.update({
       where: { id: existingStudent.id },
       data: {
         fullName: fullName || existingStudent.fullName,
         gender: gender || existingStudent.gender,
-        dob: dob ? new Date(dob) : existingStudent.dob,
+        dob: (formattedDob && !isNaN(formattedDob.getTime())) ? formattedDob : existingStudent.dob,
         address: address || existingStudent.address,
         fideId: fideId || existingStudent.fideId,
         fideRating: fideRating !== undefined ? parseInt(fideRating) : existingStudent.fideRating,
@@ -34,6 +54,17 @@ export const getOrCreateStudent = async (tx, studentData) => {
         email: email || existingStudent.email
       }
     });
+
+    // Ensure UCA ID exists
+    if (!updatedStudent.ucaId) {
+      const ucaId = await generateUcaId(tx);
+      return await tx.student.update({
+        where: { id: updatedStudent.id },
+        data: { ucaId: ucaId }
+      });
+    }
+
+    return updatedStudent;
   }
 
   // 2. Create new student if not found
@@ -49,14 +80,17 @@ export const getOrCreateStudent = async (tx, studentData) => {
     attempts++;
   }
 
+  const ucaId = await generateUcaId(tx);
+
   return await tx.student.create({
     data: {
       id: newId,
+      ucaId: ucaId,
       fullName: fullName || "Unknown Student",
       phone: phone,
       email: email || null,
       gender: gender || "Other",
-      dob: dob ? new Date(dob) : new Date(),
+      dob: (formattedDob && !isNaN(formattedDob.getTime())) ? formattedDob : new Date(),
       address: address || "NA",
       fideId: fideId || "NA",
       fideRating: parseInt(fideRating) || 0,

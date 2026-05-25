@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../lib/api";
 import { Tournament } from "../../types";
-import { ArrowLeft, LayoutDashboard, CreditCard, Users, TrendingUp, Wallet, Award, Percent, Search, Filter, Download, FileText, Phone, Mail, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowLeft, LayoutDashboard, CreditCard, Users, TrendingUp, Wallet, Award,
+  Percent, Search, Filter, Download, FileText, Phone, Mail,
+  Calendar as CalendarIcon, ChevronLeft, ChevronRight,
+  Copy, User, ShieldCheck, Image as PhotoIcon, Check, Loader2, Trophy, BookOpen
+} from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Skeleton } from "../../components/ui/skeleton";
@@ -15,14 +20,38 @@ import StatusBadge from "../../components/shared/admin/StatusBadge";
 import AdminShell from "../../components/admin/AdminShell";
 import Pagination from "../../components/shared/admin/Pagination";
 import { getAvatarStyles, cn } from "../../lib/utils";
+import { RowActionMenu } from "../../components/admin/RowActionMenu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../components/ui/sheet";
+import { useToast } from "../../hooks/useToast";
+import AdminModal from "../../components/admin/AdminModal";
+import { Label } from "../../components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "../../components/ui/select";
+import ConfirmDialog from "../../components/admin/ConfirmDialog";
 
 const ITEMS_PER_PAGE = 8;
 
 const TournamentPortal: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { success, error: toastError } = useToast();
+  const qc = useQueryClient();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
+
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [pendingChanges, setPendingChanges] = useState<{ status?: string; paymentStatus?: string }>({});
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState<any>(null);
 
   const { data: tournament, isLoading: isTournamentLoading } = useQuery<Tournament>({
     queryKey: ["tournament", id],
@@ -41,6 +70,77 @@ const TournamentPortal: React.FC = () => {
   });
 
   const totalCollections = (registrations?.length || 0) * (tournament?.entryFee || 0);
+
+  const handleAction = async (regId: string | number, action: 'status' | 'delete' | 'paymentStatus' | 'bulk', payload?: any) => {
+    const isDelete = action === 'delete';
+    if (isDelete) setIsDeleting(true);
+    else setIsSubmitting(true);
+
+    const path = `/tournaments/admin/registrations/${regId}`;
+
+    try {
+      if (action === 'delete') {
+        await api.delete(path);
+      } else if (action === 'paymentStatus') {
+        await api.patch(path, { paymentStatus: payload });
+      } else if (action === 'status') {
+        await api.patch(path, { status: payload });
+      } else if (action === 'bulk') {
+        await api.patch(path, payload);
+      }
+
+      qc.invalidateQueries({ queryKey: ["tournament-registrations", id] });
+      qc.invalidateQueries({ queryKey: ["registrations"] });
+
+      if (selectedItem && selectedItem.id === regId) {
+        if (action === 'delete') setSelectedItem(null);
+        else if (action === 'bulk') setSelectedItem((prev: any) => ({ ...prev, ...payload }));
+        else if (action === 'paymentStatus') setSelectedItem((prev: any) => ({ ...prev, paymentStatus: payload }));
+        else setSelectedItem((prev: any) => ({ ...prev, status: payload }));
+      }
+
+      success(`${action === 'delete' ? 'Deleted' : 'Updated'} successfully`);
+
+      if (isDelete) {
+        setIsConfirmOpen(false);
+        setRecordToDelete(null);
+      }
+      return true;
+    } catch (err: any) {
+      console.error(err);
+      toastError(err.response?.data?.error || "Operation failed");
+      return false;
+    } finally {
+      if (isDelete) setIsDeleting(false);
+      else setIsSubmitting(false);
+    }
+  };
+
+  const handleEdit = (item: any) => {
+    setEditingRecord(item);
+    setPendingChanges({
+      status: item.status,
+      paymentStatus: item.paymentStatus
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleSave = async () => {
+    if (!editingRecord) return;
+    const ok = await handleAction(editingRecord.id, 'bulk', pendingChanges);
+    if (ok) {
+      setIsEditModalOpen(false);
+      setEditingRecord(null);
+      setPendingChanges({});
+    }
+  };
+
+  const handleCloseEdit = () => {
+    if (isSubmitting) return;
+    setIsEditModalOpen(false);
+    setEditingRecord(null);
+    setPendingChanges({});
+  };
 
   if (isTournamentLoading) {
     return (
@@ -62,6 +162,7 @@ const TournamentPortal: React.FC = () => {
   );
 
   return (
+    <>
     <AdminShell
       title={tournament.title}
       subtitle={`Portal ID: ${id?.substring(0, 8).toUpperCase()}`}
@@ -187,15 +288,16 @@ const TournamentPortal: React.FC = () => {
                     <thead>
                       <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Player</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">UCA ID</th>
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Division / FIDE</th>
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted hidden lg:table-cell">Contact</th>
                         <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-center">Status</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Registered</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-uca-border">
                       {isRegLoading ? (
-                        <tr><td colSpan={5} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading roster...</td></tr>
+                        <tr><td colSpan={6} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading roster...</td></tr>
                       ) : (
                         (() => {
                           const filtered = registrations.filter((reg) => {
@@ -207,7 +309,7 @@ const TournamentPortal: React.FC = () => {
                           const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
                           const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-                          if (paginated.length === 0) return <tr><td colSpan={5} className="py-20 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No players found</td></tr>;
+                          if (paginated.length === 0) return <tr><td colSpan={6} className="py-20 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No players found</td></tr>;
 
                           return (
                             <>
@@ -215,7 +317,7 @@ const TournamentPortal: React.FC = () => {
                                 const name = reg?.student?.fullName || "N/A";
                                 const avatarStyles = getAvatarStyles(name);
                                 return (
-                                  <tr key={reg?.id} className="hover:bg-uca-bg-elevated/30 transition-colors">
+                                  <tr key={reg?.id} className="hover:bg-uca-bg-elevated/30 transition-colors cursor-pointer" onClick={() => setSelectedItem({ ...reg, type: 'tournament' })}>
                                     <td className="px-6 py-4">
                                       <div className="flex items-center gap-3">
                                         <div className="size-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0" style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}>
@@ -226,6 +328,11 @@ const TournamentPortal: React.FC = () => {
                                           <p className="text-[10px] text-uca-text-muted font-mono">{reg?.referenceId}</p>
                                         </div>
                                       </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                      <span className="font-mono text-[10px] font-bold text-uca-accent-blue">
+                                        {reg.student?.ucaId || "—"}
+                                      </span>
                                     </td>
                                     <td className="px-6 py-4">
                                       <div className="flex flex-col gap-0.5">
@@ -242,17 +349,20 @@ const TournamentPortal: React.FC = () => {
                                     <td className="px-6 py-4 text-center">
                                       <StatusBadge status={reg?.status} />
                                     </td>
-                                    <td className="px-6 py-4 text-right">
-                                      <span className="text-[10px] text-uca-text-muted font-bold">
-                                        {reg?.createdAt ? format(new Date(reg.createdAt), "MMM d, yyyy") : 'TBD'}
-                                      </span>
+                                    <td className="px-6 py-4 text-right" onClick={e => e.stopPropagation()}>
+                                      <RowActionMenu
+                                        onView={() => setSelectedItem({ ...reg, type: 'tournament' })}
+                                        onEdit={() => handleEdit(reg)}
+                                        onConfirm={() => handleAction(reg.id, 'status', 'APPROVED')}
+                                        onDelete={() => { setRecordToDelete(reg); setIsConfirmOpen(true); }}
+                                      />
                                     </td>
                                   </tr>
                                 );
                               })}
                               {totalPages > 1 && (
                                 <tr>
-                                  <td colSpan={5} className="px-6 py-4 bg-uca-bg-elevated/20">
+                                  <td colSpan={6} className="px-6 py-4 bg-uca-bg-elevated/20">
                                     <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
                                   </td>
                                 </tr>
@@ -269,6 +379,228 @@ const TournamentPortal: React.FC = () => {
         </Tabs>
       </div>
     </AdminShell>
+
+    <AdminModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEdit}
+        title="Edit Registration"
+        footer={
+          <>
+            <Button variant="ghost" disabled={isSubmitting} onClick={handleCloseEdit}>Cancel</Button>
+            <Button
+              onClick={handleSave}
+              disabled={isSubmitting}
+              className="bg-uca-navy hover:bg-uca-navy-hover text-white font-bold px-8 h-10 gap-2"
+            >
+              {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
+              Save Changes
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4 py-2">
+          <div className="grid gap-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Registration Status</Label>
+            <Select
+              value={pendingChanges.status}
+              onValueChange={(val) => setPendingChanges(prev => ({ ...prev, status: val }))}
+            >
+              <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="APPROVED">Approved</SelectItem>
+                <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                <SelectItem value="COMPLETED">Completed</SelectItem>
+                <SelectItem value="REJECTED">Rejected</SelectItem>
+                <SelectItem value="CANCELLED">Cancelled</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-2">
+            <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Payment Status</Label>
+            <Select
+              value={pendingChanges.paymentStatus}
+              onValueChange={(val) => setPendingChanges(prev => ({ ...prev, paymentStatus: val }))}
+            >
+              <SelectTrigger className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg text-uca-text-primary">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-uca-bg-surface border-uca-border text-uca-text-primary shadow-lg">
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="VERIFIED">Verified</SelectItem>
+                <SelectItem value="FAILED">Failed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </AdminModal>
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        onCancel={() => { setIsConfirmOpen(false); setRecordToDelete(null); }}
+        onConfirm={() => handleAction(recordToDelete.id, 'delete')}
+        isLoading={isDeleting}
+        title="Permanent Delete?"
+        description="This action cannot be undone. The registration and associated student link will be removed."
+      />
+
+      <Sheet open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
+        <SheetContent className="sm:max-w-xl rounded-l-[2rem] p-0 border-uca-border bg-uca-bg-base shadow-2xl overflow-y-auto">
+          {selectedItem && (
+            <div className="h-full flex flex-col">
+              <div className="bg-uca-navy p-8 text-white relative overflow-hidden shrink-0 border-b border-uca-border">
+                <SheetHeader className="mb-6 relative z-10 text-left">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="px-2.5 py-1 bg-white/10 text-[9px] font-black uppercase tracking-[0.2em] rounded border border-white/20">
+                      Tournament
+                    </span>
+                    <StatusBadge status={selectedItem.status} />
+                  </div>
+                  <SheetTitle className="text-3xl font-black text-white leading-tight tracking-tight">
+                    {selectedItem.student?.fullName}
+                  </SheetTitle>
+                  <p className="text-uca-text-muted font-bold text-sm mt-1 flex items-center gap-2">
+                    <Trophy className="size-4 text-amber-500" />
+                    {tournament.title}
+                  </p>
+                </SheetHeader>
+
+                <div className="flex flex-wrap gap-3 relative z-10">
+                  <div className="bg-uca-bg-elevated px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5">
+                    <p className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">Reference ID</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs font-mono font-bold tracking-wider text-uca-accent-blue">
+                        {selectedItem.referenceId}
+                      </p>
+                      <button onClick={() => {
+                        navigator.clipboard.writeText(selectedItem.referenceId);
+                        success("Ref ID Copied");
+                      }} className="text-uca-text-muted hover:text-uca-text-primary transition-colors">
+                        <Copy className="size-3" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="bg-uca-bg-elevated px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5">
+                    <p className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">Submission Date</p>
+                    <p className="text-xs text-white font-bold">{selectedItem.createdAt ? format(new Date(selectedItem.createdAt), "PPP") : 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1 p-8 space-y-10 bg-uca-bg-base">
+                <section>
+                  <div className="flex items-center gap-3 mb-5 text-uca-text-primary">
+                    <User className="size-4 text-uca-accent-blue" />
+                    <h4 className="text-xs font-black uppercase tracking-widest">Student Profile</h4>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
+                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Gender</p>
+                      <p className="font-bold text-uca-text-primary">{selectedItem.student?.gender || 'N/A'}</p>
+                    </div>
+                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
+                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Birth Date</p>
+                      <p className="font-bold text-uca-text-primary">{selectedItem.student?.dob ? format(new Date(selectedItem.student.dob), "PPP") : 'N/A'}</p>
+                    </div>
+                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
+                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Phone</p>
+                      <p className="font-bold text-uca-text-primary text-sm">{selectedItem.student?.phone || 'N/A'}</p>
+                    </div>
+                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
+                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Email</p>
+                      <p className="font-bold text-uca-text-primary text-xs truncate">{selectedItem.student?.email || 'N/A'}</p>
+                    </div>
+                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border col-span-2">
+                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Address</p>
+                      <p className="font-bold text-uca-text-primary text-xs leading-relaxed">{selectedItem.student?.address || 'N/A'}</p>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <div className="flex items-center gap-3 mb-5 text-uca-text-primary">
+                    <ShieldCheck className="size-4 text-uca-accent-blue" />
+                    <h4 className="text-xs font-black uppercase tracking-widest">Entry Details</h4>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
+                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">FIDE ID</p>
+                      <p className="text-lg font-black text-uca-text-primary">{selectedItem.student?.fideId || 'N/A'}</p>
+                    </div>
+                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
+                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Rating</p>
+                      <p className="text-lg font-black text-uca-accent-blue">{selectedItem.student?.fideRating || '0'}</p>
+                    </div>
+                    <div className="bg-uca-bg-elevated p-4 rounded-xl border border-uca-border col-span-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Transaction ID</p>
+                          <p className="font-mono font-bold text-white text-sm">{selectedItem.transactionId || 'N/A'}</p>
+                        </div>
+                        <div className="text-right">
+                           <StatusBadge status={selectedItem.paymentStatus || 'PENDING'} />
+                           {selectedItem.paymentStatus !== 'VERIFIED' && (
+                              <button
+                                className="block mt-1 text-[9px] font-black text-uca-accent-blue uppercase hover:underline"
+                                onClick={() => handleAction(selectedItem.id, 'paymentStatus', 'VERIFIED')}
+                              >
+                                Verify Payment
+                              </button>
+                           )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="pb-8">
+                  <div className="flex items-center gap-3 mb-5 text-uca-text-primary">
+                    <PhotoIcon className="size-4 text-uca-accent-blue" />
+                    <h4 className="text-xs font-black uppercase tracking-widest">Documents</h4>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      onClick={() => window.open(selectedItem.ageProofUrl)}
+                      className="group relative aspect-video bg-uca-bg-surface rounded-xl overflow-hidden border border-uca-border hover:border-uca-accent-blue/50 transition-colors"
+                    >
+                      <img src={selectedItem.ageProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" alt="Age proof" />
+                      <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-uca-text-primary bg-black/40">View Age Proof</span>
+                    </button>
+                    <button
+                      onClick={() => window.open(selectedItem.paymentProofUrl)}
+                      className="group relative aspect-video bg-uca-bg-surface rounded-xl overflow-hidden border border-uca-border hover:border-uca-accent-blue/50 transition-colors"
+                    >
+                      <img src={selectedItem.paymentProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" alt="Payment proof" />
+                      <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-uca-text-primary bg-black/40">View Payment Proof</span>
+                    </button>
+                  </div>
+                </section>
+              </div>
+
+              <div className="p-6 bg-uca-bg-surface border-t border-uca-border flex gap-3 shrink-0">
+                {selectedItem.status === "PENDING" && (
+                  <Button
+                    className="flex-1 h-12 bg-uca-navy hover:bg-uca-navy-hover text-white rounded-lg font-bold text-xs uppercase tracking-widest"
+                    onClick={() => handleAction(selectedItem.id, 'status', 'APPROVED')}
+                  >
+                    Approve Entry
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  className="flex-1 h-12 rounded-lg font-bold text-xs uppercase tracking-widest border-uca-border bg-uca-bg-base text-uca-text-muted hover:text-uca-text-primary"
+                  onClick={() => handleAction(selectedItem.id, 'status', 'CANCELLED')}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+    </>
   );
 };
 

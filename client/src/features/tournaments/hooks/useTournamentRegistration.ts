@@ -14,11 +14,7 @@ export const useTournamentRegistration = () => {
       // ✅ CHANGE: Sending FormData requires 'multipart/form-data'
       // Most modern fetch/axios wrappers (like yours likely is) handle this automatically 
       // when they see a FormData object, but we await the full response here.
-      const response = await api.post(`/tournaments/${tournamentId}/register`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await api.post(`/tournaments/${tournamentId}/register`, formData);
       
       return response.data;
     },

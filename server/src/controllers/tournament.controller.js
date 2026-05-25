@@ -74,8 +74,8 @@ export const registerForTournament = async (req, res) => {
     }
 
     // FIX: Use .buffer instead of .path for MemoryStorage
-    const ageProofUrl = await uploadToCloudinary(ageProofFile.buffer);
-    const paymentProofUrl = await uploadToCloudinary(paymentProofFile.buffer);
+    const ageProofUrl = await uploadToCloudinary(ageProofFile.buffer, "tournaments");
+    const paymentProofUrl = await uploadToCloudinary(paymentProofFile.buffer, "tournaments");
 
     if (!ageProofUrl || !paymentProofUrl) {
       throw new Error("Failed to upload documents to Cloudinary");
