@@ -25,12 +25,12 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
 
   return (
     <ScrollReveal delay={delay}>
-      {/* FIX: Added mx-auto, w-full, and explicit mobile/desktop max-widths. 
-        This prevents parent layouts from squishing the card on 361px mobile viewports.
+      {/* MODIFIED LINE BELOW: 
+        Added `-mx-4` to pull the card closer to the screen edges on mobile.
+        Added `sm:mx-0` so desktop or larger viewports remain completely unaffected.
       */}
-      <div className="flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-200 h-full w-full max-w-full sm:max-w-md md:max-w-sm mx-auto">
-        
-        {/* IMAGE AREA */}
+      <div className="flex flex-col -mx-4 sm:mx-0 bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200 h-full">
+        {/* IMAGE AREA - Reverted to match exact tournament height container ratio */}
         <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 flex items-center justify-center border-b border-slate-100">
           <img
             src={tournament.imageUrl || DEFAULT_IMAGE}
@@ -43,18 +43,32 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
           />
 
           {/* Status badge - BOTTOM of image */}
-          <div className="absolute bottom-3 left-3 z-10">
+          <div className="absolute bottom-3 left-3">
             {(() => {
               const cfg = {
-                upcoming: { label: 'Upcoming', cls: 'bg-blue-600 text-white' },
-                ongoing: { label: '● Live Now', cls: 'bg-green-500 text-white' },
-                completed: { label: 'Ended', cls: 'bg-slate-600 text-white' },
-                rejected: { label: 'Unavailable', cls: 'bg-red-600 text-white' },
-                cancelled: { label: 'Cancelled', cls: 'bg-orange-600 text-white' },
-              }[status] || { label: 'Unavailable', cls: 'bg-slate-600 text-white' };
-
+                upcoming: {
+                  label: 'Upcoming',
+                  cls: 'bg-blue-600 text-white'
+                },
+                ongoing: {
+                  label: '● Live Now',
+                  cls: 'bg-green-500 text-white'
+                },
+                completed: {
+                  label: 'Ended',
+                  cls: 'bg-slate-600 text-white'
+                },
+                rejected: {
+                  label: 'Unavailable',
+                  cls: 'bg-red-600 text-white'
+                },
+                cancelled: {
+                  label: 'Cancelled',
+                  cls: 'bg-orange-600 text-white'
+                },
+              }[status];
               return (
-                <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-sm ${cfg.cls}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${cfg.cls}`}>
                   {cfg.label}
                 </span>
               );
@@ -65,40 +79,42 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
         {/* CARD BODY */}
         <div className="p-4 flex flex-col flex-1">
           {/* Title */}
-          <h3 className="text-base font-bold text-slate-900 mb-1.5 line-clamp-1">
+          <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-1">
             {tournament.title}
           </h3>
 
           {/* Date range */}
-          <p className="text-xs text-slate-500 font-medium mb-1.5 flex items-center gap-1.5">
-            <Calendar className="size-3.5 text-slate-400 flex-shrink-0" />
+          <p className="text-xs text-slate-400 font-medium mb-1.5 flex items-center gap-1.5">
+            <Calendar className="size-3.5 flex-shrink-0" />
             {formatDateRange(tournament.startDate, tournament.endDate)}
           </p>
 
           {/* Venue */}
-          <p className="text-xs text-slate-500 mb-4 flex items-center gap-1.5 truncate">
+          <p className="text-xs text-slate-500 mb-3 flex items-center gap-1.5 truncate">
             <MapPin className="size-3.5 flex-shrink-0 text-blue-500" />
             {tournament.location || "Main Academy Hall"}
           </p>
 
-          {/* Prize pool inline row */}
-          <div className="flex items-center gap-1.5 mb-5 text-amber-600 bg-amber-50/50 border border-amber-100 rounded-xl px-3 py-2">
-            <Trophy className="size-4 flex-shrink-0 text-amber-500" />
-            <div className="flex items-center gap-1 text-xs font-semibold">
-              <span className="uppercase tracking-wider text-[10px] text-amber-700 font-bold">Prize Pool:</span>
-              <span className="font-bold text-amber-700">
-                {formatINR(tournament.totalPrizePool ?? 0)}
-              </span>
+          {/* Prize pool pill */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-1.5 bg-transparent rounded-lg px-1 py-1 flex-1">
+              <Trophy className="size-6 text-amber-600 flex-shrink-0" />
+              <div className="flex items-center gap-1.5 text-sm font-bold text-amber-600">
+                <span className="uppercase tracking-wide">Prize Pool:</span>
+                <span>
+                  {formatINR(tournament.totalPrizePool ?? 0)}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Bottom row - entry fee + register */}
           <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto">
-            <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Entry Fee</span>
-              <span className="text-base font-black text-slate-900 leading-none">
+            <div>
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Entry Fee</p>
+              <p className="text-base font-black text-slate-900">
                 {formatINR(tournament.entryFee ?? 0)}
-              </span>
+              </p>
             </div>
 
             {(() => {
@@ -117,7 +133,7 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
                     e.preventDefault();
                     onRegister();
                   }}
-                  className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors duration-150 shadow-sm"
+                  className="bg-slate-900 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors duration-150"
                 >
                   Register
                 </button>
