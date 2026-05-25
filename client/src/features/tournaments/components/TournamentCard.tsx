@@ -25,8 +25,10 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
 
   return (
     <ScrollReveal delay={delay}>
-      {/* Ensure full width across parent layouts */}
-      <div className="flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-200 h-full w-full">
+      {/* FIX: Added mx-auto, w-full, and explicit mobile/desktop max-widths. 
+        This prevents parent layouts from squishing the card on 361px mobile viewports.
+      */}
+      <div className="flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-200 h-full w-full max-w-full sm:max-w-md md:max-w-sm mx-auto">
         
         {/* IMAGE AREA */}
         <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 flex items-center justify-center border-b border-slate-100">
