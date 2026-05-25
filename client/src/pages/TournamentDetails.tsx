@@ -163,21 +163,28 @@ export default function TournamentDetails() {
     const minSize = 100 * 1024; // 100 KB
     const maxSize = 300 * 1024; // 300 KB
 
+    // Updated upload validation block
     for (const [key, file] of Object.entries(files)) {
       if (file) {
+        const friendlyName = key === 'payment1' ? 'Age Proof' : 'Payment Proof';
+
+        // Validate Type
         if (!allowedTypes.includes(file.type)) {
           toast({
             variant: "destructive",
             title: "Invalid File Type",
-            description: `${key === 'payment1' ? 'Age Proof' : 'Payment Proof'} must be a JPEG or PNG image.`
+            description: `${friendlyName} must be a JPEG or PNG image.`
           });
           return;
         }
+
+        // Validate Size with debugging helper
         if (file.size < minSize || file.size > maxSize) {
+          const actualKb = (file.size / 1024).toFixed(1);
           toast({
             variant: "destructive",
             title: "Invalid File Size",
-            description: `${key === 'payment1' ? 'Age Proof' : 'Payment Proof'} size must be between 100 KB and 300 KB.`
+            description: `${friendlyName} size is ${actualKb} KB. It must be strictly between 100 KB and 300 KB.`
           });
           return;
         }
