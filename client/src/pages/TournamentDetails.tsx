@@ -96,13 +96,92 @@ export default function TournamentDetails() {
     e.preventDefault();
     if (!tournament || !id) return;
 
+    // Name validation
+    if (!/^[A-Za-z\s]+$/.test(form.studentName)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Name",
+        description: "Player name should only contain letters and spaces."
+      });
+      return;
+    }
+
+    // Phone validation
+    if (!/^\d{10}$/.test(form.phone)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Phone Number",
+        description: "Phone number must be exactly 10 digits."
+      });
+      return;
+    }
+
+    // Email validation
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Email",
+        description: "Please enter a valid email address."
+      });
+      return;
+    }
+
+    // FIDE ID validation (Optional, but must be numeric if provided)
+    if (form.fideId && !/^\d+$/.test(form.fideId)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid FIDE ID",
+        description: "FIDE ID must be numeric."
+      });
+      return;
+    }
+
+    // FIDE Rating validation (Optional, but must be 0-3500 if provided)
+    if (form.fideRating) {
+      const rating = parseInt(form.fideRating);
+      if (isNaN(rating) || rating < 0 || rating > 3500) {
+        toast({
+          variant: "destructive",
+          title: "Invalid FIDE Rating",
+          description: "FIDE Rating must be between 0 and 3500."
+        });
+        return;
+      }
+    }
+
     if (!files.payment1 || !files.payment2) {
       toast({
         variant: "destructive",
         title: "Missing Files",
-        description: "Please upload both payment proof images."
+        description: "Please upload both Age Proof and Payment Proof."
       });
       return;
+    }
+
+    // File validation
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    const minSize = 100 * 1024; // 100 KB
+    const maxSize = 300 * 1024; // 300 KB
+
+    for (const [key, file] of Object.entries(files)) {
+      if (file) {
+        if (!allowedTypes.includes(file.type)) {
+          toast({
+            variant: "destructive",
+            title: "Invalid File Type",
+            description: `${key === 'payment1' ? 'Age Proof' : 'Payment Proof'} must be a JPEG or PNG image.`
+          });
+          return;
+        }
+        if (file.size < minSize || file.size > maxSize) {
+          toast({
+            variant: "destructive",
+            title: "Invalid File Size",
+            description: `${key === 'payment1' ? 'Age Proof' : 'Payment Proof'} size must be between 100 KB and 300 KB.`
+          });
+          return;
+        }
+      }
     }
 
     const formData = new FormData();

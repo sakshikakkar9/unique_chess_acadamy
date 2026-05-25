@@ -79,6 +79,26 @@ export default function CourseEnrollmentPage() {
     e.preventDefault();
     if (!course) return;
 
+    // Name validation
+    if (!/^[A-Za-z\s]+$/.test(form.studentName)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Name",
+        description: "Student name should only contain letters and spaces."
+      });
+      return;
+    }
+
+    // Phone validation
+    if (!/^\d{10}$/.test(form.phone)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Phone Number",
+        description: "Phone number must be exactly 10 digits."
+      });
+      return;
+    }
+
     if (!files.age || !files.payment) {
       toast({
         variant: "destructive",
@@ -86,6 +106,32 @@ export default function CourseEnrollmentPage() {
         description: "Please upload both Age Proof and Payment Proof."
       });
       return;
+    }
+
+    // File validation
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    const minSize = 100 * 1024; // 100 KB
+    const maxSize = 300 * 1024; // 300 KB
+
+    for (const [key, file] of Object.entries(files)) {
+      if (file) {
+        if (!allowedTypes.includes(file.type)) {
+          toast({
+            variant: "destructive",
+            title: "Invalid File Type",
+            description: `${key === 'age' ? 'Age Proof' : 'Payment Proof'} must be a JPEG or PNG image.`
+          });
+          return;
+        }
+        if (file.size < minSize || file.size > maxSize) {
+          toast({
+            variant: "destructive",
+            title: "Invalid File Size",
+            description: `${key === 'age' ? 'Age Proof' : 'Payment Proof'} size must be between 100 KB and 300 KB.`
+          });
+          return;
+        }
+      }
     }
 
     setLoading(true);
