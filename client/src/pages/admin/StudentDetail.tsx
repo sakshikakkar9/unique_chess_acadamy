@@ -68,7 +68,7 @@ export default function StudentDetailPage() {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/admin/students")}
-            className="rounded-lg hover:bg-uca-bg-elevated text-uca-text-muted gap-2 px-3"
+            className="rounded-lg hover:bg-uca-blue text-uca-text-muted gap-2 px-3"
           >
             <ArrowLeft className="size-4" /> Back to Students
           </Button>
