@@ -257,10 +257,10 @@ const CoursePortal: React.FC = () => {
                 <Button
                   className="h-11 rounded-lg font-bold gap-2 bg-uca-navy hover:bg-uca-navy-hover text-white text-xs uppercase tracking-widest w-full md:w-auto"
                   onClick={() => {
-                    const headers = ["UCA ID", "ID", "Student Name", "Category", "Skill Level", "Phone", "Status"];
+                    const headers = ["UCA ID", "Reference ID", "Student Name", "Category", "Skill Level", "Phone", "Status"];
                     const rows = enrollments.map(r => [
                       r?.ucaId || "—",
-                      r?.id || "N/A",
+                      r?.referenceId || r?.id || "N/A",
                       r?.student?.fullName || "N/A",
                       r?.category || "N/A",
                       r?.student?.experienceLevel || "N/A",
@@ -325,7 +325,7 @@ const CoursePortal: React.FC = () => {
                                         </div>
                                         <div className="min-w-0">
                                           <p className="text-sm font-bold text-uca-text-primary truncate">{name}</p>
-                                          <p className="text-[10px] text-uca-text-muted font-mono">{reg?.id?.substring(0, 8)}</p>
+                                          <p className="text-[10px] text-uca-text-muted font-mono">{reg?.referenceId || reg?.id?.substring(0, 8)}</p>
                                         </div>
                                       </div>
                                     </td>

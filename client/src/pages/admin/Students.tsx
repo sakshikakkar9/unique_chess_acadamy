@@ -81,7 +81,7 @@ export default function StudentsPage() {
       const XLSX = await import("xlsx");
       const dataToExport = filteredStudents.map((s: any) => ({
         "Name": s.fullName,
-        "Student ID": s.id,
+        "Student ID": s.ucaId || "—",
         "Phone": s.phone,
         "Email": s.email || "N/A",
         "Gender": s.gender,
