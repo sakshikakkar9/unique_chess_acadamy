@@ -92,7 +92,7 @@ export default function CoursesPage() {
       <div className="sticky top-16 z-30 w-full bg-white/90 backdrop-blur-md border-b border-slate-100 py-3 sm:py-4 lg:py-6 transform-gpu">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Scrollable on mobile, centered on larger screens */}
-          <div className="flex gap-2 overflow-x-auto no-scrollbar sm:flex-wrap sm:justify-center sm:overflow-x-visible pb-0.5 sm:pb-0">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar sm:flex-wrap sm:justify-center sm:overflow-x-visible py-1.5 sm:py-0 -my-1.5 sm:my-0">
             {["ALL", ...AGE_GROUP_ORDER].map((category) => (
               <button
                 key={category}
