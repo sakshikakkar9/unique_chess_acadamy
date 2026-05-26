@@ -22,9 +22,9 @@ import { cn, getAvatarStyles } from "../../lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import Pagination from "../../components/shared/admin/Pagination";
 import { RowActionMenu } from "../../components/admin/RowActionMenu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../components/ui/sheet";
 import { format } from "date-fns";
 import { useToast } from "../../hooks/useToast";
+import { StudentDetailSheet } from "../../components/admin/StudentDetailSheet";
 import AdminModal from "../../components/admin/AdminModal";
 import { Label } from "../../components/ui/label";
 import {
@@ -567,165 +567,14 @@ const AdminDashboard: React.FC = () => {
         description="This action cannot be undone. The registration and associated student link will be removed."
       />
 
-      {/* Details Sheet */}
-      <Sheet open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
-        <SheetContent className="sm:max-w-xl rounded-l-[2rem] p-0 border-uca-border bg-uca-bg-base shadow-2xl overflow-y-auto">
-          {selectedItem && (
-            <div className="h-full flex flex-col">
-              <div className="bg-uca-navy p-8 text-white relative overflow-hidden shrink-0 border-b border-uca-border">
-                <SheetHeader className="mb-6 relative z-10 text-left">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="px-2.5 py-1 bg-white/10 text-[9px] font-black uppercase tracking-[0.2em] rounded border border-white/20">
-                      {selectedItem.type}
-                    </span>
-                    <StatusBadge status={selectedItem.status} />
-                  </div>
-                  <SheetTitle className="text-3xl font-black text-white leading-tight tracking-tight">
-                    {selectedItem.student?.fullName || selectedItem.studentName}
-                  </SheetTitle>
-                  <p className="text-uca-text-muted font-bold text-sm mt-1 flex items-center gap-2">
-                    {selectedItem.type === 'tournament' ? <Trophy className="size-4 text-amber-500" /> : <BookOpen className="size-4 text-uca-accent-blue" />}
-                    {selectedItem.tournament?.title || selectedItem.course?.title || 'Initial Demo Session'}
-                  </p>
-                </SheetHeader>
-
-                <div className="flex flex-wrap gap-3 relative z-10">
-                  <div className="bg-uca-bg-elevated px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5">
-                    <p className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">Reference ID</p>
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs font-mono font-bold tracking-wider text-uca-accent-blue">
-                        {selectedItem.referenceId || selectedItem.id.toString().slice(-8).toUpperCase()}
-                      </p>
-                      <button onClick={() => {
-                        navigator.clipboard.writeText(selectedItem.referenceId || selectedItem.id);
-                        success("Ref ID Copied");
-                      }} className="text-uca-text-muted hover:text-uca-text-primary transition-colors">
-                        <Copy className="size-3" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="bg-uca-bg-elevated px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5">
-                    <p className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">Submission Date</p>
-                    <p className="text-xs font-bold">{selectedItem.createdAt ? format(new Date(selectedItem.createdAt), "PPP") : 'N/A'}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex-1 p-8 space-y-10 bg-uca-bg-base">
-                <section>
-                  <div className="flex items-center gap-3 mb-5 text-uca-text-primary">
-                    <User className="size-4 text-uca-accent-blue" />
-                    <h4 className="text-xs font-black uppercase tracking-widest">Student Profile</h4>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Gender</p>
-                      <p className="font-bold text-uca-text-primary">{selectedItem.student?.gender || selectedItem.gender || 'N/A'}</p>
-                    </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Birth Date</p>
-                      <p className="font-bold text-uca-text-primary">{(selectedItem.student?.dob || selectedItem.dob) ? format(new Date(selectedItem.student?.dob || selectedItem.dob), "PPP") : 'N/A'}</p>
-                    </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Phone</p>
-                      <p className="font-bold text-uca-text-primary text-sm">{selectedItem.student?.phone || selectedItem.phone || 'N/A'}</p>
-                    </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Email</p>
-                      <p className="font-bold text-uca-text-primary text-xs truncate">{selectedItem.student?.email || selectedItem.email || 'N/A'}</p>
-                    </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border col-span-2">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Address</p>
-                      <p className="font-bold text-uca-text-primary text-xs leading-relaxed">{selectedItem.student?.address || selectedItem.address || 'N/A'}</p>
-                    </div>
-                  </div>
-                </section>
-
-                {(selectedItem.type === 'tournament' || selectedItem.type === 'course') && (
-                  <section>
-                    <div className="flex items-center gap-3 mb-5 text-uca-text-primary">
-                      <ShieldCheck className="size-4 text-uca-accent-blue" />
-                      <h4 className="text-xs font-black uppercase tracking-widest">Entry Details</h4>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                        <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">FIDE ID</p>
-                        <p className="text-lg font-black text-uca-text-primary">{selectedItem.student?.fideId || selectedItem.fideId || 'N/A'}</p>
-                      </div>
-                      <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                        <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Rating</p>
-                        <p className="text-lg font-black text-uca-accent-blue">{selectedItem.student?.fideRating || selectedItem.fideRating || '0'}</p>
-                      </div>
-                      <div className="bg-uca-bg-elevated p-4 rounded-xl border border-uca-border col-span-2">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Transaction ID</p>
-                            <p className="font-mono font-bold text-white text-sm">{selectedItem.transactionId || 'N/A'}</p>
-                          </div>
-                          <div className="text-right">
-                             <StatusBadge status={selectedItem.paymentStatus || 'PENDING'} />
-                             {selectedItem.paymentStatus !== 'VERIFIED' && (
-                                <button
-                                  className="block mt-1 text-[9px] font-black text-uca-accent-blue uppercase hover:underline"
-                                  onClick={() => handleAction(selectedItem.id, selectedItem.type, 'paymentStatus', 'VERIFIED')}
-                                >
-                                  Verify Payment
-                                </button>
-                             )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-                )}
-
-                {selectedItem.type !== 'demo' && (
-                  <section className="pb-8">
-                    <div className="flex items-center gap-3 mb-5 text-uca-text-primary">
-                      <PhotoIcon className="size-4 text-uca-accent-blue" />
-                      <h4 className="text-xs font-black uppercase tracking-widest">Documents</h4>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <button
-                        onClick={() => window.open(selectedItem.ageProofUrl)}
-                        className="group relative aspect-video bg-uca-bg-surface rounded-xl overflow-hidden border border-uca-border hover:border-uca-accent-blue/50 transition-colors"
-                      >
-                        <img src={selectedItem.ageProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
-                        <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-uca-text-primary bg-black/40">View Age Proof</span>
-                      </button>
-                      <button
-                        onClick={() => window.open(selectedItem.paymentProofUrl)}
-                        className="group relative aspect-video bg-uca-bg-surface rounded-xl overflow-hidden border border-uca-border hover:border-uca-accent-blue/50 transition-colors"
-                      >
-                        <img src={selectedItem.paymentProofUrl || '/placeholder-doc.png'} className="size-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
-                        <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black uppercase text-uca-text-primary bg-black/40">View Payment Proof</span>
-                      </button>
-                    </div>
-                  </section>
-                )}
-              </div>
-
-              <div className="p-6 bg-uca-bg-surface border-t border-uca-border flex gap-3 shrink-0">
-                {selectedItem.status === "PENDING" && (
-                  <Button
-                    className="flex-1 h-12 bg-uca-navy hover:bg-uca-navy-hover text-white rounded-lg font-bold text-xs uppercase tracking-widest"
-                    onClick={() => handleAction(selectedItem.id, selectedItem.type, 'status', selectedItem.type === 'course' ? 'CONFIRMED' : 'APPROVED')}
-                  >
-                    Approve Entry
-                  </Button>
-                )}
-                <Button
-                  variant="outline"
-                  className="flex-1 h-12 rounded-lg font-bold text-xs uppercase tracking-widest border-uca-border bg-uca-bg-base text-uca-text-muted hover:text-uca-text-primary"
-                  onClick={() => handleAction(selectedItem.id, selectedItem.type, 'status', selectedItem.type === 'course' ? 'REJECTED' : 'CANCELLED')}
-                >
-                  {selectedItem.type === 'course' ? 'Reject' : 'Cancel'}
-                </Button>
-              </div>
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
+      <StudentDetailSheet
+        open={!!selectedItem}
+        onOpenChange={() => setSelectedItem(null)}
+        data={selectedItem}
+        type={selectedItem?.type || 'course'}
+        onAction={(id, action, payload) => handleAction(id, selectedItem?.type, action, payload)}
+        isSubmitting={isSubmitting}
+      />
     </>
   );
 };

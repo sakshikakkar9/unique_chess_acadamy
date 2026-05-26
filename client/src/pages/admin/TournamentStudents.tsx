@@ -21,11 +21,14 @@ import { format } from "date-fns";
 import StatusBadge from "../../components/shared/admin/StatusBadge";
 import { getAvatarStyles, cn } from "../../lib/utils";
 import AdminShell from "../../components/admin/AdminShell";
+import { RowActionMenu } from "../../components/admin/RowActionMenu";
+import { StudentDetailSheet } from "../../components/admin/StudentDetailSheet";
 
 const TournamentStudents: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [selectedItem, setSelectedItem] = React.useState<any>(null);
 
   const { data: tournament, isLoading: isTournamentLoading } = useQuery<Tournament>({
     queryKey: ["tournament", id],
@@ -128,6 +131,7 @@ const TournamentStudents: React.FC = () => {
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Contact</th>
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-center">Status</th>
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Enrolled</th>
+                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-uca-border">
@@ -145,7 +149,7 @@ const TournamentStudents: React.FC = () => {
                     const name = reg.studentName || reg.student?.fullName || "N/A";
                     const avatarStyles = getAvatarStyles(name);
                     return (
-                      <tr key={reg.id} className="hover:bg-uca-bg-elevated/30 transition-colors">
+                      <tr key={reg.id} className="hover:bg-uca-bg-elevated/30 transition-colors cursor-pointer" onClick={() => setSelectedItem(reg)}>
                         <td className="px-6 py-4 font-mono text-[10px] font-bold text-uca-accent-blue">{reg.referenceId}</td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -187,6 +191,14 @@ const TournamentStudents: React.FC = () => {
                             {reg.createdAt ? format(new Date(reg.createdAt), "MMM d, yyyy") : 'TBD'}
                           </span>
                         </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex justify-end" onClick={e => e.stopPropagation()}>
+                            <RowActionMenu
+                              onView={() => setSelectedItem(reg)}
+                              onEdit={() => navigate(`/admin/students/${reg.studentId}`)}
+                            />
+                          </div>
+                        </td>
                       </tr>
                     );
                   })
@@ -211,7 +223,8 @@ const TournamentStudents: React.FC = () => {
                 return (
                   <div
                     key={reg.id}
-                    className="p-4 space-y-3 hover:bg-uca-bg-elevated/30 active:bg-uca-bg-elevated transition-colors"
+                    className="p-4 space-y-3 hover:bg-uca-bg-elevated/30 active:bg-uca-bg-elevated transition-colors cursor-pointer"
+                    onClick={() => setSelectedItem(reg)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -226,7 +239,13 @@ const TournamentStudents: React.FC = () => {
                           <p className="text-[9px] font-mono font-bold text-uca-accent-blue">{reg.referenceId}</p>
                         </div>
                       </div>
-                      <StatusBadge status={reg.status} />
+                      <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                        <StatusBadge status={reg.status} />
+                        <RowActionMenu
+                          onView={() => setSelectedItem(reg)}
+                          onEdit={() => navigate(`/admin/students/${reg.studentId}`)}
+                        />
+                      </div>
                     </div>
                     <div className="flex justify-between items-center pl-11 text-[10px]">
                       <div className="flex flex-col gap-0.5">
@@ -247,6 +266,13 @@ const TournamentStudents: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <StudentDetailSheet
+        open={!!selectedItem}
+        onOpenChange={() => setSelectedItem(null)}
+        data={selectedItem}
+        type="tournament"
+      />
     </AdminShell>
   );
 };
