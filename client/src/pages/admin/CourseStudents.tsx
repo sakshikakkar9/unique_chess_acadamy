@@ -119,11 +119,11 @@ const CourseStudents: React.FC = () => {
         </div>
 
         <div className="bg-uca-bg-surface border border-uca-border rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
+          {/* Desktop View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">ID</th>
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">UCA ID</th>
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Student</th>
                   <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-uca-text-muted">Skill & Level</th>
@@ -135,10 +135,10 @@ const CourseStudents: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-uca-border">
                 {isRegLoading ? (
-                  <tr><td colSpan={6} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading entries...</td></tr>
+                  <tr><td colSpan={7} className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading entries...</td></tr>
                 ) : filteredEnrollments.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-20 text-center">
+                    <td colSpan={7} className="py-20 text-center">
                       <FileText className="size-10 text-uca-bg-elevated mx-auto mb-3" />
                       <p className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">No Enrollments Found</p>
                     </td>
@@ -149,7 +149,6 @@ const CourseStudents: React.FC = () => {
                     const avatarStyles = getAvatarStyles(name);
                     return (
                       <tr key={reg.id} className="hover:bg-uca-bg-elevated/30 transition-colors">
-                        <td className="px-6 py-4 font-mono text-[10px] font-bold text-uca-accent-blue">{(reg.id || "").substring(0, 8)}</td>
                         <td className="px-6 py-4 font-mono text-[10px] font-bold text-uca-accent-blue">{reg.student?.ucaId || "—"}</td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -192,10 +191,12 @@ const CourseStudents: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <RowActionMenu
-                            onView={() => navigate(`/admin/students/${reg.studentId}`)}
-                            onEdit={() => navigate(`/admin/students/${reg.studentId}`)}
-                          />
+                          <div className="flex justify-end">
+                            <RowActionMenu
+                              onView={() => navigate(`/admin/students/${reg.studentId}`)}
+                              onEdit={() => navigate(`/admin/students/${reg.studentId}`)}
+                            />
+                          </div>
                         </td>
                       </tr>
                     );
@@ -203,6 +204,63 @@ const CourseStudents: React.FC = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile View */}
+          <div className="md:hidden divide-y divide-uca-border">
+            {isRegLoading ? (
+              <div className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading entries...</div>
+            ) : filteredEnrollments.length === 0 ? (
+              <div className="py-20 text-center">
+                <FileText className="size-10 text-uca-bg-elevated mx-auto mb-3" />
+                <p className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">No Enrollments Found</p>
+              </div>
+            ) : (
+              filteredEnrollments.map((reg) => {
+                const name = reg?.student?.fullName || "N/A";
+                const avatarStyles = getAvatarStyles(name);
+                return (
+                  <div
+                    key={reg.id}
+                    className="p-4 space-y-3 hover:bg-uca-bg-elevated/30 active:bg-uca-bg-elevated transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="size-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                          style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
+                        >
+                          {name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-uca-text-primary truncate">{name}</p>
+                          <p className="text-[9px] font-mono font-bold text-uca-accent-blue">{reg.student?.ucaId || "—"}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={reg.status} />
+                        <RowActionMenu
+                          onView={() => navigate(`/admin/students/${reg.studentId}`)}
+                          onEdit={() => navigate(`/admin/students/${reg.studentId}`)}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center pl-11 text-[10px]">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-black uppercase text-uca-text-muted tracking-widest">Category</span>
+                        <span className="font-bold text-uca-text-primary">{reg.category || 'General'}</span>
+                      </div>
+                      <div className="flex flex-col gap-0.5 text-right">
+                        <span className="font-black uppercase text-uca-text-muted tracking-widest">Enrolled On</span>
+                        <span className="font-bold text-uca-text-primary">
+                          {reg.createdAt ? format(new Date(reg.createdAt), "MMM d, yyyy") : 'TBD'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>

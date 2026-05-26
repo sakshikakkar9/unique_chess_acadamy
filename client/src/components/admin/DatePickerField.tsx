@@ -27,7 +27,7 @@ export default function DatePickerField({
     <div className="flex flex-col gap-1.5">
 
       {/* Label row with DD/MM/YYYY display */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
         <label className="text-[10px] font-bold text-slate-500
                           uppercase tracking-widest">
           {label}
@@ -37,8 +37,8 @@ export default function DatePickerField({
         </label>
         {/* DD/MM/YYYY shown clearly next to label */}
         {value && (
-          <span className="text-xs font-bold text-blue-600
-                           bg-blue-50 px-2 py-0.5 rounded-lg">
+          <span className="text-[10px] sm:text-xs font-bold text-blue-600
+                           bg-blue-50 px-2 py-0.5 rounded-lg w-fit">
             📅 {toDisplayDate(value)}
           </span>
         )}

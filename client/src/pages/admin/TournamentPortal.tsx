@@ -210,7 +210,7 @@ const TournamentPortal: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="finance" className="mt-0 focus-visible:ring-0 space-y-6">
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                {[
                  { label: 'Total Collections', value: `₹${totalCollections.toLocaleString()}`, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10', sub: `${registrations.length} players` },
                  { label: 'Entry Fee', value: `₹${tournament?.entryFee?.toLocaleString() || "0"}`, icon: Wallet, color: 'text-uca-accent-blue', bg: 'bg-uca-accent-blue/10', sub: 'Standard rate' },
@@ -283,7 +283,8 @@ const TournamentPortal: React.FC = () => {
              </div>
 
              <div className="bg-uca-bg-surface border border-uca-border rounded-xl overflow-hidden shadow-sm">
-                <div className="overflow-x-auto">
+                {/* Desktop View */}
+                <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left">
                     <thead>
                       <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
@@ -373,6 +374,80 @@ const TournamentPortal: React.FC = () => {
                       )}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Mobile View */}
+                <div className="md:hidden divide-y divide-uca-border">
+                  {isRegLoading ? (
+                    <div className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading roster...</div>
+                  ) : (
+                    (() => {
+                      const filtered = registrations.filter((reg) => {
+                        const name = reg?.student?.fullName?.toLowerCase() || "";
+                        const refId = reg?.referenceId?.toLowerCase() || "";
+                        const search = searchQuery.toLowerCase();
+                        return name.includes(search) || refId.includes(search);
+                      });
+                      const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+                      const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+                      if (paginated.length === 0) return <div className="py-20 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No players found</div>;
+
+                      return (
+                        <>
+                          {paginated.map((reg) => {
+                            const name = reg?.student?.fullName || "N/A";
+                            const avatarStyles = getAvatarStyles(name);
+                            return (
+                              <div
+                                key={reg?.id}
+                                className="p-4 space-y-3 hover:bg-uca-bg-elevated/30 active:bg-uca-bg-elevated transition-colors cursor-pointer"
+                                onClick={() => setSelectedItem({ ...reg, type: 'tournament' })}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3 min-w-0">
+                                    <div className="size-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0" style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}>
+                                      {name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="flex flex-col min-w-0">
+                                      <p className="text-sm font-bold text-uca-text-primary truncate">{name}</p>
+                                      <span className="font-mono text-[9px] font-bold text-uca-accent-blue">
+                                        {reg.student?.ucaId || "—"}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                                    <StatusBadge status={reg?.status} />
+                                    <RowActionMenu
+                                      onView={() => setSelectedItem({ ...reg, type: 'tournament' })}
+                                      onEdit={() => handleEdit(reg)}
+                                      onConfirm={() => handleAction(reg.id, 'status', 'APPROVED')}
+                                      onDelete={() => { setRecordToDelete(reg); setIsConfirmOpen(true); }}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex justify-between items-center pl-11 text-[10px]">
+                                   <div className="flex flex-col gap-0.5">
+                                      <span className="font-black uppercase text-uca-text-muted tracking-widest">FIDE Rating</span>
+                                      <span className="font-bold text-uca-text-primary">{reg?.student?.fideRating || 0}</span>
+                                   </div>
+                                   <div className="flex flex-col gap-0.5 text-right">
+                                      <span className="font-black uppercase text-uca-text-muted tracking-widest">Contact</span>
+                                      <span className="font-bold text-uca-text-primary">{reg?.student?.phone || 'N/A'}</span>
+                                   </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                          {totalPages > 1 && (
+                            <div className="px-4 py-4 bg-uca-bg-elevated/20">
+                              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()
+                  )}
                 </div>
              </div>
           </TabsContent>
@@ -495,7 +570,7 @@ const TournamentPortal: React.FC = () => {
                     <User className="size-4 text-uca-accent-blue" />
                     <h4 className="text-xs font-black uppercase tracking-widest">Student Profile</h4>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
                       <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Gender</p>
                       <p className="font-bold text-uca-text-primary">{selectedItem.student?.gender || 'N/A'}</p>
@@ -512,7 +587,7 @@ const TournamentPortal: React.FC = () => {
                       <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Email</p>
                       <p className="font-bold text-uca-text-primary text-xs truncate">{selectedItem.student?.email || 'N/A'}</p>
                     </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border col-span-2">
+                <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border sm:col-span-2">
                       <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Address</p>
                       <p className="font-bold text-uca-text-primary text-xs leading-relaxed">{selectedItem.student?.address || 'N/A'}</p>
                     </div>
@@ -524,7 +599,7 @@ const TournamentPortal: React.FC = () => {
                     <ShieldCheck className="size-4 text-uca-accent-blue" />
                     <h4 className="text-xs font-black uppercase tracking-widest">Entry Details</h4>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
                       <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">FIDE ID</p>
                       <p className="text-lg font-black text-uca-text-primary">{selectedItem.student?.fideId || 'N/A'}</p>
@@ -533,7 +608,7 @@ const TournamentPortal: React.FC = () => {
                       <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Rating</p>
                       <p className="text-lg font-black text-uca-accent-blue">{selectedItem.student?.fideRating || '0'}</p>
                     </div>
-                    <div className="bg-uca-bg-elevated p-4 rounded-xl border border-uca-border col-span-2">
+                <div className="bg-uca-bg-elevated p-4 rounded-xl border border-uca-border sm:col-span-2">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Transaction ID</p>

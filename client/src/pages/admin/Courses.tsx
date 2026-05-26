@@ -378,7 +378,7 @@ const AdminCourses = () => {
         />
 
         {/* Unified Table view for Desktop & Match Card View for Mobile explicitly */}
-        <div className="block sm:hidden space-y-4">
+        <div className="block md:hidden space-y-4">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="size-6 animate-spin text-uca-navy" />
@@ -471,7 +471,7 @@ const AdminCourses = () => {
         </div>
 
         {/* Regular Table for wide view screens */}
-        <div className="hidden sm:block">
+        <div className="hidden md:block">
           <AdminTable
             columns={columns}
             rows={rows}
@@ -547,7 +547,7 @@ const AdminCourses = () => {
         }
       >
         <div className="space-y-6 py-2" key={editingCourse?.id ?? 'new'}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <DatePickerField
               label="Start Date"
               value={formData.startDate || ""}
@@ -563,7 +563,7 @@ const AdminCourses = () => {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Course Title</Label>
               <Input
@@ -605,7 +605,7 @@ const AdminCourses = () => {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Skill Level</Label>
               <Select value={formData.skillLevel} onValueChange={(v) => setFormData({...formData, skillLevel: v})}>
@@ -653,7 +653,7 @@ const AdminCourses = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Age Group Tag</Label>
               <Select value={formData.ageGroup} onValueChange={(v) => setFormData({...formData, ageGroup: v})}>
@@ -674,7 +674,7 @@ const AdminCourses = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Duration</Label>
               <Input className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" value={formData.duration || ""} onChange={(e) => setFormData({...formData, duration: e.target.value})} placeholder="e.g. 4 Months" />

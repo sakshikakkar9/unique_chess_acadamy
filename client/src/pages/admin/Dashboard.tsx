@@ -331,7 +331,8 @@ const AdminDashboard: React.FC = () => {
 
               return (
                 <TabsContent key={tab} value={tab} className="m-0">
-                  <div className="overflow-x-auto">
+                  {/* Desktop view */}
+                  <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
                         <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
@@ -411,6 +412,66 @@ const AdminDashboard: React.FC = () => {
                         )}
                       </tbody>
                     </table>
+                  </div>
+
+                  {/* Mobile view */}
+                  <div className="md:hidden divide-y divide-uca-border">
+                    {loading ? (
+                      <div className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading...</div>
+                    ) : data.length > 0 ? (
+                      data.map((item: any) => {
+                        const name = item?.student?.fullName || item?.studentName || "N/A";
+                        const avatarStyles = getAvatarStyles(name);
+                        const typeKey = tab === 'tournaments' ? 'tournament' : tab === 'courses' ? 'course' : 'demo';
+                        return (
+                          <div
+                            key={item.id}
+                            className="p-4 space-y-3 hover:bg-uca-bg-elevated/30 active:bg-uca-bg-elevated transition-colors cursor-pointer"
+                            onClick={() => setSelectedItem({ ...item, type: typeKey })}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div
+                                  className="size-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                                  style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
+                                >
+                                  {name.charAt(0).toUpperCase()}
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                  <span className="text-sm font-bold text-uca-text-primary truncate">{name}</span>
+                                  <span className="font-mono text-[9px] font-bold text-uca-accent-blue">
+                                    {item.student?.ucaId || "—"}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                <StatusBadge status={item.status} />
+                                <RowActionMenu
+                                  onView={() => setSelectedItem({ ...item, type: typeKey })}
+                                  onEdit={() => handleEdit(item, tab)}
+                                  onConfirm={() => {
+                                    const status = typeKey === 'course' ? 'CONFIRMED' : (typeKey === 'tournament' ? 'APPROVED' : 'COMPLETED');
+                                    handleAction(item.id, typeKey, 'status', status);
+                                  }}
+                                  onDelete={() => {
+                                    setRecordToDelete({ ...item, type: typeKey });
+                                    setIsConfirmOpen(true);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-1 pl-11">
+                                <span className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Address</span>
+                                <span className="text-xs text-uca-text-primary leading-relaxed line-clamp-2">
+                                  {item.student?.address || item.address || item.city || 'N/A'}
+                                </span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">No records found</div>
+                    )}
                   </div>
                   {tab !== 'demos' && totalPages > 1 && (
                     <div className="px-6 py-4 border-t border-uca-border">

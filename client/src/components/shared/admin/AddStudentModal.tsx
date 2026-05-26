@@ -126,7 +126,7 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
       }
     >
       <div className="space-y-6 py-2" key={editingRecord?.id ?? 'new'}>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Full Name</Label>
             <Input
@@ -147,7 +147,7 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Email Address</Label>
             <Input
@@ -178,7 +178,7 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
 </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Gender</Label>
             <Select value={form.gender} onValueChange={v => update("gender", v)}>
@@ -218,7 +218,7 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">FIDE ID</Label>
             <Input
@@ -246,7 +246,7 @@ export default function AddStudentModal({ open, onOpenChange, onSuccess, editing
           </div> */}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Experience Level</Label>
             <Select value={form.experienceLevel} onValueChange={v => update("experienceLevel", v)}>

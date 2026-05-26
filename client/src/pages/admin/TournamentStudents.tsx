@@ -117,7 +117,8 @@ const TournamentStudents: React.FC = () => {
         </div>
 
         <div className="bg-uca-bg-surface border border-uca-border rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
+          {/* Desktop View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-uca-bg-elevated/50 border-b border-uca-border">
@@ -192,6 +193,57 @@ const TournamentStudents: React.FC = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile View */}
+          <div className="md:hidden divide-y divide-uca-border">
+            {isRegLoading ? (
+              <div className="py-12 text-center text-uca-text-muted text-xs uppercase font-bold tracking-widest">Loading entries...</div>
+            ) : filteredRegistrations.length === 0 ? (
+              <div className="py-20 text-center">
+                <FileText className="size-10 text-uca-bg-elevated mx-auto mb-3" />
+                <p className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">No Signups Found</p>
+              </div>
+            ) : (
+              filteredRegistrations.map((reg) => {
+                const name = reg.studentName || reg.student?.fullName || "N/A";
+                const avatarStyles = getAvatarStyles(name);
+                return (
+                  <div
+                    key={reg.id}
+                    className="p-4 space-y-3 hover:bg-uca-bg-elevated/30 active:bg-uca-bg-elevated transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="size-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+                          style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
+                        >
+                          {name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-uca-text-primary truncate">{name}</p>
+                          <p className="text-[9px] font-mono font-bold text-uca-accent-blue">{reg.referenceId}</p>
+                        </div>
+                      </div>
+                      <StatusBadge status={reg.status} />
+                    </div>
+                    <div className="flex justify-between items-center pl-11 text-[10px]">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-black uppercase text-uca-text-muted tracking-widest">Category</span>
+                        <span className="font-bold text-uca-text-primary">{reg.category || 'Open'}</span>
+                      </div>
+                      <div className="flex flex-col gap-0.5 text-right">
+                        <span className="font-black uppercase text-uca-text-muted tracking-widest">Registered On</span>
+                        <span className="font-bold text-uca-text-primary">
+                          {reg.createdAt ? format(new Date(reg.createdAt), "MMM d, yyyy") : 'TBD'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>

@@ -151,7 +151,7 @@ export default function StudentDetailPage() {
                 <ShieldCheck className="size-5 text-uca-accent-blue" />
                 <h3 className="text-xs font-black uppercase text-uca-text-primary tracking-widest">Chess Profile</h3>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-uca-bg-elevated p-4 rounded-xl border border-uca-border">
                   <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1">FIDE ID</p>
                   <p className="text-lg font-black text-uca-text-primary">{student.fideId || 'NA'}</p>
@@ -160,7 +160,7 @@ export default function StudentDetailPage() {
                   <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1">Rating</p>
                   <p className="text-lg font-black text-uca-accent-blue">{student.fideRating || '0'}</p>
                 </div>
-                <div className="col-span-2 bg-uca-bg-elevated p-4 rounded-xl border border-uca-border">
+                <div className="sm:col-span-2 bg-uca-bg-elevated p-4 rounded-xl border border-uca-border">
                   <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1">Club / Affiliation</p>
                   <p className="text-sm font-bold text-uca-text-primary">{student.clubAffiliation || 'Direct Entry'}</p>
                 </div>
@@ -205,7 +205,7 @@ export default function StudentDetailPage() {
                         </div>
 
                         {/* Extended Data Display */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 pt-3 border-t border-uca-border/50">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-3 border-t border-uca-border/50">
                           {item.ucaId && (
                             <div className="flex flex-col gap-0.5">
                               <span className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">UCA ID</span>
@@ -311,7 +311,7 @@ export default function StudentDetailPage() {
                   <h3 className="text-lg font-black text-uca-text-primary uppercase tracking-tight">Academic Profile</h3>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-5 rounded-2xl bg-uca-bg-elevated/30 border border-uca-border">
                     <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-2 flex items-center gap-2">
                       <Zap className="size-3.5 text-uca-accent-blue" /> Skill Level
@@ -324,7 +324,7 @@ export default function StudentDetailPage() {
                     </p>
                     <p className="text-sm font-bold text-uca-text-primary">{student.preferredBatch || 'TBD'}</p>
                   </div>
-                  <div className="p-5 rounded-2xl bg-uca-bg-elevated/30 border border-uca-border col-span-2">
+                  <div className="p-5 rounded-2xl bg-uca-bg-elevated/30 border border-uca-border sm:col-span-2">
                     <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-2">Discovery Source</p>
                     <p className="text-xs font-bold text-uca-text-primary uppercase tracking-wide">{student.discoverySource || 'Direct Search'}</p>
                   </div>
