@@ -180,49 +180,110 @@ export default function CourseEnrollmentPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-white">
-        <Navbar />
-        <div className="container mx-auto px-6 pt-40 pb-20 flex flex-col items-center justify-center text-center">
-          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md space-y-6">
-            <div className="h-24 w-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 className="h-14 w-14 text-green-500" />
-            </div>
-            <h1 className="text-4xl font-bold text-slate-900 tracking-tight">Enrollment Successful!</h1>
-            <p className="text-slate-500 leading-relaxed">Your registration for <span className="text-blue-600 font-semibold">{course.title}</span> has been submitted.</p>
+      // <div className="min-h-screen bg-white">
+      //   <Navbar />
+      //   <div className="container mx-auto px-6 pt-40 pb-20 flex flex-col items-center justify-center text-center">
+      //     <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md space-y-6">
+      //       <div className="h-24 w-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+      //         <CheckCircle2 className="h-14 w-14 text-green-500" />
+      //       </div>
+      //       <h1 className="text-4xl font-bold text-slate-900 tracking-tight">Enrollment Successful!</h1>
+      //       <p className="text-slate-500 leading-relaxed">Your registration for <span className="text-blue-600 font-semibold">{course.title}</span> has been submitted.</p>
 
-            <div className="bg-slate-50 border border-slate-100 p-8 rounded-3xl space-y-2">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reference ID</p>
-              <p className="text-3xl font-bold text-blue-600 tracking-tight">{refId}</p>
-            </div>
+      //       <div className="bg-slate-50 border border-slate-100 p-8 rounded-3xl space-y-2">
+      //         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reference ID</p>
+      //         <p className="text-3xl font-bold text-blue-600 tracking-tight">{refId}</p>
+      //       </div>
 
-            {ucaId && (
-              <div className="
-                mt-4 p-4 rounded-xl
-                bg-amber-50 dark:bg-amber-900/20
-                border border-amber-200 dark:border-amber-700
-                text-center
-              ">
-                <p className="text-xs text-amber-600 dark:text-amber-400 font-medium
-                              uppercase tracking-wider mb-1">
-                  Your Student ID
-                </p>
-                <p className="text-2xl font-bold text-amber-700 dark:text-amber-300
-                              tracking-widest font-mono">
-                  {ucaId}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Please save this ID for future reference
-                </p>
-              </div>
-            )}
+      //       {ucaId && (
+      //         <div className="
+      //           mt-4 p-4 rounded-xl
+      //           bg-amber-50 dark:bg-amber-900/20
+      //           border border-amber-200 dark:border-amber-700
+      //           text-center
+      //         ">
+      //           <p className="text-xs text-amber-600 dark:text-amber-400 font-medium
+      //                         uppercase tracking-wider mb-1">
+      //             Your Student ID
+      //           </p>
+      //           <p className="text-2xl font-bold text-amber-700 dark:text-amber-300
+      //                         tracking-widest font-mono">
+      //             {ucaId}
+      //           </p>
+      //           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+      //             Please save this ID for future reference
+      //           </p>
+      //         </div>
+      //       )}
 
-            <Button onClick={() => navigate("/courses")} className="w-full h-16 bg-slate-900 hover:bg-blue-600 rounded-2xl font-bold transition-all text-white text-lg">
-              RETURN TO PROGRAMS
-            </Button>
-          </motion.div>
+      //       <Button onClick={() => navigate("/courses")} className="w-full h-16 bg-slate-900 hover:bg-blue-600 rounded-2xl font-bold transition-all text-white text-lg">
+      //         RETURN TO PROGRAMS
+      //       </Button>
+      //     </motion.div>
+      //   </div>
+      //   <Footer />
+      // </div>
+      <div className="min-h-screen flex flex-col bg-white">
+    <Navbar />
+    {/* Optimized padding: pt-24 for mobile, pt-32 for tablets, pt-40 for large desktops */}
+    <div className="flex-1 container mx-auto px-4 sm:px-6 pt-24 md:pt-32 lg:pt-40 pb-12 flex flex-col items-center justify-center text-center">
+      <motion.div 
+        initial={{ scale: 0.8, opacity: 0 }} 
+        animate={{ scale: 1, opacity: 1 }} 
+        className="w-full max-w-md space-y-5 md:space-y-6"
+      >
+        {/* Success Icon */}
+        <div className="h-20 w-20 md:h-24 md:w-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-4">
+          <CheckCircle2 className="h-10 w-10 md:h-14 md:w-14 text-green-500" />
         </div>
-        <Footer />
-      </div>
+        
+        {/* Headings */}
+        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight px-2">
+          Enrollment Successful!
+        </h1>
+        <p className="text-sm md:text-base text-slate-500 leading-relaxed px-4">
+          Your registration for <span className="text-blue-600 font-semibold">{course.title}</span> has been submitted.
+        </p>
+
+        {/* Reference ID Card */}
+        <div className="bg-slate-50 border border-slate-100 p-6 md:p-8 rounded-2xl md:rounded-3xl space-y-1 md:space-y-2 mx-2">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reference ID</p>
+          <p className="text-2xl md:text-3xl font-bold text-blue-600 tracking-tight break-all">{refId}</p>
+        </div>
+
+        {/* Student ID Card */}
+        {ucaId && (
+          <div className="
+            mt-4 p-4 rounded-xl mx-2
+            bg-amber-50 dark:bg-amber-900/20
+            border border-amber-200 dark:border-amber-700
+            text-center
+          ">
+            <p className="text-[10px] md:text-xs text-amber-600 dark:text-amber-400 font-medium uppercase tracking-wider mb-1">
+              Your Student ID
+            </p>
+            <p className="text-xl md:text-2xl font-bold text-amber-700 dark:text-amber-300 tracking-widest font-mono break-all">
+              {ucaId}
+            </p>
+            <p className="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Please save this ID for future reference
+            </p>
+          </div>
+        )}
+
+        {/* Action Button */}
+        <div className="px-2 pt-2">
+          <Button 
+            onClick={() => navigate("/courses")} 
+            className="w-full h-12 md:h-16 bg-slate-900 hover:bg-blue-600 rounded-xl md:rounded-2xl font-bold transition-all text-white text-base md:text-lg shadow-sm"
+          >
+            RETURN TO PROGRAMS
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+    <Footer />
+  </div>
     );
   }
 
