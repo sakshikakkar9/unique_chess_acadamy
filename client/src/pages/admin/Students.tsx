@@ -8,7 +8,20 @@ import {
   BookOpen,
   Phone,
   X,
-  Plus
+  Plus,
+  User,
+  Calendar,
+  MapPin,
+  ShieldCheck,
+  Zap,
+  Info,
+  Clock,
+  Mail,
+  Copy,
+  ArrowRight,
+  Upload,
+  Download,
+  Loader2
 } from "lucide-react";
 import AdminShell from "../../components/admin/AdminShell";
 import AdminTable, { AdminTableColumn } from "../../components/admin/AdminTable";
@@ -27,10 +40,6 @@ import { useToast } from "../../hooks/useToast";
 import { getAvatarStyles, cn } from "../../lib/utils";
 import { Button } from "../../components/ui/button";
 import { format } from "date-fns";
-import {
-  User, Calendar, MapPin, ShieldCheck, Zap, Info, Clock, Mail, Copy, ArrowRight,
-  Upload, Download, Loader2
-} from "lucide-react";
 import { StudentDetailSheet } from "../../components/admin/StudentDetailSheet";
 import { RowActionMenu } from "@/components/admin/RowActionMenu";
 
@@ -117,13 +126,12 @@ export default function StudentsPage() {
     }
   };
 
-  // All columns left-aligned — removed align:'right' from Status
   const columns: AdminTableColumn[] = [
     { key: 'displayFullName', label: 'Student', className: 'min-w-[200px]' },
-    { key: 'displayUcaId', label: 'UCA ID', className: 'min-w-[140px]', hiddenOn: 'mobile' },
-    { key: 'displayContact', label: 'Contact Info', hiddenOn: 'mobile' },
-    { key: 'displayActivity', label: 'Last Activity', hiddenOn: 'tablet' },
-    { key: 'displayStatus', label: 'Status' },
+    { key: 'displayUcaId', label: 'UCA ID', className: 'min-w-[140px]', hiddenOn: 'mobile', align: 'right' },
+    { key: 'displayContact', label: 'Contact Info', hiddenOn: 'mobile', align: 'right' },
+    { key: 'displayActivity', label: 'Last Activity', hiddenOn: 'tablet', align: 'right' },
+    { key: 'displayStatus', label: 'Status', align: 'right' },
   ];
 
   const handleAdd = () => {
@@ -166,23 +174,31 @@ export default function StudentsPage() {
         </div>
       ),
 
-      // UCA ID — left-aligned (was text-right)
+      // UCA ID — table right-aligned via column config
       displayUcaId: (
         <span className="font-mono text-[10px] font-bold text-uca-accent-blue">
           {student.ucaId || "—"}
         </span>
       ),
 
-      // CONTACT INFO — left-aligned (was items-end)
+      // CONTACT INFO — right-aligned
       displayContact: (
-        <div className="flex items-center gap-1.5 text-xs text-uca-text-muted">
-          <Phone className="size-3" /> {student.phone}
+        <div className="flex flex-col gap-1 items-end w-full">
+          <div className="flex items-center gap-1.5 text-xs text-uca-text-muted">
+            <Phone className="size-3" /> {student.phone}
+          </div>
+          {student.email && (
+            <div className="flex items-center gap-1.5 text-[10px] text-uca-text-muted/60">
+              <Mail className="size-3" />
+              <span className="truncate max-w-[150px]">{student.email}</span>
+            </div>
+          )}
         </div>
       ),
 
-      // LAST ACTIVITY — left-aligned (was justify-end)
+      // LAST ACTIVITY — right-aligned
       displayActivity: (
-        <div className="flex flex-wrap gap-1.5 justify-start w-full">
+        <div className="flex flex-wrap gap-1.5 justify-end w-full">
           {lastTournament && (
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 max-w-full">
               <Trophy className="size-3 text-amber-500 shrink-0" />
@@ -209,9 +225,9 @@ export default function StudentsPage() {
         </div>
       ),
 
-      // STATUS — left-aligned (was justify-end)
+      // STATUS — right-aligned
       displayStatus: (
-        <div className="flex justify-start w-full">
+        <div className="flex justify-end">
           <span
             className={cn(
               "inline-flex items-center px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm whitespace-nowrap",
@@ -335,28 +351,28 @@ export default function StudentsPage() {
         </div>
 
         {/* Mobile View */}
-        <div className="md:hidden space-y-4">
+        <div className="md:hidden space-y-3">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
+            <div className="flex items-center justify-center p-8">
               <Loader2 className="size-6 animate-spin text-uca-navy" />
             </div>
           ) : rows.length === 0 ? (
-            <div className="text-center py-12 border border-dashed border-uca-border rounded-xl bg-uca-bg-surface">
-              <p className="text-sm text-uca-text-muted font-medium">No students found</p>
+            <div className="text-center py-8 border border-dashed border-uca-border rounded-xl bg-uca-bg-surface">
+              <p className="text-xs text-uca-text-muted font-medium">No students found.</p>
             </div>
           ) : (
             rows.map((row) => (
               <div
                 key={row.id}
-                className="bg-uca-bg-surface border border-uca-border rounded-xl p-4 shadow-sm active:bg-uca-bg-elevated/30 transition-all cursor-pointer"
                 onClick={() => {
                   setSelectedStudent(row);
                   setIsDetailSheetOpen(true);
                 }}
+                className="p-4 border border-uca-border bg-uca-bg-surface rounded-xl flex flex-col gap-3 transition-all active:scale-[0.99] active:bg-uca-bg-elevated cursor-pointer"
               >
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-start justify-between gap-2">
                   {row.displayFullName}
-                  <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                  <div onClick={(e) => e.stopPropagation()} className="shrink-0 pt-0.5">
                     <RowActionMenu
                       onView={() => navigate(`/admin/students/${row.id}`)}
                       onEdit={() => {
@@ -368,19 +384,25 @@ export default function StudentsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-y-3 pt-3 border-t border-uca-border/50 text-[10px]">
-                  <div>
-                    <span className="block font-black uppercase text-uca-text-muted mb-0.5 tracking-widest">UCA ID</span>
+                <div className="h-px bg-uca-border/60 w-full" />
+
+                <div className="grid grid-cols-2 gap-2 text-[10px]">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-black uppercase tracking-widest text-uca-text-muted">UCA ID</span>
                     {row.displayUcaId}
                   </div>
-                  <div className="text-right">
-                    <span className="block font-black uppercase text-uca-text-muted mb-0.5 tracking-widest">Status</span>
-                    {row.displayStatus}
-                  </div>
-                  <div className="col-span-2">
-                    <span className="block font-black uppercase text-uca-text-muted mb-0.5 tracking-widest">Contact</span>
+                  <div className="flex flex-col gap-0.5 items-end">
+                    <span className="font-black uppercase tracking-widest text-uca-text-muted">Contact</span>
                     {row.displayContact}
                   </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 bg-uca-bg-elevated/40 p-2 rounded-lg border border-uca-border/40">
+                  <div className="flex items-center gap-1.5 text-[11px] text-uca-text-primary font-medium">
+                    <Calendar className="size-3 text-uca-accent-blue shrink-0" />
+                    <span>Joined {row.createdAt ? format(new Date(row.createdAt), "dd MMM yyyy") : '—'}</span>
+                  </div>
+                  {row.displayStatus}
                 </div>
               </div>
             ))

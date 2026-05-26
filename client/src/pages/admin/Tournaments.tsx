@@ -277,12 +277,14 @@ const AdminTournaments: React.FC = () => {
     {
       key: 'category',
       label: 'Category',
-      hiddenOn: 'mobile'
+      hiddenOn: 'mobile',
+      align: 'right'
     },
     {
       key: 'displayDates',
       label: 'Event Dates',
-      hiddenOn: 'tablet'
+      hiddenOn: 'tablet',
+      align: 'right'
     },
     {
       key: 'displayRegistrations',
@@ -318,7 +320,7 @@ const AdminTournaments: React.FC = () => {
       </div>
     ),
     displayDates: (
-      <div className="flex items-center gap-2 text-xs font-medium">
+      <div className="flex items-center justify-end gap-2 text-right text-xs font-medium">
         <Calendar className="size-3.5 text-uca-accent-blue" />
         <div className="flex flex-col">
           <span>{t.startDate ? toDisplayDate(t.startDate) : '—'}</span>
