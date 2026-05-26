@@ -32,6 +32,7 @@ import {
   Upload, Download, Loader2
 } from "lucide-react";
 import { StudentDetailSheet } from "../../components/admin/StudentDetailSheet";
+import { RowActionMenu } from "@/components/admin/RowActionMenu";
 
 export default function StudentsPage() {
   const navigate = useNavigate();
