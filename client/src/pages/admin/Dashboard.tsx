@@ -439,7 +439,7 @@ const AdminDashboard: React.FC = () => {
                                 </div>
                                 <div className="flex flex-col min-w-0">
                                   <span className="text-sm font-bold text-uca-text-primary truncate">{name}</span>
-                                  <span className="font-mono text-[9px] font-bold text-uca-accent-blue">
+                                    <span className="font-mono text-[10px] font-bold text-uca-accent-blue">
                                     {item.student?.ucaId || "—"}
                                   </span>
                                 </div>

@@ -127,7 +127,7 @@ export default function MessagesPage() {
               {msg.name ? msg.name.charAt(0).toUpperCase() : "M"}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="font-bold text-uca-text-primary truncate">{msg.name}</span>
+              <span className="font-bold text-sm text-uca-text-primary truncate">{msg.name}</span>
               <span className="text-[10px] text-uca-text-muted truncate">{msg.email}</span>
             </div>
           </div>
@@ -232,7 +232,7 @@ export default function MessagesPage() {
                 
                 <SheetHeader className="mb-6 relative z-10 text-left">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.2em] rounded border ${
+                    <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-widest rounded border ${
                       selectedMessage.status === "read" 
                         ? "bg-slate-100/10 border-white/20 text-white/60" 
                         : "bg-blue-500/20 border-blue-500/50 text-blue-400"

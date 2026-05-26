@@ -298,9 +298,9 @@ const AdminCourses = () => {
           )}
         </div>
         <div className="flex flex-col min-w-0">
-          <span className="font-bold text-uca-text-primary truncate">{c.title}</span>
+          <span className="font-bold text-sm text-uca-text-primary truncate">{c.title}</span>
           <div className="flex gap-1.5 mt-0.5">
-            <span className={cn("text-[9px] font-black uppercase px-1.5 py-0.5 rounded", getLevelPillStyles(c.skillLevel))}>
+            <span className={cn("text-[10px] font-black uppercase px-1.5 py-0.5 rounded", getLevelPillStyles(c.skillLevel))}>
               {c.skillLevel}
             </span>
           </div>
@@ -435,19 +435,19 @@ const AdminCourses = () => {
 
                   <hr className="border-uca-border/60 my-3.5" />
 
-                  <div className="grid grid-cols-2 gap-y-3 text-xs">
+                  <div className="grid grid-cols-2 gap-y-3 text-[10px]">
                     <div>
-                      <span className="block text-[10px] font-black uppercase tracking-wider text-uca-text-muted mb-0.5">
-                        Status:
+                      <span className="block font-black uppercase text-uca-text-muted mb-0.5 tracking-widest">
+                        Status
                       </span>
                       <StatusBadge status={currentStatus} />
                     </div>
 
                     <div className="text-right">
-                      <span className="block text-[10px] font-black uppercase tracking-wider text-uca-text-muted mb-0.5">
-                        Course Fee:
+                      <span className="block font-black uppercase text-uca-text-muted mb-0.5 tracking-widest">
+                        Course Fee
                       </span>
-                      <span className="font-extrabold text-sm text-uca-accent-blue tabular-nums">
+                      <span className="font-bold text-sm text-uca-accent-blue tabular-nums">
                         ₹{course.fee?.toLocaleString()}
                       </span>
                     </div>

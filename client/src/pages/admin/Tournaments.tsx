@@ -312,8 +312,8 @@ const AdminTournaments: React.FC = () => {
           />
         </div>
         <div className="flex flex-col">
-          <span className="font-bold text-uca-text-primary line-clamp-1 text-sm md:text-base">{t.title}</span>
-          <span className="text-[10px] text-uca-text-muted uppercase tracking-tight line-clamp-1">{t.location || "Online"}</span>
+          <span className="font-bold text-sm text-uca-text-primary line-clamp-1">{t.title}</span>
+          <span className="text-[10px] text-uca-text-muted uppercase tracking-widest font-black line-clamp-1">{t.location || "Online"}</span>
         </div>
       </div>
     ),
@@ -423,13 +423,13 @@ const AdminTournaments: React.FC = () => {
 
                   <div className="h-px bg-uca-border/60 w-full" />
 
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="grid grid-cols-2 gap-2 text-[10px]">
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[9px] uppercase tracking-wider text-uca-text-muted font-bold">Category</span>
-                      <span className="font-semibold text-uca-text-primary truncate">{t.category || "Open"}</span>
+                      <span className="font-black uppercase tracking-widest text-uca-text-muted">Category</span>
+                      <span className="font-bold text-uca-text-primary truncate">{t.category || "Open"}</span>
                     </div>
                     <div className="flex flex-col gap-0.5 items-end">
-                      <span className="text-[9px] uppercase tracking-wider text-uca-text-muted font-bold">Registrations</span>
+                      <span className="font-black uppercase tracking-widest text-uca-text-muted">Registrations</span>
                       <span className="font-black text-uca-accent-blue flex items-center gap-1">
                         <Users className="size-3" />
                         {t._count?.registrations || 0}
