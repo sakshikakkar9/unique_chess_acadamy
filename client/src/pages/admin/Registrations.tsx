@@ -208,7 +208,7 @@ export default function RegistrationsPage() {
             {item.student?.fullName?.charAt(0).toUpperCase() || item.studentName?.charAt(0).toUpperCase() || "S"}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="font-bold text-uca-text-primary truncate">{item.student?.fullName || item.studentName}</span>
+            <span className="font-bold text-sm text-uca-text-primary truncate">{item.student?.fullName || item.studentName}</span>
             <span className="text-[10px] text-uca-text-muted">
               {item.student?.gender || item.gender || 'Not Specified'}
             </span>

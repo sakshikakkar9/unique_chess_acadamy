@@ -146,18 +146,18 @@ export default function StudentsPage() {
 
       // STUDENT — left-aligned (unchanged)
       displayFullName: (
-        <div className="flex items-center gap-3 w-full">
+        <div className="flex items-center gap-3">
           <div
-            className="size-9 sm:size-10 rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-sm border border-black/5"
+            className="size-8 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0"
             style={{ backgroundColor: avatarStyles.bg, color: avatarStyles.color }}
           >
             {(student.fullName || "?").charAt(0).toUpperCase()}
           </div>
-          <div className="flex flex-col min-w-0 gap-0.5">
-            <span className="font-bold text-sm sm:text-base text-uca-text-primary tracking-tight truncate">
+          <div className="flex flex-col min-w-0">
+            <span className="font-bold text-sm text-uca-text-primary truncate">
               {student.fullName}
             </span>
-            <span className="inline-flex items-center text-[10px] font-black tracking-widest text-uca-text-muted uppercase">
+            <span className="text-[10px] text-uca-text-muted">
               {student.gender}
               <span className="mx-1.5 text-uca-text-muted/40">•</span>
               {new Date().getFullYear() - new Date(student.dob).getFullYear()} Years
@@ -168,26 +168,15 @@ export default function StudentsPage() {
 
       // UCA ID — left-aligned (was text-right)
       displayUcaId: (
-        <div className="w-full text-left">
-          <span className="text-sm font-black text-uca-text-primary tracking-mono">
-            {student.ucaId || "—"}
-          </span>
-        </div>
+        <span className="font-mono text-[10px] font-bold text-uca-accent-blue">
+          {student.ucaId || "—"}
+        </span>
       ),
 
       // CONTACT INFO — left-aligned (was items-end)
       displayContact: (
-        <div className="flex flex-col gap-1.5 items-start w-full">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-uca-text-primary">
-            <Phone className="size-3.5 text-uca-accent-blue shrink-0" />
-            <span>{student.phone}</span>
-          </div>
-          {student.email && (
-            <div className="flex items-center gap-1.5 text-[10px] font-medium text-uca-text-muted">
-              <Mail className="size-3 text-uca-text-muted/70 shrink-0" />
-              <span className="truncate max-w-[160px]">{student.email}</span>
-            </div>
-          )}
+        <div className="flex items-center gap-1.5 text-xs text-uca-text-muted">
+          <Phone className="size-3" /> {student.phone}
         </div>
       ),
 
@@ -197,7 +186,7 @@ export default function StudentsPage() {
           {lastTournament && (
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 max-w-full">
               <Trophy className="size-3 text-amber-500 shrink-0" />
-              <span className="text-[9px] font-black text-amber-600 uppercase tracking-wider truncate max-w-[110px]">
+              <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest truncate max-w-[110px]">
                 {lastTournament}
               </span>
             </div>
@@ -205,14 +194,14 @@ export default function StudentsPage() {
           {lastCourse && (
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-accent-blue/10 border border-uca-accent-blue/20 max-w-full">
               <BookOpen className="size-3 text-uca-accent-blue shrink-0" />
-              <span className="text-[9px] font-black text-uca-accent-blue uppercase tracking-wider truncate max-w-[110px]">
+              <span className="text-[10px] font-black text-uca-accent-blue uppercase tracking-widest truncate max-w-[110px]">
                 {lastCourse}
               </span>
             </div>
           )}
           {!lastTournament && !lastCourse && (
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-uca-bg-base border border-uca-border">
-              <span className="text-[9px] font-bold tracking-widest text-uca-text-muted uppercase">
+              <span className="text-[10px] font-black tracking-widest text-uca-text-muted uppercase">
                 Grand Master
               </span>
             </div>
@@ -381,19 +370,16 @@ export default function StudentsPage() {
 
                 <div className="grid grid-cols-2 gap-y-3 pt-3 border-t border-uca-border/50 text-[10px]">
                   <div>
-                    <span className="block font-black uppercase text-uca-text-muted mb-0.5">UCA ID</span>
-                    <span className="text-xs font-mono font-bold text-uca-accent-blue">{row.ucaId || "—"}</span>
+                    <span className="block font-black uppercase text-uca-text-muted mb-0.5 tracking-widest">UCA ID</span>
+                    {row.displayUcaId}
                   </div>
                   <div className="text-right">
-                    <span className="block font-black uppercase text-uca-text-muted mb-0.5">Account Status</span>
+                    <span className="block font-black uppercase text-uca-text-muted mb-0.5 tracking-widest">Status</span>
                     {row.displayStatus}
                   </div>
                   <div className="col-span-2">
-                    <span className="block font-black uppercase text-uca-text-muted mb-0.5">Contact</span>
-                    <div className="flex items-center gap-2 text-xs font-bold text-uca-text-primary">
-                      <Phone className="size-3 text-uca-accent-blue" />
-                      <span>{row.phone}</span>
-                    </div>
+                    <span className="block font-black uppercase text-uca-text-muted mb-0.5 tracking-widest">Contact</span>
+                    {row.displayContact}
                   </div>
                 </div>
               </div>

@@ -332,7 +332,7 @@ const TournamentPortal: React.FC = () => {
                                       </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                      <span className="font-mono text-[10px] font-bold text-uca-accent-blue">
+                                      <span className="font-mono text-[10px] font-bold text-uca-accent-blue bg-uca-bg-elevated px-2 py-1 rounded border border-uca-border">
                                         {reg.student?.ucaId || "—"}
                                       </span>
                                     </td>

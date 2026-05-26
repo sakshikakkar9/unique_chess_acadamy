@@ -250,11 +250,11 @@ const TournamentStudents: React.FC = () => {
                     <div className="flex justify-between items-center pl-11 text-[10px]">
                       <div className="flex flex-col gap-0.5">
                         <span className="font-black uppercase text-uca-text-muted tracking-widest">Category</span>
-                        <span className="font-bold text-uca-text-primary">{reg.category || 'Open'}</span>
+                        <span className="font-bold text-uca-text-primary uppercase">{reg.category || 'Open'}</span>
                       </div>
                       <div className="flex flex-col gap-0.5 text-right">
                         <span className="font-black uppercase text-uca-text-muted tracking-widest">Registered On</span>
-                        <span className="font-bold text-uca-text-primary">
+                        <span className="font-bold text-uca-text-primary uppercase">
                           {reg.createdAt ? format(new Date(reg.createdAt), "MMM d, yyyy") : 'TBD'}
                         </span>
                       </div>

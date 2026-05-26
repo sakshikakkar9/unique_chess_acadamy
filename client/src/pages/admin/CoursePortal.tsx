@@ -330,7 +330,7 @@ const CoursePortal: React.FC = () => {
                                       </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                      <span className="font-mono text-[11px] font-bold text-uca-text-primary bg-uca-bg-elevated px-2 py-1 rounded border border-uca-border">
+                                      <span className="font-mono text-[10px] font-bold text-uca-accent-blue bg-uca-bg-elevated px-2 py-1 rounded border border-uca-border">
                                         {reg?.student?.ucaId || '—'}
                                       </span>
                                     </td>
@@ -428,7 +428,7 @@ const CoursePortal: React.FC = () => {
                                 <div className="flex justify-between items-center pl-11 text-[10px]">
                                    <div className="flex flex-col gap-0.5">
                                       <span className="font-black uppercase text-uca-text-muted tracking-widest">Category</span>
-                                      <span className="font-bold text-uca-text-primary">{reg?.category || 'General'}</span>
+                                      <span className="font-bold text-uca-text-primary uppercase">{reg?.category || 'General'}</span>
                                    </div>
                                    <div className="flex flex-col gap-0.5 text-right">
                                       <span className="font-black uppercase text-uca-text-muted tracking-widest">Contact</span>

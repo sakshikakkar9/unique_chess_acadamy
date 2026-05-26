@@ -153,15 +153,15 @@ export default function StudentDetailPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-uca-bg-elevated p-4 rounded-xl border border-uca-border">
-                  <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1">FIDE ID</p>
+                  <p className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest mb-1">FIDE ID</p>
                   <p className="text-lg font-black text-uca-text-primary">{student.fideId || 'NA'}</p>
                 </div>
                 <div className="bg-uca-bg-elevated p-4 rounded-xl border border-uca-border">
-                  <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1">Rating</p>
+                  <p className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest mb-1">Rating</p>
                   <p className="text-lg font-black text-uca-accent-blue">{student.fideRating || '0'}</p>
                 </div>
                 <div className="sm:col-span-2 bg-uca-bg-elevated p-4 rounded-xl border border-uca-border">
-                  <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1">Club / Affiliation</p>
+                  <p className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest mb-1">Club / Affiliation</p>
                   <p className="text-sm font-bold text-uca-text-primary">{student.clubAffiliation || 'Direct Entry'}</p>
                 </div>
               </div>
@@ -313,19 +313,19 @@ export default function StudentDetailPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-5 rounded-2xl bg-uca-bg-elevated/30 border border-uca-border">
-                    <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-2 flex items-center gap-2">
+                    <p className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest mb-2 flex items-center gap-2">
                       <Zap className="size-3.5 text-uca-accent-blue" /> Skill Level
                     </p>
                     <p className="text-sm font-bold text-uca-text-primary">{student.experienceLevel || 'Beginner'}</p>
                   </div>
                   <div className="p-5 rounded-2xl bg-uca-bg-elevated/30 border border-uca-border">
-                    <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-2 flex items-center gap-2">
+                    <p className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest mb-2 flex items-center gap-2">
                       <Clock className="size-3.5 text-uca-accent-blue" /> Preferred Batch
                     </p>
                     <p className="text-sm font-bold text-uca-text-primary">{student.preferredBatch || 'TBD'}</p>
                   </div>
                   <div className="p-5 rounded-2xl bg-uca-bg-elevated/30 border border-uca-border sm:col-span-2">
-                    <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-2">Discovery Source</p>
+                    <p className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest mb-2">Discovery Source</p>
                     <p className="text-xs font-bold text-uca-text-primary uppercase tracking-wide">{student.discoverySource || 'Direct Search'}</p>
                   </div>
                 </div>

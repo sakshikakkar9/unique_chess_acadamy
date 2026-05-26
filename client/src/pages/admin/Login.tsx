@@ -77,7 +77,7 @@ const AdminLogin: React.FC = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-xs font-semibold text-uca-text-muted uppercase tracking-wide">Username</Label>
+              <Label htmlFor="username" className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest">Username</Label>
               <Input
                 id="username"
                 type="text"
@@ -89,7 +89,7 @@ const AdminLogin: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-xs font-semibold text-uca-text-muted uppercase tracking-wide">Password</Label>
+              <Label htmlFor="password" className="text-[10px] font-black text-uca-text-muted uppercase tracking-widest">Password</Label>
               <Input
                 id="password"
                 type="password"

@@ -109,7 +109,7 @@ const AdminGallery: React.FC = () => {
               <input
                 type="text"
                 placeholder="Search gallery..."
-                className="w-full h-10 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg pl-10 pr-4 outline-none"
+                className="w-full h-10 bg-uca-bg-base border-uca-border text-sm focus:ring-uca-accent-blue rounded-lg pl-10 pr-4 outline-none placeholder:text-[10px] placeholder:font-black placeholder:uppercase placeholder:tracking-widest"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
