@@ -738,9 +738,6 @@ const AdminTournaments: React.FC = () => {
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-uca-accent-blue">Arena Preview Mode</p>
               <DialogTitle className="text-base md:text-xl font-black">User Experience View</DialogTitle>
             </div>
-            <Button variant="ghost" onClick={() => setIsPreviewOpen(false)} className="text-uca-text-primary hover:bg-uca-bg-elevated rounded-lg p-1 h-auto">
-              <X className="size-5 md:size-6" />
-            </Button>
           </div>
 
           <div className="p-3 md:p-12 max-h-[80vh] overflow-y-auto scrollbar-thin">

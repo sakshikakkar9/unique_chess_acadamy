@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
-import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../ui/dialog";
 
 interface AdminModalProps {
@@ -54,16 +52,8 @@ const AdminModal: React.FC<AdminModalProps> = ({
         </div>
 
         {/* Header */}
-        <div className="flex justify-between items-center px-5 py-4 sm:px-6 sm:py-4 border-b border-uca-border bg-uca-bg-surface shadow-sm sticky top-0 z-10 shrink-0">
+        <div className="flex items-center px-5 py-4 sm:px-6 sm:py-4 border-b border-uca-border bg-uca-bg-surface shadow-sm sticky top-0 z-10 shrink-0">
           <DialogTitle className="text-lg font-bold text-uca-text-primary">{title}</DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="text-uca-text-muted hover:text-uca-text-primary hover:bg-uca-bg-elevated -mr-2"
-          >
-            <X className="size-5" />
-          </Button>
         </div>
 
         <DialogDescription className="sr-only">
