@@ -119,7 +119,7 @@ export default function StudentsPage() {
   // All columns left-aligned — removed align:'right' from Status
   const columns: AdminTableColumn[] = [
     { key: 'displayFullName', label: 'Student', className: 'min-w-[200px]' },
-    { key: 'displayUcaId', label: 'UCA ID', className: 'min-w-[140px]' },
+    { key: 'displayUcaId', label: 'UCA ID', className: 'min-w-[140px]', hiddenOn: 'mobile' },
     { key: 'displayContact', label: 'Contact Info', hiddenOn: 'mobile' },
     { key: 'displayActivity', label: 'Last Activity', hiddenOn: 'tablet' },
     { key: 'displayStatus', label: 'Status' },
@@ -324,23 +324,81 @@ export default function StudentsPage() {
         </div>
 
         {/* Table */}
-        <AdminTable
-          columns={columns}
-          rows={rows}
-          isLoading={isLoading}
-          onRowClick={(s) => {
-            setSelectedStudent(s);
-            setIsDetailSheetOpen(true);
-          }}
-          onEdit={(row) => {
-            const original = students.find((s: any) => s.id === row.id);
-            if (original) handleEdit(original);
-          }}
-          onView={(s) => navigate(`/admin/students/${s.id}`)}
-          onDelete={(s) => { setSelectedStudent(s); setIsConfirmOpen(true); }}
-          entityName="students"
-          onAddFirst={handleAdd}
-        />
+        <div className="hidden md:block">
+          <AdminTable
+            columns={columns}
+            rows={rows}
+            isLoading={isLoading}
+            onRowClick={(s) => {
+              setSelectedStudent(s);
+              setIsDetailSheetOpen(true);
+            }}
+            onEdit={(row) => {
+              const original = students.find((s: any) => s.id === row.id);
+              if (original) handleEdit(original);
+            }}
+            onView={(s) => navigate(`/admin/students/${s.id}`)}
+            onDelete={(s) => { setSelectedStudent(s); setIsConfirmOpen(true); }}
+            entityName="students"
+            onAddFirst={handleAdd}
+          />
+        </div>
+
+        {/* Mobile View */}
+        <div className="md:hidden space-y-4">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="size-6 animate-spin text-uca-navy" />
+            </div>
+          ) : rows.length === 0 ? (
+            <div className="text-center py-12 border border-dashed border-uca-border rounded-xl bg-uca-bg-surface">
+              <p className="text-sm text-uca-text-muted font-medium">No students found</p>
+            </div>
+          ) : (
+            rows.map((row) => (
+              <div
+                key={row.id}
+                className="bg-uca-bg-surface border border-uca-border rounded-xl p-4 shadow-sm active:bg-uca-bg-elevated/30 transition-all cursor-pointer"
+                onClick={() => {
+                  setSelectedStudent(row);
+                  setIsDetailSheetOpen(true);
+                }}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  {row.displayFullName}
+                  <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                    <RowActionMenu
+                      onView={() => navigate(`/admin/students/${row.id}`)}
+                      onEdit={() => {
+                        const original = students.find((s: any) => s.id === row.id);
+                        if (original) handleEdit(original);
+                      }}
+                      onDelete={() => { setSelectedStudent(row); setIsConfirmOpen(true); }}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-y-3 pt-3 border-t border-uca-border/50 text-[10px]">
+                  <div>
+                    <span className="block font-black uppercase text-uca-text-muted mb-0.5">UCA ID</span>
+                    <span className="text-xs font-mono font-bold text-uca-accent-blue">{row.ucaId || "—"}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="block font-black uppercase text-uca-text-muted mb-0.5">Account Status</span>
+                    {row.displayStatus}
+                  </div>
+                  <div className="col-span-2">
+                    <span className="block font-black uppercase text-uca-text-muted mb-0.5">Contact</span>
+                    <div className="flex items-center gap-2 text-xs font-bold text-uca-text-primary">
+                      <Phone className="size-3 text-uca-accent-blue" />
+                      <span>{row.phone}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       <AddStudentModal

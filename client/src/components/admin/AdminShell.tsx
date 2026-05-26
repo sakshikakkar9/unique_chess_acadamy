@@ -149,14 +149,14 @@ const AdminShell: React.FC<AdminShellProps> = ({
             >
               {isSidebarOpen ? <X className="size-6" /> : <Menu className="size-6" />}
             </button>
-            <div className="flex flex-col min-w-0 hidden sm:block">
+            <div className="flex flex-col min-w-0 hidden md:block">
               <h1 className="text-xl lg:text-2xl font-bold text-uca-text-primary truncate">{title}</h1>
               {subtitle && <p className="text-xs lg:text-sm text-uca-text-muted truncate">{subtitle}</p>}
             </div>
           </div>
 
           {actionLabel && (
-            <div className="hidden sm:block">
+            <div className="hidden md:block">
               <Button
                 onClick={onAction}
                 className="bg-uca-navy hover:bg-uca-navy-hover text-white font-semibold text-sm px-4 py-2 rounded-lg transition-colors h-10 gap-2"
@@ -169,7 +169,7 @@ const AdminShell: React.FC<AdminShellProps> = ({
         </header>
 
         {/* Mobile Page Header (Stacked) */}
-        <div className="sm:hidden px-4 py-4 space-y-3 bg-uca-bg-surface border-b border-uca-border">
+        <div className="md:hidden px-4 py-4 space-y-3 bg-uca-bg-surface border-b border-uca-border">
           <div className="flex flex-col">
             <h1 className="text-xl font-bold text-uca-text-primary">{title}</h1>
             {subtitle && <p className="text-xs text-uca-text-muted">{subtitle}</p>}

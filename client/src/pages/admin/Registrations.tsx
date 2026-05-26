@@ -173,7 +173,7 @@ export default function RegistrationsPage() {
       { key: 'displayProfile', label: 'Student Profile', className: 'min-w-[200px]' },
       { key: 'displayUcaId', label: 'UCA ID', hiddenOn: 'mobile' },
       { key: 'displayProgram', label: activeTab === 'demo' ? 'City' : 'Address', hiddenOn: 'mobile' },
-      { key: 'displayDate', label: activeTab === 'demo' ? 'Date of Submission' : 'Submission', hiddenOn: 'tablet' },
+      { key: 'displayDate', label: 'Submission', hiddenOn: 'tablet' },
       { key: 'displayContact', label: 'Contact', hiddenOn: 'mobile' },
       { key: 'displayStatus', label: 'Status', align: 'right' }
     ];
@@ -350,35 +350,97 @@ export default function RegistrationsPage() {
         </div>
 
         {/* Table Area */}
-        <AdminTable
-          columns={columns}
-          rows={rows}
-          isLoading={currentLoading}
-          onRowClick={(item) => setSelectedItem({ ...item, type: currentType })}
-          onEdit={(row) => {
-            const original = currentData.find((item: any) => item.id === row.id);
-            if (original) handleEdit(original);
-          }}
-          onDelete={(item) => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
-          renderActions={(row) => (
-            <div className="flex items-center gap-2">
-               {row.status === 'PENDING' && (
-                 <Button
-                   size="sm"
-                   variant="ghost"
-                   className="h-8 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-                   onClick={(e) => {
-                     e.stopPropagation();
-                     handleAction(row.id, currentType, 'status', currentType === 'course' ? 'CONFIRMED' : 'APPROVED');
-                   }}
-                 >
-                   Approve
-                 </Button>
-               )}
-               {row.actions}
+        <div className="hidden md:block">
+          <AdminTable
+            columns={columns}
+            rows={rows}
+            isLoading={currentLoading}
+            onRowClick={(item) => setSelectedItem({ ...item, type: currentType })}
+            onEdit={(row) => {
+              const original = currentData.find((item: any) => item.id === row.id);
+              if (original) handleEdit(original);
+            }}
+            onDelete={(item) => { setRecordToDelete({ ...item, type: currentType }); setIsConfirmOpen(true); }}
+            renderActions={(row) => (
+              <div className="flex items-center gap-2">
+                 {row.status === 'PENDING' && (
+                   <Button
+                     size="sm"
+                     variant="ghost"
+                     className="h-8 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       handleAction(row.id, currentType, 'status', currentType === 'course' ? 'CONFIRMED' : 'APPROVED');
+                     }}
+                   >
+                     Approve
+                   </Button>
+                 )}
+                 {row.actions}
+              </div>
+            )}
+          />
+        </div>
+
+        {/* Mobile View */}
+        <div className="md:hidden space-y-4">
+          {currentLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="size-6 animate-spin text-uca-navy" />
             </div>
+          ) : rows.length === 0 ? (
+            <div className="text-center py-12 border border-dashed border-uca-border rounded-xl bg-uca-bg-surface">
+              <p className="text-sm text-uca-text-muted font-medium">No registrations found</p>
+            </div>
+          ) : (
+            rows.map((row) => (
+              <div
+                key={row.id}
+                className="bg-uca-bg-surface border border-uca-border rounded-xl p-4 shadow-sm active:bg-uca-bg-elevated/30 transition-all cursor-pointer"
+                onClick={() => setSelectedItem({ ...row, type: currentType })}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  {row.displayProfile}
+                  <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                    {row.status === 'PENDING' && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 px-2 text-[10px] font-black uppercase text-emerald-600"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAction(row.id, currentType, 'status', currentType === 'course' ? 'CONFIRMED' : 'APPROVED');
+                        }}
+                      >
+                        Approve
+                      </Button>
+                    )}
+                    <RowActionMenu
+                      onView={() => setSelectedItem({ ...row, type: currentType })}
+                      onEdit={() => handleEdit(row)}
+                      onDelete={() => { setRecordToDelete({ ...row, type: currentType }); setIsConfirmOpen(true); }}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-y-3 pt-3 border-t border-uca-border/50 text-[10px]">
+                  <div>
+                    <span className="block font-black uppercase text-uca-text-muted mb-0.5">UCA ID</span>
+                    {row.displayUcaId}
+                  </div>
+                  <div className="text-right">
+                    <span className="block font-black uppercase text-uca-text-muted mb-0.5">Status</span>
+                    <StatusBadge status={row.status} />
+                  </div>
+                  <div className="col-span-2">
+                    <span className="block font-black uppercase text-uca-text-muted mb-0.5">{currentType === 'demo' ? 'City' : 'Address'}</span>
+                    <p className="text-xs text-uca-text-primary line-clamp-1">{row.student?.address || row.address || row.city || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+            ))
           )}
-        />
+        </div>
       </div>
 
       <AdminModal
@@ -508,7 +570,7 @@ export default function RegistrationsPage() {
                     <User className="size-4 text-uca-accent-blue" />
                     <h4 className="text-xs font-black uppercase tracking-widest">Student Profile</h4>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
                       <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Gender</p>
                       <p className="font-bold text-uca-text-primary">{selectedItem.student?.gender || selectedItem.gender || 'N/A'}</p>
@@ -525,7 +587,7 @@ export default function RegistrationsPage() {
                       <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Email</p>
                       <p className="font-bold text-uca-text-primary text-xs truncate">{selectedItem.student?.email || selectedItem.email || 'N/A'}</p>
                     </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border col-span-2">
+                <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border sm:col-span-2">
                       <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Address</p>
                       <p className="font-bold text-uca-text-primary text-xs leading-relaxed">{selectedItem.student?.address || selectedItem.address || 'N/A'}</p>
                     </div>
@@ -538,7 +600,7 @@ export default function RegistrationsPage() {
                       <ShieldCheck className="size-4 text-uca-accent-blue" />
                       <h4 className="text-xs font-black uppercase tracking-widest">Entry Details</h4>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
                         <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">FIDE ID</p>
                         <p className="text-lg font-black text-uca-text-primary">{selectedItem.student?.fideId || selectedItem.fideId || 'N/A'}</p>
@@ -547,7 +609,7 @@ export default function RegistrationsPage() {
                         <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Rating</p>
                         <p className="text-lg font-black text-uca-accent-blue">{selectedItem.student?.fideRating || selectedItem.fideRating || '0'}</p>
                       </div>
-                      <div className="bg-uca-bg-elevated p-4 rounded-xl border border-uca-border col-span-2">
+                      <div className="bg-uca-bg-elevated p-4 rounded-xl border border-uca-border sm:col-span-2">
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Transaction ID</p>
@@ -576,7 +638,7 @@ export default function RegistrationsPage() {
                       <PhotoIcon className="size-4 text-uca-accent-blue" />
                       <h4 className="text-xs font-black uppercase tracking-widest">Documents</h4>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <button
                         onClick={() => window.open(selectedItem.ageProofUrl)}
                         className="group relative aspect-video bg-uca-bg-surface rounded-xl overflow-hidden border border-uca-border hover:border-uca-accent-blue/50 transition-colors"

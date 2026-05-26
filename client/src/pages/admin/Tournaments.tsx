@@ -375,7 +375,7 @@ const AdminTournaments: React.FC = () => {
         </div>
 
         {/* Desktop View Container: Visible from small screen breakpoint up */}
-        <div className="hidden sm:block">
+        <div className="hidden md:block">
           <AdminTable
             columns={columns}
             rows={rows}
@@ -393,7 +393,7 @@ const AdminTournaments: React.FC = () => {
         </div>
 
         {/* Mobile View Layout Alternative: Triggers under 640px viewport seamlessly */}
-        <div className="block sm:hidden space-y-3">
+        <div className="block md:hidden space-y-3">
           {isLoading ? (
             <div className="flex items-center justify-center p-8">
               <Loader2 className="size-6 animate-spin text-uca-accent-blue" />
@@ -517,7 +517,7 @@ const AdminTournaments: React.FC = () => {
               {formErrors.title && <p className="text-[10px] text-uca-accent-red font-bold flex items-center gap-1"><X className="size-3" /> {formErrors.title}</p>}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <DatePickerField
                 label="Reg Starts"
                 value={formData.regStartDate}
@@ -550,7 +550,7 @@ const AdminTournaments: React.FC = () => {
               />
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <DatePickerField
                 label="Starts On"
                 value={formData.startDate}
@@ -582,7 +582,7 @@ const AdminTournaments: React.FC = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Venue</Label>
                 <Input
@@ -617,7 +617,7 @@ const AdminTournaments: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label className="text-[10px] font-black uppercase text-uca-text-muted tracking-widest">Prize Pool</Label>
                 <Input value={formData.totalPrizePool} onChange={(e) => setFormData({...formData, totalPrizePool: e.target.value})} placeholder="₹1,00,000" className="h-11 bg-uca-bg-elevated border-uca-border rounded-lg" />
