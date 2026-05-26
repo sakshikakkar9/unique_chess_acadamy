@@ -258,8 +258,9 @@ const TournamentPortal: React.FC = () => {
                 <Button
                   className="h-11 rounded-lg font-bold gap-2 bg-uca-navy hover:bg-uca-navy-hover text-white text-xs uppercase tracking-widest w-full md:w-auto"
                   onClick={() => {
-                    const headers = ["Reference ID", "Student Name", "Category", "FIDE ID", "Rating", "Phone", "Status"];
+                    const headers = ["UCA ID", "Reference ID", "Student Name", "Category", "FIDE ID", "Rating", "Phone", "Status"];
                     const rows = registrations?.map(r => [
+                      r?.student?.ucaId || "—",
                       r?.referenceId,
                       r?.student?.fullName || "N/A",
                         r?.category || "N/A",

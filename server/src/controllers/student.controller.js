@@ -70,22 +70,29 @@ export const bulkImportStudents = async (req, res) => {
           continue;
         }
 
-        await prisma.student.create({
-          data: {
-            fullName: student.fullName,
-            email: student.email || null,
-            phone: student.phone,
-            gender: student.gender || 'Male',
-            dob: student.dob ? new Date(student.dob) : new Date(),
-            address: student.address || '',
-            fideId: student.fideId || "NA",
-            fideRating: parseInt(student.fideRating) || 0,
-            clubAffiliation: student.clubAffiliation || null,
-            experienceLevel: student.experienceLevel || "BEGINNER",
-            preferredBatch: student.preferredBatch || null,
-            discoverySource: student.discoverySource || "Social Media",
-            accountStatus: "ACTIVE"
-          }
+        await prisma.$transaction(async (tx) => {
+          const newStudent = await tx.student.create({
+            data: {
+              fullName: student.fullName,
+              email: student.email || null,
+              phone: student.phone,
+              gender: student.gender || 'Male',
+              dob: student.dob ? new Date(student.dob) : new Date(),
+              address: student.address || '',
+              fideId: student.fideId || "NA",
+              fideRating: parseInt(student.fideRating) || 0,
+              clubAffiliation: student.clubAffiliation || null,
+              experienceLevel: student.experienceLevel || "BEGINNER",
+              preferredBatch: student.preferredBatch || null,
+              discoverySource: student.discoverySource || "Social Media",
+              accountStatus: "ACTIVE"
+            }
+          });
+          const ucaId = await generateUcaId(tx);
+          await tx.student.update({
+            where: { id: newStudent.id },
+            data: { ucaId }
+          });
         });
         created++;
       } catch (rowError) {
@@ -134,6 +141,7 @@ export const createStudent = async (req, res) => {
 
     if (isDuplicate) {
       return res.status(409).json({
+        error: `A student with this info already exists: ${existingStudent.fullName}${existingUcaId ? ` (ID: ${existingUcaId})` : ''}`,
         message: `A student with this info already exists: ${existingStudent.fullName}${existingUcaId ? ` (ID: ${existingUcaId})` : ''}`,
         existingStudentId: existingStudent.id,
         existingRecord: {
@@ -175,6 +183,12 @@ export const updateStudent = async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = { ...req.body };
+
+    // Prevent manual modification of system-controlled IDs
+    delete updateData.id;
+    delete updateData.ucaId;
+    delete updateData.uca_id;
+
     if (updateData.dob) updateData.dob = new Date(updateData.dob);
     if (updateData.fideRating !== undefined) updateData.fideRating = parseInt(updateData.fideRating) || 0;
 

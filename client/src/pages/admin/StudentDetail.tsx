@@ -60,7 +60,7 @@ export default function StudentDetailPage() {
   return (
     <AdminShell
       title={student.fullName}
-      subtitle={`Student ID: ${student.id.slice(0, 8).toUpperCase()}`}
+      subtitle={`Student ID: ${student.ucaId || "—"}`}
     >
       <div className="space-y-6">
         <div className="flex items-center gap-3">

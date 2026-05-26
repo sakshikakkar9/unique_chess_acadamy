@@ -69,7 +69,9 @@ export const StudentDetailSheet: React.FC<StudentDetailSheetProps> = ({
                 )}
                 <p className="text-uca-text-muted font-bold text-xs flex items-center gap-2">
                   <User className="size-3.5 text-uca-accent-blue shrink-0" />
-                  ID: {(data.ucaId || student.ucaId || data.referenceId || data.id?.toString())?.toUpperCase()}
+                  ID: {type === 'student'
+                    ? (student.ucaId || data.ucaId || "—")
+                    : (data.referenceId || data.ucaId || student.ucaId || data.id?.toString())?.toUpperCase()}
                 </p>
               </div>
             </SheetHeader>
