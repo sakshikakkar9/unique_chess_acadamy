@@ -26,12 +26,12 @@ import {
 import { useToast } from "../../hooks/useToast";
 import { getAvatarStyles, cn } from "../../lib/utils";
 import { Button } from "../../components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../components/ui/sheet";
 import { format } from "date-fns";
 import {
   User, Calendar, MapPin, ShieldCheck, Zap, Info, Clock, Mail, Copy, ArrowRight,
-  Upload, Download
+  Upload, Download, Loader2
 } from "lucide-react";
+import { StudentDetailSheet } from "../../components/admin/StudentDetailSheet";
 
 export default function StudentsPage() {
   const navigate = useNavigate();
@@ -429,159 +429,20 @@ export default function StudentsPage() {
         description="This will permanently remove the student and all their registrations. This action cannot be undone."
       />
 
-      {/* Detail Sheet */}
-      <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
-        <SheetContent className="w-full sm:max-w-xl rounded-l-[2rem] p-0 border-uca-border bg-uca-bg-base shadow-2xl overflow-y-auto">
-          {selectedStudent && (
-            <div className="h-full flex flex-col">
-              {/* Sheet Header */}
-              <div className="bg-uca-navy p-6 sm:p-8 text-white relative overflow-hidden shrink-0 border-b border-uca-border">
-                <SheetHeader className="mb-5 sm:mb-6 relative z-10 text-left">
-                  <div className="flex items-center gap-3 mb-4 flex-wrap">
-                    <span className="px-2.5 py-1 bg-white/10 text-[9px] font-black uppercase tracking-[0.2em] rounded border border-white/20">
-                      STUDENT PROFILE
-                    </span>
-                    <span
-                      className={cn(
-                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                        selectedStudent.accountStatus === 'ACTIVE'
-                          ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-                          : 'bg-uca-accent-red/20 text-uca-accent-red border-uca-accent-red/30'
-                      )}
-                    >
-                      {selectedStudent.accountStatus}
-                    </span>
-                  </div>
-                  <SheetTitle className="text-2xl sm:text-3xl font-black text-white leading-tight tracking-tight">
-                    {selectedStudent.fullName}
-                  </SheetTitle>
-                  <p className="text-uca-text-muted font-bold text-sm mt-1 flex items-center gap-2">
-                    <User className="size-4 text-uca-accent-blue shrink-0" />
-                    Student ID: {selectedStudent.id.slice(0, 8).toUpperCase()}
-                  </p>
-                </SheetHeader>
-
-                <div className="flex flex-wrap gap-3 relative z-10">
-                  <div className="bg-uca-bg-elevated px-3 sm:px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5">
-                    <p className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">Joined On</p>
-                    <p className="text-xs font-bold text-uca-text-primary">
-                      {selectedStudent.createdAt ? format(new Date(selectedStudent.createdAt), "PPP") : 'N/A'}
-                    </p>
-                  </div>
-                  <div className="bg-uca-bg-elevated px-3 sm:px-4 py-2 rounded-lg border border-uca-border flex flex-col gap-0.5 text-uca-text-primary">
-                    <p className="text-[8px] font-black text-uca-text-muted uppercase tracking-widest">Experience</p>
-                    <p className="text-xs font-bold">{selectedStudent.experienceLevel || 'Beginner'}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sheet Body */}
-              <div className="flex-1 p-6 sm:p-8 space-y-8 sm:space-y-10 bg-uca-bg-base">
-                {/* Contact */}
-                <section>
-                  <div className="flex items-center gap-3 mb-4 sm:mb-5 text-uca-text-primary">
-                    <Phone className="size-4 text-uca-accent-blue" />
-                    <h4 className="text-xs font-black uppercase tracking-widest">Contact Details</h4>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Phone</p>
-                      <p className="font-bold text-uca-text-primary text-sm">{selectedStudent.phone}</p>
-                    </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Email</p>
-                      <p className="font-bold text-uca-text-primary text-xs truncate">{selectedStudent.email || 'N/A'}</p>
-                    </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border sm:col-span-2">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Address</p>
-                      <p className="font-bold text-uca-text-primary text-xs leading-relaxed">{selectedStudent.address || 'N/A'}</p>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Chess Profile */}
-                <section>
-                  <div className="flex items-center gap-3 mb-4 sm:mb-5 text-uca-text-primary">
-                    <ShieldCheck className="size-4 text-uca-accent-blue" />
-                    <h4 className="text-xs font-black uppercase tracking-widest">Chess Profile</h4>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">FIDE ID</p>
-                      <p className="text-lg font-black text-uca-text-primary">{selectedStudent.fideId || 'N/A'}</p>
-                    </div>
-                    <div className="bg-uca-bg-surface p-4 rounded-xl border border-uca-border">
-                      <p className="text-[9px] font-black text-uca-text-muted uppercase tracking-widest mb-1.5">Rating</p>
-                      <p className="text-lg font-black text-uca-accent-blue">{selectedStudent.fideRating || '0'}</p>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Activity */}
-                <section>
-                  <div className="flex items-center justify-between mb-4 sm:mb-5">
-                    <div className="flex items-center gap-3 text-uca-text-primary">
-                      <Zap className="size-4 text-uca-accent-blue" />
-                      <h4 className="text-xs font-black uppercase tracking-widest">Activity History</h4>
-                    </div>
-                    <button
-                      onClick={() => navigate(`/admin/students/${selectedStudent.id}`)}
-                      className="text-[10px] font-black text-uca-accent-blue uppercase hover:underline flex items-center gap-1"
-                    >
-                      Full Details <ArrowRight className="size-3" />
-                    </button>
-                  </div>
-                  <div className="space-y-3">
-                    {[...(selectedStudent.registrations || []), ...(selectedStudent.enrollments || [])].slice(0, 3).map((item: any, idx: number) => {
-                      const isTournament = !!item.tournament;
-                      return (
-                        <div key={item.id || idx} className="p-3 sm:p-4 rounded-xl border border-uca-border bg-uca-bg-surface flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-3 min-w-0">
-                            {isTournament
-                              ? <Trophy className="size-4 text-amber-500 shrink-0" />
-                              : <BookOpen className="size-4 text-uca-accent-blue shrink-0" />}
-                            <span className="text-xs font-bold text-uca-text-primary truncate">
-                              {item.tournament?.title || item.course?.title}
-                            </span>
-                          </div>
-                          <span className="text-[10px] font-black uppercase text-uca-text-muted shrink-0">
-                            {item.status}
-                          </span>
-                        </div>
-                      );
-                    })}
-                    {(!selectedStudent.registrations?.length && !selectedStudent.enrollments?.length) && (
-                      <p className="text-center py-4 text-[10px] font-black text-uca-text-muted uppercase tracking-widest bg-uca-bg-elevated/20 rounded-xl border border-dashed border-uca-border">
-                        No activity found
-                      </p>
-                    )}
-                  </div>
-                </section>
-              </div>
-
-              {/* Sheet Footer */}
-              <div className="p-4 sm:p-6 bg-uca-bg-surface border-t border-uca-border flex gap-3 shrink-0">
-                <Button
-                  className="flex-1 h-11 sm:h-12 bg-uca-navy hover:bg-uca-navy-hover text-white rounded-lg font-bold text-xs uppercase tracking-widest"
-                  onClick={() => {
-                    setEditingRecord(selectedStudent);
-                    setIsAddModalOpen(true);
-                  }}
-                >
-                  Edit Profile
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 h-11 sm:h-12 rounded-lg font-bold text-xs uppercase tracking-widest border-uca-border bg-uca-bg-base text-uca-text-muted hover:text-red-500 hover:border-red-500"
-                  onClick={() => setIsConfirmOpen(true)}
-                >
-                  Delete Profile
-                </Button>
-              </div>
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
+      <StudentDetailSheet
+        open={isDetailSheetOpen}
+        onOpenChange={setIsDetailSheetOpen}
+        data={selectedStudent}
+        type="student"
+        onAction={(id, action) => {
+          if (action === 'edit') {
+            setEditingRecord(selectedStudent);
+            setIsAddModalOpen(true);
+          } else if (action === 'delete') {
+            setIsConfirmOpen(true);
+          }
+        }}
+      />
     </AdminShell>
   );
 }

@@ -66,8 +66,8 @@ export default function StatusFilterBar({
         )}
       </div>
 
-      <div className="flex gap-1.5 flex-wrap w-full lg:w-auto justify-center lg:justify-end">
-        <div className="flex bg-uca-bg-base p-1 rounded-lg h-10 border border-uca-border">
+      <div className="flex gap-1.5 w-full lg:w-auto justify-center lg:justify-end overflow-hidden">
+        <div className="flex bg-uca-bg-base p-1 rounded-lg h-10 border border-uca-border overflow-x-auto scrollbar-none flex-nowrap w-full sm:w-auto">
           {FILTER_TABS.filter(tab => !excludeStatuses.includes(tab.value)).map((tab) => {
             const n = count(tab.value);
             const isActive = activeFilter === tab.value;
@@ -75,7 +75,7 @@ export default function StatusFilterBar({
               <button
                 key={tab.value}
                 onClick={() => onFilterChange(tab.value)}
-                className={`rounded-md px-3 sm:px-4 text-[10px] font-black uppercase tracking-widest h-8 flex items-center gap-2 transition-all ${
+                className={`rounded-md px-3 sm:px-4 text-[10px] font-black uppercase tracking-widest h-8 flex items-center gap-2 transition-all shrink-0 whitespace-nowrap ${
                   isActive
                     ? "bg-uca-navy text-white"
                     : "text-uca-text-muted hover:text-uca-text-primary"
