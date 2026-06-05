@@ -12,6 +12,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { CoursePublicView } from "@/features/courses/components/public/CoursePublicView";
 import 'react-quill/dist/quill.snow.css';
+import { resolveRegistrationStatus } from "@/lib/statusUtils";
 
 export default function CourseEnrollmentPage() {
   const { id } = useParams();
@@ -20,6 +21,19 @@ export default function CourseEnrollmentPage() {
   const { courses, isLoading } = useAdminCourses();
 
   const course = useMemo(() => courses.find((c) => c.id === id), [courses, id]);
+
+  const registrationStatus = useMemo(() => {
+    if (!course) return "OPEN";
+    return resolveRegistrationStatus(
+      course.startDate,
+      course.endDate,
+      course.enrollmentStart,
+      course.enrollmentEnd,
+      course.status
+    );
+  }, [course]);
+
+  const isRegistrationDisabled = registrationStatus !== "OPEN";
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -300,6 +314,8 @@ export default function CourseEnrollmentPage() {
 
         <CoursePublicView
           course={course}
+          isRegistrationDisabled={isRegistrationDisabled}
+          registrationStatus={registrationStatus}
           form={form}
           set={set}
           handleFileChange={handleFileChange}

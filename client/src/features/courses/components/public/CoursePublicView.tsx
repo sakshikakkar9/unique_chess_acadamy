@@ -12,6 +12,8 @@ import { formatINR, formatTime } from "@/lib/formatUtils";
 
 interface CoursePublicViewProps {
   course: Course;
+  isRegistrationDisabled?: boolean;
+  registrationStatus?: string;
   form?: any;
   set?: (key: string, value: string) => void;
   handleFileChange?: (e: React.ChangeEvent<HTMLInputElement>, type: 'age' | 'payment') => void;
@@ -26,6 +28,8 @@ const DEFAULT_BANNER = "https://images.unsplash.com/photo-1586165368502-1bad197a
 
 export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
   course,
+  isRegistrationDisabled = false,
+  registrationStatus = "OPEN",
   form = {},
   set = () => {},
   handleFileChange = () => {},
@@ -40,22 +44,29 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
       <div className="lg:sticky lg:top-24 lg:order-2">
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
           {/* Form header */}
-          <div className="bg-slate-900 px-5 py-4 flex items-center gap-3">
-            <ShieldCheck className="size-5 text-blue-400" />
-            <div>
-              <p className="text-sm font-bold text-white">Registration Form</p>
+          <div className="bg-slate-900 px-5 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="size-5 text-blue-400" />
+              <div>
+                <p className="text-sm font-bold text-white">Registration Form</p>
+              </div>
+            </div>
+            {/* Status Badge */}
+            <div className={cn("px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest", registrationStatus === "OPEN" ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400")}>
+              {registrationStatus}
             </div>
           </div>
 
           {/* Form fields */}
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
+            <div className={cn("space-y-4 transition-all", isRegistrationDisabled && "opacity-40 grayscale pointer-events-none")}>
             <div className="space-y-1.5">
               <LabelItem label="Student Full Name" required />
               <input
                 value={form.studentName || ""}
                 onChange={(e) => set("studentName", e.target.value)}
                 required
-                disabled={isPreview}
+                disabled={isRegistrationDisabled || isPreview}
                 pattern="[A-Za-z\s]+"
                 title="Only letters and spaces are allowed"
                 placeholder="Enter full name"
@@ -72,7 +83,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                     value={form.gender || "Male"}
                     onChange={(e) => set("gender", e.target.value)}
                     required
-                    disabled={isPreview}
+                    disabled={isRegistrationDisabled || isPreview}
                   >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -89,7 +100,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                     value={form.category || ""}
                     onChange={(e) => set("category", e.target.value)}
                     required
-                    disabled={isPreview}
+                    disabled={isRegistrationDisabled || isPreview}
                   >
                     <option value="">Select Age</option>
                     <option value="U-7">U-7</option>
@@ -114,7 +125,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                   value={form.dob || ""}
                   onChange={(e) => set("dob", e.target.value)}
                   required
-                  disabled={isPreview}
+                  disabled={isRegistrationDisabled || isPreview}
                   className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 h-auto"
                 />
               </div>
@@ -125,7 +136,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                   value={form.phone || ""}
                   onChange={(e) => set("phone", e.target.value)}
                   required
-                  disabled={isPreview}
+                  disabled={isRegistrationDisabled || isPreview}
                   pattern="\d{10}"
                   maxLength={10}
                   title="Phone number must be exactly 10 digits"
@@ -141,7 +152,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                 value={form.address || ""}
                 onChange={(e) => set("address", e.target.value)}
                 required
-                disabled={isPreview}
+                disabled={isRegistrationDisabled || isPreview}
                 placeholder="Residential address"
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors duration-150 placeholder:text-slate-300 min-h-[80px] resize-none"
               />
@@ -155,7 +166,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
                   value={form.discoverySource || "Social Media"}
                   onChange={(e) => set("discoverySource", e.target.value)}
                   required
-                  disabled={isPreview}
+                  disabled={isRegistrationDisabled || isPreview}
                 >
                   <option value="Social Media">Social Media</option>
                   <option value="Through Academy">Through Academy</option>
@@ -170,7 +181,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
               <div className="space-y-1.5">
                 <LabelItem label="Age Proof" required />
                 <div className="relative group/file">
-                  <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange(e, 'age')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required={!isPreview} disabled={isPreview} />
+                  <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange(e, 'age')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required={!isPreview} disabled={isRegistrationDisabled || isPreview} />
                   <div className={cn("h-[42px] border border-dashed rounded-xl flex items-center justify-center gap-2 transition-all px-4", files.age ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-slate-50 border-slate-200 text-slate-400 group-hover/file:border-blue-400")}>
                     {files.age ? <CheckCircle2 className="size-4" /> : <Upload className="size-4" />}
                     <span className="text-xs font-bold uppercase tracking-wider truncate">{files.age ? "Uploaded" : "Upload"}</span>
@@ -180,7 +191,7 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
               <div className="space-y-1.5">
                 <LabelItem label="Payment Proof" required />
                 <div className="relative group/file">
-                  <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange(e, 'payment')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required={!isPreview} disabled={isPreview} />
+                  <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange(e, 'payment')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required={!isPreview} disabled={isRegistrationDisabled || isPreview} />
                   <div className={cn("h-[42px] border border-dashed rounded-xl flex items-center justify-center gap-2 transition-all px-4", files.payment ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-slate-50 border-slate-200 text-slate-400 group-hover/file:border-blue-400")}>
                     {files.payment ? <CheckCircle2 className="size-4" /> : <Upload className="size-4" />}
                     <span className="text-xs font-bold uppercase tracking-wider truncate">{files.payment ? "Uploaded" : "Upload"}</span>
@@ -189,9 +200,10 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
               </div>
             </div>
 
+            </div>
             <button
               type="submit"
-              disabled={loading || isPreview}
+              disabled={loading || isRegistrationDisabled || isPreview}
               className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm py-3.5 rounded-xl transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed h-auto mt-4"
             >
               {loading ? "Processing..." : <>Enroll Now <ArrowRight className="size-4" /></>}

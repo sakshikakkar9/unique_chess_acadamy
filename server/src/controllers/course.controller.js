@@ -162,6 +162,27 @@ export const enrollInCourse = async (req, res) => {
   try {
     const courseId = req.params.id; 
 
+    const course = await courseService.getCourseById(courseId);
+    if (!course) return res.status(404).json({ error: 'Course not found' });
+
+    // Check manual status first
+    if (['completed', 'rejected', 'cancelled'].includes(course.status)) {
+      return res.status(400).json({ error: `Enrollment is closed because the course is ${course.status}.` });
+    }
+
+    // Check enrollment window
+    const now = new Date();
+    if (course.enrollmentStart && now < new Date(course.enrollmentStart)) {
+      return res.status(400).json({ error: "Enrollment has not started yet for this course." });
+    }
+    if (course.enrollmentEnd) {
+      const enrollmentEnd = new Date(course.enrollmentEnd);
+      enrollmentEnd.setHours(23, 59, 59, 999);
+      if (now > enrollmentEnd) {
+        return res.status(400).json({ error: "Enrollment has been closed for this course." });
+      }
+    }
+
     const proofs = { ageProofUrl: null, paymentProofUrl: null };
 
     if (req.files) {
