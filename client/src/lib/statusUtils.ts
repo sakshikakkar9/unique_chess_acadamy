@@ -86,3 +86,43 @@ export const FILTER_TABS = [
   { value: 'rejected',  label: 'Rejected' },
   { value: 'cancelled', label: 'Cancelled' },
 ] as const;
+
+/**
+ * Registration window status
+ */
+export type RegistrationStatus = "OPEN" | "CLOSED" | "NOT_STARTED";
+
+export function resolveRegistrationStatus(
+  startDate: string | Date | null | undefined,
+  endDate: string | Date | null | undefined,
+  regStartDate: string | Date | null | undefined,
+  regEndDate: string | Date | null | undefined,
+  manualStatus?: string | null
+): RegistrationStatus {
+  const itemStatus = resolveStatus(startDate, endDate, manualStatus);
+
+  // If the item itself is completed, rejected or cancelled, registration is CLOSED
+  if (['completed', 'rejected', 'cancelled'].includes(itemStatus)) {
+    return 'CLOSED';
+  }
+
+  const now = new Date();
+  const start = regStartDate ? new Date(regStartDate) : null;
+  const end = regEndDate ? new Date(regEndDate) : null;
+
+  // If registration start date is set, check if we are before it
+  if (start) {
+    const startTime = new Date(start);
+    startTime.setHours(0, 0, 0, 0);
+    if (now < startTime) return 'NOT_STARTED';
+  }
+
+  // If registration end date is set, check if we are after it
+  if (end) {
+    const closingTime = new Date(end);
+    closingTime.setHours(23, 59, 59, 999);
+    if (now > closingTime) return 'CLOSED';
+  }
+
+  return 'OPEN';
+}

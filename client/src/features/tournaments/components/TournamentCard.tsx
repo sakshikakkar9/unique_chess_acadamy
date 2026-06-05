@@ -1,6 +1,6 @@
 import { MapPin, Calendar, Trophy } from "lucide-react";
 import { Tournament } from "@/types";
-import { resolveStatus } from "@/lib/statusUtils";
+import { resolveStatus, resolveRegistrationStatus } from "@/lib/statusUtils";
 import ScrollReveal from "@/components/shared/ScrollReveal";
 import { formatINR, formatDateRange } from "@/lib/formatUtils";
 
@@ -14,14 +14,13 @@ const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1529699211952-734e80c4d
 
 export const TournamentCard = ({ tournament, delay = 0, onRegister }: TournamentCardProps) => {
   const status = resolveStatus(tournament.startDate, tournament.endDate, tournament.status);
-
-  const now = new Date();
-  const regStart = tournament.regStartDate ? new Date(tournament.regStartDate) : null;
-  const regEnd = tournament.regEndDate ? new Date(tournament.regEndDate) : null;
-  if (regEnd) regEnd.setHours(23, 59, 59, 999);
-
-  const isRegOpen = (!regStart || now >= regStart) && (!regEnd || now <= regEnd);
-  const isActive = ['upcoming', 'ongoing'].includes(status);
+  const regStatus = resolveRegistrationStatus(
+    tournament.startDate,
+    tournament.endDate,
+    tournament.regStartDate,
+    tournament.regEndDate,
+    tournament.status
+  );
 
   return (
     <ScrollReveal delay={delay}>
@@ -118,12 +117,12 @@ export const TournamentCard = ({ tournament, delay = 0, onRegister }: Tournament
             </div>
 
             {(() => {
-              if (!isActive || !isRegOpen) return (
+              if (regStatus !== 'OPEN') return (
                 <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-3 py-2 rounded-lg">
                   {status === 'completed' ? 'Ended'
                     : status === 'cancelled' ? 'Cancelled'
-                    : !isRegOpen && isActive ? 'Closed'
-                    : 'Unavailable'}
+                    : regStatus === 'NOT_STARTED' ? 'Soon'
+                    : 'Closed'}
                 </span>
               );
 

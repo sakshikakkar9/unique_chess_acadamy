@@ -53,8 +53,13 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
               </div>
             </div>
             {/* Status Badge */}
-            <div className={cn("px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest", registrationStatus === "OPEN" ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400")}>
-              {registrationStatus}
+            <div className={cn(
+              "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+              registrationStatus === "OPEN" ? "bg-emerald-500/20 text-emerald-400" :
+              registrationStatus === "NOT_STARTED" ? "bg-amber-500/20 text-amber-400" :
+              "bg-red-500/20 text-red-400"
+            )}>
+              {registrationStatus === "OPEN" ? "Open" : registrationStatus === "NOT_STARTED" ? "Soon" : "Closed"}
             </div>
           </div>
 

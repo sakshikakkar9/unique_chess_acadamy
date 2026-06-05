@@ -53,6 +53,11 @@ export const registerForTournament = async (req, res) => {
     const tournament = await tournamentService.getTournamentById(id);
     if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
 
+    // Check manual status first
+    if (['completed', 'rejected', 'cancelled'].includes(tournament.status)) {
+      return res.status(400).json({ error: `Registration is closed because the tournament is ${tournament.status}.` });
+    }
+
     const now = new Date();
     if (tournament.regStartDate && now < new Date(tournament.regStartDate)) {
       return res.status(400).json({ error: "Registration has not started yet for this tournament." });

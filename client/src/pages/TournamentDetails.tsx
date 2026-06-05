@@ -13,6 +13,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { TournamentPublicView } from "@/features/tournaments/components/public/TournamentPublicView";
 import 'react-quill/dist/quill.snow.css';
+import { resolveRegistrationStatus } from "@/lib/statusUtils";
 
 export default function TournamentDetails() {
   const { id } = useParams();
@@ -50,17 +51,13 @@ export default function TournamentDetails() {
 
   const registrationStatus = useMemo(() => {
     if (!tournament) return "OPEN";
-    const now = new Date();
-    const start = tournament.regStartDate ? new Date(tournament.regStartDate) : null;
-    const end = tournament.regEndDate ? new Date(tournament.regEndDate) : null;
-
-    if (start && now < start) return "NOT_STARTED";
-    if (end) {
-      const closingTime = new Date(end);
-      closingTime.setHours(23, 59, 59, 999);
-      if (now > closingTime) return "CLOSED";
-    }
-    return "OPEN";
+    return resolveRegistrationStatus(
+      tournament.startDate,
+      tournament.endDate,
+      tournament.regStartDate,
+      tournament.regEndDate,
+      tournament.status
+    );
   }, [tournament]);
 
   const isRegistrationDisabled = registrationStatus !== "OPEN";

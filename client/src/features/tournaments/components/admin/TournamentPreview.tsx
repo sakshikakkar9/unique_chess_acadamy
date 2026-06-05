@@ -1,12 +1,23 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Tournament } from "@/types";
 import { TournamentPublicView } from "../public/TournamentPublicView";
+import { resolveRegistrationStatus } from "@/lib/statusUtils";
 
 interface TournamentPreviewProps {
   tournament: Tournament;
 }
 
 const TournamentPreview: React.FC<TournamentPreviewProps> = ({ tournament }) => {
+  const regStatus = useMemo(() => {
+    return resolveRegistrationStatus(
+      tournament.startDate,
+      tournament.endDate,
+      tournament.regStartDate,
+      tournament.regEndDate,
+      tournament.status
+    );
+  }, [tournament]);
+
   return (
     <div className="bg-slate-50 p-4 sm:p-8 rounded-[2rem] border border-slate-200">
       <div className="max-w-6xl mx-auto">
@@ -20,7 +31,8 @@ const TournamentPreview: React.FC<TournamentPreviewProps> = ({ tournament }) => 
         <TournamentPublicView
           tournament={tournament}
           isPreview={true}
-          registrationStatus="OPEN"
+          registrationStatus={regStatus}
+          isRegistrationDisabled={regStatus !== "OPEN"}
         />
       </div>
     </div>
