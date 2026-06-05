@@ -229,46 +229,50 @@ export const CoursePublicView: React.FC<CoursePublicViewProps> = ({
               {course.title}
             </h1>
 
-            <div className="w-full flex justify-start">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl lg:max-w-2xl">
-                {[
-                  {
-                    icon: <Clock className="size-4 text-blue-500 shrink-0" />,
-                    label: 'Duration',
-                    value: course.duration ?? '—'
-                  },
-                  {
-                    icon: <Star className="size-4 text-amber-500 shrink-0" />,
-                    label: 'Level',
-                    value: course.skillLevel ?? '—'
-                  },
-                  {
-                    icon: <Globe className="size-4 text-green-500 shrink-0" />,
-                    label: 'Mode',
-                    value: course.mode ?? '—'
-                  },
-                  {
-                    icon: <Clock className="size-4 text-purple-500 shrink-0" />,
-                    label: 'Class Time',
-                    value: course.classTime ? formatTime(course.classTime) : '—'
-                  },
-                ].map(info => (
-                  <div key={info.label} className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-left w-full flex items-center gap-3">
-                    <div className="flex items-center justify-center">
-                      {info.icon}
-                    </div>
-                    <div className="flex flex-col justify-center items-start min-w-0">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-left leading-none mb-1.5 truncate w-full">
-                        {info.label}
-                      </p>
-                      <p className="text-sm font-bold text-slate-900 text-left leading-none truncate w-full">
-                        {info.value}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+                       <div className="w-full flex justify-start">
+  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl lg:max-w-2xl">
+    {[
+      {
+        icon: <Clock className="size-4 text-blue-500 shrink-0" />,
+        label: 'Duration',
+        value: course.duration ?? '—'
+      },
+      {
+        icon: <Star className="size-4 text-amber-500 shrink-0" />,
+        label: 'Level',
+        value: course.skillLevel ?? '—'
+      },
+      {
+        icon: <Globe className="size-4 text-green-500 shrink-0" />,
+        label: 'Mode',
+        value: course.mode ?? '—'
+      },
+      {
+        icon: <Clock className="size-4 text-purple-500 shrink-0" />,
+        label: 'Class Time',
+        value: course.classTime ? formatTime(course.classTime) : '—'
+      },
+    ].map(info => (
+      <div 
+        key={info.label} 
+        className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-left flex items-center gap-3 h-full"
+      >
+        <div className="flex items-center justify-center shrink-0">
+          {info.icon}
+        </div>
+        <div className="flex flex-col justify-center items-start min-w-0 flex-1">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-left leading-none mb-1">
+            {info.label}
+          </p>
+          {/* Removed truncation and enabled word wrapping for full visibility */}
+          <p className="text-sm font-semibold text-slate-900 text-left leading-snug break-words w-full">
+            {info.value}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
           </div>
         </div>
 
