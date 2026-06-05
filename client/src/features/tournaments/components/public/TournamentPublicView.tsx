@@ -309,41 +309,44 @@ export const TournamentPublicView: React.FC<TournamentPublicViewProps> = ({
                 </div>
               ))}
             </div> */}
-     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
   {[
     {
-      icon: <Calendar className="size-4 text-blue-500" />,
+      icon: <Calendar className="size-4 text-blue-500 shrink-0" />,
       label: 'Schedule',
       value: formatDateRange(tournament.startDate, tournament.endDate)
     },
     {
-      icon: <MapPin className="size-4 text-blue-500" />,
+      icon: <MapPin className="size-4 text-blue-500 shrink-0" />,
       label: 'Venue',
       value: tournament.location || '—'
     },
     {
-      icon: <Trophy className="size-4 text-amber-500" />,
+      icon: <Trophy className="size-4 text-amber-500 shrink-0" />,
       label: 'Prize Pool',
       value: formatINR(tournament.totalPrizePool ?? 0)
     },
     {
-      icon: <FileText className="size-4 text-green-500" />,
+      icon: <FileText className="size-4 text-green-500 shrink-0" />,
       label: 'Category',
       value: tournament.category || '—'
     },
   ].map(info => (
-    <div key={info.label} className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center gap-2.5">
-      {/* Icon Wrapper */}
-      <div className="flex-shrink-0 flex items-center justify-center">
+    <div 
+      key={info.label} 
+      className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 flex items-start sm:items-center gap-3 h-full"
+    >
+      <div className="flex-shrink-0 flex items-center justify-center mt-0.5 sm:mt-0">
         {info.icon}
       </div>
       
-      {/* Text Wrapper */}
-      <div className="min-w-0 flex-1 leading-tight">
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">
+      {/* Container with min-w-0 and flex-1 to allow flexible wrapping */}
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
           {info.label}
         </p>
-        <p className="text-sm font-bold text-slate-900 truncate block">
+        {/* Removed truncate, added break-words and leading-snug for multi-line support */}
+        <p className="text-sm font-bold text-slate-900 leading-snug break-words">
           {info.value}
         </p>
       </div>
